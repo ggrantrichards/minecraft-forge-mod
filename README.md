@@ -9,7 +9,7 @@ message when you join a world.
 | Tool | Why | Get it |
 |---|---|---|
 | **JDK 25** | Minecraft 26.x runs on Java 25 | [Adoptium Temurin 25](https://adoptium.net/) (Gradle can also auto-download it) |
-| **IntelliJ IDEA Community** | Java IDE with the best Gradle support | [jetbrains.com/idea](https://www.jetbrains.com/idea/download/) |
+| **An editor** | IntelliJ IDEA Community has the best Gradle support; VS Code or Antigravity also work (see section 3) | [jetbrains.com/idea](https://www.jetbrains.com/idea/download/) |
 | **Minecraft Java Edition** | To play your mod for real (not needed for `runClient`) | minecraft.net |
 | **Git** (optional) | Version control | git-scm.com |
 
@@ -41,6 +41,40 @@ from <https://files.minecraftforge.net/> and unzip it. This project is that MDK 
    > Minecraft's code. Your mod jar contains only *your* code.
 
 From a terminal instead: `./gradlew build` (Windows: `gradlew.bat build`).
+
+### Using VS Code or Antigravity instead of IntelliJ
+
+1. Install the extensions **Extension Pack for Java** (or at least **Language Support for
+   Java by Red Hat**) and **Gradle for Java**. In Antigravity, search for them in its
+   extensions panel.
+2. **File → Open Folder** → this folder. Say yes to importing the Gradle project, then wait
+   for the Java status in the bottom bar to say it's ready. The first import takes 5–15 minutes.
+3. To read Minecraft's source, press **Ctrl+T** (Cmd+T on Mac) and type a class name such as
+   `Block`, or Ctrl+click a Minecraft class in `RubyMod.java`.
+4. Run everything from the built-in terminal (**Ctrl+`**): `./gradlew runClient`, or
+   `.\gradlew.bat runClient` on Windows.
+
+### Checking your Java
+
+Run these in a terminal. You need a **JDK** (it includes `javac`), not only a Java runtime.
+
+```
+java -version        # should say 25
+javac -version       # should say javac 25 (if "not found", you only have a runtime, not a JDK)
+```
+
+Then, inside this folder, ask Gradle which JDKs it can see:
+
+```
+./gradlew -q javaToolchains       # Windows: .\gradlew.bat -q javaToolchains
+```
+
+The first time you run a Gradle command here, Forge also sets up Minecraft, so it can take several
+minutes. If `gradlew` itself fails with a Java version error, your default `java` is older than 17;
+set `JAVA_HOME` to your Java 25 folder.
+
+If that lists a JDK with **Language Version: 25** and **Is JDK: true**, you're set. If not, Gradle downloads one
+automatically on the first build.
 
 ## 4. Run the game with your mod
 
