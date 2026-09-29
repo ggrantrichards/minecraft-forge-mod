@@ -1,0 +1,15 @@
+# gradle
+.gradle/
+build/
+out/
+# IDEs
+.idea/
+*.iml
+.vscode/
+bin/
+.classpath
+.project
+.settings/
+# game run directories (worlds, logs, options)
+run/
+run-data/

@@ -1,0 +1,26 @@
+# Tells Forge about your mod. Docs: https://docs.minecraftforge.net/en/latest/gettingstarted/modfiles/
+
+modLoader="javafml"
+loaderVersion="[66,)"
+license="All Rights Reserved"
+
+[[mods]]
+modId="rubymod"             # must match RubyMod.MODID; lowercase letters, numbers, underscores
+version="1.0.0"
+displayName="Ruby Mod"
+authors="YourNameHere"
+description='''My first Forge mod: adds rubies and a ruby block.'''
+
+[[dependencies.rubymod]]
+    modId="forge"
+    mandatory=true
+    versionRange="[66,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.rubymod]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[26.3,26.4)"
+    ordering="NONE"
+    side="BOTH"

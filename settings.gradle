@@ -1,0 +1,6 @@
+plugins {
+    // Lets Gradle auto-download the right JDK (Java 25) if you don't have it installed
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = 'rubymod'
