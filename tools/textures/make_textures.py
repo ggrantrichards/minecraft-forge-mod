@@ -926,6 +926,284 @@ def gravity_anomaly_frame(phase):
     return img
 
 
+
+# ---------------------------------------------------------------- wood sets (Phase 3.5)
+
+LUMINE_STEM = [hexc("5e5470"), hexc("736887"), hexc("877c9b"), hexc("9d93b0"), hexc("b4abc4")]
+LUMINE_GLOW = [hexc("2fb7ad"), hexc("5fe3d6"), hexc("aefcf2")]
+LUMINE_PLANKS = [hexc("6d6286"), hexc("83789d"), hexc("988db1"), hexc("aca2c3"), hexc("c0b8d4")]
+NULL_BARK = [hexc("0c0a10"), hexc("15121c"), hexc("1f1a29"), hexc("2a2338"), hexc("3a3050")]
+NULL_HEART = [hexc("2e1a4a"), hexc("3f2566"), hexc("523283"), hexc("66409e"), hexc("7d55b8")]
+NULL_LEAF = [hexc("140f22"), hexc("1f1734"), hexc("2c2148"), hexc("3a2c5e"), hexc("6b4fb0")]
+
+
+def planks_tex(pal, seed):
+    """Four horizontal boards with grain and nail holes, like vanilla planks."""
+    rnd = random.Random(seed)
+    img = Image.new("RGBA", (16, 16), pal[2])
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            r = rnd.random()
+            px[x, y] = pal[3] if r < 0.18 else pal[1] if r < 0.3 else pal[2]
+    for board in range(4):
+        y0 = board * 4
+        for x in range(16):
+            px[x, y0 + 3] = pal[0]
+            if rnd.random() < 0.5:
+                px[x, y0] = pal[3]
+        # grain streaks
+        for _ in range(2):
+            gx, gy = rnd.randrange(16), y0 + rnd.randrange(1, 3)
+            for i in range(rnd.randint(3, 6)):
+                px[(gx + i) % 16, gy] = pal[1]
+        seam = (rnd.randrange(4, 12) + board * 5) % 16
+        for y in range(y0, y0 + 3):
+            px[seam, y] = pal[0]
+    return img
+
+
+def bark_tex(pal, seed, streak=None, streaks=0):
+    """Vertical, furrowed bark like a log's side."""
+    rnd = random.Random(seed)
+    img = Image.new("RGBA", (16, 16), pal[2])
+    px = img.load()
+    for x in range(16):
+        base = [pal[1], pal[2], pal[3], pal[2], pal[1], pal[0]][rnd.randrange(6)]
+        for y in range(16):
+            px[x, y] = base if rnd.random() > 0.25 else rnd.choice([pal[0], pal[1], pal[3], pal[4]])
+    for _ in range(4):  # deep furrows
+        x, y = rnd.randrange(16), rnd.randrange(16)
+        for i in range(rnd.randint(4, 9)):
+            px[x, (y + i) % 16] = pal[0]
+    if streak:
+        for _ in range(streaks):
+            x, y = rnd.randrange(16), rnd.randrange(16)
+            for i in range(rnd.randint(2, 5)):
+                px[x, (y + i) % 16] = streak[1] if i % 3 else streak[2]
+    return img
+
+
+def log_top_tex(outer, inner, core):
+    img = Image.new("RGBA", (16, 16), inner[2])
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            d = max(abs(x - 7.5), abs(y - 7.5))
+            if d > 6.5:
+                px[x, y] = outer[1] if (x + y) % 3 else outer[0]
+            elif d > 5.5:
+                px[x, y] = inner[1]
+            elif int(d) % 2:
+                px[x, y] = inner[3]
+            else:
+                px[x, y] = inner[2]
+            if d < 1.5:
+                px[x, y] = core
+    return img
+
+
+def cap_tex(seed):
+    """A glowing Lumineshroom cap block: cyan flesh with pale spots."""
+    rnd = random.Random(seed)
+    img = Image.new("RGBA", (16, 16), LUMINE_GLOW[0])
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            px[x, y] = LUMINE_GLOW[0] if rnd.random() < 0.6 else hexc("25968f")
+    for _ in range(5):
+        cx, cy = rnd.randrange(1, 15), rnd.randrange(1, 15)
+        for dx, dy in [(0, 0), (1, 0), (0, 1), (1, 1)]:
+            px[(cx + dx) % 16, (cy + dy) % 16] = LUMINE_GLOW[2] if (dx + dy) == 0 else LUMINE_GLOW[1]
+    return img
+
+
+def door_tex(pal, frame, window, top):
+    """A door half: plank boards in a frame; the top half has a small window."""
+    img = planks_tex(pal, 900 + top).rotate(90)
+    px = img.load()
+    for i in range(16):
+        px[0, i] = frame
+        px[15, i] = frame
+        px[1, i] = pal[3]
+    if top:
+        for i in range(16):
+            px[i, 0] = frame
+        for y in range(3, 8):
+            for x in range(4, 12):
+                px[x, y] = window if (x in (4, 11) or y in (3, 7)) is False else frame
+        img2 = img
+        return img2
+    else:
+        for i in range(16):
+            px[i, 15] = frame
+        for x in (11, 12):
+            px[x, 3] = hexc("c9b27a")  # handle
+        return img
+
+
+def trapdoor_tex(pal, frame):
+    img = planks_tex(pal, 950)
+    px = img.load()
+    for i in range(16):
+        for j in (0, 15):
+            px[i, j] = frame
+            px[j, i] = frame
+    for x in range(3, 13):
+        px[x, 7] = frame
+        px[x, 8] = frame
+    for (x, y) in [(4, 4), (11, 4), (4, 11), (11, 11)]:
+        px[x, y] = CLEAR
+    return img
+
+
+def leaves_tex(pal, seed, glints=0):
+    rnd = random.Random(seed)
+    img = new()
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            r = rnd.random()
+            if r < 0.14:
+                continue  # holes, like vanilla leaves
+            px[x, y] = pal[1] if r < 0.45 else pal[2] if r < 0.8 else pal[3]
+    for _ in range(glints):
+        px[rnd.randrange(16), rnd.randrange(16)] = pal[4]
+    return img
+
+
+NULLWOOD_SAPLING = [
+    "................",
+    "................",
+    ".....ll.........",
+    "....lLLl..l.....",
+    "...lLllLlLLl....",
+    "....llLLLLl.....",
+    ".....lLbLll.....",
+    "..lll.lb........",
+    ".lLLLl.b..ll....",
+    "..lllLlb.lLLl...",
+    ".......bLLll....",
+    ".......b.l......",
+    ".......b........",
+    "......bb........",
+    ".......b........",
+    ".......b........",
+]
+NULLWOOD_SAPLING_PAL = {"l": hexc("2c2148"), "L": hexc("4a3a78"), "b": hexc("1f1a29")}
+
+NEBULA_TUFTS = [
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "..........p.....",
+    "..p.......P.....",
+    "..P...p..pP..p..",
+    "..Pp..P..P...P..",
+    "...P..Pp.P..pP..",
+    ".p.P.pP..P.pP...",
+    ".P.PpP..PP.P..p.",
+    ".PpPP.P.P..P.pP.",
+    "..PP..PPP.PP.P..",
+    ".dPd.ddPddPdPd..",
+    ".dddddddddddddd.",
+]
+TUFTS_PAL = {"p": hexc("b48cf0"), "P": hexc("8a5fd0"), "d": hexc("5a3a96")}
+
+TENDRIL_PLANT = [
+    ".......t........",
+    ".......t........",
+    "......tT........",
+    "......T.........",
+    "......Tt........",
+    ".......T........",
+    ".......Tg.......",
+    "......tT........",
+    "......T.........",
+    "......Tt........",
+    ".......T........",
+    "......gT........",
+    ".......Tt.......",
+    "........T.......",
+    ".......tT.......",
+    ".......T........",
+]
+TENDRIL_TIP = [
+    ".......t........",
+    ".......t........",
+    "......tT........",
+    "......T.........",
+    "......Tt........",
+    ".......T........",
+    ".......Tg.......",
+    "......tT........",
+    "......T.........",
+    ".....gTg........",
+    "......G.........",
+    ".....gGg........",
+    "......G.........",
+    ".....gWg........",
+    "......g.........",
+    "................",
+]
+TENDRIL_PAL = {"t": hexc("5b2e8f"), "T": hexc("7a4ab8"), "g": hexc("5fe3d6"), "G": hexc("aefcf2"), "W": hexc("ffffff")}
+
+SHIMMER_REED_TOP = [
+    "................",
+    "......w.........",
+    ".....wsw........",
+    "......s...w.....",
+    "......s..wsw....",
+    "..w...S...s.....",
+    ".wsw..S...S.....",
+    "..s...S..S......",
+    "..S...S..S......",
+    "...S..S.S.......",
+    "...S..SSS.......",
+    "....S.SS........",
+    "....S.S.........",
+    ".....SS.........",
+    "......S.........",
+    "......S.........",
+]
+SHIMMER_REED_BOTTOM = [
+    "......S.........",
+    "......S.........",
+    ".....SS.........",
+    "....S.S.........",
+    "....S.S....S....",
+    "...S..S...S.....",
+    "...S..SS.S......",
+    "......S.SS......",
+    "......S.S.......",
+    "......SS........",
+    ".....gS.........",
+    ".....gSg........",
+    "....gGSg........",
+    "....gGSGg.......",
+    "...gGGSGgg......",
+    "...gGGSGGg......",
+]
+REED_PAL = {"w": hexc("f4fbff"), "s": hexc("cfeeee"), "S": hexc("9fd6d8"), "g": hexc("6aa3b2"), "G": hexc("4f8296")}
+
+
+def petrified_stalk_side():
+    img = stone([hexc("5e5953"), hexc("6b6660"), hexc("7a746c"), hexc("8a847b"), hexc("a39c91")], 141, blotches=16, specks=10)
+    px = img.load()
+    for y in range(16):  # the fossil outline of a twisting vine running up the stalk
+        x = 7 + int(3 * __import__("math").sin(y / 2.5))
+        px[x, y] = hexc("4d4944")
+        px[(x + 1) % 16, y] = hexc("a9a298")
+    return img
+
+
+def petrified_stalk_top():
+    return log_top_tex([hexc("5e5953"), hexc("6b6660")], [hexc("5e5953"), hexc("6b6660"), hexc("7a746c"), hexc("8a847b")],
+                       hexc("4d4944"))
+
+
 # ---------------------------------------------------------------- write everything
 
 def save(img, rel):
@@ -1032,6 +1310,43 @@ def main():
     # ---- Phase 3 items
     out.append(save(from_map(RAW_SOLARITE, RAW_SOLAR), "item/raw_solarite.png"))
     out.append(save(from_map(SOLARITE_INGOT, SOLAR), "item/solarite_ingot.png"))
+
+    # ---- Phase 3.5: Lumine wood (from giant Lumineshroom stems) and Nullwood (Dark Matter Belt trees)
+    out.append(save(bark_tex(LUMINE_STEM, 201, LUMINE_GLOW, 5), "block/lumine_stem.png"))
+    out.append(save(log_top_tex(LUMINE_STEM, LUMINE_STEM, LUMINE_GLOW[1]), "block/lumine_stem_top.png"))
+    out.append(save(bark_tex([hexc("7e7494"), hexc("8f86a6"), hexc("a39ab8"), hexc("b6aecb"), hexc("c8c1da")], 202), "block/stripped_lumine_stem.png"))
+    out.append(save(log_top_tex([hexc("7e7494"), hexc("8f86a6")], LUMINE_PLANKS, LUMINE_GLOW[0]), "block/stripped_lumine_stem_top.png"))
+    out.append(save(planks_tex(LUMINE_PLANKS, 203), "block/lumine_planks.png"))
+    out.append(save(cap_tex(204), "block/lumine_cap.png"))
+    out.append(save(door_tex(LUMINE_PLANKS, LUMINE_STEM[0], LUMINE_GLOW[1], 1), "block/lumine_door_top.png"))
+    out.append(save(door_tex(LUMINE_PLANKS, LUMINE_STEM[0], LUMINE_GLOW[1], 0), "block/lumine_door_bottom.png"))
+    out.append(save(trapdoor_tex(LUMINE_PLANKS, LUMINE_STEM[0]), "block/lumine_trapdoor.png"))
+    out.append(save(bark_tex(NULL_BARK, 211, [None, NULL_HEART[2], NULL_HEART[4]], 3), "block/nullwood_log.png"))
+    out.append(save(log_top_tex(NULL_BARK, NULL_HEART, NULL_HEART[4]), "block/nullwood_log_top.png"))
+    out.append(save(bark_tex(NULL_HEART, 212), "block/stripped_nullwood_log.png"))
+    out.append(save(log_top_tex(NULL_HEART, NULL_HEART, NULL_HEART[4]), "block/stripped_nullwood_log_top.png"))
+    out.append(save(planks_tex(NULL_HEART, 213), "block/nullwood_planks.png"))
+    out.append(save(leaves_tex(NULL_LEAF, 214, glints=3), "block/nullwood_leaves.png"))
+    out.append(save(from_map(NULLWOOD_SAPLING, NULLWOOD_SAPLING_PAL), "block/nullwood_sapling.png"))
+    out.append(save(door_tex(NULL_HEART, NULL_BARK[0], NULL_BARK[2], 1), "block/nullwood_door_top.png"))
+    out.append(save(door_tex(NULL_HEART, NULL_BARK[0], NULL_BARK[2], 0), "block/nullwood_door_bottom.png"))
+    out.append(save(trapdoor_tex(NULL_HEART, NULL_BARK[0]), "block/nullwood_trapdoor.png"))
+    # item icons for the doors (like vanilla's)
+    for wood, pal, frame in (("lumine", LUMINE_PLANKS, LUMINE_STEM[0]), ("nullwood", NULL_HEART, NULL_BARK[0])):
+        icon = new()
+        top = door_tex(pal, frame, LUMINE_GLOW[1] if wood == "lumine" else NULL_BARK[2], 1).resize((8, 8), Image.NEAREST)
+        bottom = door_tex(pal, frame, frame, 0).resize((8, 8), Image.NEAREST)
+        icon.paste(top, (4, 0))
+        icon.paste(bottom, (4, 8))
+        out.append(save(icon, f"item/{wood}_door.png"))
+    # ---- new plants
+    out.append(save(from_map(NEBULA_TUFTS, TUFTS_PAL), "block/nebula_tufts.png"))
+    out.append(save(from_map(TENDRIL_TIP, TENDRIL_PAL), "block/nebula_tendril.png"))
+    out.append(save(from_map(TENDRIL_PLANT, TENDRIL_PAL), "block/nebula_tendril_plant.png"))
+    out.append(save(from_map(SHIMMER_REED_TOP, REED_PAL), "block/shimmer_reed_top.png"))
+    out.append(save(from_map(SHIMMER_REED_BOTTOM, REED_PAL), "block/shimmer_reed_bottom.png"))
+    out.append(save(petrified_stalk_side(), "block/petrified_stalk.png"))
+    out.append(save(petrified_stalk_top(), "block/petrified_stalk_top.png"))
 
     write_preview(out)
     print(f"Wrote {len(out)} textures to {TEX.relative_to(ROOT)} and a preview to {PREVIEW.relative_to(ROOT)}")
