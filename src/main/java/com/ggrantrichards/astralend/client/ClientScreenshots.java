@@ -170,7 +170,22 @@ public final class ClientScreenshots {
             entity.snapTo(shot.mobX(), shot.mobY(), shot.mobZ(), yaw, 0.0F);
             entity.setYHeadRot(yaw);
             entity.setNoGravity(true);
-            entity.setInvulnerable(true);   // no hurt flash if a big one touches a wall
+            // A big mob can clip into a wall and take damage (and flash red): move it to the nearest
+            // spot where it fits.
+            search:
+            for (int r = 1; r <= 3 && !end.noCollision(entity); r++) {
+                for (int dx = -r; dx <= r; dx++) {
+                    for (int dz = -r; dz <= r; dz++) {
+                        entity.snapTo(shot.mobX() + dx * 0.5, shot.mobY(), shot.mobZ() + dz * 0.5, yaw, 0.0F);
+                        if (end.noCollision(entity)) {
+                            break search;
+                        }
+                    }
+                }
+            }
+            if (!end.noCollision(entity)) {
+                entity.snapTo(shot.mobX(), shot.mobY(), shot.mobZ(), yaw, 0.0F);
+            }
             if (entity instanceof Mob mob) {
                 mob.setNoAi(true);
                 mob.setPersistenceRequired();
