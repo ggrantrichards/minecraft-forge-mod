@@ -139,6 +139,11 @@ in the air.
 
 - **Built (Phase 2):** regions several hundred blocks across covering about a fifth of the
   outer End, placed by their own noise on top of vanilla's End biomes.
+- **Rebuilt as a world of its own (Phase 3.5):** territories a few thousand blocks across, on big
+  rolling moss islands; forests of **giant Lumineshrooms** (glowing caps up to 15 blocks high,
+  like the Nether's huge fungi) with **Nebula Tendrils** dripping from their rims and from island
+  undersides; a carpet of **Nebula Tufts**. The giant stems give **Lumine wood** (a full wood set,
+  like crimson and warped).
 - **Terrain:** vanilla End islands, with every island floor topped with **Nebula Moss** (a
   material rule). No chorus grows here, since chorus needs bare End Stone.
 - **Low gravity:** players and mobs get **0.65× gravity**, which makes them jump about
@@ -161,6 +166,8 @@ in the air.
 Huge, flat, thin "shelf" islands close to the void, under a sky full of slow aurora
 ribbons.
 
+- **Phase 3.5:** big shelf landmasses, a meadow of Shimmer Grass with tall **Shimmer Reeds**, and
+  whole **Leviathan ribcages** (a spine with rib arches over it) lying on the shelves.
 - **Built (Phase 3):** islands reshaped into flat-topped shelves (level at y=54, thinning to a
   see-through edge) of **Pale End Stone**, with **Shimmer Grass**, standing stones of Pale End
   Stone Bricks and Tiles, and Leviathan Bone ribs. Aurora skies and Drift Whales come in
@@ -179,6 +186,8 @@ ribbons.
 The trail a comet left when it broke apart: scorched islands, a glittering "debris river"
 of small floating chunks, and craters.
 
+- **Phase 3.5:** broad scorched islands pocked with **impact craters** (a lump of Meteoric Iron at
+  the bottom of each) and **Comet Ice spires** driven into the ground at an angle.
 - **Built (Phase 3):** **Charred End Stone** islands with a field of small floating debris
   between them, **Stardust** veins, glassy **Comet Ice** shards, **Comet Cores** (boulders with a
   heart of Meteoric Iron Ore), and Stardust gathered under island undersides with **Comet
@@ -200,6 +209,9 @@ of small floating chunks, and craters.
 Near-invisible islands. You can only really see them from their edges, where light
 bends.
 
+- **Phase 3.5:** ring archipelagos (land follows broken rings and arcs around empty centres) under
+  dense forests of twisted **Nullwood** trees: black bark, violet heartwood, dark leaves. A full
+  wood set; its saplings grow on End ground.
 - **Built (Phase 3):** ragged ring-shaped islands (big islands are hollowed out) of **Umbral
   Stone** with **Void Crystal Ore**, near-black fog, and **Gravity Inversion Pockets**: a
   **Gravity Anomaly** set into an island's underside, with a sphere of flipped gravity (60%
@@ -229,6 +241,8 @@ bends.
 ### 4.5 Shattered Observatory
 The rarest biome: a cluster of islands around a huge, broken ring of obsidian and quartz.
 
+- **Phase 3.5:** larger, rare regions on one big island, with the **great ring**: a circle of tall
+  quartz pillars and lintels around a star mosaic, mostly fallen.
 - **Built (Phase 3):** small, rare regions of vanilla-shaped islands with **Observatory Quartz**
   ruins set into them (round floors with a **Star Inlay** at the centre, broken and fallen
   pillars), overgrown with Starblooms, Astral Vines and chorus. The great ring, Wormhole Maws
@@ -249,6 +263,8 @@ The islands closest to **the Remnant**, the dying ember of the collapsed star. I
 low in the sky over this region as a huge, dim, slowly pulsing disc. You can see it from
 far away, so players always know where the Corona is (and can choose to avoid it).
 
+- **Phase 3.5:** flat-topped mesas with sheer cliffs, fields of Flareblooms over glowing lichen, and
+  the **petrified stalks** of giant Astral Vines that died here, up to 20 blocks tall.
 - **Built (Phase 3):** smoother, low-relief islands (few overhangs) with a crust of
   **Sunscorched Stone** over **Charred End Stone**; **Solarite Ore** in rich veins at the surface
   and sparse ones deep inside; **Flareblooms** (shut tight), glowing **Sunscale Lichen**, and the
@@ -870,6 +886,7 @@ Each phase is playable on its own. Later phases build on earlier ones.
 | **1. Blocks and flora** ✅ | Umbral Stone set, Stardust (falls up), Astral Glass, Leviathan Bone, Nebula Moss, Lumineshroom, Astral Vine, Starbloom, Comet Cress, Void Crystal and Meteoric Iron. **Done.** Orrery Bronze (tarnishing) moves to Phase 6 with the Orbital Stations it comes from. | Block and item registration, a block that rises instead of falls, a hanging crop, and generated JSON with an automatic checker |
 | **2. First biome: Nebula Fields** ✅ | The biome, its terrain features and low gravity | The End's biome list is **hard-coded in vanilla**. Adding biomes needs a custom `BiomeSource` registered in Java, then a data-pack override of `dimension/the_end.json` to use it. Biomes and features themselves are JSON. |
 | **3. Remaining biomes** ✅ | Aurora Shallows, Comet Wake, Dark Matter Belt, Shattered Observatory, the Corona, inversion pockets, 42 new blocks and 2 new items. **Done.** | Biome-shaped terrain as JSON density functions, four Java features, a block entity for the pockets |
+| **3.5. Biome worlds** ✅ | Territories thousands of blocks across on big biome-shaped islands, dense ground cover, giant flora (Lumineshrooms, Nullwood trees, petrified stalks), ribcages, craters, ice spires, the great ring, Lumine and Nullwood wood sets | Landmass density functions, eight Java features, in-game screenshots in CI |
 | **4. Mobs** | Pollinator, Void Wanderer, Black Hole Guardian, Umbral Stalker, Corona Skimmer, Cinder Mite, then Drift Whale and the Watcher | Entity classes, AI goals, models (Blockbench → Java model code), spawn rules |
 | **5. Sky and Stellar Flares** | Moving stars, auroras, silhouettes, the Remnant, Corona flare phases, Flare Burn, solar wind, flare charging | A custom `DimensionSpecialEffects` for the End (client), a saved server-side flare timer, a network packet to sync flare state |
 | **6. Structures** | Comet Crater, Observatory Ruins, Wanderer Relay, Whalefall, Solar Array Ruins, Wormhole Maw, Constellation Maze, Orbital Station + Sentinel | Structure templates built in-game and saved as `.nbt`, plus jigsaw JSON. Maw linking, maze bridges and station power need Java. |
