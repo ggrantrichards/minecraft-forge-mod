@@ -61,6 +61,7 @@ jobs:
       # Boots the real game client on a virtual screen, waits until every texture and model has
       # loaded, then fails if the game reported anything missing for this mod.
       - name: Load the mod in the real client
+        if: always() && hashFiles('build/libs/*.jar') != ''
         timeout-minutes: 15
         run: |
           sudo apt-get install -y -qq xvfb libgl1-mesa-dri libglx-mesa0 libegl-mesa0 mesa-utils mesa-vulkan-drivers libvulkan1 > /dev/null
@@ -70,6 +71,7 @@ jobs:
       # Opens the survey's world in the real client and photographs every astral biome, then
       # publishes the pictures to the ci-screenshots branch (browse them on GitHub).
       - name: In-game screenshots of every biome
+        if: always() && hashFiles('run/survey-world/level.dat') != ''
         timeout-minutes: 20
         run: .github/scripts/screenshots.sh
 

@@ -510,9 +510,11 @@ public final class WorldgenSurvey {
         atLeast(area, ModBlocks.LUMINE_CAP.get(), 20, failures);
         atLeast(area, ModBlocks.NEBULA_TUFTS.get(), 20, failures);
         atLeast(area, ModBlocks.NEBULA_TENDRIL.get(), 1, failures);
+        // Where the ground itself is the top block (not a giant mushroom's cap), it should be moss.
         int mossTops = area.tops(ModBlocks.NEBULA_MOSS.get());
-        if (mossTops < 0.9 * area.landColumnsIn) {
-            failures.add("Nebula Fields: only " + mossTops + " of " + area.landColumnsIn + " land columns are topped with Nebula Moss");
+        int groundTops = mossTops + area.tops(Blocks.END_STONE);
+        if (mossTops < 0.9 * groundTops) {
+            failures.add("Nebula Fields: only " + mossTops + " of " + groundTops + " bare-ground columns are topped with Nebula Moss");
         }
         int chorus = area.in(Blocks.CHORUS_PLANT) + area.in(Blocks.CHORUS_FLOWER);
         if (chorus > 0) {

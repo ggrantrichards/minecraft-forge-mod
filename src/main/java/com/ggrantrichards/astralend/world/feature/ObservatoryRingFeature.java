@@ -12,7 +12,8 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 
 // The great ring of the Shattered Observatory: a circle of tall quartz pillars joined by lintels,
-// around a star mosaic. Most of it has fallen; a few arches still stand.
+// around a star mosaic. Most of it has fallen; a few arches still stand. (A feature may only touch
+// the chunks right next to its own, so everything stays within 14 blocks of the centre.)
 public record ObservatoryRingFeature() implements Feature {
     public static final MapCodec<ObservatoryRingFeature> CODEC = MapCodec.unit(ObservatoryRingFeature::new);
 
@@ -27,7 +28,7 @@ public record ObservatoryRingFeature() implements Feature {
         if (level.getBlockState(centre).isAir()) {
             return false;
         }
-        int radius = 9 + random.nextInt(5);
+        int radius = 8 + random.nextInt(3);
         int pillars = 12;
         int tall = 7 + random.nextInt(4);
         BlockState quartz = ModBlocks.OBSERVATORY_QUARTZ.get().defaultBlockState();
@@ -53,7 +54,7 @@ public record ObservatoryRingFeature() implements Feature {
             if (heights[i] < tall && random.nextBoolean()) {
                 // The fallen top lies beside it.
                 Direction dir = Direction.Plane.HORIZONTAL.getRandomDirection(random);
-                for (int k = 2; k < 2 + (tall - heights[i]) / 2 + 1; k++) {
+                for (int k = 2; k < Math.min(4, 2 + (tall - heights[i]) / 2 + 1); k++) {
                     BlockPos ground = Build.surface(level, base.getX() + dir.getStepX() * k, base.getZ() + dir.getStepZ() * k);
                     if (ground != null) {
                         Build.put(level, ground.above(), pillar.setValue(RotatedPillarBlock.AXIS, dir.getAxis()));
