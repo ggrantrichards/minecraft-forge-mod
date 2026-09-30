@@ -1,0 +1,23 @@
+{
+  "parent": "astralend:end/something_big_out_there",
+  "display": {
+    "icon": {
+      "id": "astralend:whalelight_scale"
+    },
+    "title": {
+      "translate": "advancements.astralend.whale_song.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.whale_song.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:end/root",
+  "display": {
+    "icon": {
+      "id": "astralend:star_chart"
+    },
+    "title": {
+      "translate": "advancements.astralend.something_looks_back.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.something_looks_back.description"
+    },
+    "frame": "goal",
+    "hidden": true,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

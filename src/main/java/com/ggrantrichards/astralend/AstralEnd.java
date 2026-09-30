@@ -2,9 +2,12 @@ package com.ggrantrichards.astralend;
 
 import com.ggrantrichards.astralend.client.ClientScreenshots;
 import com.ggrantrichards.astralend.client.SpectatorOverlayFix;
+import com.ggrantrichards.astralend.client.entity.ModModelLayers;
+import com.ggrantrichards.astralend.entity.ModEntities;
 import com.ggrantrichards.astralend.dev.WorldgenSurvey;
 import com.ggrantrichards.astralend.world.GravityInversion;
 import com.ggrantrichards.astralend.world.LowGravity;
+import com.ggrantrichards.astralend.world.MobSpawning;
 import com.ggrantrichards.astralend.world.ModWorldgen;
 import com.ggrantrichards.astralend.world.WoodStripping;
 import com.mojang.logging.LogUtils;
@@ -31,13 +34,17 @@ public final class AstralEnd {
         ModItems.ITEMS.register(modBusGroup);
         ModCreativeTabs.TABS.register(modBusGroup);
         ModBlockEntities.BLOCK_ENTITIES.register(modBusGroup);
+        ModEntities.ENTITY_TYPES.register(modBusGroup);
         ModWorldgen.BIOME_SOURCES.register(modBusGroup);
         ModWorldgen.FEATURE_TYPES.register(modBusGroup);
 
         LowGravity.register();
         GravityInversion.register();
         WoodStripping.register();
+        ModEntities.register();   // mob attributes and where they may spawn
+        MobSpawning.register();   // Drift Whales, the Watcher and Black Hole Guardians
         if (FMLEnvironment.dist == Dist.CLIENT) {
+            ModModelLayers.register();       // mob models and renderers
             SpectatorOverlayFix.register();  // client-only code; the server never loads it
             ClientScreenshots.register();    // does nothing unless started with -Dastralend.screenshots=true
         }

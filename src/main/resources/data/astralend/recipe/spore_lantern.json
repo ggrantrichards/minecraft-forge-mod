@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "S": "astralend:glowing_spores",
+    "G": "astralend:astral_glass"
+  },
+  "pattern": [
+    " S ",
+    "SGS",
+    " S "
+  ],
+  "result": {
+    "id": "astralend:spore_lantern"
+  }
+}

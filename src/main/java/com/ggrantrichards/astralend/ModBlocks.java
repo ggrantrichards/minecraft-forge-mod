@@ -271,6 +271,16 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).instrument(NoteBlockInstrument.BASEDRUM)
             .requiresCorrectToolForDrops().strength(2.0F, 6.0F).sound(SoundType.DRIPSTONE_BLOCK));
 
+    // ---- Phase 4: from the mobs ----
+    // Spore Lantern: Glowing Spores in a glass case. Its light also reveals Umbral Stalkers.
+    public static final RegistryObject<Block> SPORE_LANTERN = register("spore_lantern", Block::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).strength(0.3F).sound(SoundType.GLASS)
+            .lightLevel(state -> 15).isRedstoneConductor((state, level, pos) -> false));
+    // Whalelight Scale: shed, very rarely, by a humming Drift Whale. Glows softly.
+    public static final RegistryObject<Block> WHALELIGHT_SCALE = register("whalelight_scale", Block::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.ICE).strength(1.0F).sound(SoundType.AMETHYST)
+            .lightLevel(state -> 10));
+
     // ---- helpers ----
 
     private static BlockBehaviour.Properties stone(SoundType sound) {

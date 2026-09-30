@@ -78,8 +78,10 @@ wood_sets = re.findall(r'woodSet\("([a-z0-9_]+)", "([a-z]+)", "([a-z]+)"', block
 for n, log, wood in wood_sets:
     blocks_with_item |= {part.format(n=n, log=log, wood=wood) for part in WOOD_PARTS}
 blocks = blocks_with_item | blocks_no_item
-plain_items = set(re.findall(r'\b(?:simple|ITEMS\.register)\("([a-z0-9_]+)"', items_src))
+plain_items = set(re.findall(r'\b(?:simple|register|ITEMS\.register)\("([a-z0-9_]+)"', items_src))
+plain_items |= {f"{mob}_spawn_egg" for mob in re.findall(r'\bspawnEgg\("([a-z0-9_]+)"', items_src)}
 items = blocks_with_item | plain_items
+entities = set(re.findall(r'ENTITY_TYPES\.register\("([a-z0-9_]+)"', (JAVA / "entity/ModEntities.java").read_text()))
 
 lang = load(ASSETS / "lang/en_us.json") or {}
 
@@ -199,7 +201,23 @@ for name in sorted(items):
 
 # ------------------------------------------------------------------ data files only reference real things
 
-known = {f"{NS}:{n}" for n in blocks | items}
+known = {f"{NS}:{n}" for n in blocks | items | entities}
+# Advancements are registered by their JSON files.
+ADVANCEMENTS = RES / "data" / NS / "advancement"
+advancements = {f"{NS}:{f.relative_to(ADVANCEMENTS).with_suffix('').as_posix()}"
+                for f in ADVANCEMENTS.rglob("*.json")} if ADVANCEMENTS.exists() else set()
+known |= advancements
+
+# Every mob needs a name, a loot table, a spawn egg and its texture.
+for mob in sorted(entities):
+    if f"entity.{NS}.{mob}" not in lang:
+        err(f"entity {NS}:{mob}: missing English name entity.{NS}.{mob}")
+    if not (RES / "data" / NS / "loot_table" / "entities" / f"{mob}.json").exists():
+        err(f"entity {NS}:{mob}: missing loot table data/{NS}/loot_table/entities/{mob}.json")
+    if f"{mob}_spawn_egg" not in items:
+        err(f"entity {NS}:{mob}: no spawn egg")
+    if not (ASSETS / "textures" / "entity" / mob / f"{mob}.png").exists():
+        err(f"entity {NS}:{mob}: missing texture textures/entity/{mob}/{mob}.png")
 # World generation entries (biomes, features, noise settings...) are registered by their JSON files,
 # plus the biome source type registered in Java.
 WORLDGEN = RES / "data" / NS / "worldgen"
@@ -239,15 +257,18 @@ for file in sorted((RES / "data").rglob("*.json")):
     text = file.read_text()
     load(file)
     for ref in set(re.findall(rf'"({NS}:[a-z0-9_/]+)"', text)):
-        if ref.startswith(f"{NS}:blocks/"):
+        if ref.startswith(f"{NS}:blocks/") or ref.startswith(f"{NS}:entities/"):
             continue  # loot table random_sequence names
         if ref not in known:
             err(f"{file.relative_to(ROOT)}: refers to {ref}, which the Java code doesn't register")
 
 for file in sorted(ASSETS.rglob("*.json")):
     load(file)
+item_messages = {k for k in lang if k.startswith(f"item.{NS}.") and k.split(".")[2] in items and k.count(".") > 2}
+advancement_text = {f"advancements.{NS}.{a.split('/')[-1]}.{part}" for a in advancements for part in ("title", "description")}
 for extra in sorted(set(lang) - {f"block.{NS}.{n}" for n in blocks} - {f"item.{NS}.{n}" for n in items}
                     - {f"biome.{NS}.{b.split(':')[1]}" for b in worldgen_ids.get("biome", set())}
+                    - {f"entity.{NS}.{n}" for n in entities} - item_messages - advancement_text
                     - {"itemGroup.astralend"}):
     err(f"lang/en_us.json: {extra} doesn't match anything registered")
 
@@ -256,5 +277,5 @@ if errors:
     for e in errors:
         print("  -", e)
     sys.exit(1)
-print(f"OK: {len(blocks)} blocks and {len(items)} items all have blockstates, models, textures, names and loot tables; "
+print(f"OK: {len(blocks)} blocks, {len(items)} items and {len(entities)} mobs all have blockstates, models, textures, names and loot tables; "
       f"{sum(len(v) for v in worldgen_ids.values())} world generation files all point at things that exist.")

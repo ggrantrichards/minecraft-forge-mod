@@ -56,6 +56,9 @@ SIMPLE_CUBES = [
     ("star_inlay_observatory_quartz", "Star Inlay Observatory Quartz"),
     ("gravity_anomaly", "Gravity Anomaly"),
     ("lumine_cap", "Lumine Cap"),
+    # Phase 4
+    ("spore_lantern", "Spore Lantern"),
+    ("whalelight_scale", "Whalelight Scale"),
 ]
 PILLARS = [
     ("leviathan_bone_block", "Leviathan Bone Block", "leviathan_bone"),
@@ -77,6 +80,15 @@ ITEMS = [
     ("comet_cress", "Comet Cress"),
     ("raw_solarite", "Raw Solarite"),
     ("solarite_ingot", "Solarite Ingot"),
+    # Phase 4: what the mobs leave behind
+    ("glowing_spores", "Glowing Spores"),
+    ("data_shard", "Data Shard"),
+    ("cracked_lens", "Cracked Lens"),
+    ("singularity_shard", "Singularity Shard"),
+    ("umbral_membrane", "Umbral Membrane"),
+    ("skimmer_film", "Skimmer Film"),
+    ("cinder", "Cinder"),
+    ("star_chart", "Star Chart"),
 ]
 
 PLURAL = {"umbral_stone_bricks": "umbral_stone_brick", "pale_end_stone_bricks": "pale_end_stone_brick",
@@ -798,8 +810,7 @@ def worldgen():
     # The biome itself. Endermen spawn as in the rest of the End; violet fog and drifting motes.
     write(WG / "biome" / "nebula_fields.json", {
         "attributes": {
-            "minecraft:gameplay/natural_mob_spawns": {"argument": {"spawn_costs": {}, "spawns_by_category": {
-                "monster": [{"type": "minecraft:enderman", "count": 4, "weight": 10}]}}, "modifier": "overlay"},
+            "minecraft:gameplay/natural_mob_spawns": mob_spawns("nebula_fields"),
             "minecraft:visual/ambient_particles": {"argument": [
                 {"particle": {"type": "minecraft:reverse_portal"}, "probability": 0.012}], "modifier": "append"},
             "minecraft:visual/fog_color": "#2b1d45",
@@ -869,11 +880,29 @@ def java_feature(name):
     feature(name, {"type": rid(name)})
 
 
+# Phase 4 mobs, by biome and spawn category (on top of the End's Endermen). The Drift Whale, the
+# Watcher and the Black Hole Guardian aren't here: MobSpawning.java places them one at a time.
+MOB_SPAWNS = {
+    "nebula_fields": {"creature": [("pollinator", 12, 3)]},
+    "aurora_shallows": {"creature": [("pollinator", 8, 2)]},
+    "dark_matter_belt": {"monster": [("umbral_stalker", 4, 1)], "creature": [("void_wanderer", 4, 1)]},
+    "shattered_observatory": {"creature": [("void_wanderer", 6, 1)]},
+    "corona": {"monster": [("cinder_mite", 8, 4)], "creature": [("corona_skimmer", 10, 3)]},
+}
+
+
+def mob_spawns(biome):
+    spawns = {"monster": [{"type": "minecraft:enderman", "count": 4, "weight": 10}]}
+    for category, entries in MOB_SPAWNS.get(biome, {}).items():
+        spawns.setdefault(category, [])
+        spawns[category] += [{"type": rid(mob), "count": count, "weight": weight} for mob, weight, count in entries]
+    return {"argument": {"spawn_costs": {}, "spawns_by_category": spawns}, "modifier": "overlay"}
+
+
 def end_biome(name, english, fog, water, features_step4=(), features_step7=(), features_step9=(),
               particle=None, particle_chance=0.0):
     attributes = {
-        "minecraft:gameplay/natural_mob_spawns": {"argument": {"spawn_costs": {}, "spawns_by_category": {
-            "monster": [{"type": "minecraft:enderman", "count": 4, "weight": 10}]}}, "modifier": "overlay"},
+        "minecraft:gameplay/natural_mob_spawns": mob_spawns(name),
         "minecraft:visual/fog_color": fog,
     }
     if particle:
@@ -998,11 +1027,108 @@ def worldgen_phase3():
               particle="minecraft:white_ash", particle_chance=0.03)
 
 
+# ------------------------------------------------------------------ Phase 4: mobs
+MOBS = [
+    # (id, English name)
+    ("pollinator", "End Pollinator"),
+    ("void_wanderer", "Void Wanderer"),
+    ("umbral_stalker", "Umbral Stalker"),
+    ("cinder_mite", "Cinder Mite"),
+    ("corona_skimmer", "Corona Skimmer"),
+    ("black_hole_guardian", "Black Hole Guardian"),
+    ("drift_whale", "Drift Whale"),
+    ("watcher", "The Watcher"),
+]
+
+
+def entity_loot(mob, pools):
+    obj = {"type": "minecraft:entity", "pools": pools, "random_sequence": f"{NS}:entities/{mob}"}
+    write(DATA / "loot_table" / "entities" / f"{mob}.json", obj)
+
+
+def player_kill_drop(item, count_max=1, looting=True):
+    modifiers = [{"type": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 0, "max": count_max}}]
+    if looting:
+        modifiers.append({"type": "minecraft:enchanted_count_increase", "count": {"type": "minecraft:uniform", "min": 0.0, "max": 1.0},
+                          "enchantment": "minecraft:looting"})
+    return {"condition": {"type": "minecraft:killed_by_player"}, "rolls": 1,
+            "entries": [{"type": "minecraft:item", "name": rid(item), "modifier": modifiers}]}
+
+
+def advancement(name, icon, title, description, parent="minecraft:end/root", frame="task", hidden=False):
+    write(DATA / "advancement" / "end" / f"{name}.json", {
+        "parent": parent,
+        "display": {"icon": {"id": icon}, "title": {"translate": f"advancements.{NS}.{name}.title"},
+                    "description": {"translate": f"advancements.{NS}.{name}.description"},
+                    "frame": frame, "hidden": hidden, "show_toast": True, "announce_to_chat": True},
+        "criteria": {"done": {"trigger": "minecraft:impossible"}},
+    })
+    lang[f"advancements.{NS}.{name}.title"] = title
+    lang[f"advancements.{NS}.{name}.description"] = description
+
+
+def mobs_phase4():
+    for mob, english in MOBS:
+        lang[f"entity.{NS}.{mob}"] = english
+        egg = f"{mob}_spawn_egg"
+        item_model(egg, {"parent": "minecraft:item/generated", "textures": {"layer0": rid(f"item/{egg}")}})
+        item_def(egg, rid(f"item/{egg}"))
+        lang[f"item.{NS}.{egg}"] = f"{english.replace('The ', '')} Spawn Egg"
+
+    # Drops. Killing a Pollinator or a Skimmer gives nothing useful - there's no reason to.
+    entity_loot("pollinator", [])
+    entity_loot("corona_skimmer", [])
+    entity_loot("drift_whale", [])
+    entity_loot("watcher", [])
+    entity_loot("void_wanderer", [player_kill_drop("cracked_lens", 1, looting=False)])
+    entity_loot("umbral_stalker", [player_kill_drop("umbral_membrane", 1)])
+    entity_loot("black_hole_guardian", [{"condition": {"type": "minecraft:killed_by_player"}, "rolls": 1,
+                                         "entries": [{"type": "minecraft:item", "name": rid("singularity_shard")}]}])
+    entity_loot("cinder_mite", [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("cinder"), "modifier": [
+        {"type": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 0, "max": 2}},
+        {"type": "minecraft:enchanted_count_increase", "count": {"type": "minecraft:uniform", "min": 0.0, "max": 1.0},
+         "enchantment": "minecraft:looting"}]}]}])
+
+    # Flying and floating mobs don't take fall damage.
+    for mob in ("pollinator", "void_wanderer", "corona_skimmer", "black_hole_guardian", "drift_whale", "watcher"):
+        tag("entity_type", "minecraft:fall_damage_immune", rid(mob))
+
+    # What End Pollinators visit (and spread when they pollinate it).
+    for plant in ("lumineshroom", "starbloom", "shimmer_grass", "nebula_tufts"):
+        tag("block", f"{NS}:pollinator_flora", rid(plant))
+
+    # Blocks
+    drop_self("spore_lantern")
+    drop_self("whalelight_scale")
+    tag("block", "minecraft:mineable/pickaxe", rid("whalelight_scale"))
+    shaped("spore_lantern", "spore_lantern", [" S ", "SGS", " S "], {"S": rid("glowing_spores"), "G": rid("astral_glass")})
+    recipe("glow_ink_sac_from_glowing_spores", {"type": "minecraft:crafting_shapeless", "category": "misc",
+                                                "ingredients": [rid("glowing_spores"), rid("glowing_spores"), "minecraft:ink_sac"],
+                                                "result": {"id": "minecraft:glow_ink_sac"}})
+
+    # Star Chart messages
+    lang[f"item.{NS}.star_chart.marks"] = "Marks a far-off region: %s"
+    lang[f"item.{NS}.star_chart.blank"] = "The chart is blank."
+    lang[f"item.{NS}.star_chart.direction"] = "The chart marks the %s, %s blocks %s of here."
+    for d, english in (("north", "north"), ("north_east", "north-east"), ("east", "east"), ("south_east", "south-east"),
+                       ("south", "south"), ("south_west", "south-west"), ("west", "west"), ("north_west", "north-west")):
+        lang[f"item.{NS}.star_chart.{d}"] = english
+
+    # Advancements the mobs grant (see ModAdvancements.java).
+    advancement("something_big_out_there", rid("drift_whale_spawn_egg"), "Something Big Out There", "See a Drift Whale")
+    advancement("whale_song", rid("whalelight_scale"), "Whale Song", "Be close to a Drift Whale while it hums",
+                parent=f"{NS}:end/something_big_out_there")
+    advancement("tagalong", "minecraft:elytra", "Tagalong", "Fly alongside a Drift Whale for a whole minute",
+                parent=f"{NS}:end/whale_song", frame="challenge")
+    advancement("something_looks_back", rid("star_chart"), "Something Looks Back",
+                "Catch the Watcher in a spyglass", frame="goal", hidden=True)
+
+
 def main():
     # Clear previously generated folders so renamed/removed content doesn't linger.
     for folder in (ASSETS / "blockstates", ASSETS / "models", ASSETS / "items", DATA / "loot_table",
                    DATA / "recipe", RES / "data" / NS / "tags", MC_DATA / "tags", DATA / "worldgen",
-                   MC_DATA / "dimension"):
+                   MC_DATA / "dimension", DATA / "advancement"):
         shutil.rmtree(folder, ignore_errors=True)
 
     family_variants = {}
@@ -1328,6 +1454,7 @@ def main():
 
     worldgen()
     worldgen_phase3()
+    mobs_phase4()
 
     # ---------------------------------------------------------------- write tags + lang
     for (registry, name), values in tags.items():

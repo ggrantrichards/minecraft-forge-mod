@@ -10,6 +10,13 @@
               "count": 4,
               "weight": 10
             }
+          ],
+          "creature": [
+            {
+              "type": "astralend:void_wanderer",
+              "count": 1,
+              "weight": 6
+            }
           ]
         }
       },

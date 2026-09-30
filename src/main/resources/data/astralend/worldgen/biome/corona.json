@@ -9,6 +9,18 @@
               "type": "minecraft:enderman",
               "count": 4,
               "weight": 10
+            },
+            {
+              "type": "astralend:cinder_mite",
+              "count": 4,
+              "weight": 8
+            }
+          ],
+          "creature": [
+            {
+              "type": "astralend:corona_skimmer",
+              "count": 3,
+              "weight": 10
             }
           ]
         }

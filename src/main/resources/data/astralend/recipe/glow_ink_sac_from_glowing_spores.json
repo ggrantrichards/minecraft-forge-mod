@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "astralend:glowing_spores",
+    "astralend:glowing_spores",
+    "minecraft:ink_sac"
+  ],
+  "result": {
+    "id": "minecraft:glow_ink_sac"
+  }
+}

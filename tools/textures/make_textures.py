@@ -1254,6 +1254,52 @@ NULL_LANTERN_STEM = [
 NULL_LANTERN_PAL = {"r": hexc("3b1766"), "m": hexc("7a2fb8"), "b": hexc("b25ae8"), "w": hexc("e6a6ff"),
                     "W": hexc("fff0ff"), "s": hexc("1f1a29"), "l": hexc("2c2148"), "L": hexc("4a3a78")}
 
+
+def spore_lantern():
+    """Glowing Spores behind a frame of Astral Glass, like a sea lantern."""
+    rnd = random.Random(401)
+    img = new()
+    frame = [hexc("3e5f6b"), hexc("4d7480"), hexc("5b8793")]
+    for y in range(16):
+        for x in range(16):
+            edge = min(x, y, 15 - x, 15 - y)
+            if edge == 0:
+                c = hexc("2a4049")
+            elif edge == 1:
+                c = rnd.choice(frame)
+            else:
+                t = 1.0 - (abs(x - 7.5) + abs(y - 7.5)) / 13.0
+                base = tuple(int(a + (b - a) * t) for a, b in zip(hexc("1f8e8c")[:3], hexc("6ff2da")[:3])) + (255,)
+                c = base
+            img.putpixel((x, y), c)
+    for _ in range(14):
+        x, y = rnd.randint(3, 12), rnd.randint(3, 12)
+        img.putpixel((x, y), hexc("e6fffa"))
+        if rnd.random() < 0.5:
+            img.putpixel((min(12, x + 1), y), hexc("aefcf2"))
+    return img
+
+
+def whalelight_scale():
+    """Overlapping pale, pearly scales."""
+    img = new()
+    pal = [hexc("9dbaf5"), hexc("b5cfff"), hexc("d8e6ff"), hexc("f2f7ff"), hexc("7d92d0")]
+    for y in range(16):
+        for x in range(16):
+            row = y // 4
+            cx = (x + (2 if row % 2 else 0)) % 4
+            cy = y % 4
+            # each scale: bright at the top, darker toward its lower rim
+            if cy == 3 or (cy == 2 and cx in (0, 3)):
+                c = pal[4]
+            elif cy == 0 and cx in (1, 2):
+                c = pal[3]
+            else:
+                c = pal[1 + (cy + cx) % 2]
+            img.putpixel((x, y), c)
+    return img
+
+
 def petrified_stalk_side():
     img = stone([hexc("5e5953"), hexc("6b6660"), hexc("7a746c"), hexc("8a847b"), hexc("a39c91")], 141, blotches=16, specks=10)
     px = img.load()
@@ -1415,6 +1461,12 @@ def main():
     out.append(save(from_map(NULL_LANTERN_SIDE, NULL_LANTERN_PAL), "block/null_lantern_side.png"))
     out.append(save(from_map(NULL_LANTERN_END, NULL_LANTERN_PAL), "block/null_lantern_end.png"))
     out.append(save(from_map(NULL_LANTERN_STEM, NULL_LANTERN_PAL), "block/null_lantern_stem.png"))
+    # ---- Phase 4: mob drops and blocks
+    from mob_items import ITEM_MAPS
+    for name, (rows, colours) in ITEM_MAPS.items():
+        out.append(save(from_map(rows, {k: hexc(v) for k, v in colours.items()}), f"item/{name}.png"))
+    out.append(save(spore_lantern(), "block/spore_lantern.png"))
+    out.append(save(whalelight_scale(), "block/whalelight_scale.png"))
 
     write_preview(out)
     print(f"Wrote {len(out)} textures to {TEX.relative_to(ROOT)} and a preview to {PREVIEW.relative_to(ROOT)}")
