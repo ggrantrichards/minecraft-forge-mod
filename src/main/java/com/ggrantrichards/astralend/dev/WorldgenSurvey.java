@@ -2,6 +2,7 @@ package com.ggrantrichards.astralend.dev;
 
 import com.ggrantrichards.astralend.ModBlocks;
 import com.ggrantrichards.astralend.block.GravityAnomalyBlockEntity;
+import com.ggrantrichards.astralend.entity.ModEntities;
 import com.ggrantrichards.astralend.world.AstralEndBiomeSource;
 import com.ggrantrichards.astralend.world.GravityInversion;
 import com.ggrantrichards.astralend.world.LowGravity;
@@ -277,6 +278,51 @@ public final class WorldgenSurvey {
         checkObservatory(areas.get('R'), failures);
         checkCorona(areas.get('C'), failures);
         checkLowGravity(areas.get('N'), vanillaSpot, end, failures);
+        checkMobs(areas, end, failures);
+    }
+
+    // Every mob can be created in the End, in its home biome, with its attributes, and stays put
+    // for a moment without errors; the ones with natural spawns have spawn rules.
+    private static void checkMobs(Map<Character, Area> areas, ServerLevel end, List<String> failures) {
+        record Home(net.minecraft.world.entity.EntityType<?> type, char biome) {}
+        List<Home> homes = List.of(
+            new Home(ModEntities.POLLINATOR.get(), 'N'), new Home(ModEntities.VOID_WANDERER.get(), 'R'),
+            new Home(ModEntities.UMBRAL_STALKER.get(), 'D'), new Home(ModEntities.CINDER_MITE.get(), 'C'),
+            new Home(ModEntities.CORONA_SKIMMER.get(), 'C'), new Home(ModEntities.BLACK_HOLE_GUARDIAN.get(), 'W'),
+            new Home(ModEntities.DRIFT_WHALE.get(), 'A'), new Home(ModEntities.WATCHER.get(), 'R'));
+        for (Home home : homes) {
+            Area area = areas.get(home.biome());
+            String name = home.type().getDescription().getString();
+            if (area == null || area.standOn == null) {
+                failures.add(name + ": no " + home.biome() + " area to test it in");
+                continue;
+            }
+            var entity = home.type().create(end, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+            if (!(entity instanceof net.minecraft.world.entity.Mob mob)) {
+                failures.add(name + ": couldn't be created");
+                continue;
+            }
+            mob.snapTo(area.standOn.getX() + 0.5, area.standOn.getY() + 1.0, area.standOn.getZ() + 0.5, 0.0F, 0.0F);
+            if (!end.addFreshEntity(mob)) {
+                failures.add(name + ": couldn't be added to the End");
+                continue;
+            }
+            try {
+                for (int i = 0; i < 40; i++) {
+                    mob.tick();
+                }
+            } catch (RuntimeException e) {
+                LOGGER.error(TAG + name + " crashed while ticking", e);
+                failures.add(name + ": crashed while ticking: " + e);
+            }
+            boolean hasHealth = mob.getAttribute(Attributes.MAX_HEALTH) != null && mob.getHealth() > 0;
+            log(String.format("Mob %s: created in the %s at %s, health %.0f, still there after 40 ticks: %s", name, area.info.name(),
+                mob.blockPosition().toShortString(), mob.getHealth(), !mob.isRemoved()));
+            if (!hasHealth) {
+                failures.add(name + ": has no health attribute");
+            }
+            mob.discard();
+        }
     }
 
     // Two camera positions per biome for dev/ClientScreenshots: one looking across the land from

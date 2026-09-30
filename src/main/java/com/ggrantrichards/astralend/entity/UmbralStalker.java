@@ -42,6 +42,7 @@ public class UmbralStalker extends Monster {
     private static final EntityDataAccessor<Boolean> DATA_REVEALED = SynchedEntityData.defineId(UmbralStalker.class, EntityDataSerializers.BOOLEAN);
     public static final int REVEALING_LIGHT = 7;
     private int revealTicks;
+    private int attackAnimationTicks;  // client side: counts down while the arms lash out
 
     public UmbralStalker(EntityType<? extends UmbralStalker> type, Level level) {
         super(type, level);
@@ -80,6 +81,20 @@ public class UmbralStalker extends Monster {
         return this.entityData.get(DATA_REVEALED);
     }
 
+    @Override
+    public void handleEntityEvent(byte id) {
+        if (id == 4) {
+            this.attackAnimationTicks = 10;
+        } else {
+            super.handleEntityEvent(id);
+        }
+    }
+
+    // 0..1 through the strike, for the renderer.
+    public float getAttackAnimation(float partialTicks) {
+        return this.attackAnimationTicks > 0 ? 1.0F - (this.attackAnimationTicks - partialTicks) / 10.0F : 0.0F;
+    }
+
     // True if the player is facing this stalker (within about 60 degrees) and can see it.
     public boolean isWatchedBy(Player player) {
         Vec3 view = player.getViewVector(1.0F).normalize();
@@ -91,6 +106,9 @@ public class UmbralStalker extends Monster {
     public void aiStep() {
         super.aiStep();
         if (this.level().isClientSide()) {
+            if (this.attackAnimationTicks > 0) {
+                this.attackAnimationTicks--;
+            }
             // Distortion where it moves.
             if (!this.isRevealed() && this.walkAnimation.speed() > 0.1F && this.random.nextInt(3) == 0) {
                 this.level().addParticle(ParticleTypes.REVERSE_PORTAL, this.getRandomX(0.6), this.getRandomY(), this.getRandomZ(0.6), 0.0, 0.0, 0.0);
@@ -107,6 +125,7 @@ public class UmbralStalker extends Monster {
     @Override
     public boolean doHurtTarget(ServerLevel level, Entity target) {
         this.revealTicks = 40;
+        level.broadcastEntityEvent(this, (byte) 4);
         boolean hit = super.doHurtTarget(level, target);
         if (hit && target instanceof LivingEntity living) {
             // Thrown away from the stalker - toward the void, if that's what's behind you.

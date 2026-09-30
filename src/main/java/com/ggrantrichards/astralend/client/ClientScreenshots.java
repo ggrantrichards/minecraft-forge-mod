@@ -9,13 +9,14 @@ import java.util.List;
 import com.ggrantrichards.astralend.ModBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
@@ -149,7 +150,7 @@ public final class ClientScreenshots {
     private static void summon(ServerLevel end, Shot shot) {
         BlockPos at = BlockPos.containing(shot.mobX(), shot.mobY(), shot.mobZ());
         end.getChunk(at.getX() >> 4, at.getZ() >> 4);  // make sure it's loaded
-        EntityType.byString(shot.mob()).ifPresentOrElse(type -> {
+        BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.parse(shot.mob())).ifPresentOrElse(type -> {
             Entity entity = type.create(end, EntitySpawnReason.COMMAND);
             if (entity == null) {
                 return;
