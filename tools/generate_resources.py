@@ -506,11 +506,9 @@ def main():
     item_def("flarebloom", rid("item/flarebloom"))
     lang[f"block.{NS}.flarebloom"] = "Flarebloom"
     loot("flarebloom", [{
-        "condition": {"type": "minecraft:all_of", "terms": [
-            {"type": "minecraft:match_block", "blocks": rid("flarebloom"), "state": {"half": "lower"}},
-            {"type": "minecraft:survives_explosion"},
-        ]},
-        "entries": [{"type": "minecraft:item", "name": rid("flarebloom")}],
+        "condition": {"type": "minecraft:survives_explosion"},
+        "entries": [{"type": "minecraft:item", "name": rid("flarebloom"), "condition": {
+            "type": "minecraft:match_block", "blocks": rid("flarebloom"), "state": {"half": "lower"}}}],
         "rolls": 1,
     }])
     tag("block", "minecraft:tall_flowers", rid("flarebloom"))
@@ -597,7 +595,6 @@ def main():
         tag("block", "minecraft:needs_iron_tool", rid(name))
     tag("block", "minecraft:mineable/hoe", rid("sunscale_lichen"))
     tag("block", "minecraft:replaceable_by_trees", rid("shimmer_grass"))
-    tag("block", "minecraft:sword_efficient", rid("shimmer_grass"))
     tag("block", "minecraft:beacon_base_blocks", rid("solarite_block"))
     tag("block", "minecraft:beacon_base_blocks", rid("meteoric_iron_block"))
     # What the End's plants grow on.

@@ -27,7 +27,7 @@ VANILLA_PARENTS = {
     "minecraft:block/stairs", "minecraft:block/inner_stairs", "minecraft:block/outer_stairs",
     "minecraft:block/template_wall_post", "minecraft:block/template_wall_side",
     "minecraft:block/template_wall_side_tall", "minecraft:block/wall_inventory",
-    "minecraft:item/generated", "minecraft:item/handheld",
+    "minecraft:item/generated", "minecraft:item/handheld", "minecraft:block/carpet",
 }
 
 errors = []
@@ -132,6 +132,7 @@ REQUIRED = {
     "minecraft:block/outer_stairs": {"bottom", "top", "side"}, "minecraft:block/template_wall_post": {"wall"},
     "minecraft:block/template_wall_side": {"wall"}, "minecraft:block/template_wall_side_tall": {"wall"},
     "minecraft:block/wall_inventory": {"wall"}, "minecraft:item/generated": {"layer0"},
+    "minecraft:block/carpet": {"wool"},
 }
 
 for file in sorted((ASSETS / "models").rglob("*.json")):

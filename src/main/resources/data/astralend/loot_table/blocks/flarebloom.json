@@ -3,24 +3,19 @@
   "pools": [
     {
       "condition": {
-        "type": "minecraft:all_of",
-        "terms": [
-          {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "astralend:flarebloom",
+          "condition": {
             "type": "minecraft:match_block",
             "blocks": "astralend:flarebloom",
             "state": {
               "half": "lower"
             }
-          },
-          {
-            "type": "minecraft:survives_explosion"
           }
-        ]
-      },
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "astralend:flarebloom"
         }
       ],
       "rolls": 1
