@@ -139,6 +139,38 @@ def write_java(mobs):
     JAVA.write_text("\n".join(lines) + "\n")
 
 
+def auto_uv(mob):
+    """Gives every box whose u is None a place on the texture (shelf packing, tallest first).
+    Boxes with the same `uv_key` share one area (mirrored limbs)."""
+    boxes = [b for b in all_boxes(mob.parts) if b.u is None]
+    shared = {}
+    todo = []
+    for b in boxes:
+        key = getattr(b, "uv_key", None) or id(b)
+        if key not in shared:
+            shared[key] = []
+            todo.append((key, b))
+        shared[key].append(b)
+    def footprint(b):
+        return int(math.ceil(2 * (b.d + b.w))), int(math.ceil(b.d + b.h))
+    todo.sort(key=lambda kb: (-footprint(kb[1])[1], -footprint(kb[1])[0]))
+    sky = [0] * mob.size[0]                   # skyline: the lowest free row in each column
+    for key, b in todo:
+        w, h = footprint(b)
+        best = None
+        for x in range(0, mob.size[0] - w + 1):
+            y = max(sky[x:x + w])
+            if y + h <= mob.size[1] and (best is None or y < best[1]):
+                best = (x, y)
+        if best is None:
+            raise ValueError(f"{mob.name}: texture {mob.size} too small for its boxes")
+        x, y = best
+        for i in range(x, x + w):
+            sky[i] = y + h
+        for other in shared[key]:
+            other.u, other.v = x, y
+
+
 def all_boxes(parts):
     for p in parts:
         yield from p.boxes
@@ -204,6 +236,75 @@ def paint_mob(mob, seed):
 
 
 # ------------------------------------------------------------------ painters
+
+def B(x, y, z, w, h, d, paint=None, glow=None, key=None, mirror=False, inflate=0.0):
+    """A box placed on the texture automatically (auto_uv). Boxes with the same key share one area."""
+    b = Box(None, None, x, y, z, w, h, d, mirror=mirror, paint=paint, glow=glow, inflate=inflate)
+    b.uv_key = key
+    return b
+
+
+def shade_flat(face):
+    """Vanilla-style face shading: top a shade lighter, bottom darker, sides the base."""
+    return {"up": 1, "down": -1}.get(face, 0)
+
+
+def clamp(i, pal):
+    return pal[max(0, min(len(pal) - 1, i))]
+
+
+def dith(pal, base=1, var=0.3, patch=0.72, light_top=True, dark=False):
+    """Vanilla-style fill: one main tone, a few lighter/darker pixels, lighter patches, top lit."""
+    def f(face, px, py, fw, fh, rnd):
+        i = base + (shade_flat(face) if light_top else 0)
+        v = n()
+        if v > patch:
+            i += 1                                            # soft lighter patches
+        elif dark and v < 1 - patch - 0.05:
+            i -= 1                                            # and darker ones
+        r = rnd.random()
+        k = var * 0.4                                         # only a few single-pixel specks
+        if r < k / 2:
+            i -= 1
+        elif r < k:
+            i += 1
+        return clamp(i, pal)
+    return f
+
+
+def mirror_rows(rows):
+    return [r[::-1] for r in rows]
+
+
+def art(faces, pal, base=None):
+    """Hand-drawn pixel art per face; '.' falls through to the base painter, ' ' is transparent."""
+    def f(face, px, py, fw, fh, rnd):
+        rows = faces.get(face)
+        if rows is not None and py < len(rows) and px < len(rows[py]):
+            ch = rows[py][px]
+            if ch == " ":
+                return None
+            if ch in pal:
+                c = pal[ch]
+                return c(face, px, py, fw, fh, rnd) if callable(c) else c
+        return base(face, px, py, fw, fh, rnd) if base else None
+    return f
+
+
+def glow_art(faces, pal):
+    def f(face, px, py, fw, fh, rnd):
+        rows = faces.get(face)
+        if rows is not None and py < len(rows) and px < len(rows[py]):
+            return pal.get(rows[py][px])
+        return None
+    return f
+
+
+def sides(east_rows):
+    """East and west faces of a symmetric part (east runs back->front, west front->back)."""
+    return {"east": east_rows, "west": mirror_rows(east_rows)}
+
+
 
 def speckled(colours, weights=None, top=None, bottom=None):
     """Random pixels from a palette, lighter on top and darker underneath."""
@@ -379,136 +480,93 @@ WANDERER = Mob("void_wanderer", (64, 64), [
 ], egg=(hexc("8e5c32"), hexc("68b89c")))
 
 
-# ---- Umbral Stalker: a gaunt shadow predator of the Dark Matter Belts, built and painted the way
-# vanilla builds the Warden and the Creaking: chunky symmetric boxes, a body that is almost flat
-# near-black violet, and a few strong features that glow - slanted eyes, a jagged mouth, an
-# eclipse sigil on its chest with veins running from it. Bone horns and claws, and a ragged cape of
-# shadow (the Umbral Membrane it drops) trailing from its shoulders.
-SH = [hexc("0b0814"), hexc("120d1f"), hexc("1a1330"), hexc("251b42")]
-BONE = [hexc("5e5670"), hexc("8f86a3"), hexc("c4bcd4"), hexc("e6e0f0")]
-VEIN = hexc("9c7ae8")
+# ---- Umbral Stalker: a hunched brute of the Dark Matter Belts that walks on its knuckles, like a
+# gorilla. Near-black violet fur, a leathery grey-violet face with bone tusks, bone plates over its
+# knuckles; shards of dark-matter crystal grow out of its back and a violet rift glows through a
+# crack in its chest. Crystals, rift and eyes glow only once it is revealed (see the renderer).
+SH = [hexc("0c0914"), hexc("150f22"), hexc("1f1732"), hexc("2b2145"), hexc("3b2e5c")]
+BONE = [hexc("4e4760"), hexc("7d7590"), hexc("aaa2bb"), hexc("d2cbdc"), hexc("f0ecf5")]
+VIO = hexc("a77bff")
+VIO_HI = hexc("eadcff")
+VIO_DIM = hexc("6c4bc2")
+
+fur = dith(SH, 1, 0.2)
+bone = dith(BONE, 2, 0.25, patch=0.8)
+bone_hi = dith(BONE, 3, 0.2, patch=0.85)
+SOCKET = hexc("050308")
+CRYSTAL = [hexc("1a0f33"), hexc("331d63"), hexc("5a36a8"), hexc("8a64e6"), hexc("d4c2ff")]
+HIDE = [hexc("261d3a"), hexc("342849"), hexc("43365c"), hexc("554672")]
+hide = dith(HIDE, 1, 0.2, patch=0.8)
 
 
-def shade_flat(face):
-    """Vanilla-style face shading: top a shade lighter, bottom darker, sides the base."""
-    return {"up": 1, "down": -1}.get(face, 0)
+def crystal(face, px, py, fw, fh, rnd):
+    i = 2 + shade_flat(face) + (1 if px == 0 else 0) - (1 if py >= fh - 2 else 0)
+    return clamp(i, CRYSTAL)
 
 
-def stalker_skin(face, px, py, fw, fh, rnd):
-    i = 1 + shade_flat(face) + (1 if n() > 0.72 else 0)     # mostly one tone, a few lighter patches
-    return SH[max(0, min(3, i))]
-
-
-EYES = {(1, 3), (2, 4), (6, 3), (5, 4)}                      # slanted inward: a scowl
-MOUTH = {(2, 6), (3, 7), (4, 6), (5, 7)}
-
-
-def stalker_face(face, px, py, fw, fh, rnd):
-    if face == "north":
-        if (px, py) in EYES:
-            return hexc("c9a8ff")
-        if (px, py) in MOUTH:
-            return hexc("3a2766")
-        return SH[0] if py >= 5 else SH[1]                      # the lower face falls into shadow
-    return stalker_skin(face, px, py, fw, fh, rnd)
-
-
-def stalker_face_glow(face, px, py, fw, fh, rnd):
-    if face == "north":
-        if (px, py) in ((1, 3), (6, 3)):
-            return hexc("ffffff")
-        if (px, py) in EYES:
-            return hexc("d6bcff")
-        if (px, py) in MOUTH:
-            return hexc("7a56d0")
+def crystal_glow(face, px, py, fw, fh, rnd):
+    if py >= fh - 2:
+        return None                                           # the roots sit in dark hide
+    if face == "up" or py <= 1:
+        return CRYSTAL[4]
+    if px == 0 or (px + py) % 3 == 0:
+        return CRYSTAL[3]
     return None
 
 
-def _sigil(px, py):
-    """The chest sigil: an eclipse (a ring with a bright crescent) and veins running down."""
-    d = math.hypot(px - 4.5, py - 4.5)
-    if 2.0 <= d <= 3.0:
-        return "ring"
-    if px in (4, 5) and 8 <= py <= 13 and (py % 2 == 0) == (px == 4):
-        return "vein"
-    if (px, py) in ((2, 8), (1, 10), (7, 8), (8, 10)):
-        return "vein"
-    return None
+BRUTE_PAL = {".": fur, "s": fur, "h": SH[3], "f": hide, "k": SOCKET, "E": VIO, "W": bone_hi, "C": hexc("5a36a8"),
+             "c": hexc("2c1d52"), "B": bone, "b": BONE[1]}
+BRUTE_CHEST = ["ssssssssssssss",
+               "sshhhhsshhhhss",
+               "sffffffffCfffs",
+               "sfffffffCcfffs",
+               "sffffffCCffffs",
+               "sfffffCcfffffs",
+               "sffffCCffffffs",
+               "sfffffCCfffffs",
+               "sffffffCcffffs",
+               "sfffffCffffffs",
+               "ssffffffffffss",
+               "ssssssssssssss"]
+BRUTE_CHEST_GLOW = [r.replace("c", "C") for r in BRUTE_CHEST]
+BRUTE_HEAD = {"north": ["ssssssss",
+                        "hhhhhhhh",
+                        "hkEffEkh",
+                        "sffffffs",
+                        "sffkkffs",
+                        "fWkkkkWf",
+                        "fWffffWf",
+                        "sffffffs"],
+              **sides(["sssssss", "hhhhhhh", "ssssssf", "ssssssf", "sssssff", "ssssssW", "ssssssW", "sssssss"])}
+BRUTE_HEAD_GLOW = {"north": ["........", "........", "..E..E.."]}
+BRUTE_FIST = {"north": ["ssssss", "BBBBBB", "BbBBbB", "ffffff", "ffffff", "ffffff"],
+              "down": ["ffffff"] * 6, "up": ["ssssss"] * 6}
+brute_glow_pal = {"E": VIO_HI, "C": VIO}
 
 
-def stalker_body(face, px, py, fw, fh, rnd):
-    if face == "north" and _sigil(px, py):
-        return hexc("4a3480")
-    return stalker_skin(face, px, py, fw, fh, rnd)
-
-
-def stalker_body_glow(face, px, py, fw, fh, rnd):
-    if face == "north":
-        k = _sigil(px, py)
-        if k == "ring":
-            return hexc("e8d8ff") if px <= 4 and py <= 4 else VEIN   # the lit crescent
-        if k == "vein":
-            return VEIN
-    return None
-
-
-def stalker_arm(face, px, py, fw, fh, rnd):
-    if py >= fh - 3:                                           # bone claws, with gaps between
-        if face == "down":
-            return BONE[0]
-        if px == 1 and face in ("north", "south", "east", "west"):
-            return None if py == fh - 1 else SH[0]
-        return BONE[3] if py == fh - 1 else BONE[2] if py == fh - 2 else BONE[1]
-    return stalker_skin(face, px, py, fw, fh, rnd)
-
-
-def stalker_arm_glow(face, px, py, fw, fh, rnd):
-    if face == "north" and px == 1 and 12 <= py <= fh - 4:
-        return hexc("7a5cc8")                                 # a vein down the forearm to the claws
-    if face == "north" and (px, py) in ((0, 11), (2, 16)):
-        return hexc("5a42a0")                                 # where it branches
-    return None
-
-
-def stalker_leg(face, px, py, fw, fh, rnd):
-    if py == fh - 1 and face != "down":
-        return SH[2]                                          # the foot
-    return stalker_skin(face, px, py, fw, fh, rnd)
-
-
-def horn(face, px, py, fw, fh, rnd):
-    if face == "up":
-        return BONE[3]
-    return BONE[3] if py == 0 else BONE[2] if py == 1 else BONE[1]
-
-
-def shadow_cape(face, px, py, fw, fh, rnd):
-    if face not in ("north", "south"):
-        return None
-    ragged = fh - 1 - (2 if px % 3 == 0 else 0) - (1 if px % 4 == 1 else 0)
-    if py > ragged:
-        return None
-    if px in (0, fw - 1):
-        return hexc("3a2a66", 220)                            # a faint lit edge
-    return hexc("140e24", 215) if (px + py // 4) % 3 else hexc("1d1535", 215)
+def brute_arm(face, px, py, fw, fh, rnd):
+    if py <= 5:
+        return clamp(2 + shade_flat(face), SH) if n() > 0.5 else fur(face, px, py, fw, fh, rnd)   # shaggy shoulders
+    return fur(face, px, py, fw, fh, rnd)
 
 
 STALKER = Mob("umbral_stalker", (64, 64), [
-    Part("body", (0, 10, 0, 0.08, 0, 0), [Box(0, 16, -5, -14, -3, 10, 14, 6, paint=stalker_body, glow=stalker_body_glow)], [
-        Part("head", (0, -14, -1), [
-            Box(0, 0, -4, -8, -5, 8, 8, 8, paint=stalker_face, glow=stalker_face_glow),
-            Box(32, 0, -4, -11, -2, 2, 3, 2, paint=horn),
-            Box(32, 0, 2, -11, -2, 2, 3, 2, mirror=True, paint=horn),
-        ]),
-        Part("spines", (0, -12, 3), [Box(40, 0, -1, -1, 0, 2, 3, 2, paint=horn), Box(40, 0, -1, 4, 0, 2, 3, 2, paint=horn)]),
-        Part("right_arm", (-6.5, -12, 0, -0.08, 0, 0), [Box(32, 16, -1.5, 0, -1.5, 3, 24, 3, paint=stalker_arm, glow=stalker_arm_glow)]),
-        Part("left_arm", (6.5, -12, 0, -0.08, 0, 0), [Box(32, 16, -1.5, 0, -1.5, 3, 24, 3, mirror=True, paint=stalker_arm,
-                                                         glow=stalker_arm_glow)]),
-        Part("cape", (0, -13, 3.2, 0.12, 0, 0), [Box(0, 36, -5, 0, 0, 10, 16, 0, paint=shadow_cape)]),
+    Part("body", (0, 12, 3, 0.4, 0, 0), [B(-7, -13, -4, 14, 13, 8, art({"north": BRUTE_CHEST}, BRUTE_PAL, fur),
+                                           glow_art({"north": BRUTE_CHEST_GLOW}, brute_glow_pal))], [
+        Part("head", (0, -10, -4, -0.4, 0, 0), [B(-4, -5, -7, 8, 8, 7, art(BRUTE_HEAD, BRUTE_PAL, fur),
+                                                   glow_art(BRUTE_HEAD_GLOW, brute_glow_pal))]),
+        Part("crystal_1", (-4, -11, 3, -0.3, 0, -0.5), [B(-1, -7, -1, 2, 7, 2, crystal, crystal_glow, key="cry")]),
+        Part("crystal_2", (1, -9, 3, -0.15, 0, 0.25), [B(-1.5, -10, -1.5, 3, 10, 3, crystal, crystal_glow)]),
+        Part("crystal_3", (4, -5, 3, 0.1, 0, 0.7), [B(-1, -7, -1, 2, 7, 2, crystal, crystal_glow, key="cry")]),
+        Part("crystal_4", (-2, -4, 3, 0.3, 0, -0.6), [B(-1, -5, -1, 2, 5, 2, crystal, crystal_glow)]),
     ]),
-    Part("right_leg", (-2.8, 10, 0), [Box(44, 16, -2, 0, -2, 4, 14, 4, paint=stalker_leg)]),
-    Part("left_leg", (2.8, 10, 0), [Box(44, 16, -2, 0, -2, 4, 14, 4, mirror=True, paint=stalker_leg)]),
-], egg=(hexc("120d1f"), hexc("9c7ae8")))
+    Part("right_arm", (-9.5, 2, -3), [B(-2.5, -2, -2.5, 5, 18, 5, brute_arm, key="barm"),
+                                     B(-3, 16, -3, 6, 6, 6, art(BRUTE_FIST, BRUTE_PAL, fur), key="fist")]),
+    Part("left_arm", (9.5, 2, -3), [B(-2.5, -2, -2.5, 5, 18, 5, brute_arm, key="barm", mirror=True),
+                                   B(-3, 16, -3, 6, 6, 6, art(BRUTE_FIST, BRUTE_PAL, fur), key="fist", mirror=True)]),
+    Part("right_leg", (-4, 12, 4), [B(-2.5, 0, -2.5, 5, 12, 5, fur, key="bleg")]),
+    Part("left_leg", (4, 12, 4), [B(-2.5, 0, -2.5, 5, 12, 5, fur, key="bleg", mirror=True)]),
+], egg=(SH[1], VIO))
 
 
 # ---- Cinder Mite: a small burrower of the Corona. A basalt-shelled insect in three segments, with
@@ -787,120 +845,108 @@ WHALE = Mob("drift_whale", (128, 64), [
 ], egg=(hexc("3a4fa8"), hexc("dbe6ff")))
 
 
-# ---- The Watcher: built on vanilla's Illager body (the Evoker and Illusioner): a head inside a
-# hood overlay, a long robe over the body, arms crossed. Painted like the Evoker too - flat colour
-# fields with a crisp gold trim - but its robe is midnight blue stitched with constellations, and
-# inside the hood there is no face at all: only darkness and two stars for eyes.
-ROBE = [hexc("080b1a"), hexc("0f1430"), hexc("161c40"), hexc("1f2752")]
-GOLD = [hexc("6e5a2c"), hexc("a8893f"), hexc("d8b865")]
-STAR, STAR_DIM, THREAD = hexc("cfd8ff"), hexc("7a86c8"), hexc("2c3670")
-# Two constellations stitched on the robe's front panels (robe front face is 8 x 20).
-CONSTELLATION = [(1, 4), (2, 7), (1, 10), (6, 5), (5, 8), (6, 12), (2, 14)]
-THREADS = {(1, 5), (1, 6), (2, 8), (2, 9), (6, 6), (6, 7), (5, 9), (5, 10), (6, 11)}
+# ---- The Watcher: a floating construct of pale observatory stone, built like the Breeze or the
+# Iron Golem rather than a person. One great diamond eye in a stone head crowned with three shards,
+# gold bands, runes that glow cyan, two floating stone hands and four shards that orbit it.
+GOLD = [hexc("5e4a22"), hexc("9a7c36"), hexc("cfae58"), hexc("f0d890")]
+STONE = [hexc("4d4862"), hexc("716b8a"), hexc("9791b0"), hexc("bdb7d2"), hexc("dcd8ea")]
+_stone = dith(STONE, 2, 0.12, patch=0.8)
 
 
-def robe_base(face, px, py, fw, fh):
-    i = 1 + shade_flat(face)
-    if face in ("north", "south", "east", "west") and px % 4 == 3:
-        i -= 1                                                # the folds
-    return ROBE[max(0, min(3, i + (1 if n() > 0.8 else 0)))]
+def stone(face, px, py, fw, fh, rnd):
+    """Dressed stone: flat, with a lit top-left edge and a shadowed bottom-right edge per face."""
+    if fw > 2 and fh > 2:
+        if px == 0 or py == 0:
+            return clamp(3 + shade_flat(face), STONE)
+        if px == fw - 1 or py == fh - 1:
+            return clamp(1 + shade_flat(face), STONE)
+    return _stone(face, px, py, fw, fh, rnd)
 
 
-def robe(face, px, py, fw, fh, rnd):
-    if face in ("north", "south", "east", "west") and py >= fh - 2:
-        return GOLD[1] if py == fh - 2 else GOLD[0]           # the hem band
-    if face == "north":
-        if px in (3, 4):
-            return GOLD[2] if px == 3 else GOLD[1]            # trim down the front, like the Evoker's
-        if (px, py) in CONSTELLATION:
-            return STAR_DIM
-        if (px, py) in THREADS:
-            return THREAD
-    return robe_base(face, px, py, fw, fh)
+RUNE = hexc("63e6ff")
+MONO_PAL = {".": stone, "S": stone, "d": STONE[0], "W": hexc("f2f6ff"), "I": hexc("39c6e8"), "P": hexc("0a0c16"),
+            "G": GOLD[2], "g": GOLD[1], "r": hexc("2b6f86")}
+MONO_EYE = ["GGGGGGGGGG",
+            "SSSSddSSSS",
+            "SSSdWWdSSS",
+            "SSdWIIWdSS",
+            "SdWIPPIWdS",
+            "SdWIPPIWdS",
+            "SSdWIIWdSS",
+            "SSSdWWdSSS",
+            "SSSSddSSSS",
+            "GGGGGGGGGG"]
+MONO_SIDE = ["GGGGGGGGGG",
+             "SSSSSSSSSS",
+             "SSrSSSSrSS",
+             "SSrrSSrrSS",
+             "SSSrSSrSSS",
+             "SSSrSSrSSS",
+             "SSrrSSrrSS",
+             "SSrSSSSrSS",
+             "SSSSSSSSSS",
+             "GGGGGGGGGG"]
+MONO_HEAD = {"north": MONO_EYE, "east": MONO_SIDE, "west": MONO_SIDE, "south": MONO_SIDE}
+MONO_HEAD_GLOW = {"north": [r.replace("P", ".") for r in MONO_EYE], "east": MONO_SIDE, "west": MONO_SIDE,
+                  "south": MONO_SIDE}
+mono_glow_pal = {"W": hexc("ffffff"), "I": RUNE, "r": RUNE}
+COLUMN_FRONT = ["SSSSSS", "SSrrSS", "SSSSSS", "SrSSrS", "SSrrSS", "SSSSSS", "SSrrSS", "SrSSrS", "SSSSSS",
+                "SSrrSS", "SSSSSS", "GGGGGG"]
 
 
-def robe_glow(face, px, py, fw, fh, rnd):
-    if face == "north" and (px, py) in CONSTELLATION and px not in (3, 4):
-        return STAR
-    if face in ("north", "south", "east", "west") and py == fh - 2 and px % 4 == 1:
-        return hexc("fff0b8")                                 # small stars along the hem
+def shoulders(face, px, py, fw, fh, rnd):
+    if face in ("north", "south", "east", "west") and py == fh - 1:
+        return GOLD[2]
+    if face == "up" and (px in (0, fw - 1) or py in (0, fh - 1)):
+        return GOLD[1]
+    return stone(face, px, py, fw, fh, rnd)
+
+
+def shard(face, px, py, fw, fh, rnd):
+    if py == 0 or face == "up":
+        return STONE[4]
+    return stone(face, px, py, fw, fh, rnd)
+
+
+def shard_glow(face, px, py, fw, fh, rnd):
+    if face in ("north", "south", "east", "west") and py in (2, 3) and px == 0:
+        return RUNE
     return None
-
-
-def robe_top(face, px, py, fw, fh, rnd):
-    """The body under the robe: only its top (the shoulders) shows."""
-    if face == "north" and px in (3, 4):
-        return GOLD[2] if px == 3 else GOLD[1]
-    return robe_base(face, px, py, fw, fh)
-
-
-def hood(face, px, py, fw, fh, rnd):
-    if face == "north":
-        if 1 <= px <= 6 and 2 <= py <= 9:
-            return None                                       # the open front of the hood
-        if (px in (0, 7) and 1 <= py <= 10) or (py in (1, 10) and 0 <= px <= 7):
-            return GOLD[1]                                    # gold rim round the opening
-    if face == "up":
-        return ROBE[2]
-    return robe_base(face, px, py, fw, fh)
-
-
-def faceless(face, px, py, fw, fh, rnd):
-    if face == "north":
-        if (px, py) in ((2, 4), (5, 4)):
-            return hexc("aab8ff")
-        return hexc("030409")                                 # darkness where a face should be
-    return ROBE[0]
-
-
-def faceless_glow(face, px, py, fw, fh, rnd):
-    if face == "north":
-        if (px, py) in ((2, 4), (5, 4)):
-            return hexc("ffffff")
-        if (px, py) in ((1, 7), (4, 6), (6, 8)):
-            return hexc("4a58a8")                             # faint stars deeper in
-    return None
-
-
-def sleeve(face, px, py, fw, fh, rnd):
-    if py >= fh - 2 and face in ("north", "south", "east", "west"):
-        return GOLD[1] if py == fh - 2 else GOLD[0]           # cuffs
-    return robe_base(face, px, py, fw, fh)
-
-
-def folded_arms(face, px, py, fw, fh, rnd):
-    if face in ("north", "up", "down") and px in (0, 1, fw - 2, fw - 1):
-        return GOLD[1] if px in (1, fw - 2) else ROBE[1]      # cuffs at both ends
-    if face == "north" and 3 <= px <= fw - 4:
-        return hexc("06070f")                                 # hands hidden in the sleeves
-    return robe_base(face, px, py, fw, fh)
-
-
-def watcher_leg(face, px, py, fw, fh, rnd):
-    return ROBE[0]
 
 
 WATCHER = Mob("watcher", (64, 64), [
-    Part("head", (0, 0, 0), [
-        Box(0, 0, -4, -10, -4, 8, 10, 8, paint=faceless, glow=faceless_glow),
-        Box(32, 0, -4, -10, -4, 8, 12, 8, inflate=0.45, paint=hood),
+    Part("head", (0, -3, 0), [B(-5, -10, -5, 10, 10, 10, art(MONO_HEAD, MONO_PAL, stone), glow_art(MONO_HEAD_GLOW, mono_glow_pal))], [
+        Part("crown_l", (-3.5, -10, 0, 0, 0, -0.3), [B(-1, -4, -1, 2, 4, 2, shard, key="crown")]),
+        Part("crown_m", (0, -10, 0), [B(-1, -5, -1, 2, 5, 2, shard)]),
+        Part("crown_r", (3.5, -10, 0, 0, 0, 0.3), [B(-1, -4, -1, 2, 4, 2, shard, key="crown", mirror=True)]),
     ]),
     Part("body", (0, 0, 0), [
-        Box(16, 20, -4, 0, -3, 8, 12, 6, paint=robe_top),
-        Box(0, 38, -4, 0, -3, 8, 20, 6, inflate=0.5, paint=robe, glow=robe_glow),
+        B(-7, -1, -4, 14, 4, 8, shoulders),
+        B(-3, 3, -3, 6, 12, 6, art({"north": COLUMN_FRONT, "south": COLUMN_FRONT}, MONO_PAL, stone),
+          glow_art({"north": COLUMN_FRONT, "south": COLUMN_FRONT}, mono_glow_pal)),
+        B(-2, 15, -2, 4, 3, 4, stone),
+        B(-1, 18, -1, 2, 2, 2, stone),
     ]),
-    Part("arms", (0, 3, -1, -0.75, 0, 0), [
-        Box(44, 22, -8, -2, -2, 4, 8, 4, paint=sleeve),
-        Box(40, 38, -4, 2, -2, 8, 4, 4, paint=folded_arms),
-    ], [
-        Part("left_shoulder", (0, 0, 0), [Box(44, 22, 4, -2, -2, 4, 8, 4, mirror=True, paint=sleeve)]),
+    Part("right_hand", (-10, 4, -1, 0, 0, 0.15), [
+        B(-2, 0, -2, 4, 7, 4, art({"north": ["SSSS", "SrrS", "SSSS", "SSSS", "SSSS", "GGGG", "SSSS"]}, MONO_PAL, stone),
+          glow_art({"north": ["....", ".rr."]}, mono_glow_pal), key="mhand"),
     ]),
-    Part("right_leg", (-2, 12, 0), [Box(0, 22, -2, 0, -2, 4, 12, 4, paint=watcher_leg)]),
-    Part("left_leg", (2, 12, 0), [Box(0, 22, -2, 0, -2, 4, 12, 4, mirror=True, paint=watcher_leg)]),
-], egg=(hexc("0f1430"), hexc("d8b865")))
+    Part("left_hand", (10, 4, -1, 0, 0, -0.15), [
+        B(-2, 0, -2, 4, 7, 4, art({"north": ["SSSS", "SrrS", "SSSS", "SSSS", "SSSS", "GGGG", "SSSS"]}, MONO_PAL, stone),
+          glow_art({"north": ["....", ".rr."]}, mono_glow_pal), key="mhand", mirror=True),
+    ]),
+    Part("shards", (0, -6, 0), [
+        B(-9, -3, -9, 2, 5, 2, shard, shard_glow, key="shard"),
+        B(7, -1, -9, 2, 5, 2, shard, shard_glow, key="shard"),
+        B(-9, 0, 7, 2, 5, 2, shard, shard_glow, key="shard"),
+        B(7, -4, 7, 2, 5, 2, shard, shard_glow, key="shard"),
+    ]),
+], egg=(STONE[3], RUNE))
 
 
 MOBS = [POLLINATOR, WANDERER, STALKER, CINDER_MITE, SKIMMER, GUARDIAN, WHALE, WATCHER]
+for _mob in MOBS:
+    auto_uv(_mob)          # boxes drawn without a texture position get one
 
 
 # ------------------------------------------------------------------ spawn eggs

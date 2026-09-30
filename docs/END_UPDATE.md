@@ -396,8 +396,9 @@ A small, unstable singularity: a black sphere with a rotating accretion ring.
   - **Void Traps**: a trapdoor-like block that holds a mob in place for a few seconds.
 
 ### 5.5 Umbral Stalker (hostile)
-The End needs one real new threat. This is a lanky, almost invisible predator that lives
-in the Dark Matter Belts.
+The End needs one real new threat. This is a hunched, almost invisible brute that lives
+in the Dark Matter Belts: it walks on its knuckles like a gorilla, with dark-matter crystals
+growing from its back and a violet rift glowing in its chest.
 
 - **Visibility:**
   - It is hard to see: only a faint shimmer outline, plus distortion particles when it
@@ -408,16 +409,19 @@ in the Dark Matter Belts.
   - It stalks the player from behind and retreats when the player turns to face it (the
     reverse of an Enderman).
   - When it reaches you, it hits hard and tries to knock you toward the void.
+  - Up close, every few seconds, it rears up and slams both fists into the ground: a
+    Ground Slam that hurts everything around it and throws it outward.
 - **Drops:** **Umbral Membrane**, used for the Stalker Cloak and the Voidwalker upgrade.
 - **Counterplay:** light (spores), a Portal Lens, or keeping your back to a wall.
 
 ### 5.6 The Watcher (unique, never fought)
-A tall, still silhouette standing at the very edge of render distance, on islands in the
-Shattered Observatory.
+A floating sentinel of pale observatory stone with one great eye - as if one of the
+Observatory's own instruments had started looking back. It hangs in the air at the very edge
+of render distance, on islands in the Shattered Observatory, with stone shards circling it.
 
 - **Behaviour:**
   - It appears only when you're alone, only at a distance, and only for a few seconds.
-  - If you look at it through a **spyglass or telescope**, it vanishes. A new Star Chart
+  - If you look at it through a **spyglass or telescope**, it comes apart into starlight. A new Star Chart
     then appears in your inventory, pointing to the nearest undiscovered Maw, Maze or
     Station.
 - **It never attacks and can't be reached.** It gives the advancement

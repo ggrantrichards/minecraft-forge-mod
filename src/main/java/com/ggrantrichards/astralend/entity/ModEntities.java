@@ -30,7 +30,7 @@ public final class ModEntities {
         () -> EntityType.Builder.of(VoidWanderer::new, MobCategory.CREATURE).sized(0.75F, 0.8F).eyeHeight(0.45F)
             .clientTrackingRange(10).build(ENTITY_TYPES.key("void_wanderer")));
     public static final RegistryObject<EntityType<UmbralStalker>> UMBRAL_STALKER = ENTITY_TYPES.register("umbral_stalker",
-        () -> EntityType.Builder.of(UmbralStalker::new, MobCategory.MONSTER).sized(0.9F, 2.6F).eyeHeight(2.3F)
+        () -> EntityType.Builder.of(UmbralStalker::new, MobCategory.MONSTER).sized(1.4F, 2.2F).eyeHeight(1.5F)
             .clientTrackingRange(8).build(ENTITY_TYPES.key("umbral_stalker")));
     public static final RegistryObject<EntityType<CinderMite>> CINDER_MITE = ENTITY_TYPES.register("cinder_mite",
         () -> EntityType.Builder.of(CinderMite::new, MobCategory.MONSTER).sized(0.6F, 0.35F).eyeHeight(0.2F).fireImmune()
@@ -45,7 +45,7 @@ public final class ModEntities {
         () -> EntityType.Builder.of(DriftWhale::new, MobCategory.AMBIENT).sized(2.6F, 2.3F).eyeHeight(1.2F).fireImmune()
             .clientTrackingRange(16).build(ENTITY_TYPES.key("drift_whale")));
     public static final RegistryObject<EntityType<Watcher>> WATCHER = ENTITY_TYPES.register("watcher",
-        () -> EntityType.Builder.of(Watcher::new, MobCategory.MISC).sized(0.8F, 2.9F).eyeHeight(2.5F).fireImmune()
+        () -> EntityType.Builder.of(Watcher::new, MobCategory.MISC).sized(1.0F, 2.9F).eyeHeight(2.4F).fireImmune()
             .clientTrackingRange(16).build(ENTITY_TYPES.key("watcher")));
 
     public static void register() {

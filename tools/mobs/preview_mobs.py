@@ -54,17 +54,24 @@ def faces_of(part, transform, out):
             "up": ([(x0, y0, z1), (x1, y0, z1), (x1, y0, z0), (x0, y0, z0)], rects["up"]),
             "down": ([(x0, y1, z0), (x1, y1, z0), (x1, y1, z1), (x0, y1, z1)], rects["down"]),
         }
+        normals = {"north": (0, 0, -1), "south": (0, 0, 1), "east": (-1, 0, 0), "west": (1, 0, 0),
+                   "up": (0, -1, 0), "down": (0, 1, 0)}
         for name, (corners, rect) in quads.items():
             if rect[2] <= 0 or rect[3] <= 0:
                 continue
             if b.mirror:
                 rect = (rect[0] + rect[2], rect[1], -rect[2], rect[3])
-            out.append(([local(c) for c in corners], rect))
+            p0 = local(corners[0])
+            p1 = local(tuple(a + b2 for a, b2 in zip(corners[0], normals[name])))
+            normal = tuple(q - r for q, r in zip(p1, p0))
+            # Minecraft-like entity shading: tops brightest, sides darker, undersides darkest.
+            shade = max(0.45, min(1.0, 0.76 - 0.26 * normal[1] - 0.06 * normal[0]))
+            out.append(([local(c) for c in corners], rect, shade))
     for c in part.children:
         faces_of(c, local, out)
 
 
-def render(mob, texture, yaw, pitch, size=260, glow=None):
+def render(mob, texture, yaw, pitch, size=260, glow=None, scale=None):
     faces = []
     for part in mob.parts:
         faces_of(part, lambda v: v, faces)
@@ -75,11 +82,11 @@ def render(mob, texture, yaw, pitch, size=260, glow=None):
         y, z = y * math.cos(pitch) - z * math.sin(pitch), y * math.sin(pitch) + z * math.cos(pitch)
         return (x, y, z)
 
-    faces = [([view(c) for c in corners], rect) for corners, rect in faces]
-    xs = [c[0] for f, _ in faces for c in f]
-    ys = [c[1] for f, _ in faces for c in f]
+    faces = [([view(c) for c in corners], rect, shade) for corners, rect, shade in faces]
+    xs = [c[0] for f, _, _ in faces for c in f]
+    ys = [c[1] for f, _, _ in faces for c in f]
     span = max(max(xs) - min(xs), max(ys) - min(ys)) or 1
-    scale = (size - 20) / span
+    scale = scale or (size - 20) / span
     cx, cy = (max(xs) + min(xs)) / 2, (max(ys) + min(ys)) / 2
     img = Image.new("RGBA", (size, size), (46, 44, 58, 255))
     px = img.load()
@@ -87,7 +94,7 @@ def render(mob, texture, yaw, pitch, size=260, glow=None):
     tex = texture.load()
     gl = glow.load() if glow else None
     tw, th = texture.size
-    for corners, (u, v, w, h) in faces:
+    for corners, (u, v, w, h), shade in faces:
         pts = [((c[0] - cx) * scale + size / 2, (c[1] - cy) * scale + size / 2, c[2]) for c in corners]
         uvs = [(u, v), (u + w, v), (u + w, v + h), (u, v + h)]
         for tri in ((0, 1, 2), (0, 2, 3)):
@@ -116,6 +123,8 @@ def render(mob, texture, yaw, pitch, size=260, glow=None):
                         continue
                     if gl and gl[ix, iy][3] > 20:
                         c = gl[ix, iy][:3] + (255,)       # glowing parts, at full brightness
+                    else:
+                        c = tuple(int(c[i] * shade) for i in range(3)) + (c[3],)
                     depth[yy][xx] = z
                     base = px[xx, yy]
                     a = c[3] / 255

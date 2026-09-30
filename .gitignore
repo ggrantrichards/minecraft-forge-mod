@@ -13,3 +13,5 @@ bin/
 # game run directories (worlds, logs, options)
 run/
 run-data/
+# python
+__pycache__/
