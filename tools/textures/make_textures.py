@@ -929,38 +929,18 @@ def gravity_anomaly_frame(phase):
 
 # ---------------------------------------------------------------- wood sets (Phase 3.5)
 
-LUMINE_STEM = [hexc("5e5470"), hexc("736887"), hexc("877c9b"), hexc("9d93b0"), hexc("b4abc4")]
-LUMINE_GLOW = [hexc("2fb7ad"), hexc("5fe3d6"), hexc("aefcf2")]
-LUMINE_PLANKS = [hexc("6d6286"), hexc("83789d"), hexc("988db1"), hexc("aca2c3"), hexc("c0b8d4")]
-NULL_BARK = [hexc("0c0a10"), hexc("15121c"), hexc("1f1a29"), hexc("2a2338"), hexc("3a3050")]
-NULL_HEART = [hexc("2e1a4a"), hexc("3f2566"), hexc("523283"), hexc("66409e"), hexc("7d55b8")]
+import hq as _hq  # the wood palettes live with the redrawn wood textures
+LUMINE_STEM = _hq.LUMINE_STEM
+LUMINE_GLOW = _hq.LUMINE_GLOW
+LUMINE_PLANKS = _hq.LUMINE_PLANK
+NULL_BARK = _hq.NULL_BARK
+NULL_HEART = _hq.NULL_PLANK
 NULL_LEAF = [hexc("21183a"), hexc("30245a"), hexc("403075"), hexc("53408f"), hexc("9a7ee6")]
 
 
 def planks_tex(pal, seed):
-    """Four horizontal boards with grain and nail holes, like vanilla planks."""
-    rnd = random.Random(seed)
-    img = Image.new("RGBA", (16, 16), pal[2])
-    px = img.load()
-    for y in range(16):
-        for x in range(16):
-            r = rnd.random()
-            px[x, y] = pal[3] if r < 0.18 else pal[1] if r < 0.3 else pal[2]
-    for board in range(4):
-        y0 = board * 4
-        for x in range(16):
-            px[x, y0 + 3] = pal[0]
-            if rnd.random() < 0.5:
-                px[x, y0] = pal[3]
-        # grain streaks
-        for _ in range(2):
-            gx, gy = rnd.randrange(16), y0 + rnd.randrange(1, 3)
-            for i in range(rnd.randint(3, 6)):
-                px[(gx + i) % 16, gy] = pal[1]
-        seam = (rnd.randrange(4, 12) + board * 5) % 16
-        for y in range(y0, y0 + 3):
-            px[seam, y] = pal[0]
-    return img
+    import hq
+    return hq.planks(seed, pal)
 
 
 def bark_tex(pal, seed, streak=None, streaks=0):
@@ -1468,8 +1448,31 @@ def main():
     out.append(save(spore_lantern(), "block/spore_lantern.png"))
     out.append(save(whalelight_scale(), "block/whalelight_scale.png"))
 
+    # ---- The redrawn textures (tools/textures/hq.py) replace the older versions above.
+    import hq
+    names = {rel for rel, _ in hq.TEXTURES}
+    out = [(rel, img) for rel, img in out if rel not in names]
+    for rel, make in hq.TEXTURES:
+        out.append(save(make(), rel))
     write_preview(out)
+    write_tiled_preview(hq.TEXTURES)
     print(f"Wrote {len(out)} textures to {TEX.relative_to(ROOT)} and a preview to {PREVIEW.relative_to(ROOT)}")
+
+
+def write_tiled_preview(textures):
+    """Each block texture tiled 3x3, to show seams and repeats (docs/images/textures_tiled.png)."""
+    from PIL import ImageDraw
+    from pixelart import tile3
+    blocks = [(rel, make()) for rel, make in textures if rel.startswith("block/")]
+    cols, cell = 6, 16 * 3 * 3 + 24
+    sheet = Image.new("RGBA", (cols * cell, ((len(blocks) + cols - 1) // cols) * cell), (40, 40, 48, 255))
+    draw = ImageDraw.Draw(sheet)
+    for i, (rel, img) in enumerate(blocks):
+        x, y = (i % cols) * cell, (i // cols) * cell
+        t = tile3(img, 3)
+        sheet.paste(t, (x + 4, y + 4), t)
+        draw.text((x + 4, y + cell - 18), rel.split("/")[-1][:-4], fill=(230, 230, 236))
+    sheet.save(ROOT / "docs/images/textures_tiled.png")
 
 
 def write_preview(items):

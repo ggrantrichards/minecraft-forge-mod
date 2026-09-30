@@ -30,7 +30,7 @@ public final class ModEntities {
         () -> EntityType.Builder.of(VoidWanderer::new, MobCategory.CREATURE).sized(0.75F, 0.8F).eyeHeight(0.45F)
             .clientTrackingRange(10).build(ENTITY_TYPES.key("void_wanderer")));
     public static final RegistryObject<EntityType<UmbralStalker>> UMBRAL_STALKER = ENTITY_TYPES.register("umbral_stalker",
-        () -> EntityType.Builder.of(UmbralStalker::new, MobCategory.MONSTER).sized(0.7F, 2.6F).eyeHeight(2.3F)
+        () -> EntityType.Builder.of(UmbralStalker::new, MobCategory.MONSTER).sized(1.0F, 2.0F).eyeHeight(1.7F)
             .clientTrackingRange(8).build(ENTITY_TYPES.key("umbral_stalker")));
     public static final RegistryObject<EntityType<CinderMite>> CINDER_MITE = ENTITY_TYPES.register("cinder_mite",
         () -> EntityType.Builder.of(CinderMite::new, MobCategory.MONSTER).sized(0.4F, 0.3F).eyeHeight(0.13F).fireImmune()

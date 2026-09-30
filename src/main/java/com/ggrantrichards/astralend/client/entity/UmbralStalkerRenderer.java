@@ -1,6 +1,7 @@
 package com.ggrantrichards.astralend.client.entity;
 
 import com.ggrantrichards.astralend.entity.UmbralStalker;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -12,6 +13,7 @@ import net.minecraft.util.Mth;
 
 public class UmbralStalkerRenderer extends MobRenderer<UmbralStalker, UmbralStalkerRenderer.State, UmbralStalkerRenderer.Model> {
     private static final Identifier TEXTURE = ModModelLayers.texture("umbral_stalker");
+    public static final float SCALE = 1.35F;
 
     public UmbralStalkerRenderer(EntityRendererProvider.Context context) {
         super(context, new Model(context.bakeLayer(ModModelLayers.UMBRAL_STALKER)), 0.0F);
@@ -46,42 +48,75 @@ public class UmbralStalkerRenderer extends MobRenderer<UmbralStalker, UmbralStal
         public float attackTime;
     }
 
-    // A long, loping walk with the arms swinging low; the arms lash forward when it strikes.
+    @Override
+    protected void scale(State state, PoseStack poseStack) {
+        poseStack.scale(SCALE, SCALE, SCALE);
+    }
+
+    // It prowls on its knuckles and backward-bent legs: diagonal pairs move together like a big
+    // cat's, the tail sways, the jaw works. When it strikes it rears up and both arms lash forward.
     public static class Model extends EntityModel<State> {
+        private final ModelPart torso;
         private final ModelPart head;
+        private final ModelPart jaw;
         private final ModelPart rightArm;
         private final ModelPart leftArm;
-        private final ModelPart rightLeg;
-        private final ModelPart leftLeg;
+        private final ModelPart rightForearm;
+        private final ModelPart leftForearm;
+        private final ModelPart rightThigh;
+        private final ModelPart leftThigh;
+        private final ModelPart rightShin;
+        private final ModelPart leftShin;
+        private final ModelPart tail;
+        private final ModelPart tailTip;
 
         public Model(ModelPart root) {
             super(root, RenderTypes::entityTranslucent);
-            ModelPart body = root.getChild("body");
-            this.head = body.getChild("head");
-            this.rightArm = body.getChild("right_arm");
-            this.leftArm = body.getChild("left_arm");
-            this.rightLeg = root.getChild("right_leg");
-            this.leftLeg = root.getChild("left_leg");
+            ModelPart hips = root.getChild("hips");
+            this.torso = hips.getChild("torso");
+            this.head = this.torso.getChild("head");
+            this.jaw = this.head.getChild("jaw");
+            this.rightArm = this.torso.getChild("right_arm");
+            this.leftArm = this.torso.getChild("left_arm");
+            this.rightForearm = this.rightArm.getChild("right_forearm");
+            this.leftForearm = this.leftArm.getChild("left_forearm");
+            this.rightThigh = hips.getChild("right_thigh");
+            this.leftThigh = hips.getChild("left_thigh");
+            this.rightShin = this.rightThigh.getChild("right_shin");
+            this.leftShin = this.leftThigh.getChild("left_shin");
+            this.tail = hips.getChild("tail");
+            this.tailTip = this.tail.getChild("tail_tip");
         }
 
         @Override
         public void setupAnim(State state) {
-            super.setupAnim(state);
-            float pos = state.walkAnimationPos;
+            super.setupAnim(state);  // back to the rest pose; everything below is added to it
+            float pos = state.walkAnimationPos * 0.6F;
             float speed = Math.min(state.walkAnimationSpeed, 1.0F);
-            this.head.yRot = state.yRot * Mth.DEG_TO_RAD;
-            this.head.xRot = state.xRot * Mth.DEG_TO_RAD - 0.3F;
-            this.rightLeg.xRot = Mth.cos(pos * 0.5F) * 0.9F * speed;
-            this.leftLeg.xRot = Mth.cos(pos * 0.5F + Mth.PI) * 0.9F * speed;
-            // Arms hang straight down despite the hunched body, and swing against the legs.
-            this.rightArm.xRot = -0.3F + Mth.cos(pos * 0.5F + Mth.PI) * 0.6F * speed;
-            this.leftArm.xRot = -0.3F + Mth.cos(pos * 0.5F) * 0.6F * speed;
-            this.rightArm.zRot = 0.08F + Mth.sin(state.ageInTicks * 0.05F) * 0.03F;
-            this.leftArm.zRot = -0.08F - Mth.sin(state.ageInTicks * 0.05F) * 0.03F;
+            float t = state.ageInTicks;
+            this.head.yRot += state.yRot * Mth.DEG_TO_RAD * 0.8F;
+            this.head.xRot += state.xRot * Mth.DEG_TO_RAD * 0.6F + Mth.sin(t * 0.08F) * 0.04F;
+            this.jaw.xRot += 0.08F + Mth.sin(t * 0.13F) * 0.06F;
+            // diagonal gait: right arm with left leg, left arm with right leg
+            float a = Mth.cos(pos) * 0.55F * speed;
+            this.rightArm.xRot += a;
+            this.leftArm.xRot -= a;
+            this.rightForearm.xRot += Math.max(0.0F, -a) * 0.6F;
+            this.leftForearm.xRot += Math.max(0.0F, a) * 0.6F;
+            this.leftThigh.xRot += a;
+            this.rightThigh.xRot -= a;
+            this.leftShin.xRot += Math.max(0.0F, -a) * 0.8F;
+            this.rightShin.xRot += Math.max(0.0F, a) * 0.8F;
+            this.torso.xRot += Mth.sin(pos * 2.0F) * 0.04F * speed;
+            this.tail.yRot += Mth.sin(t * 0.07F) * 0.3F;
+            this.tailTip.yRot += Mth.sin(t * 0.07F - 0.8F) * 0.35F;
             if (state.attackTime > 0.0F) {
-                float swing = Mth.sin(state.attackTime * Mth.PI);
-                this.rightArm.xRot -= swing * 1.6F;
-                this.leftArm.xRot -= swing * 1.6F;
+                float strike = Mth.sin(state.attackTime * Mth.PI);
+                this.torso.xRot -= strike * 0.55F;
+                this.head.xRot += strike * 0.45F;
+                this.jaw.xRot += strike * 0.5F;
+                this.rightArm.xRot -= strike * 1.3F;
+                this.leftArm.xRot -= strike * 1.3F;
             }
         }
     }

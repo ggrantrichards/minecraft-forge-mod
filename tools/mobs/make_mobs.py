@@ -142,7 +142,35 @@ def all_boxes(parts):
         yield from all_boxes(p.children)
 
 
+# While a mob is painted: the texture pixel being painted, and smooth noise over the whole texture,
+# so painters can shade coherently (mottling in patches) instead of pixel by pixel.
+CUR = {"x": 0, "y": 0, "noise": None}
+
+
+def smooth_noise(w, h, seed, cell=4):
+    rnd = random.Random(seed)
+    gw, gh = w // cell + 2, h // cell + 2
+    lattice = [[rnd.random() for _ in range(gw)] for _ in range(gh)]
+    out = [[0.0] * w for _ in range(h)]
+    for y in range(h):
+        for x in range(w):
+            gx, gy = x / cell, y / cell
+            x0, y0 = int(gx), int(gy)
+            tx, ty = gx - x0, gy - y0
+            tx, ty = tx * tx * (3 - 2 * tx), ty * ty * (3 - 2 * ty)
+            a, b = lattice[y0][x0], lattice[y0][x0 + 1]
+            c, d = lattice[y0 + 1][x0], lattice[y0 + 1][x0 + 1]
+            out[y][x] = (a + (b - a) * tx) * (1 - ty) + (c + (d - c) * tx) * ty
+    return out
+
+
+def n():
+    """Smooth noise (0..1) at the pixel being painted."""
+    return CUR["noise"][CUR["y"]][CUR["x"]]
+
+
 def paint_mob(mob, seed):
+    CUR["noise"] = smooth_noise(mob.size[0], mob.size[1], seed)
     img = Image.new("RGBA", mob.size, (0, 0, 0, 0))
     glow = Image.new("RGBA", mob.size, (0, 0, 0, 0))
     has_glow = False
@@ -159,6 +187,7 @@ def paint_mob(mob, seed):
                     x, y = int(fx) + px, int(fy) + py
                     if not (0 <= x < mob.size[0] and 0 <= y < mob.size[1]):
                         continue
+                    CUR["x"], CUR["y"] = x, y
                     if b.paint:
                         c = b.paint(face, px, py, int(fw), int(fh), rnd)
                         if c is not None:
@@ -309,52 +338,125 @@ WANDERER = Mob("void_wanderer", (64, 32), [
 ], egg=(hexc("3a3350"), hexc("5ff0ff")))
 
 
-# ---- Umbral Stalker: a lanky, almost invisible predator of the Dark Matter Belts
-S_SKIN = [hexc("140f22"), hexc("1a1430"), hexc("221a38"), hexc("171126")]
+# ---- Umbral Stalker: a hunched, almost invisible predator of the Dark Matter Belts. It walks on
+# its knuckles and on backward-bent legs, with a long skull, a whip of a tail, bone claws, and torn
+# membranes slung between its arms and body. (Its membranes are what it drops.)
+S_HIDE = [hexc("0c0914"), hexc("16101f"), hexc("1f1730"), hexc("2a2042"), hexc("3a2d5a")]
+S_BONE = [hexc("6f6680"), hexc("a39bb4"), hexc("d6cfe2")]
 
 
-def stalker_skin(face, px, py, fw, fh, rnd):
-    c = rnd.choice(S_SKIN)
-    if rnd.random() < 0.06:
-        c = hexc("3d2f66")  # the shimmer that gives it away
-    if face == "down":
-        c = mix(c, hexc("07050c"), 0.5)
+def stalker_hide(face, px, py, fw, fh, rnd):
+    t = n()
+    i = 1 + int(t * 3.2)                       # 1..4, in smooth patches
+    if face == "up":
+        i = min(4, i + 1)
+    elif face == "down":
+        i = max(0, i - 1)
+    c = S_HIDE[i]
+    if face in ("east", "west", "north", "south") and px % 3 == 1 and 0.45 < t < 0.6:
+        c = S_HIDE[4]                          # sinews showing through
     return c
 
 
 def stalker_head(face, px, py, fw, fh, rnd):
-    c = stalker_skin(face, px, py, fw, fh, rnd)
-    if face == "north" and py == 3 and px in (1, 4):
-        return hexc("5a3fa0")
-    if face == "north" and py == 5 and 1 <= px <= 4:
-        return hexc("07050c")
+    c = stalker_hide(face, px, py, fw, fh, rnd)
+    if face == "north":
+        if (px, py) in ((1, 2), (3, 2), (2, 1)):
+            return hexc("6a4fb0")              # three eyes in a triangle
+        if py == fh - 1:
+            return S_BONE[0]
+    if face in ("east", "west") and py == fh - 1 and px % 2 == 0:
+        return S_BONE[1]                       # teeth along the jawline
+    if face == "up" and px == fw // 2:
+        return S_HIDE[4]                       # a ridge down the skull
     return c
 
 
-def stalker_head_glow(face, px, py, fw, fh, rnd):
-    if face == "north" and py == 3 and px in (1, 4):
-        return hexc("c9a8ff")
+def stalker_eyes(face, px, py, fw, fh, rnd):
+    if face == "north" and (px, py) in ((1, 2), (3, 2)):
+        return hexc("e2ccff")
+    if face == "north" and (px, py) == (2, 1):
+        return hexc("b48cf0")
     return None
 
 
+def stalker_jaw(face, px, py, fw, fh, rnd):
+    if face in ("north", "east", "west") and py == 0:
+        return S_BONE[2] if px % 2 == 0 else S_BONE[1]   # fangs
+    return stalker_hide(face, px, py, fw, fh, rnd)
+
+
+def bone(face, px, py, fw, fh, rnd):
+    if face == "up":
+        return S_BONE[2]
+    if face == "down":
+        return S_BONE[0]
+    return S_BONE[2] if py < fh // 2 and px == 0 else S_BONE[1] if py < fh - 1 else S_BONE[0]
+
+
 def stalker_limb(face, px, py, fw, fh, rnd):
-    c = stalker_skin(face, px, py, fw, fh, rnd)
-    if py >= fh - 3 and face in ("north", "south", "east", "west"):
-        c = mix(c, hexc("3a2c5e"), 0.5)  # claws
+    c = stalker_hide(face, px, py, fw, fh, rnd)
+    if face in ("north", "south", "east", "west") and py == 0:
+        c = S_HIDE[4]                          # joint
     return c
 
 
+def membrane(face, px, py, fw, fh, rnd):
+    """A torn, see-through membrane: dark, veined, ragged at its lower edge."""
+    if face not in ("east", "west"):
+        return None
+    edge = fh - 1 - int(2 * abs(math.sin(px * 1.7)) + (px % 3 == 0))
+    if py > edge or (py > fh - 5 and (px * 5 + py * 3) % 11 == 0):
+        return None                            # the torn edge and holes
+    if px == 0 or (px - py // 3) % 4 == 0 and py > 1:
+        return hexc("4a3a78", 230)             # veins
+    return mix(hexc("1c1430", 205), hexc("2c2048", 205), n())
+
+
 STALKER = Mob("umbral_stalker", (64, 64), [
-    Part("body", (0, 2, 0, 0.3, 0, 0), [Box(0, 16, -3, -12, -2, 6, 12, 4, paint=stalker_skin)], [
-        Part("head", (0, -12, -1), [
-            Box(0, 0, -3, -7, -3, 6, 7, 6, paint=stalker_head, glow=stalker_head_glow),
-            Box(40, 0, -2, -2, -5, 4, 2, 2, paint=stalker_skin),
+    Part("hips", (0, 11, 3), [Box(0, 0, -2.5, -3, -1, 5, 5, 6, paint=stalker_hide)], [
+        Part("torso", (0, -1, -1, 1.0, 0, 0), [Box(0, 11, -4, -12, -3, 8, 12, 6, paint=stalker_hide)], [
+            Part("head", (0, -12, 0, -0.85, 0, 0), [
+                Box(28, 0, -2.5, -3, -7, 5, 5, 7, paint=stalker_head, glow=stalker_eyes),
+                Box(52, 0, -0.5, -5, -4, 1, 2, 1, paint=bone),
+                Box(52, 0, -0.5, -4.5, -1, 1, 2, 1, paint=bone),
+            ], [
+                Part("jaw", (0, 2, 0), [Box(28, 12, -2, 0, -6, 4, 1, 5, paint=stalker_jaw)]),
+            ]),
+            Part("spines", (0, -6, 3), [Box(52, 0, -0.5, -1, 0, 1, 2, 1, paint=bone),
+                                        Box(52, 0, -0.5, 3, 0, 1, 2, 1, paint=bone)]),
+            Part("right_arm", (-4.5, -10, 0, -1.2, 0, 0.15), [Box(0, 29, -1, -1, -1, 2, 11, 2, paint=stalker_limb)], [
+                Part("right_forearm", (0, 10, 0, -0.3, 0, 0), [Box(8, 29, -1, 0, -1, 2, 10, 2, paint=stalker_limb)], [
+                    Part("right_claws", (0, 10, 0), [Box(56, 0, -1.5, 0, -1.5, 1, 4, 1, paint=bone),
+                                                     Box(56, 0, 0.5, 0, -1.5, 1, 4, 1, paint=bone),
+                                                     Box(56, 0, -0.5, 0, -0.5, 1, 3, 1, paint=bone)]),
+                ]),
+                Part("right_membrane", (-0.5, 1, 1), [Box(40, 36, 0, 0, 0, 0, 12, 8, paint=membrane)]),
+            ]),
+            Part("left_arm", (4.5, -10, 0, -1.2, 0, -0.15), [Box(0, 29, -1, -1, -1, 2, 11, 2, mirror=True, paint=stalker_limb)], [
+                Part("left_forearm", (0, 10, 0, -0.3, 0, 0), [Box(8, 29, -1, 0, -1, 2, 10, 2, mirror=True, paint=stalker_limb)], [
+                    Part("left_claws", (0, 10, 0), [Box(56, 0, -1.5, 0, -1.5, 1, 4, 1, paint=bone),
+                                                    Box(56, 0, 0.5, 0, -1.5, 1, 4, 1, paint=bone),
+                                                    Box(56, 0, -0.5, 0, -0.5, 1, 3, 1, paint=bone)]),
+                ]),
+                Part("left_membrane", (0.5, 1, 1), [Box(40, 36, 0, 0, 0, 0, 12, 8, paint=membrane)]),
+            ]),
         ]),
-        Part("right_arm", (-4, -11, 0), [Box(24, 16, -1, 0, -1, 2, 26, 2, paint=stalker_limb)]),
-        Part("left_arm", (4, -11, 0), [Box(24, 16, -1, 0, -1, 2, 26, 2, mirror=True, paint=stalker_limb)]),
+        Part("right_thigh", (-2.5, 0, 1, -0.7, 0, 0), [Box(16, 29, -1, 0, -1, 2, 7, 2, paint=stalker_limb)], [
+            Part("right_shin", (0, 7, 0, 1.4, 0, 0), [Box(24, 29, -1, 0, -1, 2, 7, 2, paint=stalker_limb)], [
+                Part("right_foot", (0, 7, 0, -0.7, 0, 0), [Box(32, 29, -1, 0, -3, 2, 2, 4, paint=stalker_limb)]),
+            ]),
+        ]),
+        Part("left_thigh", (2.5, 0, 1, -0.7, 0, 0), [Box(16, 29, -1, 0, -1, 2, 7, 2, mirror=True, paint=stalker_limb)], [
+            Part("left_shin", (0, 7, 0, 1.4, 0, 0), [Box(24, 29, -1, 0, -1, 2, 7, 2, mirror=True, paint=stalker_limb)], [
+                Part("left_foot", (0, 7, 0, -0.7, 0, 0), [Box(32, 29, -1, 0, -3, 2, 2, 4, mirror=True, paint=stalker_limb)]),
+            ]),
+        ]),
+        Part("tail", (0, -1, 5, 0.45, 0, 0), [Box(0, 44, -1, -1, 0, 2, 2, 8, paint=stalker_hide)], [
+            Part("tail_tip", (0, 0, 8, -0.55, 0, 0), [Box(20, 44, -0.5, -0.5, 0, 1, 1, 8, paint=stalker_hide),
+                                                   Box(56, 0, -0.5, -1.5, 7, 1, 2, 1, paint=bone)]),
+        ]),
     ]),
-    Part("right_leg", (-2, 2, 0), [Box(32, 16, -1, 0, -1, 2, 22, 2, paint=stalker_limb)]),
-    Part("left_leg", (2, 2, 0), [Box(32, 16, -1, 0, -1, 2, 22, 2, mirror=True, paint=stalker_limb)]),
 ], egg=(hexc("140f22"), hexc("7d5fd0")))
 
 
@@ -487,68 +589,109 @@ GUARDIAN = Mob("black_hole_guardian", (64, 64), [
 ], egg=(hexc("0a0610"), hexc("ff7ab8")))
 
 
-# ---- Drift Whale: a huge, translucent whale, the last small descendant of the Star Leviathans
-H_SKIN = [hexc("a9c6ff", 150), hexc("9dbaf5", 150), hexc("b5cfff", 150)]
+# ---- Drift Whale: a huge, translucent whale, the last small descendant of the Star Leviathans.
+# Deep blue along its back fading to a pale belly with throat grooves; a line of glowing spots
+# along each flank and a scatter of "stars" over its skin; ribs faintly showing through.
+W_BACK = [hexc("2c3d8e", 215), hexc("3a4fa8", 215), hexc("4a62bf", 215)]
+W_SIDE = [hexc("5a76d2", 205), hexc("6c88de", 205), hexc("7f9be8", 205)]
+W_LOW = [hexc("a7bdf4", 210), hexc("bccdf8", 210)]
+W_BELLY = [hexc("dbe6ff", 220), hexc("c9d8fb", 220)]
 
 
-def whale_skin(face, px, py, fw, fh, rnd):
-    c = rnd.choice(H_SKIN)
-    if face == "down":
-        c = hexc("d8e6ff", 170)
+def whale_skin(face, px, py, fw, fh, rnd, ribs=False):
+    t = n()
+    k = 0 if t < 0.35 else 1 if t < 0.7 else 2
     if face == "up":
-        c = mix(c, hexc("8aa6e8", 160), 0.4)
-    if face in ("east", "west") and px % 4 == 0 and 2 <= py <= fh - 3:
-        c = hexc("6a7fc0", 225)  # ribs showing through
-    if face in ("east", "west") and py == fh // 2 - 1:
-        c = hexc("7d92d0", 215)  # spine line
-    return c
+        return W_BACK[k]
+    if face == "down":
+        return W_BELLY[1] if px % 3 == 0 else W_BELLY[0]     # throat and belly grooves
+    if face in ("east", "west", "north", "south"):
+        v = py / max(1, fh - 1)                              # 0 at the top of the side, 1 at the bottom
+        if v < 0.3:
+            c = W_BACK[min(2, k + 1)]
+        elif v < 0.72:
+            c = W_SIDE[k]
+        else:
+            c = W_LOW[0] if v < 0.86 else W_LOW[1]
+        if ribs and face in ("east", "west") and px % 4 == 1 and 0.25 < v < 0.75:
+            c = mix(c, hexc("b9c9ff", 225), 0.45)             # ribs showing through
+        return c
+    return W_SIDE[1]
 
 
-def whale_skin_glow(face, px, py, fw, fh, rnd):
-    if face in ("east", "west", "up") and rnd.random() < 0.035:
-        return hexc("e6f2ff")
+def whale_body(face, px, py, fw, fh, rnd):
+    return whale_skin(face, px, py, fw, fh, rnd, ribs=True)
+
+
+def whale_glow(face, px, py, fw, fh, rnd):
+    if face in ("east", "west"):
+        v = py / max(1, fh - 1)
+        if abs(v - 0.55) < 0.05 and px % 3 == 0:
+            return hexc("d6ecff")                            # the lateral line of lights
+    if face in ("up", "east", "west") and rnd.random() < 0.03:
+        return hexc("f0f6ff")                                # stars on its skin
     return None
 
 
 def whale_head(face, px, py, fw, fh, rnd):
-    if face in ("east", "west") and py == 3 and px == 1 + (0 if face == "east" else fw - 3):
-        return hexc("1d2a55", 255)
-    c = rnd.choice(H_SKIN)
-    if face == "down":
-        c = hexc("d8e6ff", 170)
-        if px % 2 == 0:
-            c = hexc("c2d4f5", 190)  # throat grooves
-    return c
+    eye_x = 2 if face == "east" else fw - 3
+    if face in ("east", "west") and py in (6, 7) and px in (eye_x, eye_x + (1 if face == "east" else -1)):
+        return hexc("141c3c") if py == 6 else hexc("27346a")
+    return whale_skin(face, px, py, fw, fh, rnd)
 
 
 def whale_head_glow(face, px, py, fw, fh, rnd):
-    if face in ("east", "west") and py == 3 and px == 1 + (0 if face == "east" else fw - 3):
+    eye_x = 2 if face == "east" else fw - 3
+    if face in ("east", "west") and py == 6 and px == eye_x:
         return hexc("bfe0ff")
-    return None
+    return whale_glow(face, px, py, fw, fh, rnd)
 
 
-def whale_snout(face, px, py, fw, fh, rnd):
-    c = rnd.choice(H_SKIN)
-    if face == "down" or (face in ("north", "east", "west") and py >= fh - 2):
-        c = hexc("d8e6ff", 175)  # pale jaw
-    if face in ("east", "west", "north") and py == fh - 3:
-        c = hexc("6a7fc0", 225)  # the line of the mouth
-    return c
+def whale_jaw(face, px, py, fw, fh, rnd):
+    if face in ("east", "west", "north") and py == 0:
+        return hexc("33458f", 225)                           # the line of the mouth
+    if face == "down":
+        return W_BELLY[1] if px % 2 == 0 else W_BELLY[0]      # throat grooves
+    return W_LOW[1] if py > 0 else W_LOW[0]
+
+
+def whale_fin(face, px, py, fw, fh, rnd):
+    if face in ("up", "down"):
+        edge = px == fw - 1 or py in (0, fh - 1)
+        c = W_BACK[1] if face == "up" else W_LOW[0]
+        return mix(c, hexc("1e2a66", 225), 0.5) if edge else c
+    return W_BACK[0]
+
+
+def whale_fluke(face, px, py, fw, fh, rnd):
+    if face in ("up", "down"):
+        # a notched trailing edge
+        if py == fh - 1 and px % 4 in (0, 1) or py == fh - 2 and px % 4 == 0:
+            return None
+        return W_BACK[1] if face == "up" else W_LOW[0]
+    return W_BACK[0]
 
 
 WHALE = Mob("drift_whale", (128, 64), [
-    Part("body", (0, 12, 0), [Box(0, 0, -6, -6, -12, 12, 12, 24, paint=whale_skin, glow=whale_skin_glow)], [
-        Part("head", (0, 0, -12), [
-            Box(72, 0, -5, -5, -8, 10, 10, 8, paint=whale_head, glow=whale_head_glow),
-            Box(0, 54, -4, -2, -12, 8, 6, 4, paint=whale_snout),  # the tapering snout and jaw
+    Part("body", (0, 10, 0), [Box(0, 0, -8, -7, -10, 16, 14, 12, paint=whale_body, glow=whale_glow)], [
+        Part("head", (0, 0, -10), [
+            Box(56, 0, -7, -6, -10, 14, 11, 10, paint=whale_head, glow=whale_head_glow),
+            Box(0, 26, -5, -8, -8, 10, 2, 7, paint=whale_skin),                   # the forehead
+            Box(86, 51, -5, -4, -13, 10, 7, 3, paint=whale_head),                 # the rounded snout
+        ], [
+            Part("jaw", (0, 5, 0), [Box(56, 21, -6.5, 0, -10, 13, 3, 10, paint=whale_jaw)]),
         ]),
-        Part("left_fin", (6, 3, -4), [Box(72, 18, 0, 0, -3, 10, 1, 6, paint=whale_skin)]),
-        Part("right_fin", (-6, 3, -4), [Box(72, 18, -10, 0, -3, 10, 1, 6, mirror=True, paint=whale_skin)]),
-        Part("tail", (0, -1, 12), [Box(0, 36, -3, -3, 0, 6, 6, 12, paint=whale_skin, glow=whale_skin_glow)], [
-            Part("fluke", (0, 0, 12), [Box(36, 36, -8, -0.5, 0, 16, 1, 6, paint=whale_skin)]),
+        Part("left_fin", (8, 4, -5, 0, 0.5, 0.55), [Box(86, 44, 0, 0, -3, 14, 1, 6, paint=whale_fin)]),
+        Part("right_fin", (-8, 4, -5, 0, -0.5, -0.55), [Box(86, 44, -14, 0, -3, 14, 1, 6, mirror=True, paint=whale_fin)]),
+        Part("rear", (0, 0, 2), [Box(0, 35, -6.5, -6, 0, 13, 12, 11, paint=whale_body, glow=whale_glow)], [
+            Part("dorsal", (0, -6, 4, -0.3, 0, 0), [Box(104, 21, -0.5, -4, 0, 1, 4, 5, paint=whale_fin)]),
+            Part("tailstock", (0, -1, 11), [Box(48, 35, -3.5, -3.5, 0, 7, 7, 12, paint=whale_skin, glow=whale_glow)], [
+                Part("fluke", (0, 0, 12), [Box(86, 35, -11, -0.5, 0, 11, 1, 7, paint=whale_fluke),
+                                          Box(86, 35, 0, -0.5, 0, 11, 1, 7, mirror=True, paint=whale_fluke)]),
+            ]),
         ]),
     ]),
-], egg=(hexc("a9c6ff"), hexc("e6f2ff")))
+], egg=(hexc("3a4fa8"), hexc("dbe6ff")))
 
 
 # ---- The Watcher: a tall, still silhouette
