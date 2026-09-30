@@ -20,6 +20,10 @@ jobs:
       - name: Java toolchains
         run: ./gradlew -q javaToolchains
 
+      - name: Minecraft pack formats (diagnostic)
+        run: |
+          for j in .gradle/mavenizer/repo/net/minecraft/client-extra/*/*.jar; do echo "== $j"; unzip -p "$j" version.json || true; done
+
       - name: Build
         run: ./gradlew build --stacktrace
 
@@ -27,6 +31,13 @@ jobs:
       # This is the closest thing to runClient that works without a screen.
       - name: Load the mod in a server
         run: timeout 900 ./gradlew runGameTestServer --stacktrace
+
+      # Forge prints these when the mod's assets/ and data/ folders didn't load (no textures, recipes, loot).
+      - name: Check the mod's resources loaded
+        run: |
+          if grep -E "Missing (metadata|data pack).*rubymod|Could not find resource pack for mod file" run/logs/latest.log; then
+            echo "::error::rubymod's resources did not load"; exit 1
+          fi
 
       - uses: actions/upload-artifact@v4
         if: always()
