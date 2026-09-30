@@ -4,11 +4,28 @@ A complete, minimal Forge mod for **Minecraft Java Edition 26.3** with **Forge 6
 It adds a Ruby item, a Block of Ruby, crafting recipes both ways, and a welcome
 message when you join a world.
 
+## Quick start: one command for everything
+
+After the one-time setup below (Java 25 plus this project on your computer), everything runs from a
+terminal inside this folder with `./dev.sh`:
+
+| Command | What it does |
+|---|---|
+| `./dev.sh` | Launch Minecraft with your mod (same as `./dev.sh run`) |
+| `./dev.sh build` | Build your mod jar into `build/libs/` |
+| `./dev.sh source` | Unpack Minecraft's source code, textures and data into `~/minecraft-source` |
+| `./dev.sh crash` | Show the start of the newest crash report, to paste when asking for help |
+| `./dev.sh repair` | Fix a broken first-time download (errors like `Unexpected end of ZLIB input stream`) |
+
+`dev.sh` finds Java 25 by itself on a Mac, even if another Java is your default.
+The very first command downloads and sets up Minecraft, which takes 5–15 minutes. After that, launching
+takes under a minute.
+
 ## 1. Install the tools (one time)
 
 | Tool | Why | Get it |
 |---|---|---|
-| **JDK 25** | Minecraft 26.x runs on Java 25 | [Adoptium Temurin 25](https://adoptium.net/) (Gradle can also auto-download it) |
+| **JDK 25** | Minecraft 26.x runs on Java 25 | [Adoptium Temurin 25](https://adoptium.net/temurin/releases/?version=25). On a Mac, pick **aarch64** (Apple Silicon) or **x64** (Intel) and download the **.pkg** installer, not the .tar.gz |
 | **An editor** | IntelliJ IDEA Community has the best Gradle support; VS Code or Antigravity also work (see section 3) | [jetbrains.com/idea](https://www.jetbrains.com/idea/download/) |
 | **Minecraft Java Edition** | To play your mod for real (not needed for `runClient`) | minecraft.net |
 | **Git** (optional) | Version control | git-scm.com |
@@ -17,9 +34,18 @@ You do **not** install Gradle yourself. The `gradlew` script in this folder down
 
 ## 2. Get this project
 
-Copy this `minecraft-forge-mod` folder anywhere on your computer. To start a mod from
-scratch instead, download the **MDK** (Mod Development Kit) for your Minecraft version
-from <https://files.minecraftforge.net/> and unzip it. This project is that MDK plus the example content.
+```
+git clone https://github.com/ggrantrichards/minecraft-forge-mod.git
+cd minecraft-forge-mod
+./dev.sh build
+```
+
+The repository is private: if Git asks for a password, use a GitHub personal access token
+(github.com/settings/tokens, with the **repo** box ticked), not your GitHub password.
+
+To start a different mod from scratch instead, download the **MDK** (Mod Development Kit) for your
+Minecraft version from <https://files.minecraftforge.net/> and unzip it. This project is that MDK
+plus the example content.
 
 ## 3. Open it in IntelliJ, which also gets you the Minecraft source
 
@@ -40,6 +66,13 @@ from <https://files.minecraftforge.net/> and unzip it. This project is that MDK 
    > You may read and learn from the decompiled code, but you may not redistribute
    > Minecraft's code. Your mod jar contains only *your* code.
 
+To browse **all** of Minecraft as ordinary files instead, run `./dev.sh source`. It unpacks
+everything into `~/minecraft-source`: Java code in `net/minecraft/`, textures and models in
+`assets/minecraft/`, and recipes, loot tables and tags in `data/minecraft/`. Add that folder to
+your editor (**File → Add Folder to Workspace**), then use **Cmd+P** / **Ctrl+P** to open a file
+by name (`Zombie.java`, `Blocks.java`, `iron_ore.json`) and **Cmd+Shift+F** / **Ctrl+Shift+F** to
+search everything. Treat it as read-only reference and never commit or upload it.
+
 From a terminal instead: `./gradlew build` (Windows: `gradlew.bat build`).
 
 ### Using VS Code or Antigravity instead of IntelliJ
@@ -50,7 +83,9 @@ From a terminal instead: `./gradlew build` (Windows: `gradlew.bat build`).
 2. **File → Open Folder** → this folder. Say yes to importing the Gradle project, then wait
    for the Java status in the bottom bar to say it's ready. The first import takes 5–15 minutes.
 3. To read Minecraft's source, press **Ctrl+T** (Cmd+T on Mac) and type a class name such as
-   `Block`, or Ctrl+click a Minecraft class in `RubyMod.java`.
+   `Block`, or Ctrl+click a Minecraft class in `RubyMod.java`. Or run `./dev.sh source` and add
+   `~/minecraft-source` to the workspace (see above). If a class opens with no code inside, set
+   the `java.contentProvider.preferred` setting to `fernflower`.
 4. Run everything from the built-in terminal (**Ctrl+`**): `./gradlew runClient`, or
    `.\gradlew.bat runClient` on Windows.
 
@@ -79,7 +114,7 @@ automatically on the first build.
 ## 4. Run the game with your mod
 
 - In IntelliJ's Gradle panel (elephant icon, right side): open **rubymod → Tasks**, find **runClient**, and double-click it, or
-- in a terminal: `./gradlew runClient`
+- in a terminal: `./dev.sh` (or `./gradlew runClient`)
 
 A development copy of Minecraft opens with your mod loaded, and you can use it offline.
 Make a Creative world, then:
@@ -88,7 +123,12 @@ Make a Creative world, then:
 - craft 9 rubies into a block and back. Mine the block with an iron pickaxe or better.
 - the chat shows "Welcome! Go find some rubies." when you join.
 
-Game files for this dev copy (worlds, logs, options) go in `run/`. Crash logs are in `run/logs/latest.log`.
+Game files for this dev copy (worlds, logs, options) go in `run/`. The full log is
+`run/logs/latest.log`; crash reports are in `run/crash-reports/` (`./dev.sh crash` shows the newest).
+
+On a Mac, the client runs with `-XstartOnFirstThread` (set in `build.gradle`). The normal
+Minecraft launcher adds this for Mac players; without it the game fails with
+"Unable to initialize SDL: No available video device".
 
 ## 5. How the project is laid out
 
@@ -101,6 +141,7 @@ src/main/java/com/yourname/rubymod/
   ModItems.java               item registrations
 src/main/resources/
   META-INF/mods.toml          mod ID, name, version, dependencies
+  pack.mcmeta                 required: makes Minecraft load assets/ and data/ below
   assets/rubymod/             CLIENT stuff: what things look like
     textures/item/ruby.png        16x16 PNG
     textures/block/ruby_block.png
@@ -131,6 +172,8 @@ Example: a "Sapphire".
 
 If the item shows as a **purple/black checkerboard**, a model or texture path is wrong.
 If it shows as **`item.rubymod.sapphire`**, the lang entry is missing.
+If **all** your textures, names and recipes are missing and the game warns
+"failed to load a valid ResourcePackInfo", `src/main/resources/pack.mcmeta` is missing or broken.
 
 ## 7. Build a jar and play it in real Minecraft
 
@@ -164,5 +207,6 @@ Rename the Java package `com.yourname.rubymod` with IntelliJ's Refactor → Rena
 ## Updating to a newer Minecraft version
 
 Change `net.minecraftforge:forge:26.3-66.0.8` in `build.gradle` and the version ranges in
-`mods.toml`, then re-sync. Minecraft changes its code every version, so expect some fixes.
+`mods.toml`, then re-sync. Also update `max_format` in `pack.mcmeta` to the new version's pack
+formats (listed under `pack_version` in `version.json` inside `~/minecraft-source` after `./dev.sh source`). Minecraft changes its code every version, so expect some fixes.
 Forge's changelog and the MDK for the new version show what changed.

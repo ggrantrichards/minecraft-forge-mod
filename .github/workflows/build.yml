@@ -20,10 +20,6 @@ jobs:
       - name: Java toolchains
         run: ./gradlew -q javaToolchains
 
-      - name: Minecraft pack formats (diagnostic)
-        run: |
-          for j in .gradle/mavenizer/repo/net/minecraft/client-extra/*/*.jar; do echo "== $j"; unzip -p "$j" version.json || true; done
-
       - name: Build
         run: ./gradlew build --stacktrace
 
