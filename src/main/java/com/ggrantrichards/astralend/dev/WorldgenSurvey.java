@@ -176,6 +176,8 @@ public final class WorldgenSurvey {
         int mossTops = 0;
         int stoneTops = 0;
         BlockPos standOn = null;
+        int size = (2 * AREA_CHUNKS + 1) * 16;
+        char[][] topView = new char[size][size];
         for (int dx = -AREA_CHUNKS; dx <= AREA_CHUNKS; dx++) {
             for (int dz = -AREA_CHUNKS; dz <= AREA_CHUNKS; dz++) {
                 LevelChunk chunk = end.getChunk(cx + dx, cz + dz);
@@ -188,12 +190,16 @@ public final class WorldgenSurvey {
                             nebulaColumns++;
                         }
                         Block top = null;
+                        Block firstSeen = null;
                         for (int y = end.getMaxY(); y >= end.getMinY(); y--) {
                             BlockState state = chunk.getBlockState(new BlockPos(bx, y, bz));
                             if (state.isAir()) {
                                 continue;
                             }
                             counts.merge(state.getBlock(), 1, Integer::sum);
+                            if (firstSeen == null) {
+                                firstSeen = state.getBlock();
+                            }
                             if (inNebula) {
                                 nebulaCounts.merge(state.getBlock(), 1, Integer::sum);
                             }
@@ -204,6 +210,7 @@ public final class WorldgenSurvey {
                                 }
                             }
                         }
+                        topView[((dz + AREA_CHUNKS) << 4) + z][((dx + AREA_CHUNKS) << 4) + x] = topSymbol(firstSeen, inNebula);
                         if (top != null && inNebula) {
                             columnsWithLand++;
                             if (top == ModBlocks.NEBULA_MOSS.get()) {
@@ -228,6 +235,11 @@ public final class WorldgenSurvey {
             + ", with land: " + columnsWithLand);
         log("Top block of Nebula Fields land: Nebula Moss " + mossTops + ", bare End Stone " + stoneTops);
         double chunksWithLand = columnsWithLand / 256.0;
+        log("Top-down view of the surveyed area (" + size + " x " + size + " blocks, north up), what you'd see from above:");
+        log("  ' ' void  e/E End Stone (outside/inside Nebula Fields)  m Nebula Moss  L Lumineshroom  S Starbloom  V Astral Vine  c chorus");
+        for (char[] row : topView) {
+            log("  |" + new String(row) + "|");
+        }
         log(String.format("Inside Nebula Fields (~%.0f chunks of land): Nebula Moss %d, Lumineshroom %d (%.1f/chunk), Starbloom %d (%.1f/chunk), "
             + "Astral Vines %d (+%d body blocks, %.1f/chunk), chorus %d", chunksWithLand, moss, shrooms, shrooms / chunksWithLand, blooms,
             blooms / chunksWithLand, vineTips, vineBody, vineTips / chunksWithLand, chorus));
@@ -285,6 +297,17 @@ public final class WorldgenSurvey {
         } else {
             failures.add("found no Nebula Moss surface to test gravity on");
         }
+    }
+
+    private static char topSymbol(Block block, boolean inNebula) {
+        if (block == null) return ' ';
+        if (block == ModBlocks.NEBULA_MOSS.get()) return 'm';
+        if (block == ModBlocks.LUMINESHROOM.get()) return 'L';
+        if (block == ModBlocks.STARBLOOM.get()) return 'S';
+        if (block == ModBlocks.ASTRAL_VINE.get() || block == ModBlocks.ASTRAL_VINE_PLANT.get()) return 'V';
+        if (block == Blocks.CHORUS_PLANT || block == Blocks.CHORUS_FLOWER) return 'c';
+        if (block == Blocks.END_STONE) return inNebula ? 'E' : 'e';
+        return '#';
     }
 
     private static long distSqr(BlockPos pos) {
