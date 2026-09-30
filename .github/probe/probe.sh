@@ -1,32 +1,24 @@
 #!/usr/bin/env bash
-# Temporary: second Phase 3 probe.
+# Temporary: third Phase 3 probe.
 set +e
 SRC=$(find .gradle/mavenizer/repo -name '*-sources.jar' | head -1)
-mkdir -p /tmp/src && unzip -qo "$SRC" -d /tmp/src
+ASSETS=$(find .gradle/mavenizer/repo/net/minecraft/client-extra -name '*.jar' | head -1)
+mkdir -p /tmp/src /tmp/assets && unzip -qo "$SRC" -d /tmp/src && unzip -qo "$ASSETS" -d /tmp/assets
+D=/tmp/assets/data/minecraft/worldgen
+for f in density_function/end/islands.json density_function/overworld/base_3d_noise.json biome/basalt_deltas.json biome/small_end_islands.json; do echo "=== DATA $f"; tr -s ' \n' ' ' < $D/$f | head -c 3000; echo; done
 cd /tmp/src
-showf() { f=$(find . -name "$1" | head -1); echo "=== FILE $f"; grep -v '^import' "$f" | head -${2:-400}; echo "=== END $1"; }
-f=$(find . -name LevelExtractor.java | head -1); echo "=== $f"; sed -n 400,500p "$f"
-grep -rn -B2 -A12 'getViewBlockingState' --include=*.java net/minecraft/client | head -60
-sed -n 100,150p net/minecraft/client/Camera.java
-echo "=== ENTITY canUsePortal"; sed -n 3330,3350p net/minecraft/world/entity/Entity.java
-grep -n -A8 'public boolean canUsePortal\|public boolean canChangeDimensions' net/minecraft/server/level/ServerPlayer.java net/minecraft/world/entity/player/Player.java
-grep -n -B3 -A3 'noPhysics\|isSpectator' net/minecraft/world/entity/Entity.java | sed -n 1,80p
-echo "=== SERVERLEVEL dragon"; sed -n 290,305p net/minecraft/server/level/ServerLevel.java
-grep -rn 'static void createEndPlatform\|public static void createEndPlatform' --include=*.java . 
-find . -name 'DensityFunction.java' -o -name 'DensityFunctions.java' -o -name 'Feature.java' -o -name 'FeaturePlaceContext.java' -o -name 'NoneFeatureConfiguration.java' -o -name 'FMLJavaModLoadingContext.java' -o -name 'BlockEntityType.java' | head -20
-showf DensityFunction.java 200
-f=$(find . -name DensityFunctions.java | head -1)
-grep -n -E 'register\(|HOLDER_HELPER_CODEC|DIRECT_CODEC|class EndIslandDensityFunction|record Clamp|record Ap2|interface PureTransformer|record RangeChoice|static .*Codec.*makeCodec|KeyDispatchDataCodec' "$f" | head -80
-grep -n -A45 'class EndIslandDensityFunction' "$f" | head -80
-grep -n -A40 'record RangeChoice' "$f" | head -60
-f=$(find . -name Feature.java -path '*levelgen*' | head -1); grep -n -E 'public Feature\(|abstract boolean place|public .*place\(|static final Feature<NoneFeatureConfiguration> (END_ISLAND|BLUE_ICE|END_PLATFORM)' "$f"
-f=$(find . -name FeaturePlaceContext.java | head -1); grep -v '^import' "$f"
-f=$(find . -name EndIslandFeature.java | head -1); grep -v '^import' "$f"
-f=$(find . -name NoneFeatureConfiguration.java | head -1); grep -n 'CODEC\|INSTANCE\|package' "$f"
-f=$(find . -name FMLJavaModLoadingContext.java | head -1); grep -n 'public' "$f"
-grep -rn 'BLOCK_ENTITY_TYPES\b' net/minecraftforge/registries/ForgeRegistries.java
-showf BaseEntityBlock.java 80
-grep -n -E 'public .* getEntitiesOfClass\(' net/minecraft/world/level/Level.java net/minecraft/world/level/EntityGetter.java
-grep -n -E 'record TargetPoint|interface Sampler|record Sampler|DensityFunction (temperature|humidity|continentalness|erosion|depth|weirdness)' net/minecraft/world/level/biome/Climate.java | head
-grep -n -E 'public record NoiseRouter|DensityFunction ' net/minecraft/world/level/levelgen/NoiseRouter.java | head -20
-grep -rn -E '"(range_choice|end_islands|noise|shifted_noise|y_clamped_gradient|gradient|lerp|clamp|abs|min|max|add|mul|cache_2d|flat_cache|interpolated|spline|constant)"' --include=*.java net/minecraft/world/level/levelgen | head -40
+showf() { f=$(find . -name "$1" | head -1); echo "=== FILE $f"; grep -v '^import' "$f" | head -${2:-200}; echo "=== END $1"; }
+showf Feature.java 120
+grep -n -E 'FEATURE_TYPE|feature_type|FEATURE =' net/minecraft/core/registries/Registries.java net/minecraft/core/registries/BuiltInRegistries.java
+f=$(grep -rl 'EndIslandFeature.CODEC' --include=*.java . | head -1); echo "=== REG $f"; grep -n -B2 -A2 'EndIslandFeature.CODEC\|static .* register(' "$f" | head -30
+for c in DistanceToPointFunction EndIslandFunction GradientFunction LerpFunction RangeChoiceFunction NoiseFunction ClampFunction; do
+  f=$(find . -name "$c.java" | head -1); echo "=== CODEC $c"; grep -n -A8 'MapCodec<.*CODEC' "$f" | head -14; done
+showf EndPlatformFeature.java 60
+grep -n -E 'getEntitiesOfClass|getEntities\(' net/minecraft/world/level/EntityGetter.java net/minecraft/world/level/Level.java | head
+f=$(find . -name IRenderCallback.java | head -1); echo "=== $f"; grep -v '^import' "$f"
+grep -rn 'interface BlockEntityTicker' -A3 --include=*.java net/minecraft | head
+grep -n -E 'public (static )?.*(isSpectator|animateTick)' net/minecraft/world/level/block/Block.java | head
+cd -
+EB=$(find ~/.gradle/caches -name 'eventbus-*.jar' ! -name '*sources*' | head -3); echo "EB=$EB"
+for j in $EB; do for c in net/minecraftforge/eventbus/api/bus/CancellableEventBus net/minecraftforge/eventbus/api/bus/EventBus; do javap -cp "$j" "$c" 2>/dev/null; done; done
+FML=$(find ~/.gradle/caches .gradle -name 'javafmllanguage*.jar' ! -name '*sources*' | head -1); echo "FML=$FML"; javap -cp "$FML" net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext 2>/dev/null

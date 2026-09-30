@@ -435,6 +435,168 @@ def worldgen():
     lang[f"biome.{NS}.nebula_fields"] = "Nebula Fields"
 
 
+# ------------------------------------------------------------------ world generation (Phase 3)
+#
+# Five more biomes. The biome source (AstralRegions.java) picks them from two region noises; our
+# terrain density function reshapes islands in some of them (flat shelves, rings, debris); the
+# material rule gives each its stone; and the features below decorate them.
+
+def ore(name, block, target, size, discard=0.0):
+    feature(name, {"type": "minecraft:ore", "discard_chance_on_air_exposure": discard, "size": size,
+                   "targets": [{"state": rid(block),
+                                "target": {"predicate_type": "minecraft:block_match", "block": target}}]})
+
+
+def placed_ore(name, feature_name, count, min_y=0, max_y=128):
+    placed(name, {"feature": rid(feature_name), "placement": [
+        {"type": "minecraft:count", "count": count},
+        {"type": "minecraft:in_square"},
+        {"type": "minecraft:height_range", "height": {"type": "minecraft:uniform",
+                                                      "max_inclusive": {"absolute": max_y},
+                                                      "min_inclusive": {"absolute": min_y}}},
+        {"type": "minecraft:biome"},
+    ]})
+
+
+def surface_feature(name, feature_name, rarity=1, count=1, y_offset=0, extra=None):
+    """Placed on the island surface of random columns (like vanilla's forest rocks)."""
+    placement = []
+    if rarity > 1:
+        placement.append({"type": "minecraft:rarity_filter", "chance": rarity})
+    if count != 1:
+        placement.append({"type": "minecraft:count", "count": count})
+    placement += [{"type": "minecraft:in_square"},
+                  {"type": "minecraft:heightmap", "heightmap": "WORLD_SURFACE_WG"}]
+    if y_offset:
+        placement.append({"type": "minecraft:random_offset", "xz_spread": 0, "y_spread": y_offset})
+    placement += (extra or []) + [{"type": "minecraft:biome"}]
+    placed(name, {"feature": rid(feature_name), "placement": placement})
+
+
+def java_feature(name):
+    """A feature coded in Java (world/feature/*.java), with no settings."""
+    feature(name, {"type": rid(name)})
+
+
+def end_biome(name, english, fog, water, features_step4=(), features_step7=(), features_step9=(),
+              particle=None, particle_chance=0.0):
+    attributes = {
+        "minecraft:gameplay/natural_mob_spawns": {"argument": {"spawn_costs": {}, "spawns_by_category": {
+            "monster": [{"type": "minecraft:enderman", "count": 4, "weight": 10}]}}, "modifier": "overlay"},
+        "minecraft:visual/fog_color": fog,
+    }
+    if particle:
+        attributes["minecraft:visual/ambient_particles"] = {"argument": [
+            {"particle": {"type": particle}, "probability": particle_chance}], "modifier": "append"}
+    steps = [[] for _ in range(10)]
+    steps[4] = ["minecraft:end_gateway_return"] + list(features_step4)
+    steps[7] = list(features_step7)   # underground ores
+    steps[9] = list(features_step9)   # vegetation
+    write(WG / "biome" / f"{name}.json", {
+        "attributes": attributes, "carvers": [], "downfall": 0.5, "effects": {"water_color": water},
+        "features": steps, "has_precipitation": False, "temperature": 0.5,
+    })
+    tag("worldgen/biome", "minecraft:is_end", rid(name))
+    lang[f"biome.{NS}.{name}"] = english
+
+
+def worldgen_phase3():
+    air = {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"}
+
+    # ---- Aurora Shallows: Pale End Stone shelves, Shimmer Grass, standing stones, bone ribs
+    plant_patch("aurora_shimmer_grass", "shimmer_grass", rarity=1, count=40, spread=7)
+    feature("standing_stone", {"type": "minecraft:block_column", "allowed_placement": air, "direction": "up",
+                               "layers": [{"height": {"type": "minecraft:uniform", "min_inclusive": 2, "max_inclusive": 4},
+                                           "provider": {"type": "minecraft:weighted_state_provider", "entries": [
+                                               {"data": {"Name": rid("pale_end_stone_bricks")}, "weight": 3},
+                                               {"data": {"Name": rid("pale_end_stone")}, "weight": 2},
+                                               {"data": {"Name": rid("pale_end_stone_tiles")}, "weight": 1}]}}],
+                               "prioritize_tip": False})
+    surface_feature("aurora_standing_stones", "standing_stone", rarity=5,
+                    extra=[{"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
+                        air, {"type": "minecraft:matching_blocks", "blocks": [rid("pale_end_stone")], "offset": [0, -1, 0]}]}}])
+    feature("leviathan_rib", {"type": "minecraft:block_column", "allowed_placement": air, "direction": "up",
+                              "layers": [{"height": {"type": "minecraft:uniform", "min_inclusive": 3, "max_inclusive": 7},
+                                          "provider": {"id": rid("leviathan_bone_block"), "properties": {"axis": "y"}}}],
+                              "prioritize_tip": False})
+    placed("aurora_leviathan_ribs", {"feature": rid("leviathan_rib"), "placement": [
+        {"type": "minecraft:rarity_filter", "chance": 9},
+        {"type": "minecraft:in_square"},
+        {"type": "minecraft:heightmap", "heightmap": "WORLD_SURFACE_WG"},
+        {"type": "minecraft:count", "count": 5},
+        {"type": "minecraft:offset", "x": trapezoid(4), "y": trapezoid(1), "z": trapezoid(4)},
+        {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
+            air, {"type": "minecraft:matching_blocks", "blocks": [rid("pale_end_stone")], "offset": [0, -1, 0]}]}},
+        {"type": "minecraft:biome"},
+    ]})
+    end_biome("aurora_shallows", "Aurora Shallows", fog="#1f3b4d", water="#5fc8c2",
+              features_step4=[rid("aurora_standing_stones"), rid("aurora_leviathan_ribs")],
+              features_step9=[rid("aurora_shimmer_grass")], particle="minecraft:end_rod", particle_chance=0.0006)
+
+    # ---- Comet Wake: Charred End Stone, Stardust veins, Comet Ice, Comet Cores, Comet Cress
+    ore("stardust_vein", "stardust_block", rid("charred_end_stone"), size=14)
+    placed_ore("comet_wake_stardust_veins", "stardust_vein", count=7, min_y=20, max_y=80)
+    feature("comet_ice_shard", {"type": "minecraft:block_blob",
+                                "can_place_on": {"type": "minecraft:matching_blocks", "blocks": [rid("charred_end_stone")]},
+                                "state": rid("comet_ice")})
+    surface_feature("comet_wake_ice_shards", "comet_ice_shard", rarity=3)
+    java_feature("comet_core")
+    surface_feature("comet_wake_comet_cores", "comet_core", rarity=6)
+    java_feature("stardust_underhang")
+    placed("comet_wake_stardust_underhangs", {"feature": rid("stardust_underhang"), "placement": [
+        {"type": "minecraft:count", "count": 3}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
+    end_biome("comet_wake", "Comet Wake", fog="#2d2533", water="#8f7fb0",
+              features_step4=[rid("comet_wake_comet_cores"), rid("comet_wake_ice_shards")],
+              features_step7=[rid("comet_wake_stardust_veins")],
+              features_step9=[rid("comet_wake_stardust_underhangs")], particle="minecraft:ash", particle_chance=0.004)
+
+    # ---- Dark Matter Belt: Umbral Stone rings, Void Crystal Ore, gravity inversion pockets
+    ore("void_crystal_vein", "void_crystal_ore", rid("umbral_stone"), size=5, discard=0.5)
+    placed_ore("dark_matter_void_crystal", "void_crystal_vein", count=9, min_y=10, max_y=90)
+    java_feature("inversion_pocket")
+    placed("dark_matter_inversion_pockets", {"feature": rid("inversion_pocket"), "placement": [
+        {"type": "minecraft:rarity_filter", "chance": 3}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
+    end_biome("dark_matter_belt", "Dark Matter Belt", fog="#07060b", water="#1a1030",
+              features_step4=[rid("dark_matter_inversion_pockets")],
+              features_step7=[rid("dark_matter_void_crystal")])
+
+    # ---- Shattered Observatory: quartz ruins, overgrown with vines and Starblooms
+    java_feature("observatory_ruin")
+    surface_feature("observatory_ruins", "observatory_ruin", rarity=2)
+    plant_patch("observatory_starblooms", "starbloom", rarity=1, count=24, spread=6)
+    placed("observatory_astral_vines", {"feature": rid("astral_vine"), "placement": [
+        {"type": "minecraft:in_square"},
+        {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"},
+        {"type": "minecraft:biome"},
+        {"type": "minecraft:count", "count": 12},
+        {"type": "minecraft:offset", "x": trapezoid(6), "y": trapezoid(2), "z": trapezoid(6)},
+        {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
+            air, {"type": "minecraft:matching_blocks", "blocks": ["minecraft:end_stone", rid("observatory_quartz")],
+                  "offset": [0, -1, 0]}]}},
+    ]})
+    end_biome("shattered_observatory", "Shattered Observatory", fog="#262a47", water="#6b7fd6",
+              features_step4=[rid("observatory_ruins")],
+              features_step9=["minecraft:chorus_plant", rid("observatory_starblooms"), rid("observatory_astral_vines")],
+              particle="minecraft:enchant", particle_chance=0.002)
+
+    # ---- The Corona: Sunscorched Stone over Charred End Stone; Solarite; adapted and dead life
+    ore("solarite_surface_vein", "solarite_ore", rid("sunscorched_stone"), size=8)
+    surface_feature("corona_solarite_surface", "solarite_surface_vein", count=5, y_offset=-3)
+    ore("solarite_deep_vein", "solarite_ore", rid("charred_end_stone"), size=3)
+    placed_ore("corona_solarite_deep", "solarite_deep_vein", count=2, min_y=10, max_y=70)
+    plant_patch("corona_flareblooms", "flarebloom", rarity=2, count=14, spread=6)
+    plant_patch("corona_sunscale_lichen", "sunscale_lichen", rarity=1, count=36, spread=7)
+    plant_patch("corona_ashen_lumineshrooms", "ashen_lumineshroom", rarity=2, count=10, spread=5)
+    plant_patch("corona_petrified_vines", "petrified_astral_vine", rarity=3, count=6, spread=5)
+    plant_patch("corona_pollinator_husks", "pollinator_husk", rarity=12, count=2, spread=3, vertical=1)
+    end_biome("corona", "The Corona", fog="#4a2616", water="#d9823b",
+              features_step7=[rid("corona_solarite_deep")],
+              features_step4=[rid("corona_solarite_surface")],
+              features_step9=[rid("corona_sunscale_lichen"), rid("corona_flareblooms"), rid("corona_ashen_lumineshrooms"),
+                              rid("corona_petrified_vines"), rid("corona_pollinator_husks")],
+              particle="minecraft:white_ash", particle_chance=0.01)
+
+
 def main():
     # Clear previously generated folders so renamed/removed content doesn't linger.
     for folder in (ASSETS / "blockstates", ASSETS / "models", ASSETS / "items", DATA / "loot_table",
@@ -677,6 +839,7 @@ def main():
                                          "result": {"id": "minecraft:yellow_dye"}})
 
     worldgen()
+    worldgen_phase3()
 
     # ---------------------------------------------------------------- write tags + lang
     for (registry, name), values in tags.items():

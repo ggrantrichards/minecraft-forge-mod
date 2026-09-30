@@ -1,0 +1,41 @@
+{
+  "type": "minecraft:block_column",
+  "allowed_placement": {
+    "type": "minecraft:matching_block_tag",
+    "tag": "minecraft:air"
+  },
+  "direction": "up",
+  "layers": [
+    {
+      "height": {
+        "type": "minecraft:uniform",
+        "min_inclusive": 2,
+        "max_inclusive": 4
+      },
+      "provider": {
+        "type": "minecraft:weighted_state_provider",
+        "entries": [
+          {
+            "data": {
+              "Name": "astralend:pale_end_stone_bricks"
+            },
+            "weight": 3
+          },
+          {
+            "data": {
+              "Name": "astralend:pale_end_stone"
+            },
+            "weight": 2
+          },
+          {
+            "data": {
+              "Name": "astralend:pale_end_stone_tiles"
+            },
+            "weight": 1
+          }
+        ]
+      }
+    }
+  ],
+  "prioritize_tip": false
+}

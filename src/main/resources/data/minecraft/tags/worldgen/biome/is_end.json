@@ -1,6 +1,11 @@
 {
   "replace": false,
   "values": [
-    "astralend:nebula_fields"
+    "astralend:aurora_shallows",
+    "astralend:comet_wake",
+    "astralend:corona",
+    "astralend:dark_matter_belt",
+    "astralend:nebula_fields",
+    "astralend:shattered_observatory"
   ]
 }
