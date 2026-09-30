@@ -25,13 +25,13 @@ These are in-game screenshots taken on every build:
 | Mob | Where | What it does | Leaves behind |
 |---|---|---|---|
 | **End Pollinator** | Nebula Fields, Aurora Shallows | A little jellyfish-like drifter. Floats between glowing plants and hovers over them; a pollinated plant spreads to the ground beside it. Starblooms tempt it and make it breed. | **Glowing Spores**, every 5-10 minutes, like a chicken lays eggs. Killing it drops nothing. |
-| **Void Wanderer** | Dark Matter Belt, Shattered Observatory | An old survey probe. It floats over and scans you: **stand still for 5 seconds** and it drops a **Data Shard** and leaves. Each one scans each player once. Hit it and it fires laser pulses back and teleports away when hurt. | Data Shard (for letting it scan you); a **Cracked Lens** if killed |
-| **Umbral Stalker** | Dark Matter Belt (hostile) | Almost invisible: a faint shimmer. It creeps up **while your back is turned** and backs off when you face it. Hits hard and throws you away from it - toward the void, near an edge. Light reveals it (block light 7+: Null Lanterns, Spore Lanterns, torches). | **Umbral Membrane** |
+| **Void Wanderer** | Dark Matter Belt, Shattered Observatory | An old bronze survey drone with a glass lens and a spinning gimbal ring. It floats over and scans you: **stand still for 5 seconds** and it drops a **Data Shard** and leaves. Each one scans each player once. Hit it and it fires laser pulses back and teleports away when hurt. | Data Shard (for letting it scan you); a **Cracked Lens** if killed |
+| **Umbral Stalker** | Dark Matter Belt (hostile) | A horned shadow with bone claws, glowing eyes and an eclipse sigil on its chest - but almost invisible: a faint shimmer. It creeps up **while your back is turned** and backs off when you face it. Hits hard and throws you away from it - toward the void, near an edge. Light reveals it (block light 7+: Null Lanterns, Spore Lanterns, torches). | **Umbral Membrane** |
 | **Cinder Mite** | The Corona (hostile) | Glowing burrowers that come in swarms of about four, set you on fire, and burrow back into the stone after a minute. Immune to fire; **water kills them** in about two seconds. | **Cinder**, a fuel (smelts 4 items) |
 | **Corona Skimmer** | The Corona | A flat manta that rests on the ground looking like stone, then lifts off and glides in wide circles. **Shear it** while its wings shimmer for **Skimmer Film**; the wings grow back. | Skimmer Film (sheared, not killed) |
 | **Black Hole Guardian** | Dark Matter Belt, Comet Wake (rare, one at a time) | A small singularity that pulls you and your dropped items in. Items it swallows are **kept, not destroyed**: it drops them when it dies or collapses (after 2-3 minutes). You can only hurt it while its ring **flickers**. | **Singularity Shard**, only from a kill |
 | **Drift Whale** | The void, most often over the Aurora Shallows (one at a time) | A huge translucent whale that swims slowly through the void, turns toward you and hums. Nothing can hurt it. Very rarely sheds a glowing **Whalelight Scale**. | Three advancements: *Something Big Out There*, *Whale Song*, *Tagalong* |
-| **The Watcher** | Shattered Observatory (only when you're alone) | A tall silhouette at the edge of sight, there for a few seconds. Walk toward it and it's gone. **Catch it in a spyglass** and it vanishes too, leaving you a **Star Chart**. | Star Chart, and the advancement *Something Looks Back* |
+| **The Watcher** | Shattered Observatory (only when you're alone) | A tall hooded figure in a robe stitched with constellations, at the edge of sight, there for a few seconds. Walk toward it and it's gone. **Catch it in a spyglass** and it vanishes too, leaving you a **Star Chart**. | Star Chart, and the advancement *Something Looks Back* |
 
 New blocks and items from the mobs:
 
@@ -423,6 +423,14 @@ building blocks for this; `hq.py` shows them in use.
   edge and a darker bottom/right (`chunks()`, `cell_light()`, `shadow_below()`, `ore()`).
 - **Deliberate details:** ore nuggets, pits, cracks and glints go in hand-picked places, a few
   of each; plants are drawn blade by blade or petal by petal, not stamped from noise.
+- **Check it in a scene, not just as a square.** `python3 tools/textures/scene.py` draws blocks
+  in little scenes (a giant mushroom on moss, the Corona's ground), up close and from a distance
+  (`docs/images/texture_scenes.png`). A colour or pattern that looks fine in one square can look
+  like mould or a grid across a hillside.
+- **Mobs follow vanilla's design language:** chunky, symmetric, mostly axis-aligned boxes (use
+  inflated overlay boxes and flat planes for detail, like the Illager's robe and the Warden's
+  tendrils); mostly flat colour fields with 3-4 tones; a few strong focal features (a readable
+  face, a trim, a glowing pattern). Compare against vanilla mobs of a similar role before drawing.
 - **Check it tiled and in the world.** `make_textures.py` writes `docs/images/textures.png`
   and `docs/images/textures_tiled.png` (3×3 tiling shows seams and repetition). A texture that
   covers the ground must stay calm from a distance: high-contrast lines or bright dots turn into
