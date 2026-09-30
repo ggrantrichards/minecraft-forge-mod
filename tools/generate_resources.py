@@ -402,7 +402,7 @@ def terrain():
     nebula, belt, ruin = rid("region/nebula"), rid("region/belt"), rid("region/ruin")
     df("region/nebula", {"type": "minecraft:noise", "noise": "minecraft:vegetation", "xz_scale": 0.25, "y_scale": 0.0})
     df("region/belt", {"type": "minecraft:noise", "noise": "minecraft:temperature", "xz_scale": 1.0, "y_scale": 0.0})
-    df("region/ruin", {"type": "minecraft:noise", "noise": "minecraft:ridge", "xz_scale": 0.5, "y_scale": 0.0})
+    df("region/ruin", {"type": "minecraft:noise", "noise": "minecraft:ridge", "xz_scale": 0.12, "y_scale": 0.0})
 
     # Weights (0..1) of each reshaped biome. They are 0 within 1,024 blocks of the centre, so the
     # main island and the gap around it are exactly vanilla.
@@ -414,7 +414,6 @@ def terrain():
     df("terrain/weight/aurora_shallows", mul(rid("terrain/outer"), mul(cold, ramp(belt, REGION_COLD_BELT))))
     df("terrain/weight/comet_wake", mul(rid("terrain/outer"), mul(cold, ramp(mul(belt, -1.0), REGION_COLD_BELT))))
     df("terrain/weight/dark_matter_belt", mul(rid("terrain/outer"), mul(middle, ramp(belt, REGION_MID_BELT))))
-    df("terrain/weight/corona", mul(rid("terrain/outer"), mul(middle, ramp(mul(belt, -1.0), REGION_MID_BELT))))
 
     islands, noise = "minecraft:end/islands", "minecraft:end/base_3d_noise"
 
@@ -436,12 +435,8 @@ def terrain():
     df("terrain/dark_matter_belt", sub(add("minecraft:end/sloped_cheese", mul(noise, 0.5)),
                                        mul(dmax(add(islands, -0.2), 0.0), 6.0)))
 
-    # The Corona: smoother, lower-relief islands with few overhangs (less 3D noise), so there's
-    # little natural shelter from the flares.
-    df("terrain/corona", add(islands, mul(noise, 0.35)))
-
     shaped = "minecraft:end/sloped_cheese"
-    for biome in ("corona", "dark_matter_belt", "comet_wake", "aurora_shallows"):
+    for biome in ("dark_matter_belt", "comet_wake", "aurora_shallows"):
         shaped = lerp(rid(f"terrain/weight/{biome}"), shaped, rid(f"terrain/{biome}"))
     df("terrain/shaped", shaped)
 

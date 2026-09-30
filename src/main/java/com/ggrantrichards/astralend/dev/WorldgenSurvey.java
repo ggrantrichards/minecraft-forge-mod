@@ -296,6 +296,7 @@ public final class WorldgenSurvey {
         final Map<Block, Integer> topsIn = new HashMap<>();
         final Map<Integer, Integer> surfaceHeightsIn = new HashMap<>();
         final List<BlockPos> anomalies = new ArrayList<>();
+        final List<String> profiles = new ArrayList<>();
         BlockPos standOn;
         int columnsIn;
         int landColumnsIn;
@@ -336,6 +337,7 @@ public final class WorldgenSurvey {
             }
             log(String.format("%s: %d columns in the biome, %d with land (~%.0f chunks). Blocks found%s", this.info.name(),
                 this.columnsIn, this.landColumnsIn, this.landChunks(), line));
+            this.profiles.forEach(p -> log(this.info.name() + " column " + p));
         }
     }
 
@@ -361,9 +363,21 @@ public final class WorldgenSurvey {
                         }
                         Block firstSeen = null;
                         Block top = null;
+                        boolean sample = inside && x == 8 && z == 8 && (dx + dz) % 2 == 0 && area.profiles.size() < 8;
+                        StringBuilder profile = sample ? new StringBuilder(bx + "," + bz + " solid at y:") : null;
+                        int runTop = Integer.MIN_VALUE;
                         for (int y = end.getMaxY(); y >= end.getMinY(); y--) {
                             BlockPos pos = new BlockPos(bx, y, bz);
                             BlockState state = chunk.getBlockState(pos);
+                            if (profile != null) {
+                                // Record solid runs as "top-bottom" pairs.
+                                if (!state.isAir() && runTop == Integer.MIN_VALUE) {
+                                    runTop = y;
+                                } else if (state.isAir() && runTop != Integer.MIN_VALUE) {
+                                    profile.append(' ').append(runTop).append('-').append(y + 1);
+                                    runTop = Integer.MIN_VALUE;
+                                }
+                            }
                             if (state.isAir()) {
                                 continue;
                             }
@@ -384,6 +398,13 @@ public final class WorldgenSurvey {
                                     }
                                 }
                             }
+                        }
+                        if (profile != null) {
+                            if (runTop != Integer.MIN_VALUE) {
+                                profile.append(' ').append(runTop).append('-').append(end.getMinY());
+                            }
+                            profile.append(", heightmap ").append(end.getHeight(Heightmap.Types.WORLD_SURFACE_WG, bx, bz));
+                            area.profiles.add(profile.toString());
                         }
                         char symbol = topSymbol(firstSeen);
                         area.topView[((dz + radius) << 4) + z][((dx + radius) << 4) + x] =

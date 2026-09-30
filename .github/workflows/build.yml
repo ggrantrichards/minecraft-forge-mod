@@ -49,6 +49,9 @@ jobs:
           printf "level-seed=astralend-ci\nlevel-name=survey-world\nonline-mode=false\n" > run/server.properties
           timeout 800 ./gradlew runServer -PastralendSurvey > survey-console.log 2>&1 || true
           cp run/logs/latest.log survey.log
+          echo "--- server warnings and errors during the survey:"
+          grep -nE "/(WARN|ERROR)\]|Exception|Caused by" survey.log | grep -v "Cache miss" | head -60 || true
+          echo "---"
           grep "AstralEnd survey" survey.log | sed 's/.*\[AstralEnd survey\] //' || { tail -60 survey-console.log; exit 1; }
           if grep -E "(WARN|ERROR).*astralend" survey.log; then echo "::error::the survey server logged problems with astralend"; exit 1; fi
           grep -q "SURVEY PASSED" survey.log || { echo "::error::the worldgen survey failed (see above)"; exit 1; }
