@@ -250,6 +250,9 @@ public final class WorldgenSurvey {
             area.print();
         }
 
+        diagnosePlants(end, generator, areas.get('A'), "aurora_shimmer_grass");
+        diagnosePlants(end, generator, areas.get('C'), "corona_sunscale_lichen");
+        diagnosePlants(end, generator, areas.get('C'), "corona_flareblooms");
         checkNebula(areas.get('N'), failures);
         checkAurora(areas.get('A'), failures);
         checkCometWake(areas.get('W'), failures);
@@ -257,6 +260,39 @@ public final class WorldgenSurvey {
         checkObservatory(areas.get('R'), failures);
         checkCorona(areas.get('C'), failures);
         checkLowGravity(areas.get('N'), vanillaSpot, end, failures);
+    }
+
+    // Tries the biome's plants by hand on its surface and reports what happens (to explain a failure).
+    private static void diagnosePlants(ServerLevel end, ChunkGenerator generator, Area area, String placedFeature) {
+        if (area == null || area.standOn == null) {
+            return;
+        }
+        BlockPos pos = area.standOn;
+        BlockState ground = end.getBlockState(pos.below());
+        StringBuilder line = new StringBuilder("Plant check at " + pos.toShortString() + " on " + ground.getBlock().getName().getString()
+            + " (in #astralend:astral_soil: " + ground.is(ModBlocks.ASTRAL_SOIL) + ", here: " + end.getBlockState(pos).getBlock().getName().getString() + "):");
+        for (Block plant : new Block[] {ModBlocks.SHIMMER_GRASS.get(), ModBlocks.SUNSCALE_LICHEN.get(), ModBlocks.FLAREBLOOM.get(),
+            ModBlocks.ASHEN_LUMINESHROOM.get(), ModBlocks.LUMINESHROOM.get()}) {
+            line.append(' ').append(plant.getName().getString()).append(" survives=").append(plant.defaultBlockState().canSurvive(end, pos));
+        }
+        log(line.toString());
+        var registry = end.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.PLACED_FEATURE);
+        var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.PLACED_FEATURE,
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("astralend", placedFeature));
+        var feature = registry.get(key);
+        if (feature.isEmpty()) {
+            log("Plant check: placed feature " + placedFeature + " is NOT in the registry");
+            return;
+        }
+        int placed = 0;
+        for (int i = 0; i < 20; i++) {
+            if (feature.get().value().place(end, generator, end.getRandom(), pos.below(pos.getY()))) {
+                placed++;
+            }
+        }
+        log("Plant check: placed feature " + placedFeature + " placed something " + placed + "/20 times when run by hand at "
+            + pos.getX() + ", " + pos.getZ() + "; biome there has it: "
+            + generator.getBiomeGenerationSettings(end.getBiome(pos)).hasFeature(feature.get().value()));
     }
 
     // Among the candidate spots nearest the centre, the one with the most land (by terrain height,
