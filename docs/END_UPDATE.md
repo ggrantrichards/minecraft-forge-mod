@@ -49,8 +49,9 @@ Echo Logs and the behaviour of mobs.
   - the **Dark Matter Belts**, where space itself is bruised;
   - the **Void Comets**, fragments of the dead star, still orbiting;
   - the **Black Hole Guardians**, small tears that open and close on their own;
-  - the **Stellar Flares**: the dead star's remnant still pulses, washing the End in
-    storms every few days.
+  - **the Remnant**: the dead star's ember still hangs over one far region of the End.
+    It pulses, and its **Stellar Flares** scorch the islands nearest to it, the
+    **Corona**. Life there either learned to feed on the flares or died out.
 - **The Ender Dragon** is not a villain. It is the last warden of the broken crossroads,
   set to stop anyone from walking the star road again.
 - **Endermen** are descendants of the Cartographers' workers. They still carry blocks
@@ -79,7 +80,7 @@ Vanilla facts it hooks into:
 
 | Vanilla fact | How the Astral End explains or uses it |
 |---|---|
-| The End has **no day/night cycle, no weather**, and a static sky texture | The sky is the dead star's afterimage. Stellar Flares become the End's only weather; the sky moves only very slowly. |
+| The End has **no day/night cycle, no weather**, and a static sky texture | Unchanged across almost all of the End: no weather, a sky that moves only very slowly. The one exception is the **Corona** biome, near the Remnant, which has Stellar Flares. |
 | **Compasses and clocks spin** in the End; **beds explode** | Space here is "bent" by the collapse. Starblooms are the only thing that points reliably (to the central island). Beds still explode. |
 | **Endermen** carry blocks, teleport, hate eye contact, take damage from water, and make garbled, distorted "speech" sounds | They are the Cartographers' old workers, still moving blocks toward a rebuild nobody remembers. Eye contact was forbidden to workers (a Cartographer taboo mentioned in Echo Logs). Their garbled sounds are a degraded version of Cartographer speech, and **Echo Logs use the same distorted sound** when read. Water was never part of the star road. |
 | The End is where Endermen spawn most; they **never attack the dragon** | They see the dragon as part of the crossroads they serve. |
@@ -110,7 +111,7 @@ in four biomes: Highlands, Midlands, Barrens and Small Islands.
 - **The central island is untouched.** The dragon fight stays vanilla.
 - The first **~1,000 blocks** of outer End keep the vanilla biomes, so End Cities and
   elytra hunting feel the same as always.
-- Beyond that, the outer End becomes a **patchwork of vanilla biomes and five new astral
+- Beyond that, the outer End becomes a **patchwork of vanilla biomes and six new astral
   biomes**, placed by a noise map. New biomes get rarer the further they are from the
   vanilla feel.
 - **Void is still the dominant biome.** New biomes never raise island density above
@@ -126,6 +127,7 @@ in four biomes: Highlands, Midlands, Barrens and Small Islands.
 | **Comet Wake** | Uncommon | Scarred, sparkling | Stardust, Meteoric Iron, craters, live comets |
 | **Dark Matter Belt** | Rare | Tense, dim, disorienting | Void Crystal, gravity inversion, danger |
 | **Shattered Observatory** | Very rare | Ancient, sacred | Lore, Wormhole Maws, Constellation Mazes, the Watcher |
+| **The Corona** | Rare | Scorched, blinding, rich | The only place with Stellar Flares. High-risk, high-value: Solarite, Charged Void Crystal, Flare Cells |
 
 ---
 
@@ -159,8 +161,7 @@ ribbons.
 - **Terrain:** wide plates of **Pale End Stone**, with thin edges you can see through
   from below. There are patches of **Shimmer Grass** (a short, swaying plant) and
   standing stones.
-- **Sky:** the strongest auroras in the End. During a Stellar Flare, this is the most
-  spectacular place to be.
+- **Sky:** the strongest auroras in the End.
 - **Mobs:** **Drift Whales** spawn here more than anywhere else. Pollinators visit the
   Shimmer Grass.
 - **Structures:** **Whalefalls**, the fossilised ribs of old Leviathans.
@@ -218,6 +219,43 @@ The rarest biome: a cluster of islands around a huge, broken ring of obsidian an
   garden here.
 - **The Watcher** can only be met here, sometimes.
 
+### 4.6 The Corona
+The islands closest to **the Remnant**, the dying ember of the collapsed star. It hangs
+low in the sky over this region as a huge, dim, slowly pulsing disc. You can see it from
+far away, so players always know where the Corona is (and can choose to avoid it).
+
+- **The only place with Stellar Flares** (§7.1). Everywhere else in the End stays calm:
+  no burning, no storms. Even at the Corona's border, a flare is only a bright glow on the
+  horizon.
+- **Terrain:**
+  - **Charred End Stone** and **Sunscorched Stone**, a bleached, cracked stone.
+  - Glassy streaks where flares melted the surface.
+  - Few overhangs, so shelter isn't free: players have to build or dig it.
+- **Life that adapted** (it thrives here):
+  - **Flareblooms**: tall flowers that stay tightly shut and only open during a flare.
+    Harvesting one while it's open gives **Flare Pollen**.
+  - **Sunscale Lichen**: a ground cover that soaks up flares and glows for a while
+    afterwards. A natural light source.
+  - **Corona Skimmers** (§5.7): manta-like fliers that surf the flares.
+  - **Cinder Mites** (§5.8): burrowing pests that emerge hungry after each flare.
+- **Life that died out** (environmental storytelling):
+  - **Ashen Lumineshrooms**: grey, lightless husks of the Nebula Fields' glowing
+    mushrooms.
+  - **Pollinator Husks**: bleached, fossil-like shells of End Pollinators that tried to
+    settle here and failed. Found as a decorative block.
+  - **Petrified Astral Vines**: stone-hard vines that stopped growing long ago.
+  - No Pollinators, Drift Whales or Void Wanderers live here.
+- **Why go (the Corona is where the best materials are):**
+  - **Solarite** (§8.1), found nowhere else. **Rich veins sit on island surfaces,**
+    exposed to flares. **Deep veins are safe but much sparser.** Surface mining is fast
+    and risky; deep mining is slow and safe.
+  - **Charged Void Crystal:** Void Crystal only becomes charged here, during a flare.
+  - **Flare Cells:** the batteries that power Orbital Stations, charged only here.
+  - **Solar Array Ruins** (§10): Cartographer mirror-farms that once harvested the
+    flares, with some of the best loot in the End.
+- **Feel:** the End's Nether. It's beautiful from a distance and dangerous up close.
+  You come prepared, work fast between flares, and leave rich.
+
 ---
 
 ## 5. Mobs
@@ -242,7 +280,8 @@ Small jellyfish-like drifters about the size of a bee, with trailing glowing ten
   hand.
 - **Breeding:** feed them Starblooms. This lets players build a "garden" of pollinators
   at home.
-- **During a Stellar Flare:** they glow brighter and drop spores twice as often.
+- **Never found in the Corona.** They tried to settle there and died out; their husks
+  still litter the islands.
 
 ### 5.2 Drift Whale (passive, extremely rare)
 A huge, translucent whale-like creature that swims slowly through the void. It's roughly
@@ -276,8 +315,8 @@ survey drone that is still running.
   - Each Wanderer only scans each player once.
   - If you attack it, it becomes hostile, fires short laser pulses, and teleports away
     when low. Killing it drops only a **Cracked Lens**, a crafting scrap.
-  - **During a Stellar Flare,** Wanderers malfunction: they drift aimlessly and spark,
-    and can't scan.
+  - Wanderers avoid the Corona. The few that stray in during a flare malfunction,
+    drifting and sparking, unable to scan.
 - **Data Shards:** used in utility recipes (Portal Lens, powering stations, Echo Logs).
 
 ### 5.4 Black Hole Guardian (hazard mob)
@@ -330,6 +369,38 @@ Shattered Observatory.
 - **Purpose:** mystery and guidance. It's the thread that pulls players deeper into the
   lore.
 
+### 5.7 Corona Skimmer (passive, Corona only)
+A flat, manta-shaped flier with thin, glowing wing-membranes. It evolved to surf the
+flares.
+
+- **Behaviour:**
+  - Between flares, Skimmers rest flat on island surfaces and look almost like stone.
+  - During a flare, they lift off in flocks and ride the light.
+  - In the afterglow, their wings are "full" and shimmer.
+- **Drops:**
+  - **Shear them during the afterglow** (like sheep) to get **Skimmer Film**, a thin,
+    heat-proof membrane. It grows back after the next flare. No killing needed.
+  - Killing one drops nothing useful.
+- **Uses of Skimmer Film:**
+  - the **Potion of Flare Ward**;
+  - **Sunshades** (§8.2).
+  The life that adapted to the flares gives players the means to survive them.
+
+### 5.8 Cinder Mite (hostile, Corona only)
+Small, glowing burrowers, about the size of an Endermite. They hide in Sunscorched Stone.
+
+- **Behaviour:**
+  - They **emerge in swarms of 3–6 right after a flare**, hungry.
+  - They go for players and set them on fire briefly.
+  - They burrow back into stone after about a minute, so they're a timed pressure, not
+    a constant threat.
+  - They're immune to fire and Flare Burn.
+- **Drops:** **Cinder**, a small fuel item (smelts 4 items). Also used in Solar
+  Lanterns.
+- **Counterplay:**
+  - Water puts them out (they die in 2 seconds).
+  - A sealed shelter keeps them from reaching you.
+
 ---
 
 ## 6. Atmosphere and the sky
@@ -360,45 +431,50 @@ renderer, not in the world.
 
 ## 7. Events
 
-### 7.1 Stellar Flares (storms)
-The collapsed star's remnant still pulses. Roughly every **60–100 minutes of play**, the
-outer End goes through a flare. The End has no weather and no day/night cycle in vanilla,
-so flares become its only "weather", much like a thunderstorm in the Overworld. The
-central island is never affected.
+### 7.1 Stellar Flares (Corona only)
+The Remnant pulses about every **15–25 minutes**. **Flares happen only in the Corona
+biome.** Everywhere else in the End, including the vanilla central island and all other
+new biomes, there is no flare, no burning and no storm. From elsewhere, a flare appears
+only as a brief glow on the horizon where the Remnant hangs.
 
 **The three phases:**
 
-| Phase | Length | What happens |
+| Phase | Length | What happens in the Corona |
 |---|---|---|
-| **Warning** | ~1 minute | The sky's stars brighten, auroras flicker faster, a low rising hum plays, and Pollinators head for cover. Experienced players learn to read it. |
-| **Flare** | 2–3 minutes | Sheets of bright light roll across the sky. Charged particles stream horizontally, and auroras go wild. |
-| **Afterglow** | ~2 minutes | Everything glows softly and settles. |
+| **Warning** | ~1 minute | The Remnant brightens, Flareblooms twitch, Skimmers stir, and a low rising hum plays. There's always time to get protected. |
+| **Flare** | 1–2 minutes | Sheets of light roll across the sky, and charged particles stream sideways. Flareblooms open and Skimmers take off. |
+| **Afterglow** | ~2 minutes | Everything glows. Sunscale Lichen lights up, Skimmers can be sheared, and **Cinder Mites** swarm out of the stone. |
 
-**Effects during the Flare phase:**
-- **Danger: flares burn you unless you're properly protected.**
-  - **Flare Burn:** a status effect on anyone with open sky above them. It deals half a
-    heart every 3 seconds at first, then a full heart after 30 seconds of exposure.
-  - **Protection** (any one is enough):
-    - **Cover:** any solid block or glass overhead. Astral Glass lets you watch the
-      flare safely.
-    - **Radiant Starforge upgrade** (§9) on 2 or more armour pieces.
-    - **Potion of Flare Ward** (Awkward Potion + Comet Ice; 3 minutes, or 8 minutes when
-      extended).
-  - The warning phase gives about a minute to get protected, so a prepared player is
-    never caught out.
-  - The point is to make preparation matter, as the Nether's fire and the Deep Dark's
-    Warden do.
-- **Solar wind:** elytra flight gets a push in the flare's direction, so flying with
-  it is fast and flying against it is slow.
-- **Wanderers malfunction,** and Pollinators drop more spores.
-- **Orbital Stations power up** (§10) and their sealed vaults open.
-- **Flare Charging:** Void Crystal exposed to the sky becomes **Charged Void Crystal**.
-  So does any Void Crystal item placed on a **Collector Pedestal** in open air.
-  - Charged Void Crystal is needed for the strongest recipes, so players plan for
-    flares instead of just hiding from them.
-- **Afterglow bonus:** Lumineshrooms bloom (a guaranteed growth tick).
+**Flare Burn: only in the Corona, and only if you're unprotected.**
+- Anyone with open sky above them during the flare gets **Flare Burn**. It deals half a
+  heart every 3 seconds at first, then a full heart after 30 seconds of exposure.
+- It never hits you instantly, and it never happens outside the Corona.
+- **Ways to deal with it** (any one is enough):
+  - **Cover:** any solid block or glass overhead. Astral Glass lets you watch safely.
+    Digging into an island counts.
+  - **Sunshade:** a quick-to-place canopy block made from Skimmer Film. You drop it
+    above you while mining surface veins, so you don't have to abandon your spot.
+  - **Potion of Flare Ward:** Awkward Potion + Skimmer Film. Lasts 3 minutes, or 8
+    minutes when extended.
+  - **Radiant Starforge upgrade** (§9) on 2 or more armour pieces. The late-game
+    solution for regular Corona miners.
 
-**Config:** frequency, damage (on/off) and sky effects can each be adjusted.
+**What flares are good for (why you'd stay):**
+- **Flare Charging:** Void Crystal becomes **Charged Void Crystal** if it's on a
+  **Collector Pedestal** under open sky in the Corona during a flare. You bring the
+  crystal in from the Dark Matter Belts, so you have to guard your pedestals while they
+  charge.
+  - Charged Void Crystal is needed for Maws and the Radiant upgrade.
+- **Flare Cells:** empty cells placed on a Collector Pedestal fill up. They power
+  Orbital Stations anywhere in the End (§10.3).
+- **Flareblooms open**, giving Flare Pollen.
+- **Skimmers become shearable** in the afterglow.
+- **Solar wind:** inside the Corona, elytra flight gets a strong push in the flare's
+  direction.
+- **Radiant armour** charges 5× faster.
+
+**Config:** flare frequency, Flare Burn (on/off) and flare sky effects can each be
+adjusted.
 
 ### 7.2 Live comets and meteors
 **Honest limitation:** Minecraft can't move real block structures smoothly, and moving
@@ -434,7 +510,9 @@ something you can interact with, without the lag and bugs of moving islands.
 | Material | Where | How you get it | What it's for |
 |---|---|---|---|
 | **Void Crystal** | Void Crystal Ore in Umbral Stone (Dark Matter Belts) | Mine with an iron pickaxe or better. Fortune works. | Starforge Alloy, Portal Lens, Starforge upgrades |
-| **Charged Void Crystal** | Void Crystal exposed to a Stellar Flare | Flare Charging (§7.1) | Advanced upgrades, powering stations |
+| **Charged Void Crystal** | Void Crystal charged during a flare, only in the Corona | Flare Charging (§7.1) | Wormhole Maws, Radiant upgrade |
+| **Solarite** | Solarite Ore, only in the Corona. Rich exposed surface veins, sparse deep veins. | Mine with a diamond pickaxe. Smelt the raw chunks. | Radiant upgrade, Flare Cells, Solar Lanterns, Sunshade frames |
+| **Flare Cell** | Crafted from Solarite and Astral Glass, then charged during a Corona flare | Collector Pedestal in the Corona | Powers Orbital Stations |
 | **Meteoric Iron** | Meteoric Iron Ore in Comet Cores (Comet Wake), live comets | Mine with a diamond pickaxe. Smelt the raw chunks. | Starforge Alloy, Gravity Wells, the Astral Forge |
 | **Temporal Crystal** | Loot only: craters, station vaults, maze rewards | Can't be mined or farmed | Portal Lens, Temporal upgrade, Maw repair |
 | **Stardust** | Stardust Blocks (Comet Wake), comet tails | Shovel, or fly through a comet tail | Building, Astral Glass, Comet Cress farms |
@@ -463,7 +541,12 @@ chiseled.
 - **Nebula Moss** (a ground cover that spreads like moss) and **Moss Carpet**
 - **Spore Lantern** (light level 13) and **Whalelight Scale Block** (light level 10)
 - **Gravity Well**, **Void Trap** (Singularity Shard utility blocks)
-- **Collector Pedestal**: charges Void Crystal during flares.
+- **Collector Pedestal**: charges Void Crystal and Flare Cells during Corona flares.
+- **Sunshade**: a canopy block (Skimmer Film + Solarite frame) that blocks Flare Burn.
+  Quick to place and break, for shelter while mining.
+- **Solar Lantern** (light level 15): Solarite + Cinder.
+- **Sunscorched Stone** (+ Polished, Bricks), **Sunscale Lichen**, **Pollinator Husk**
+  (decoration).
 
 ### 8.3 Cosmic plants
 
@@ -592,19 +675,19 @@ The End's biggest killer is falling off an island. Voidwalker is built around it
   - Out in the End, this means no more ore falling off the island's edge into the void.
   - Experience orbs are pulled in the same way.
 
-#### Radiant (Charged Void Crystal + Whalelight Scale): *store starlight*
+#### Radiant (Solarite + Charged Void Crystal): *store starlight*
 Clarifying what "health" meant: Radiant gives **absorption hearts** (the golden hearts
 from a golden apple), which you have to recharge. It is not passive regeneration.
 - **Armour, per piece:** stores up to 1 golden heart of starlight.
   - It charges while you stand under open sky in the End: 1 heart every 30 seconds per
-    piece, and 5× faster during a Stellar Flare.
+    piece, and 5× faster during a flare in the Corona.
   - Fully charged armour glows softly.
   - The stored hearts appear as golden hearts, which absorb damage before your red
     hearts.
 - **2+ pieces:** immune to Flare Burn.
 - **Swords, axes and bows:** hits make the target glow (like a spectral arrow) for 5
   seconds, revealing Umbral Stalkers and other hidden mobs through walls.
-- **Elytra:** you ride a flare's solar wind twice as hard.
+- **Elytra:** you ride the Corona's solar wind twice as hard.
 
 ### 9.3 What happened to the first draft's upgrades
 
@@ -643,6 +726,7 @@ judgement call.
 | **Constellation Maze** | Shattered Observatory, rarely Nebula Fields | See §10.2 |
 | **Abandoned Orbital Station** | High sky (Y 180+), mostly above Observatories | See §10.3 |
 | **Observatory Ruins** | Shattered Observatory, rare in Nebula Fields | A domed ruin with star mosaics and a telescope made of blocks. Vaults (opened with Data Shards, like trial keys) hold Starforge Templates, Temporal Crystals and Echo Logs. It has the only guaranteed Astral Forge recipe book. |
+| **Solar Array Ruins** | The Corona | Fields of broken Cartographer mirrors that once gathered flare light, around a sunken control room. The best loot in the End: Starforge Templates, Solarite blocks, Temporal Crystals, a guaranteed charged Flare Cell. The mirrors focus flares, so Flare Burn is doubled on the open field. |
 | **Wanderer Relay** | Dark Matter Belt edges | A thin floating spire where Void Wanderers dock. It has no loot, but Wanderers spawn here, and its top holds an Echo Log. |
 | **Whalefall** | Aurora Shallows, very rare | The fossilised ribs of a Leviathan, arched over an island. Whalelight Scales grow on the bones, and it has one lore chest. |
 
@@ -701,9 +785,11 @@ What it would look like if ancient aliens built in Minecraft's style: a giant **
     they're the easiest place to be scanned for Data Shards.
   - **Hydroponics:** overgrown Lumineshroom and Comet Cress beds; seeds and spores.
   - **Crew quarters:** Echo Logs describing the Cartographers' last days.
-  - **Solar core:** sealed. **It powers up only during a Stellar Flare.** When it does,
-    lights come on, doors unlock, and the central **vault** opens for the flare's
-    duration.
+  - **Solar core:** sealed and dead. **Insert 3 charged Flare Cells** (from the Corona)
+    to power it. Lights come on, doors unlock, and the central **vault** opens for 5
+    minutes.
+    - Stations aren't in the Corona, so the Corona's risk pays off elsewhere: you
+      charge the cells there, then carry them to a station.
 - **Vault loot:** Starforge Templates, Temporal Crystals, Charged Void Crystal and the
   Starfield Glass recipe.
 - **Station Sentinel (mini-boss):** it guards the vault and wakes with the power. It's a
@@ -721,23 +807,25 @@ What it would look like if ancient aliens built in Minecraft's style: a giant **
 2. **The first ~1,000 blocks:** vanilla End Cities, an elytra, and shulker boxes.
 3. **Nebula Fields:** your first new biome. Pollinators, glowing flora and low gravity.
    Build an outpost here.
-4. **First Stellar Flare:** learn to shelter, and learn that flares are an opportunity.
-5. **Comet Wake:** mine Meteoric Iron, chase live comets, and raid craters for Temporal
+4. **Comet Wake:** mine Meteoric Iron, chase live comets, and raid craters for Temporal
    Crystals.
-6. **Dark Matter Belt:** collect Void Crystal, meet the Umbral Stalker, fight Black Hole
+5. **Dark Matter Belt:** collect Void Crystal, meet the Umbral Stalker, fight Black Hole
    Guardians, and let Void Wanderers scan you for Data Shards.
-7. **Craft a Portal Lens and build the Astral Forge.**
-8. **Shattered Observatory:** solve Constellation Mazes for Starforge Templates, and wake
+6. **Craft a Portal Lens and build the Astral Forge.**
+7. **Shattered Observatory:** solve Constellation Mazes for Starforge Templates, and wake
    your first Wormhole Maw.
-9. **Orbital Stations:** reach one, wait for a flare, and fight the Sentinel for the
-   vault.
+8. **The Corona:** once you have Flare Ward potions or Sunshades, raid the Corona for
+   Solarite, Charged Void Crystal and Flare Cells, and loot Solar Array Ruins.
+9. **Orbital Stations:** bring charged Flare Cells, power one up, and fight the Sentinel
+   for the vault.
 10. **Long tail:** link every Maw, complete the Drift Whale chain, collect every Echo Log
     and constellation, and experiment with Starforge builds and Alignments.
 
 **Advancement tab: "The Astral End".** About 25 advancements, including:
 - *Falling Upward*: use a Stardust block.
 - *Hold Still*: get scanned by a Void Wanderer.
-- *Weather the Storm*: survive a Stellar Flare outdoors.
+- *Weather the Storm*: survive a Stellar Flare in the Corona without cover.
+- *Harvest Moon*: shear a Corona Skimmer.
 - *Tail Chaser*: collect Stardust from a comet's tail.
 - *Connect the Dots*: finish a Constellation Maze.
 - *Say Ahh*: wake a Wormhole Maw.
@@ -758,8 +846,12 @@ What it would look like if ancient aliens built in Minecraft's style: a giant **
   - comets have limited hits.
 - **Data Shards** come from a non-violent interaction that's limited to once per
   Wanderer per player.
-- **Flares can't be triggered on demand.** Charging Void Crystal takes planning, not a
-  farm.
+- **Risk is opt-in.** Flares and Flare Burn exist only in the Corona. The rest of the End,
+  vanilla or new, never burns you.
+- **The Corona pays for its risk.** Solarite, Charged Void Crystal and Flare Cells come
+  only from there. Surface veins are richer than deep veins, so taking the risk is
+  rewarded.
+- **Flares can't be triggered on demand.** Charging takes planning, not a farm.
 - **Low gravity, gravity inversion, flare damage and live comet landfall** can each be
   turned off in the config.
 - **Black Hole Guardians never delete items** and never break blocks.
@@ -772,7 +864,7 @@ What it would look like if ancient aliens built in Minecraft's style: a giant **
 | System | Approach |
 |---|---|
 | Sky (stars, auroras, background comets, silhouettes, flare light) | Drawn in the End sky renderer; no entities, no world data |
-| Stellar Flare | One server-wide timer. The burn check runs once per second per player: "is there sky above?" |
+| Stellar Flare | One server-wide timer. The burn check runs once per second, only for players inside the Corona: "is there sky above?" |
 | Live comet | One entity per player area, with a few block-display parts and particles. Block changes happen only on landfall (<40 blocks). |
 | Lumineshroom "breathing" | The visual pulse is an animated texture. The real light level changes only between 2 values, at most every few seconds, on random ticks. |
 | Biome gravity | A player-only check about once per second that adds or removes an attribute modifier |
@@ -793,10 +885,10 @@ Each phase is playable on its own. Later phases build on earlier ones.
 |---|---|---|
 | **1. Blocks and flora** | Umbral Stone set, Stardust (falls up), Astral Glass, Orrery Bronze (tarnishing), Leviathan Bone, Lumineshroom, Astral Vine, Starbloom, Comet Cress, Void Crystal and Meteoric Iron | Registering blocks and items (like the Ruby), a custom `FallingBlock` subclass that falls up, and a tarnishing block modelled on vanilla's copper. Mostly JSON. |
 | **2. First biome: Nebula Fields** | The biome, its terrain features and low gravity | The End's biome list is **hard-coded in vanilla**. Adding biomes needs a custom `BiomeSource` registered in Java, then a data-pack override of `dimension/the_end.json` to use it. Biomes and features themselves are JSON. |
-| **3. Remaining biomes** | Aurora Shallows, Comet Wake, Dark Matter Belt, Shattered Observatory, inversion pockets | More JSON worldgen, plus Java for inversion pockets |
-| **4. Mobs** | Pollinator, Void Wanderer, Black Hole Guardian, Umbral Stalker, then Drift Whale and the Watcher | Entity classes, AI goals, models (Blockbench → Java model code), spawn rules |
-| **5. Sky and Stellar Flares** | Moving stars, auroras, silhouettes, flare phases, burn, solar wind, flare charging | A custom `DimensionSpecialEffects` for the End (client), a saved server-side flare timer, a network packet to sync flare state |
-| **6. Structures** | Comet Crater, Observatory Ruins, Wanderer Relay, Whalefall, Wormhole Maw, Constellation Maze, Orbital Station + Sentinel | Structure templates built in-game and saved as `.nbt`, plus jigsaw JSON. Maw linking, maze bridges and station power need Java. |
+| **3. Remaining biomes** | Aurora Shallows, Comet Wake, Dark Matter Belt, Shattered Observatory, the Corona, inversion pockets | More JSON worldgen, plus Java for inversion pockets |
+| **4. Mobs** | Pollinator, Void Wanderer, Black Hole Guardian, Umbral Stalker, Corona Skimmer, Cinder Mite, then Drift Whale and the Watcher | Entity classes, AI goals, models (Blockbench → Java model code), spawn rules |
+| **5. Sky and Stellar Flares** | Moving stars, auroras, silhouettes, the Remnant, Corona flare phases, Flare Burn, solar wind, flare charging | A custom `DimensionSpecialEffects` for the End (client), a saved server-side flare timer, a network packet to sync flare state |
+| **6. Structures** | Comet Crater, Observatory Ruins, Wanderer Relay, Whalefall, Solar Array Ruins, Wormhole Maw, Constellation Maze, Orbital Station + Sentinel | Structure templates built in-game and saved as `.nbt`, plus jigsaw JSON. Maw linking, maze bridges and station power need Java. |
 | **7. Live comets** | The comet entity, tail harvesting, landfall craters | An entity with block-display parts, a flight path, and a small crater placer |
 | **8. Starforging** | Astral Forge, templates, the six upgrades, Alignments | Data components on items, a menu and screen for the Forge, vanilla attribute modifiers (gravity, step height, knockback resistance, fall damage, absorption), event listeners for landing, hits and projectile impacts |
 | **9. Polish** | Advancements, Echo Logs, music, config toggles, balance passes | JSON advancements, a Forge config file, playtesting |
@@ -813,12 +905,11 @@ upward; an animated texture), and prove out the art style before any worldgen wo
 |---|---|
 | Telescope | Minecraft 26.3 has one. Constellation Mazes and the Watcher use the vanilla telescope. |
 | Mod name and ID | **The Astral End**, mod ID `astralend`. The former `rubymod` project was renamed; its Ruby example content stays until Phase 1 replaces it. |
-| Flare damage | **On.** Flares burn anyone who isn't protected (cover, Radiant upgrade or Flare Ward potion). Servers can turn it off in the config. |
+| Flares | **Only in the Corona biome.** Unprotected players there get Flare Burn; cover, Sunshades, Flare Ward potions and the Radiant upgrade protect them. The vanilla End and all other biomes never burn. The Corona makes up for the risk with exclusive materials. |
+| Another hostile mob | **Yes: Cinder Mites**, Corona only. |
 | Where new biomes start | **Beyond 1,000 blocks**, the same distance where vanilla's outer islands begin. |
 
 ## 16. Open questions
 
-1. **Is one hostile mob plus the Sentinel enough,** or should Comet Wake get a small
-   threat too (for example, burning "Cinder Mites" in hot craters)?
-2. **Art:** should textures be drawn first (in Blockbench/Piskel), or should we start with
+1. **Art:** should textures be drawn first (in Blockbench/Piskel), or should we start with
    placeholder textures and replace them later?
