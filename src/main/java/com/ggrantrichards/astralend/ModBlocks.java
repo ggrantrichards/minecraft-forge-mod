@@ -9,6 +9,7 @@ import com.ggrantrichards.astralend.block.GravityAnomalyBlock;
 import com.ggrantrichards.astralend.block.LumineshroomBlock;
 import com.ggrantrichards.astralend.block.NebulaTendrilBlock;
 import com.ggrantrichards.astralend.block.NebulaTendrilPlantBlock;
+import com.ggrantrichards.astralend.block.NullLanternBlock;
 import com.ggrantrichards.astralend.block.NullwoodSaplingBlock;
 import com.ggrantrichards.astralend.block.StarbloomBlock;
 import com.ggrantrichards.astralend.block.StardustBlock;
@@ -257,6 +258,10 @@ public final class ModBlocks {
             .isRedstoneConductor((state, level, pos) -> false));
     public static final RegistryObject<Block> NULLWOOD_SAPLING = register("nullwood_sapling", NullwoodSaplingBlock::new,
         () -> plant(MapColor.COLOR_PURPLE, SoundType.GRASS).randomTicks());
+    // Null Lanterns: glowing fruit hanging under Nullwood leaves.
+    public static final RegistryObject<Block> NULL_LANTERN = register("null_lantern", NullLanternBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(0.3F).noOcclusion()
+            .sound(SoundType.SHROOMLIGHT).lightLevel(state -> 13).pushReaction(PushReaction.POPPED));
 
     // ---- Aurora Shallows and the Corona ----
     public static final RegistryObject<Block> SHIMMER_REED = register("shimmer_reed", EndTallPlantBlock::new,

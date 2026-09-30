@@ -18,7 +18,8 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 
 // A Nullwood tree: a black, twisting trunk that wanders as it climbs, a few crooked branches, and
-// clumps of dark violet leaves. Grown by world generation in the Dark Matter Belt, and by saplings.
+// clumps of dark violet leaves hung with glowing Null Lanterns. Grown by world generation in the
+// Dark Matter Belt, and by saplings.
 public record NullwoodTreeFeature() implements Feature {
     public static final MapCodec<NullwoodTreeFeature> CODEC = MapCodec.unit(NullwoodTreeFeature::new);
 
@@ -78,6 +79,14 @@ public record NullwoodTreeFeature() implements Feature {
             blob(level, random, branch.immutable(), 2, leaves);
         }
         setLeafDistances(level, logs, leaves);
+        // Null Lanterns hang from the undersides of the leaf clumps.
+        BlockState lantern = ModBlocks.NULL_LANTERN.get().defaultBlockState();
+        for (BlockPos leaf : leaves) {
+            BlockPos below = leaf.below();
+            if (random.nextInt(7) == 0 && !leaves.contains(below) && level.getBlockState(below).isAir()) {
+                level.setBlock(below, lantern, 2);
+            }
+        }
         return true;
     }
 

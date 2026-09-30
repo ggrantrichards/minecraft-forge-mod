@@ -574,6 +574,7 @@ public final class WorldgenSurvey {
         atLeast(area, ModBlocks.VOID_CRYSTAL_ORE.get(), 0.5, failures);
         atLeast(area, ModBlocks.NULLWOOD.log().get(), 15, failures);
         atLeast(area, ModBlocks.NULLWOOD_LEAVES.get(), 40, failures);
+        atLeast(area, ModBlocks.NULL_LANTERN.get(), 2, failures);
         int leaves = area.in(ModBlocks.NULLWOOD_LEAVES.get());
         log(String.format("Dark Matter Belt: %d of %d Nullwood leaves are too far from a log and would decay", area.decayingLeaves, leaves));
         if (area.decayingLeaves > 0.05 * Math.max(1, leaves)) {

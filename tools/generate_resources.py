@@ -952,7 +952,7 @@ def worldgen_phase3():
     placed("dark_matter_inversion_pockets", {"feature": rid("inversion_pocket"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 3}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
     big_feature("dark_matter_nullwood_trees", "nullwood_tree", count=3)
-    end_biome("dark_matter_belt", "Dark Matter Belt", fog="#1a1330", water="#2a1a4a",
+    end_biome("dark_matter_belt", "Dark Matter Belt", fog="#2c2150", water="#3a2a66",
               features_step4=[rid("dark_matter_inversion_pockets")],
               features_step7=[rid("dark_matter_void_crystal")],
               features_step9=[rid("dark_matter_nullwood_trees")],
@@ -960,8 +960,8 @@ def worldgen_phase3():
 
     # ---- Shattered Observatory: quartz ruins, overgrown with vines and Starblooms
     java_feature("observatory_ruin")
-    surface_feature("observatory_ruins", "observatory_ruin", rarity=6)
-    big_feature("observatory_great_rings", "observatory_ring", rarity=3, heightmap="WORLD_SURFACE_WG")
+    surface_feature("observatory_ruins", "observatory_ruin", rarity=9)
+    big_feature("observatory_great_rings", "observatory_ring", rarity=12, heightmap="WORLD_SURFACE_WG")
     plant_patch("observatory_starblooms", "starbloom", rarity=1, count=40, spread=7)
     placed("observatory_astral_vines", {"feature": rid("astral_vine"), "placement": [
         {"type": "minecraft:in_square"},
@@ -1118,6 +1118,30 @@ def main():
         tag(t, "minecraft:leaves", rid("nullwood_leaves"))
         tag(t, "minecraft:saplings", rid("nullwood_sapling"))
     tag("block", "minecraft:mineable/hoe", rid("nullwood_leaves"))
+    # Null Lantern: a glowing fruit on a short stem, hanging under Nullwood leaves.
+    blockstate("null_lantern", {"variants": {"": {"model": rid("block/null_lantern")}}})
+    block_model("null_lantern", {
+        "parent": "minecraft:block/block",
+        "ambientocclusion": False,
+        "textures": {"particle": rid("block/null_lantern_side"), "side": rid("block/null_lantern_side"),
+                     "end": rid("block/null_lantern_end"), "stem": rid("block/null_lantern_stem")},
+        "elements": [
+            {"from": [4, 2, 4], "to": [12, 10, 12], "faces": {
+                "down": {"uv": [4, 4, 12, 12], "texture": "#end"}, "up": {"uv": [4, 4, 12, 12], "texture": "#end"},
+                "north": {"uv": [4, 6, 12, 14], "texture": "#side"}, "south": {"uv": [4, 6, 12, 14], "texture": "#side"},
+                "west": {"uv": [4, 6, 12, 14], "texture": "#side"}, "east": {"uv": [4, 6, 12, 14], "texture": "#side"}}},
+            {"from": [8, 10, 0], "to": [8, 16, 16], "shade": False,
+             "rotation": {"origin": [8, 8, 8], "axis": "y", "angle": 45},
+             "faces": {"west": {"uv": [0, 0, 16, 6], "texture": "#stem"}, "east": {"uv": [0, 0, 16, 6], "texture": "#stem"}}},
+            {"from": [0, 10, 8], "to": [16, 16, 8], "shade": False,
+             "rotation": {"origin": [8, 8, 8], "axis": "y", "angle": 45},
+             "faces": {"north": {"uv": [0, 0, 16, 6], "texture": "#stem"}, "south": {"uv": [0, 0, 16, 6], "texture": "#stem"}}},
+        ],
+    })
+    item_def("null_lantern", rid("block/null_lantern"))
+    lang[f"block.{NS}.null_lantern"] = "Null Lantern"
+    drop_self("null_lantern")
+    tag("block", "minecraft:mineable/hoe", rid("null_lantern"))
     tag("block", "minecraft:mineable/axe", rid("lumine_cap"))
     tag("block", "minecraft:mineable/pickaxe", rid("petrified_stalk"))
 
@@ -1211,7 +1235,8 @@ def main():
     # and crops don't (vanilla leaves out grass and moss carpet too).
     not_solid = {"lumineshroom", "starbloom", "astral_vine", "astral_vine_plant", "comet_cress", "shimmer_grass",
                  "flarebloom", "sunscale_lichen", "ashen_lumineshroom", "petrified_astral_vine", "nebula_tufts",
-                 "nebula_tendril", "nebula_tendril_plant", "nullwood_leaves", "nullwood_sapling", "shimmer_reed"}
+                 "nebula_tendril", "nebula_tendril_plant", "nullwood_leaves", "nullwood_sapling", "shimmer_reed",
+                 "null_lantern"}
     solid = sorted(set(re.findall(r'\b(?:register|registerNoItem|stairs|slab|wall)\("([a-z0-9_]+)"',
                                   (ROOT / "src/main/java/com/ggrantrichards/astralend/ModBlocks.java").read_text()))
                    - not_solid - {"name"})

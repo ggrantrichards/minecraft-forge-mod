@@ -27,7 +27,7 @@ VANILLA_PARENTS = {
     "minecraft:block/stairs", "minecraft:block/inner_stairs", "minecraft:block/outer_stairs",
     "minecraft:block/template_wall_post", "minecraft:block/template_wall_side",
     "minecraft:block/template_wall_side_tall", "minecraft:block/wall_inventory",
-    "minecraft:item/generated", "minecraft:item/handheld", "minecraft:block/carpet", "minecraft:block/leaves",
+    "minecraft:item/generated", "minecraft:item/handheld", "minecraft:block/carpet", "minecraft:block/leaves", "minecraft:block/block",
     "minecraft:block/fence_post", "minecraft:block/fence_side", "minecraft:block/fence_inventory",
     "minecraft:block/template_fence_gate", "minecraft:block/template_fence_gate_open",
     "minecraft:block/template_fence_gate_wall", "minecraft:block/template_fence_gate_wall_open",

@@ -1196,6 +1196,64 @@ SHIMMER_REED_BOTTOM = [
 REED_PAL = {"w": hexc("f4fbff"), "s": hexc("cfeeee"), "S": hexc("9fd6d8"), "g": hexc("6aa3b2"), "G": hexc("4f8296")}
 
 
+# Null Lantern: the model shows the side's rows 6-13 and the end's centre 8x8.
+NULL_LANTERN_SIDE = [
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "....rmmrrmmr....",
+    "....mbbmmbbm....",
+    "....bwbmmbwb....",
+    "....bwwbbwwb....",
+    "....bwwbbwwb....",
+    "....mbwmmbbm....",
+    "....mbbmmbbm....",
+    "....rmmrrmmr....",
+    "................",
+    "................",
+]
+NULL_LANTERN_END = [
+    "................",
+    "................",
+    "................",
+    "................",
+    "....rrmmmmrr....",
+    "....rmbbbbmr....",
+    "....mbbwwbbm....",
+    "....mbwWWwbm....",
+    "....mbwWWwbm....",
+    "....mbbwwbbm....",
+    "....rmbbbbmr....",
+    "....rrmmmmrr....",
+    "................",
+    "................",
+    "................",
+    "................",
+]
+NULL_LANTERN_STEM = [
+    "......s.........",
+    ".......s........",
+    "...ll..s..l.....",
+    "..lLl..s.lLl....",
+    "...l..ss..l.....",
+    "......s.........",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+]
+NULL_LANTERN_PAL = {"r": hexc("3b1766"), "m": hexc("7a2fb8"), "b": hexc("b25ae8"), "w": hexc("e6a6ff"),
+                    "W": hexc("fff0ff"), "s": hexc("1f1a29"), "l": hexc("2c2148"), "L": hexc("4a3a78")}
+
 def petrified_stalk_side():
     img = stone([hexc("5e5953"), hexc("6b6660"), hexc("7a746c"), hexc("8a847b"), hexc("a39c91")], 141, blotches=16, specks=10)
     px = img.load()
@@ -1354,6 +1412,9 @@ def main():
     out.append(save(from_map(SHIMMER_REED_BOTTOM, REED_PAL), "block/shimmer_reed_bottom.png"))
     out.append(save(petrified_stalk_side(), "block/petrified_stalk_side.png"))
     out.append(save(petrified_stalk_top(), "block/petrified_stalk_top.png"))
+    out.append(save(from_map(NULL_LANTERN_SIDE, NULL_LANTERN_PAL), "block/null_lantern_side.png"))
+    out.append(save(from_map(NULL_LANTERN_END, NULL_LANTERN_PAL), "block/null_lantern_end.png"))
+    out.append(save(from_map(NULL_LANTERN_STEM, NULL_LANTERN_PAL), "block/null_lantern_stem.png"))
 
     write_preview(out)
     print(f"Wrote {len(out)} textures to {TEX.relative_to(ROOT)} and a preview to {PREVIEW.relative_to(ROOT)}")

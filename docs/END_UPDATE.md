@@ -210,8 +210,9 @@ Near-invisible islands. You can only really see them from their edges, where lig
 bends.
 
 - **Phase 3.5:** ring archipelagos (land follows broken rings and arcs around empty centres) under
-  dense forests of twisted **Nullwood** trees: black bark, violet heartwood, dark leaves. A full
-  wood set; its saplings grow on End ground.
+  dense forests of twisted **Nullwood** trees: black bark, violet heartwood, dark leaves hung with
+  glowing **Null Lanterns** (the forest's only light). A full wood set; its saplings grow on End
+  ground.
 - **Built (Phase 3):** ragged ring-shaped islands (big islands are hollowed out) of **Umbral
   Stone** with **Void Crystal Ore**, near-black fog, and **Gravity Inversion Pockets**: a
   **Gravity Anomaly** set into an island's underside, with a sphere of flipped gravity (60%

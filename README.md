@@ -4,9 +4,55 @@ A Forge mod for **Minecraft Java Edition 26.3** with **Forge 66.0.8** that expan
 into a sparse, mysterious network of astral islands. The full plan is in
 [docs/END_UPDATE.md](docs/END_UPDATE.md).
 
-**Status:** Phase 3 of 9 (all six astral biomes). Mod ID: `astralend`.
+**Status:** Phase 3.5 of 9 (every astral biome is now a world of its own). Mod ID: `astralend`.
 
 ## What's in the mod so far
+
+### Phase 3.5: each biome is its own world
+
+The astral biomes are now **territories a few thousand blocks across**, each built on its **own
+large islands** with its own shape, ground cover and giant flora, so arriving at one feels like
+landing somewhere new. These are real in-game screenshots, taken automatically on every build:
+
+| Nebula Fields | Dark Matter Belt |
+|---|---|
+| ![Nebula Fields in game](docs/images/screens/nebula_fields.png) | ![Dark Matter Belt in game](docs/images/screens/dark_matter_belt.png) |
+| **Aurora Shallows** | **Comet Wake** |
+| ![Aurora Shallows in game](docs/images/screens/aurora_shallows.png) | ![Comet Wake in game](docs/images/screens/comet_wake.png) |
+| **The Corona** | **Shattered Observatory** |
+| ![The Corona in game](docs/images/screens/corona.png) | ![Shattered Observatory in game](docs/images/screens/shattered_observatory.png) |
+
+- **Nebula Fields:** rolling moss islands under forests of **giant Lumineshrooms** (glowing caps in
+  three sizes, the biggest on thick 2x2 stems), a carpet of **Nebula Tufts**, and glowing **Nebula
+  Tendrils** dripping from mushroom caps and island undersides.
+- **Dark Matter Belt:** ring-shaped archipelagos under dense, dim forests of twisted **Nullwood**
+  trees, lit only by the glowing **Null Lanterns** hanging from their leaves.
+- **Aurora Shallows:** vast flat shelves with meadows of Shimmer Grass and tall **Shimmer Reeds**,
+  and whole **Leviathan ribcages** (a spine with rib arches over it) lying on the ground.
+- **Comet Wake:** scorched islands pocked with **impact craters** (Meteoric Iron at the bottom of
+  each) and **Comet Ice spires** driven into the ground at an angle.
+- **The Corona:** flat-topped mesas with sheer cliffs, glowing lichen and Flarebloom fields, and
+  the crooked **petrified stalks** of giant vines that died there.
+- **Shattered Observatory:** a large island with **great rings** of quartz pillars and lintels
+  around star mosaics, mostly fallen, in a garden of Starblooms and Astral Vines.
+
+**Two new wood types**, each a full set (log, wood, stripped versions, planks, stairs, slab,
+fence, fence gate, door, trapdoor, button, pressure plate) that crafts exactly like vanilla wood:
+
+- **Lumine** wood, from the stems of giant Lumineshrooms (like the Nether's crimson and warped
+  "wood" from huge fungi): pale lilac with cyan glints. **Lumine Cap** blocks glow (light 12).
+- **Nullwood**, from the Dark Matter Belt's trees: black bark, deep violet heartwood. Its leaves
+  drop **Nullwood Saplings**, which grow on End ground. **Null Lanterns**, the trees' glowing fruit,
+  give off light like a Shroomlight and hang under leaves or logs.
+
+Strip logs with an axe as usual. End wood doesn't burn, like Nether wood. Also new: **Nebula
+Tufts**, **Nebula Tendrils** (climbable, glowing tips), **Shimmer Reeds** and **Petrified Stalks**.
+
+**"Worlds using Experimental Settings are not supported":** Minecraft shows this once when you
+create (or first open) a world with this mod, because the mod changes how the End generates. It's
+normal for any mod or datapack that changes a dimension; click **I Know What I'm Doing!** and it
+won't ask again for that world.
+
 
 ### Phase 3: the other five biomes
 
@@ -21,9 +67,9 @@ biome has its own stone, and the terrain itself changes shape in three of them.
 | **Nebula Fields** (Phase 2) | ~23% | Nebula Moss, Lumineshrooms, Starblooms, Astral Vines, low gravity |
 | **Aurora Shallows** | ~6% | Wide, **flat-topped shelves** of **Pale End Stone** (all level at y=54, thinning to see-through edges), **Shimmer Grass**, standing stones, and ribs of **Leviathan Bone** sticking out of the ground |
 | **Comet Wake** | ~7% | **Charred End Stone** islands with small floating debris between them, **Stardust** veins, glassy **Comet Ice**, **Comet Cores** (boulders with a heart of **Meteoric Iron Ore**), and Stardust stuck under islands with **Comet Cress** hanging from it |
-| **Dark Matter Belt** | ~9% | Ragged, **ring-shaped** islands of **Umbral Stone** (big islands are hollow in the middle), **Void Crystal Ore**, near-black fog, and **Gravity Inversion Pockets** |
+| **Dark Matter Belt** | ~9% | Ragged, **ring-shaped** islands of **Umbral Stone** (big islands are hollow in the middle), **Void Crystal Ore**, dark violet fog, and **Gravity Inversion Pockets** |
 | **The Corona** | ~11% | A crust of **Sunscorched Stone** over Charred End Stone, **Solarite Ore** (rich at the surface, sparse deeper in), **Flareblooms**, glowing **Sunscale Lichen**, and the dead: **Ashen Lumineshrooms**, **Petrified Astral Vines**, **Pollinator Husks** |
-| **Shattered Observatory** | ~2% (rare) | Ruins of **Observatory Quartz** set into the islands: round floors with a **Star Inlay** at the centre, broken and fallen pillars, overgrown with Starblooms, Astral Vines and chorus |
+| **Shattered Observatory** | ~2% (rare) | Ruins of **Observatory Quartz** set into the islands: round floors with a **Star Inlay** at the centre, broken and fallen pillars, overgrown with Starblooms and Astral Vines; now and then a great ring of standing pillars with a mosaic floor |
 
 What the survey found in each biome, seen from above (dimmed = just outside the biome):
 
@@ -318,8 +364,10 @@ name is missing. If **all** your textures, names and recipes are missing and the
 "failed to load a valid ResourcePackInfo", `src/main/resources/pack.mcmeta` is missing or broken.
 
 **Automatic checks:** every push to GitHub builds the mod, loads it in a server (checking
-recipes, loot tables and tags), **surveys a freshly generated End** and boots the real game
-client (failing if any model or texture is missing). The survey travels through a real End
+recipes, loot tables and tags), **surveys a freshly generated End**, boots the real game
+client (failing if any model or texture is missing), and then **opens the surveyed world in the
+real client and photographs every biome** (`dev/ClientScreenshots.java`); the pictures are
+published to the repository's `ci-screenshots` branch. The survey travels through a real End
 Portal and checks the arrival platform and dragon fight, maps the End's biomes and how much each
 covers, generates an area of every astral biome and checks it has its stone, ores, plants and
 features, and tests low gravity and gravity inversion. Results are on the repository's
