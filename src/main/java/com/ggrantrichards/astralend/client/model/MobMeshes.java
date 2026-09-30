@@ -75,7 +75,7 @@ public final class MobMeshes {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
         PartDefinition body = root.addOrReplaceChild("body", CubeListBuilder.create().texOffs(0, 0).addBox(-6.0F, -6.0F, -12.0F, 12.0F, 12.0F, 24.0F), PartPose.offset(0.0F, 12.0F, 0.0F));
-        body.addOrReplaceChild("head", CubeListBuilder.create().texOffs(72, 0).addBox(-5.0F, -5.0F, -8.0F, 10.0F, 10.0F, 8.0F), PartPose.offset(0.0F, 0.0F, -12.0F));
+        body.addOrReplaceChild("head", CubeListBuilder.create().texOffs(72, 0).addBox(-5.0F, -5.0F, -8.0F, 10.0F, 10.0F, 8.0F).texOffs(0, 54).addBox(-4.0F, -2.0F, -12.0F, 8.0F, 6.0F, 4.0F), PartPose.offset(0.0F, 0.0F, -12.0F));
         body.addOrReplaceChild("left_fin", CubeListBuilder.create().texOffs(72, 18).addBox(0.0F, 0.0F, -3.0F, 10.0F, 1.0F, 6.0F), PartPose.offset(6.0F, 3.0F, -4.0F));
         body.addOrReplaceChild("right_fin", CubeListBuilder.create().texOffs(72, 18).mirror().addBox(-10.0F, 0.0F, -3.0F, 10.0F, 1.0F, 6.0F).mirror(false), PartPose.offset(-6.0F, 3.0F, -4.0F));
         PartDefinition tail = body.addOrReplaceChild("tail", CubeListBuilder.create().texOffs(0, 36).addBox(-3.0F, -3.0F, 0.0F, 6.0F, 6.0F, 12.0F), PartPose.offset(0.0F, -1.0F, 12.0F));

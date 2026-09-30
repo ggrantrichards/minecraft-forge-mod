@@ -14,7 +14,13 @@ Eight creatures live in the astral End. Every one has its own model, animations 
 (glowing parts shine in the dark), a spawn egg in the creative tab, and its own behaviour.
 These are in-game screenshots taken on every build:
 
-MOB_SCREENSHOTS
+| End Pollinator | Void Wanderer | Umbral Stalker, lit by a Spore Lantern |
+|---|---|---|
+| ![End Pollinator](docs/images/mobs/pollinator.png) | ![Void Wanderer](docs/images/mobs/void_wanderer.png) | ![Umbral Stalker in the light](docs/images/mobs/umbral_stalker_lit.png) |
+| **Cinder Mite** | **Corona Skimmer** | **Black Hole Guardian** |
+| ![Cinder Mite](docs/images/mobs/cinder_mite.png) | ![Corona Skimmer](docs/images/mobs/corona_skimmer.png) | ![Black Hole Guardian](docs/images/mobs/black_hole_guardian.png) |
+| **Drift Whale** | **The Watcher** | **The same Umbral Stalker, in the dark** |
+| ![Drift Whale](docs/images/mobs/drift_whale.png) | ![The Watcher](docs/images/mobs/watcher.png) | ![Umbral Stalker in the dark: almost invisible](docs/images/mobs/umbral_stalker.png) |
 
 | Mob | Where | What it does | Leaves behind |
 |---|---|---|---|

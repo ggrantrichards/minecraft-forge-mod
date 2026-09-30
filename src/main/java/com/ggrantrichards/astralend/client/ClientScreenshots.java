@@ -39,9 +39,9 @@ public final class ClientScreenshots {
     private static final int MAX_WAIT_TICKS = 900;
 
     // A viewpoint; mob shots also name a mob to summon (with its AI off) at mobX/Y/Z, facing the
-    // camera, and "lit" puts a Spore Lantern beside it.
+    // camera. The optional last word: "lit" puts a Spore Lantern beside it, "side" turns it side-on.
     private record Shot(String name, double x, double y, double z, float yaw, float pitch,
-                        String mob, double mobX, double mobY, double mobZ, boolean lit) {}
+                        String mob, double mobX, double mobY, double mobZ, String style) {}
 
     private static final List<Shot> SHOTS = new ArrayList<>();
     private static int index = -1;
@@ -120,11 +120,11 @@ public final class ClientScreenshots {
                 String[] p = line.trim().split("\\s+");
                 if (p.length == 6) {
                     SHOTS.add(new Shot(p[0], Double.parseDouble(p[1]), Double.parseDouble(p[2]), Double.parseDouble(p[3]),
-                        Float.parseFloat(p[4]), Float.parseFloat(p[5]), null, 0, 0, 0, false));
+                        Float.parseFloat(p[4]), Float.parseFloat(p[5]), null, 0, 0, 0, ""));
                 } else if (p.length >= 10) {
                     SHOTS.add(new Shot(p[0], Double.parseDouble(p[1]), Double.parseDouble(p[2]), Double.parseDouble(p[3]),
                         Float.parseFloat(p[4]), Float.parseFloat(p[5]), p[6], Double.parseDouble(p[7]), Double.parseDouble(p[8]),
-                        Double.parseDouble(p[9]), p.length > 10 && p[10].equals("lit")));
+                        Double.parseDouble(p[9]), p.length > 10 ? p[10] : ""));
                 }
             }
         } catch (IOException e) {
@@ -164,17 +164,18 @@ public final class ClientScreenshots {
             if (entity == null) {
                 return;
             }
-            entity.snapTo(shot.mobX(), shot.mobY(), shot.mobZ(), 135.0F, 0.0F);  // facing the camera (north-west)
-            entity.setYHeadRot(135.0F);
+            float yaw = shot.style().equals("side") ? 45.0F : 135.0F;  // 135: facing the camera (north-west)
+            entity.snapTo(shot.mobX(), shot.mobY(), shot.mobZ(), yaw, 0.0F);
+            entity.setYHeadRot(yaw);
             entity.setNoGravity(true);
             if (entity instanceof Mob mob) {
                 mob.setNoAi(true);
                 mob.setPersistenceRequired();
-                mob.yBodyRot = 135.0F;
+                mob.yBodyRot = yaw;
             }
             end.addFreshEntity(entity);
             summoned = entity;
-            if (shot.lit()) {
+            if (shot.style().equals("lit")) {
                 lantern = at.east();
                 end.setBlock(lantern, ModBlocks.SPORE_LANTERN.get().defaultBlockState(), 3);
             }

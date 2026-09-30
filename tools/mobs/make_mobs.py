@@ -527,9 +527,21 @@ def whale_head_glow(face, px, py, fw, fh, rnd):
     return None
 
 
+def whale_snout(face, px, py, fw, fh, rnd):
+    c = rnd.choice(H_SKIN)
+    if face == "down" or (face in ("north", "east", "west") and py >= fh - 2):
+        c = hexc("d8e6ff", 175)  # pale jaw
+    if face in ("east", "west", "north") and py == fh - 3:
+        c = hexc("6a7fc0", 225)  # the line of the mouth
+    return c
+
+
 WHALE = Mob("drift_whale", (128, 64), [
     Part("body", (0, 12, 0), [Box(0, 0, -6, -6, -12, 12, 12, 24, paint=whale_skin, glow=whale_skin_glow)], [
-        Part("head", (0, 0, -12), [Box(72, 0, -5, -5, -8, 10, 10, 8, paint=whale_head, glow=whale_head_glow)]),
+        Part("head", (0, 0, -12), [
+            Box(72, 0, -5, -5, -8, 10, 10, 8, paint=whale_head, glow=whale_head_glow),
+            Box(0, 54, -4, -2, -12, 8, 6, 4, paint=whale_snout),  # the tapering snout and jaw
+        ]),
         Part("left_fin", (6, 3, -4), [Box(72, 18, 0, 0, -3, 10, 1, 6, paint=whale_skin)]),
         Part("right_fin", (-6, 3, -4), [Box(72, 18, -10, 0, -3, 10, 1, 6, mirror=True, paint=whale_skin)]),
         Part("tail", (0, -1, 12), [Box(0, 36, -3, -3, 0, 6, 6, 12, paint=whale_skin, glow=whale_skin_glow)], [
