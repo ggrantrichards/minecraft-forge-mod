@@ -339,8 +339,8 @@ public final class WorldgenSurvey {
         // One close-up of each mob, summoned in its home biome (see ClientScreenshots).
         mobShot(lines, areas.get('N'), end, "pollinator", 2.0, 1.0, 1.4);
         mobShot(lines, areas.get('R'), end, "void_wanderer", 2.6, 1.2, 1.7);
-        mobShot(lines, areas.get('D'), end, "umbral_stalker", 4.5, 0.0, 2.0);
-        mobShot(lines, areas.get('D'), end, "umbral_stalker lit", 4.5, 0.0, 2.0);
+        mobShot(lines, areas.get('D'), end, "umbral_stalker side", 4.5, 0.0, 2.0);
+        mobShot(lines, areas.get('D'), end, "umbral_stalker lit,side", 4.5, 0.0, 2.0);
         mobShot(lines, areas.get('C'), end, "cinder_mite", 1.5, 0.0, 0.7);
         mobShot(lines, areas.get('C'), end, "corona_skimmer", 3.0, 0.0, 1.6);
         mobShot(lines, areas.get('W'), end, "black_hole_guardian", 3.0, 1.6, 2.0);
@@ -373,7 +373,7 @@ public final class WorldgenSurvey {
         double eyeY = ground + eye;
         double camY = eyeY - 1.62;  // a teleport places the feet; the eyes are 1.62 higher
         double pitch = Math.toDegrees(Math.atan2(eyeY - (mobY + 0.5), distance));
-        String name = "mob_" + parts[0] + (parts.length > 1 ? "_" + parts[1] : "");
+        String name = "mob_" + parts[0] + (parts.length > 1 ? "_" + parts[1].split(",")[0] : "");
         lines.add(String.format(java.util.Locale.ROOT, "%s %.1f %.1f %.1f -45 %.1f astralend:%s %.1f %.1f %.1f%s", name,
             x + 0.5 - d, camY, z + 0.5 - d, pitch, parts[0], x + 0.5, mobY, z + 0.5, parts.length > 1 ? " " + parts[1] : ""));
     }

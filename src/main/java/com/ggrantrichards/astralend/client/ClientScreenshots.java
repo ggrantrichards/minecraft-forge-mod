@@ -39,7 +39,8 @@ public final class ClientScreenshots {
     private static final int MAX_WAIT_TICKS = 900;
 
     // A viewpoint; mob shots also name a mob to summon (with its AI off) at mobX/Y/Z, facing the
-    // camera. The optional last word: "lit" puts a Spore Lantern beside it, "side" turns it side-on.
+    // camera. The optional last word lists styles, comma-separated: "lit" puts a Spore Lantern beside
+    // it, "side" turns it side-on.
     private record Shot(String name, double x, double y, double z, float yaw, float pitch,
                         String mob, double mobX, double mobY, double mobZ, String style) {}
 
@@ -164,7 +165,7 @@ public final class ClientScreenshots {
             if (entity == null) {
                 return;
             }
-            float yaw = shot.style().equals("side") ? 45.0F : 135.0F;  // 135: facing the camera (north-west)
+            float yaw = shot.style().contains("side") ? 45.0F : 135.0F;  // 135: facing the camera (north-west)
             entity.snapTo(shot.mobX(), shot.mobY(), shot.mobZ(), yaw, 0.0F);
             entity.setYHeadRot(yaw);
             entity.setNoGravity(true);
@@ -175,7 +176,7 @@ public final class ClientScreenshots {
             }
             end.addFreshEntity(entity);
             summoned = entity;
-            if (shot.style().equals("lit")) {
+            if (shot.style().contains("lit")) {
                 lantern = at.east();
                 end.setBlock(lantern, ModBlocks.SPORE_LANTERN.get().defaultBlockState(), 3);
             }
