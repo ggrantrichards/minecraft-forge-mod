@@ -9,7 +9,7 @@ modId="astralend"             # must match AstralEnd.MODID; lowercase letters, n
 version="1.0.0"
 displayName="The Astral End"
 authors="ggrantrichards"
-description='''Expands the End into a sparse, mysterious network of astral islands. Early development: currently only the example Ruby content.'''
+description='''Expands the End into a sparse, mysterious network of astral islands. Phase 1: new stone, ores, Stardust, Astral Glass and cosmic plants.'''
 
 [[dependencies.astralend]]
     modId="forge"

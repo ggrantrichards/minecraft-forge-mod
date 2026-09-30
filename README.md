@@ -4,9 +4,29 @@ A Forge mod for **Minecraft Java Edition 26.3** with **Forge 66.0.8** that expan
 into a sparse, mysterious network of astral islands. The full plan is in
 [docs/END_UPDATE.md](docs/END_UPDATE.md).
 
-**Status:** early development. The mod (ID `astralend`) currently contains only the example
-content it started from: a Ruby item, a Block of Ruby, crafting recipes both ways, and a
-welcome message when you join a world. These are replaced as the End content is built.
+**Status:** Phase 1 of 9 (blocks, materials and plants). Mod ID: `astralend`.
+
+## What's in the mod so far (Phase 1)
+
+Everything is in the **The Astral End** tab of the creative inventory. Until the new End
+biomes arrive (Phase 2 and 3), the natural blocks don't generate in the world yet, so get them
+from the creative tab or with `/give @s astralend:<name>`.
+
+![Every Phase 1 texture](docs/images/textures.png)
+
+| Content | What it does |
+|---|---|
+| **Umbral Stone** (+ Polished, Bricks, Chiseled, and stairs, slabs and walls) | The dark stone of the Dark Matter Belts. Crafts and stonecuts like deepslate. |
+| **Void Crystal Ore** → **Void Crystal** | Mine with an iron pickaxe. Drops a gem like diamond ore, works with Fortune and Silk Touch. 9 make a block. |
+| **Meteoric Iron Ore** → **Raw Meteoric Iron** → **Meteoric Iron Ingot** | Needs a diamond pickaxe. Smelt or blast the raw metal. Nuggets and blocks craft like iron. |
+| **Stardust** | Sand that **falls up**: it drifts upward until it hits something. Smelts into **Astral Glass**. |
+| **Astral Glass** | Dark glass with stars caught in it. Needs Silk Touch to pick up, like glass. |
+| **Leviathan Bone Block** | Fossil bone, placed like logs or bone blocks (it rotates to the face you click). |
+| **Nebula Moss** | Soft violet ground cover; Lumineshrooms and Starblooms grow on it. |
+| **Lumineshroom** | A glowing mushroom (light level 10) whose cap slowly "breathes". Grows on Nebula Moss, End Stone or Umbral Stone. |
+| **Starbloom** | A star-shaped flower. Grows on grass, End Stone or Nebula Moss. Makes yellow dye, and Night Vision suspicious stew. |
+| **Astral Vine** | Grows upward like twisting vines, and you can climb it. Bone meal makes it grow. |
+| **Comet Cress** | A food crop that **hangs from the underside of Stardust** and grows downward. Doesn't need light. Plant the cress itself, like carrots. |
 
 ## Quick start: one command for everything
 
@@ -122,10 +142,9 @@ automatically on the first build.
 
 A development copy of Minecraft opens with your mod loaded, and you can use it offline.
 Make a Creative world, then:
-- look in the **Ingredients** tab for the Ruby and **Building Blocks** for the Block of Ruby, or
-- `/give @s astralend:ruby 64`
-- craft 9 rubies into a block and back. Mine the block with an iron pickaxe or better.
-- the chat shows "Welcome! Go find some rubies." when you join.
+- open the creative inventory and click the **The Astral End** tab (the Void Crystal icon), or
+- `/give @s astralend:stardust_block 16`, then place it under a ceiling and watch it rise;
+- place Stardust against a ceiling and plant **Comet Cress** on its underside.
 
 Game files for this dev copy (worlds, logs, options) go in `run/`. The full log is
 `run/logs/latest.log`; crash reports are in `run/crash-reports/` (`./dev.sh crash` shows the newest).
@@ -140,44 +159,63 @@ Minecraft launcher adds this for Mac players; without it the game fails with
 build.gradle                  Minecraft + Forge versions, run configs
 settings.gradle               project name
 src/main/java/com/ggrantrichards/astralend/
-  AstralEnd.java              entry point (@Mod), event listeners
-  ModBlocks.java              block registrations
-  ModItems.java               item registrations
+  AstralEnd.java              entry point (@Mod)
+  ModBlocks.java              every block (and its block item)
+  ModItems.java               items that aren't blocks
+  ModCreativeTabs.java        "The Astral End" creative tab
+  block/                      blocks with custom behaviour (Stardust, plants, crops)
 src/main/resources/
   META-INF/mods.toml          mod ID, name, version, dependencies
   pack.mcmeta                 required: makes Minecraft load assets/ and data/ below
   assets/astralend/           CLIENT stuff: what things look like
-    textures/item/ruby.png        16x16 PNG
-    textures/block/ruby_block.png
-    models/item/ruby.json         "flat item using this texture"
-    models/block/ruby_block.json  "cube with the same texture on all sides"
+    textures/block/*.png          16x16 PNGs (drawn by tools/textures/make_textures.py)
+    textures/item/*.png
+    models/block/*.json           e.g. "cube with the same texture on all sides"
+    models/item/*.json            e.g. "flat item using this texture"
     items/*.json                  which model to use for each item
-    blockstates/ruby_block.json   which model to use for each block state
+    blockstates/*.json            which model to use for each block state
     lang/en_us.json               display names
   data/                       SERVER stuff: game rules
     astralend/recipe/*.json       crafting recipes
     astralend/loot_table/blocks/  what a block drops
     minecraft/tags/block/...      "mineable with pickaxe", "needs iron tool"
+tools/
+  textures/make_textures.py   draws every texture, plus docs/images/textures.png
+  generate_resources.py       writes all the JSON above from one list
+  check_resources.py          checks nothing is missing (run before launching)
+docs/END_UPDATE.md            the full plan for the mod
 ```
 
 Rule of thumb: **Java registers that a thing exists and what it does. JSON says what it
 looks like, what it's called, how it's crafted, and what it drops.**
-Everything uses IDs like `astralend:ruby`, where the namespace is your mod ID.
+Everything uses IDs like `astralend:void_crystal`, where the namespace is your mod ID.
 
-## 6. Adding your own item: checklist
+## 6. Adding a new block or item
 
-Example: a "Sapphire".
-1. `ModItems.java`: copy the `RUBY` line and change `ruby` to `sapphire` in all 3 places.
-2. `assets/astralend/items/sapphire.json` and `models/item/sapphire.json`: copy the ruby ones and rename inside.
-3. `assets/astralend/textures/item/sapphire.png`: a 16×16 PNG (use Aseprite, Piskel, or Paint.NET).
-4. `lang/en_us.json`: add `"item.astralend.sapphire": "Sapphire"`.
-5. Optional: add it to a creative tab in `AstralEnd.addToCreativeTabs`, and add a recipe.
-6. `./gradlew runClient`.
+The JSON files are generated, so you rarely write them by hand:
 
-If the item shows as a **purple/black checkerboard**, a model or texture path is wrong.
-If it shows as **`item.astralend.sapphire`**, the lang entry is missing.
-If **all** your textures, names and recipes are missing and the game warns
+1. **Java:** register it in `ModBlocks.java` (a block, which also gets an item) or
+   `ModItems.java` (an item only). Copy a similar line, like `NEBULA_MOSS` or `VOID_CRYSTAL`.
+   Add it to the list in `ModCreativeTabs.java`.
+2. **Texture:** draw it in `tools/textures/make_textures.py` (or save a 16×16 PNG into
+   `src/main/resources/assets/astralend/textures/block/` or `item/` using Aseprite, Piskel or
+   LibreSprite), then run `python3 tools/textures/make_textures.py`.
+3. **JSON:** add it to the right list at the top of `tools/generate_resources.py`, then run
+   `python3 tools/generate_resources.py`. That writes its blockstate, models, item
+   definition, loot table, tags and English name.
+4. **Check:** `python3 tools/check_resources.py`. It says exactly what's missing, if anything.
+5. `./dev.sh` to see it in game.
+
+The scripts need Python 3 and Pillow (`pip3 install pillow`).
+
+If something shows as a **purple/black checkerboard**, a model or texture path is wrong
+(`check_resources.py` finds these). If it shows as **`block.astralend.something`**, its English
+name is missing. If **all** your textures, names and recipes are missing and the game warns
 "failed to load a valid ResourcePackInfo", `src/main/resources/pack.mcmeta` is missing or broken.
+
+**Automatic checks:** every push to GitHub builds the mod, loads it in a server (checking
+recipes, loot tables and tags) and boots the real game client (failing if any model or texture
+is missing). Results are on the repository's **Actions** tab.
 
 ## 7. Build a jar and play it in real Minecraft
 
@@ -203,10 +241,8 @@ Rename the Java package `com.ggrantrichards.astralend` with IntelliJ's Refactor 
 - Official MDK examples (Mixins, Access Transformers, and more): <https://github.com/MinecraftForge/MDKExamples>
 - Forge source: <https://github.com/MinecraftForge/MinecraftForge> (the `26.3` branch)
 - Forge Discord and the forums at forums.minecraftforge.net
-- Ideas to try next: a custom sword (`SwordItem`/tool materials), a food item
-  (`Item.Properties().food(...)`), ore that generates in the world (worldgen JSON),
-  a block with a right-click action (override `useWithoutItem` in a `Block` subclass),
-  or a custom creative tab (see the MDK's `ExampleMod.java`).
+- What's next for this mod: Phase 2, the first new biome (Nebula Fields). See the roadmap in
+  [docs/END_UPDATE.md](docs/END_UPDATE.md).
 
 ## Updating to a newer Minecraft version
 

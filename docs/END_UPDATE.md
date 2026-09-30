@@ -180,7 +180,7 @@ of small floating chunks, and craters.
   ore.
 - **Comet Craters** (§10) are common here.
 - **Live comets** (§7.2) pass through most often here.
-- **Flora:** **Comet Cress**, a small white sprout that only grows on Stardust. It's
+- **Flora:** **Comet Cress**, a small white sprout that hangs from the underside of Stardust. It's
   edible.
 
 ### 4.4 Dark Matter Belt
@@ -533,7 +533,7 @@ chiseled.
 - **Orrery Bronze** (+ Cut, Grate, Lamp).
   - It **tarnishes from bronze to violet over time**, like copper oxidising.
   - Waxing it with Glowing Spores stops the tarnishing.
-- **Stardust Block**: falls up.
+- **Stardust Block**: falls up, drifting one block at a time until it hits something.
 - **Astral Glass**: smelted from Stardust. A dark glass with a faint star speckle.
   - A rare **Starfield Glass** variant shows the End-portal starfield effect.
   - Starfield Glass is expensive and limited to a handful per build, for performance.
@@ -552,11 +552,11 @@ chiseled.
 
 | Plant | Behaviour | Uses |
 |---|---|---|
-| **Lumineshroom** | Grows on Nebula Moss. It pulses brightness in a slow ~8-second "breath" cycle. Its actual light level only switches between two values every few seconds, so it doesn't cause lag. | Spore Lanterns, glowing stew, dye |
+| **Lumineshroom** | Grows on Nebula Moss, End Stone or Umbral Stone. Its cap pulses in a slow "breath" cycle (an animated texture). Its light level stays at 10, so it costs nothing. | Spore Lanterns, glowing stew, dye |
 | **Astral Vine** | Grows **upward** from the undersides of blocks. Climbable. Shears stop growth. | Decoration, climbing up island edges |
 | **Starbloom** | A flower that rotates to face the End's centre. Vanilla compasses and clocks spin uselessly in the End, so this is the End's only natural way to find your bearings. | Pollinator breeding, dye, **Star Compass** (points to the central island, works in the End) |
 | **Shimmer Grass** | A short, swaying grass in the Aurora Shallows | Decoration, Pollinator food |
-| **Comet Cress** | Grows only on Stardust, in any light | Food (hunger 3), light crop farming |
+| **Comet Cress** | Hangs from the underside of Stardust and grows downward, in any light. (Stardust rises until it hits a ceiling, so its underside is the only free face.) | Food (2 hunger), farming |
 | **Gravlily** | A rare flower from Dark Matter Belt inversion pockets. It grows upside down. | Brewing: **Potion of Buoyancy** (slow fall + a small jump boost) |
 
 ### 8.4 Tools and utility items
@@ -819,7 +819,7 @@ What it would look like if ancient aliens built in Minecraft's style: a giant **
 | Sky (stars, auroras, background comets, silhouettes, flare light) | Drawn in the End sky renderer; no entities, no world data |
 | Stellar Flare | One server-wide timer. The burn check runs once per second, only for players inside the Corona: "is there sky above?" |
 | Live comet | One entity per player area, with a few block-display parts and particles. Block changes happen only on landfall (<40 blocks). |
-| Lumineshroom "breathing" | The visual pulse is an animated texture. The real light level changes only between 2 values, at most every few seconds, on random ticks. |
+| Lumineshroom "breathing" | The pulse is an animated texture only; the light level never changes. |
 | Biome gravity | A player-only check about once per second that adds or removes an attribute modifier |
 | Gravity inversion and station gravity plating | Small zones generated with the world; entities check only when inside a chunk that has one |
 | Constellation star-bridges | Temporary blocks placed and cleared by the maze, only while a player is looking through the telescope |
@@ -836,7 +836,7 @@ Each phase is playable on its own. Later phases build on earlier ones.
 
 | Phase | Content | Main technical work |
 |---|---|---|
-| **1. Blocks and flora** | Umbral Stone set, Stardust (falls up), Astral Glass, Orrery Bronze (tarnishing), Leviathan Bone, Lumineshroom, Astral Vine, Starbloom, Comet Cress, Void Crystal and Meteoric Iron | Registering blocks and items (like the Ruby), a custom `FallingBlock` subclass that falls up, and a tarnishing block modelled on vanilla's copper. Mostly JSON. |
+| **1. Blocks and flora** ✅ | Umbral Stone set, Stardust (falls up), Astral Glass, Leviathan Bone, Nebula Moss, Lumineshroom, Astral Vine, Starbloom, Comet Cress, Void Crystal and Meteoric Iron. **Done.** Orrery Bronze (tarnishing) moves to Phase 6 with the Orbital Stations it comes from. | Block and item registration, a block that rises instead of falls, a hanging crop, and generated JSON with an automatic checker |
 | **2. First biome: Nebula Fields** | The biome, its terrain features and low gravity | The End's biome list is **hard-coded in vanilla**. Adding biomes needs a custom `BiomeSource` registered in Java, then a data-pack override of `dimension/the_end.json` to use it. Biomes and features themselves are JSON. |
 | **3. Remaining biomes** | Aurora Shallows, Comet Wake, Dark Matter Belt, Shattered Observatory, the Corona, inversion pockets | More JSON worldgen, plus Java for inversion pockets |
 | **4. Mobs** | Pollinator, Void Wanderer, Black Hole Guardian, Umbral Stalker, Corona Skimmer, Cinder Mite, then Drift Whale and the Watcher | Entity classes, AI goals, models (Blockbench → Java model code), spawn rules |
@@ -846,9 +846,7 @@ Each phase is playable on its own. Later phases build on earlier ones.
 | **8. Starforging** | Astral Forge, templates, the six upgrades, Rift Pearls | Data components on items, a menu and screen for the Forge, vanilla attribute modifiers (gravity, step height), a temporary rift-tile block, loot modifiers for smelting and pull, event listeners for hits, projectiles, fire damage and falling into the void |
 | **9. Polish** | Advancements, Echo Logs, music, config toggles, balance passes | JSON advancements, a Forge config file, playtesting |
 
-**Suggested first task:** Phase 1's **Stardust Block** and **Lumineshroom**. They use
-the same registration pattern as the Ruby Block, add one small twist each (falling
-upward; an animated texture), and prove out the art style before any worldgen work.
+**Next:** Phase 2, the Nebula Fields biome and the End biome source.
 
 ---
 
