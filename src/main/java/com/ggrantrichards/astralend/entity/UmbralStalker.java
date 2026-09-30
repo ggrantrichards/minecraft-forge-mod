@@ -34,8 +34,9 @@ import org.jspecify.annotations.Nullable;
 
 // Umbral Stalker: a hunched, almost invisible brute of the Dark Matter Belts that walks on its knuckles.
 //
-// It is only a faint shimmer until it attacks, is hurt, or stands in light (block light 7 or more:
-// Null Lanterns, Spore Lanterns, torches). It creeps up on a player from behind and backs off when
+// While it has no prey it is completely invisible in the dark - not even a shimmer. Once it picks a
+// target it activates: a faint shimmer shows where it moves, and it becomes fully visible when it
+// attacks, is hurt, or stands in light (block light 7 or more: Null Lanterns, Spore Lanterns, torches). It creeps up on a player from behind and backs off when
 // the player turns to face it - the reverse of an Enderman. Its blows hit hard and throw you away
 // from it, which near an edge means toward the void.
 //
@@ -44,10 +45,12 @@ import org.jspecify.annotations.Nullable;
 // ambush blow. After that it fights in the open for a moment, then melts back into the dark.
 public class UmbralStalker extends Monster {
     private static final EntityDataAccessor<Boolean> DATA_REVEALED = SynchedEntityData.defineId(UmbralStalker.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_HUNTING = SynchedEntityData.defineId(UmbralStalker.class, EntityDataSerializers.BOOLEAN);
     public static final int REVEALING_LIGHT = 7;
     public static final byte POUNCE_EVENT = 70;
     public static final int POUNCE_TICKS = 14;    // the leap, arms reaching out
     private int revealTicks;
+    private boolean displayHunting;
     private int pounceCooldown = 60;
     private int attackAnimationTicks;  // client side: counts down while the arms lash out
     private int pounceAnimationTicks;  // client side: counts down through a pounce
@@ -71,6 +74,7 @@ public class UmbralStalker extends Monster {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_REVEALED, false);
+        builder.define(DATA_HUNTING, false);
     }
 
     @Override
@@ -88,6 +92,16 @@ public class UmbralStalker extends Monster {
 
     public boolean isRevealed() {
         return this.entityData.get(DATA_REVEALED);
+    }
+
+    // True once it has a target: the shimmer shows. Without one it is invisible in the dark.
+    public boolean isHunting() {
+        return this.entityData.get(DATA_HUNTING);
+    }
+
+    // For the screenshot tool, which summons it without AI: show it as if it were hunting.
+    public void showAsHunting() {
+        this.displayHunting = true;
     }
 
     @Override
@@ -129,7 +143,7 @@ public class UmbralStalker extends Monster {
                 this.pounceAnimationTicks--;
             }
             // Distortion where it moves.
-            if (!this.isRevealed() && this.walkAnimation.speed() > 0.1F && this.random.nextInt(3) == 0) {
+            if (this.isHunting() && !this.isRevealed() && this.walkAnimation.speed() > 0.1F && this.random.nextInt(3) == 0) {
                 this.level().addParticle(ParticleTypes.REVERSE_PORTAL, this.getRandomX(0.6), this.getRandomY(), this.getRandomZ(0.6), 0.0, 0.0, 0.0);
             }
             return;
@@ -142,6 +156,7 @@ public class UmbralStalker extends Monster {
         }
         boolean lit = this.level().getBrightness(LightLayer.BLOCK, this.blockPosition().above()) >= REVEALING_LIGHT;
         this.entityData.set(DATA_REVEALED, this.revealTicks > 0 || this.hurtTime > 0 || lit);
+        this.entityData.set(DATA_HUNTING, this.displayHunting || this.getTarget() != null);
     }
 
     @Override

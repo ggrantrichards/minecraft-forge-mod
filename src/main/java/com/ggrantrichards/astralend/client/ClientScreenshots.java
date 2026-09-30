@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.ggrantrichards.astralend.AstralEnd;
 import com.ggrantrichards.astralend.ModBlocks;
+import com.ggrantrichards.astralend.entity.UmbralStalker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -185,6 +186,9 @@ public final class ClientScreenshots {
             }
             if (!end.noCollision(entity)) {
                 entity.snapTo(shot.mobX(), shot.mobY(), shot.mobZ(), yaw, 0.0F);
+            }
+            if (entity instanceof UmbralStalker stalker) {
+                stalker.showAsHunting();   // otherwise, with no prey, there'd be nothing to see
             }
             if (entity instanceof Mob mob) {
                 mob.setNoAi(true);

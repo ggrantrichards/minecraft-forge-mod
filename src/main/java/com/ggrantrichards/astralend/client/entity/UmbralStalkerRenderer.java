@@ -34,18 +34,21 @@ public class UmbralStalkerRenderer extends MobRenderer<UmbralStalker, UmbralStal
     public void extractRenderState(UmbralStalker entity, State state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.revealed = entity.isRevealed();
+        state.hunting = entity.isHunting();
         state.attackTime = entity.getAttackAnimation(partialTicks);
         state.pounceTime = entity.getPounceAnimation(partialTicks);
     }
 
-    // Hidden, it is a faint shimmer (about 15% opaque); revealed, fully visible.
+    // Dormant in the dark: not drawn at all. Hunting: a faint shimmer (about 12% opaque). Revealed:
+    // fully visible.
     @Override
     protected int getModelTint(State state) {
-        return state.revealed ? 0xFFFFFFFF : 0x26FFFFFF;
+        return state.revealed ? 0xFFFFFFFF : state.hunting ? 0x1FFFFFFF : 0x00FFFFFF;
     }
 
     public static class State extends LivingEntityRenderState {
         public boolean revealed;
+        public boolean hunting;
         public float attackTime;
         public float pounceTime;
     }

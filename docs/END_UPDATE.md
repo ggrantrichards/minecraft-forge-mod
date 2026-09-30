@@ -401,8 +401,8 @@ in the Dark Matter Belts: it walks on its knuckles like a gorilla, with dark-mat
 growing from its back and a violet rift glowing in its chest.
 
 - **Visibility:**
-  - It is hard to see: only a faint shimmer outline, plus distortion particles when it
-    moves.
+  - Until it picks a target it is completely invisible in the dark. Once it is hunting, a
+    faint shimmer outline shows, plus distortion particles when it moves.
   - It becomes fully visible while attacking, when hit, or when lit by a Spore Lantern or
     seen through a Portal Lens.
 - **Behaviour:**
