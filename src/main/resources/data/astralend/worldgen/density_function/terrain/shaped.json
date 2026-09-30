@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:lerp",
+  "alpha": "astralend:terrain/weight/aurora_shallows",
+  "first": {
+    "type": "minecraft:lerp",
+    "alpha": "astralend:terrain/weight/comet_wake",
+    "first": {
+      "type": "minecraft:lerp",
+      "alpha": "astralend:terrain/weight/dark_matter_belt",
+      "first": {
+        "type": "minecraft:lerp",
+        "alpha": "astralend:terrain/weight/corona",
+        "first": "minecraft:end/sloped_cheese",
+        "second": "astralend:terrain/corona"
+      },
+      "second": "astralend:terrain/dark_matter_belt"
+    },
+    "second": "astralend:terrain/comet_wake"
+  },
+  "second": "astralend:terrain/aurora_shallows"
+}

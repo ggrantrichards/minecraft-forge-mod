@@ -1,11 +1,15 @@
 package com.ggrantrichards.astralend;
 
+import com.ggrantrichards.astralend.client.SpectatorOverlayFix;
 import com.ggrantrichards.astralend.dev.WorldgenSurvey;
+import com.ggrantrichards.astralend.world.GravityInversion;
 import com.ggrantrichards.astralend.world.LowGravity;
 import com.ggrantrichards.astralend.world.ModWorldgen;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
@@ -24,9 +28,15 @@ public final class AstralEnd {
         ModBlocks.BLOCKS.register(modBusGroup);
         ModItems.ITEMS.register(modBusGroup);
         ModCreativeTabs.TABS.register(modBusGroup);
+        ModBlockEntities.BLOCK_ENTITIES.register(modBusGroup);
         ModWorldgen.BIOME_SOURCES.register(modBusGroup);
+        ModWorldgen.FEATURE_TYPES.register(modBusGroup);
 
         LowGravity.register();
+        GravityInversion.register();
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            SpectatorOverlayFix.register();  // client-only code; the server never loads it
+        }
         WorldgenSurvey.register(); // does nothing unless started with -Dastralend.survey=true
 
         FMLCommonSetupEvent.getBus(modBusGroup).addListener(this::commonSetup);

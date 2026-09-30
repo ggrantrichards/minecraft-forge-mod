@@ -188,10 +188,11 @@ known = {f"{NS}:{n}" for n in blocks | items}
 WORLDGEN = RES / "data" / NS / "worldgen"
 worldgen_ids = {}
 for file in sorted(WORLDGEN.rglob("*.json")) if WORLDGEN.exists() else []:
-    kind = file.relative_to(WORLDGEN).parts[0]
-    worldgen_ids.setdefault(kind, set()).add(f"{NS}:{file.stem}")
-    known.add(f"{NS}:{file.stem}")
-known |= {f"{NS}:{n}" for n in re.findall(r'BIOME_SOURCES\.register\("([a-z0-9_]+)"',
+    kind, *path = file.relative_to(WORLDGEN).with_suffix("").parts
+    ident = f"{NS}:{'/'.join(path)}"   # density functions live in subfolders: astralend:terrain/outer
+    worldgen_ids.setdefault(kind, set()).add(ident)
+    known.add(ident)
+known |= {f"{NS}:{n}" for n in re.findall(r'(?:BIOME_SOURCES|FEATURE_TYPES)\.register\("([a-z0-9_]+)"',
                                            (JAVA / "world/ModWorldgen.java").read_text())}
 
 
@@ -208,6 +209,10 @@ for file in sorted((WORLDGEN / "biome").glob("*.json")) if WORLDGEN.exists() els
             need("placed_feature", ref, file.relative_to(ROOT))
     if f"biome.{NS}.{file.stem}" not in lang:
         err(f"biome {NS}:{file.stem}: missing English name biome.{NS}.{file.stem}")
+for file in sorted((WORLDGEN).rglob("*.json")) if WORLDGEN.exists() else []:
+    if file.relative_to(WORLDGEN).parts[0] in ("density_function", "noise_settings"):
+        for ref in set(re.findall(rf'"({NS}:(?:region|terrain)/[a-z0-9_/]+)"', file.read_text())):
+            need("density_function", ref, file.relative_to(ROOT))
 for file in sorted((WORLDGEN / "noise_settings").glob("*.json")) if WORLDGEN.exists() else []:
     need("material_rule", (load(file) or {}).get("material_rule", ""), file.relative_to(ROOT))
 for file in sorted((RES / "data/minecraft/dimension").glob("*.json")):

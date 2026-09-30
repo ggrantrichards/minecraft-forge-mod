@@ -1,0 +1,38 @@
+package com.ggrantrichards.astralend.world;
+
+// Where each astral biome goes, from two slow region noises. Shared by the biome source and the
+// worldgen survey; the terrain in data/astralend/worldgen/density_function/terrain/ blends between
+// shapes using the same thresholds (tools/generate_resources.py writes both from one table).
+//
+//  - "nebula" noise (the noise router's temperature slot): above NEBULA -> Nebula Fields. This is
+//    unchanged from Phase 2, so Nebula Fields stay where they were.
+//  - "belt" noise (the vegetation slot) splits the rest of the outer End:
+//        nebula noise low  (< COLD):  belt high -> Aurora Shallows,  belt low -> Comet Wake
+//        nebula noise middle:         belt high -> Dark Matter Belt, belt low -> the Corona
+//    and between those, vanilla's Highlands/Midlands/Barrens/Small Islands.
+//  - "ruin" noise (the ridges slot): small, rare peaks inside vanilla areas -> Shattered Observatory.
+public final class AstralRegions {
+    public static final double NEBULA = 0.18;
+    public static final double COLD = -0.2;
+    public static final double COLD_BELT = 0.2;    // |belt| beyond this in the cold band
+    public static final double MID_BELT = 0.3;     // |belt| beyond this in the middle band
+    public static final double RUIN = 0.55;
+
+    public enum Region { VANILLA, NEBULA_FIELDS, AURORA_SHALLOWS, COMET_WAKE, DARK_MATTER_BELT, SHATTERED_OBSERVATORY, CORONA }
+
+    public static Region pick(double nebula, double belt, double ruin) {
+        if (nebula > NEBULA) {
+            return Region.NEBULA_FIELDS;
+        }
+        if (nebula < COLD) {
+            if (belt > COLD_BELT) return Region.AURORA_SHALLOWS;
+            if (belt < -COLD_BELT) return Region.COMET_WAKE;
+        } else {
+            if (belt > MID_BELT) return Region.DARK_MATTER_BELT;
+            if (belt < -MID_BELT) return Region.CORONA;
+        }
+        return ruin > RUIN ? Region.SHATTERED_OBSERVATORY : Region.VANILLA;
+    }
+
+    private AstralRegions() {}
+}

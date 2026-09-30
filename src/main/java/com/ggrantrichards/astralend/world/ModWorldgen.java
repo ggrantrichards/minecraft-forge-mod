@@ -1,20 +1,36 @@
 package com.ggrantrichards.astralend.world;
 
 import com.ggrantrichards.astralend.AstralEnd;
+import com.ggrantrichards.astralend.world.feature.CometCoreFeature;
+import com.ggrantrichards.astralend.world.feature.InversionPocketFeature;
+import com.ggrantrichards.astralend.world.feature.ObservatoryRuinFeature;
+import com.ggrantrichards.astralend.world.feature.StardustUnderhangFeature;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.biome.BiomeSource;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 // Registers the biome source type "astralend:astral_end", which
-// data/minecraft/dimension/the_end.json uses for the End.
+// data/minecraft/dimension/the_end.json uses for the End, and the feature types coded in Java
+// (used by data/astralend/worldgen/feature/*.json).
 public final class ModWorldgen {
     public static final DeferredRegister<MapCodec<? extends BiomeSource>> BIOME_SOURCES =
         DeferredRegister.create(Registries.BIOME_SOURCE, AstralEnd.MODID);
 
     public static final RegistryObject<MapCodec<? extends BiomeSource>> ASTRAL_END =
         BIOME_SOURCES.register("astral_end", () -> AstralEndBiomeSource.CODEC);
+
+    public static final DeferredRegister<MapCodec<? extends Feature>> FEATURE_TYPES =
+        DeferredRegister.create(Registries.FEATURE_TYPE, AstralEnd.MODID);
+
+    static {
+        FEATURE_TYPES.register("comet_core", () -> CometCoreFeature.CODEC);
+        FEATURE_TYPES.register("stardust_underhang", () -> StardustUnderhangFeature.CODEC);
+        FEATURE_TYPES.register("inversion_pocket", () -> InversionPocketFeature.CODEC);
+        FEATURE_TYPES.register("observatory_ruin", () -> ObservatoryRuinFeature.CODEC);
+    }
 
     private ModWorldgen() {}
 }

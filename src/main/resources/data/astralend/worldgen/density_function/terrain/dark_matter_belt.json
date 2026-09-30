@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:sub",
+  "left": {
+    "type": "minecraft:add",
+    "left": "minecraft:end/sloped_cheese",
+    "right": {
+      "type": "minecraft:mul",
+      "left": "minecraft:end/base_3d_noise",
+      "right": 0.5
+    }
+  },
+  "right": {
+    "type": "minecraft:mul",
+    "left": {
+      "type": "minecraft:max",
+      "left": {
+        "type": "minecraft:add",
+        "left": "minecraft:end/islands",
+        "right": -0.2
+      },
+      "right": 0.0
+    },
+    "right": 6.0
+  }
+}

@@ -47,7 +47,7 @@
                     "to_value": 0.0
                   },
                   "first": -23.4375,
-                  "second": "minecraft:end/sloped_cheese"
+                  "second": "astralend:terrain/shaped"
                 }
               }
             },
@@ -59,14 +59,9 @@
         "type": "minecraft:beardifier"
       }
     },
-    "ridges": 0.0,
-    "temperature": {
-      "type": "minecraft:noise",
-      "noise": "minecraft:vegetation",
-      "xz_scale": 0.25,
-      "y_scale": 0.0
-    },
-    "vegetation": 0.0
+    "ridges": "astralend:region/ruin",
+    "temperature": "astralend:region/nebula",
+    "vegetation": "astralend:region/belt"
   },
   "sea_level": 0,
   "spawn_target": []

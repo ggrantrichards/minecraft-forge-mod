@@ -1,0 +1,43 @@
+{
+  "type": "minecraft:min",
+  "left": {
+    "type": "minecraft:gradient",
+    "axis": "y",
+    "from_coordinate": 0,
+    "from_value": 13.625,
+    "to_coordinate": 128,
+    "to_value": -18.375
+  },
+  "right": {
+    "type": "minecraft:add",
+    "left": {
+      "type": "minecraft:gradient",
+      "axis": "y",
+      "from_coordinate": 0,
+      "from_value": -13.625,
+      "to_coordinate": 128,
+      "to_value": 18.375
+    },
+    "right": {
+      "type": "minecraft:mul",
+      "left": {
+        "type": "minecraft:mul",
+        "left": {
+          "type": "minecraft:add",
+          "left": {
+            "type": "minecraft:add",
+            "left": "minecraft:end/islands",
+            "right": 0.12
+          },
+          "right": {
+            "type": "minecraft:mul",
+            "left": "minecraft:end/base_3d_noise",
+            "right": 0.2
+          }
+        },
+        "right": 14.0
+      },
+      "right": 0.25
+    }
+  }
+}

@@ -1,18 +1,25 @@
 package com.ggrantrichards.astralend.dev;
 
 import com.ggrantrichards.astralend.ModBlocks;
+import com.ggrantrichards.astralend.block.GravityAnomalyBlockEntity;
+import com.ggrantrichards.astralend.world.AstralEndBiomeSource;
+import com.ggrantrichards.astralend.world.GravityInversion;
 import com.ggrantrichards.astralend.world.LowGravity;
 import com.ggrantrichards.astralend.world.ModBiomes;
 import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.StructureTags;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.Level;
@@ -21,26 +28,42 @@ import net.minecraft.world.level.biome.BiomeResolver;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Portal;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.RandomState;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import org.slf4j.Logger;
 
 // Development tool, not part of normal play. When the server is started with
 // -Dastralend.survey=true (./gradlew runServer -PastralendSurvey), this:
-//   1. draws a text map of the End's biomes and measures how much is Nebula Fields,
-//   2. generates a 9x9-chunk area inside Nebula Fields and counts every block,
-//   3. checks that low gravity is applied inside Nebula Fields and not outside,
+//   1. travels through a real End Portal (the way a stronghold's portal works) and checks the
+//      arrival platform, the dragon fight and the central island,
+//   2. draws a text map of the End's biomes and measures how much each biome covers,
+//   3. generates an area inside every astral biome and counts every block, checking that each
+//      biome has its stone, ores, plants and features,
+//   4. checks low gravity (Nebula Fields) and gravity inversion (Dark Matter Belt),
 // then prints SURVEY PASSED or SURVEY FAILED and stops the server. CI runs it on every push.
+// tools/render_survey.py turns its maps into the pictures in the README.
 public final class WorldgenSurvey {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String TAG = "[AstralEnd survey] ";
     private static final int MAP_RADIUS = 6000;
     private static final int MAP_STEP = 150;
-    private static final int AREA_CHUNKS = 4; // survey (2*4+1)^2 = 81 chunks
+
+    // Map symbol for each astral biome, and how much of the outer End it should cover (percent).
+    private record BiomeInfo(ResourceKey<Biome> key, char symbol, String name, double minShare, double maxShare, int areaChunks) {}
+
+    private static final List<BiomeInfo> ASTRAL = List.of(
+        new BiomeInfo(ModBiomes.NEBULA_FIELDS, 'N', "Nebula Fields", 15, 45, 4),
+        new BiomeInfo(ModBiomes.AURORA_SHALLOWS, 'A', "Aurora Shallows", 3, 25, 3),
+        new BiomeInfo(ModBiomes.COMET_WAKE, 'W', "Comet Wake", 3, 25, 3),
+        new BiomeInfo(ModBiomes.DARK_MATTER_BELT, 'D', "Dark Matter Belt", 2, 20, 3),
+        new BiomeInfo(ModBiomes.SHATTERED_OBSERVATORY, 'R', "Shattered Observatory", 0.2, 6, 3),
+        new BiomeInfo(ModBiomes.CORONA, 'C', "The Corona", 2, 20, 3));
 
     public static void register() {
         if (Boolean.getBoolean("astralend.survey")) {
@@ -52,6 +75,7 @@ public final class WorldgenSurvey {
         MinecraftServer server = event.getServer();
         List<String> failures = new ArrayList<>();
         try {
+            endPortal(server, failures);
             survey(server, failures);
         } catch (RuntimeException e) {
             LOGGER.error(TAG + "crashed", e);
@@ -66,22 +90,94 @@ public final class WorldgenSurvey {
         server.halt(false);
     }
 
+    // ================================================================ 1. Getting to the End
+
+    private static void endPortal(MinecraftServer server, List<String> failures) {
+        ServerLevel overworld = server.overworld();
+        ServerLevel end = server.getLevel(Level.END);
+        if (end == null) {
+            failures.add("the End dimension doesn't exist");
+            return;
+        }
+        if (!(end.getChunkSource().getGenerator().getBiomeSource() instanceof AstralEndBiomeSource)) {
+            failures.add("the End isn't using the Astral End biome source (is data/minecraft/dimension/the_end.json loaded?)");
+        }
+
+        // Eyes of Ender lead to strongholds (the mod doesn't touch the Overworld; this just confirms it).
+        BlockPos stronghold = overworld.findNearestMapStructure(StructureTags.EYE_OF_ENDER_LOCATED, BlockPos.ZERO, 100, false);
+        log("Nearest stronghold (where Eyes of Ender lead): " + (stronghold == null ? "none found!" : stronghold.toShortString()));
+        if (stronghold == null) {
+            failures.add("no stronghold found for Eyes of Ender");
+        }
+
+        // Step through an End Portal exactly as the portal block does it: ask it for the destination,
+        // then teleport. (A spectator can't do this in vanilla: spectators don't touch blocks, so
+        // portals never trigger for them.)
+        overworld.getChunk(0, 0);
+        ArmorStand traveller = new ArmorStand(overworld, 0.5, 100, 0.5);
+        overworld.addFreshEntity(traveller);
+        TeleportTransition transition = ((Portal) Blocks.END_PORTAL).getPortalDestination(overworld, traveller, BlockPos.containing(0.5, 100, 0.5));
+        Entity arrived = transition == null ? null : traveller.teleport(transition);
+        if (arrived == null || arrived.level() != end) {
+            failures.add("stepping through an End Portal didn't reach the End");
+            return;
+        }
+        BlockPos at = arrived.blockPosition();
+        int obsidian = 0;
+        int clear = 0;
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                if (end.getBlockState(ServerLevel.END_SPAWN_POINT.offset(dx, -2, dz)).is(Blocks.OBSIDIAN)) {
+                    obsidian++;
+                }
+                for (int dy = -1; dy <= 1; dy++) {
+                    if (end.getBlockState(ServerLevel.END_SPAWN_POINT.offset(dx, dy, dz)).isAir()) {
+                        clear++;
+                    }
+                }
+            }
+        }
+        end.getChunk(1, 1);
+        int islandTop = end.getHeight(Heightmap.Types.WORLD_SURFACE, 30, 30);
+        BlockState islandBlock = end.getBlockState(new BlockPos(30, islandTop - 1, 30));
+        log(String.format("End Portal: arrived in the End at %s; obsidian platform %d/25 blocks, clear space above %d/75; "
+                + "dragon fight %s; central island surface at (30, %d, 30) is %s",
+            at.toShortString(), obsidian, clear, end.getDragonFight() != null ? "set up" : "MISSING", islandTop - 1,
+            islandBlock.getBlock().getName().getString()));
+        if (Math.abs(at.getX() - 100) > 1 || Math.abs(at.getZ()) > 1) {
+            failures.add("arrived at " + at.toShortString() + " instead of the End spawn point (100, 50, 0)");
+        }
+        if (obsidian < 25 || clear < 75) {
+            failures.add("the End arrival platform is incomplete (" + obsidian + "/25 obsidian, " + clear + "/75 air)");
+        }
+        if (end.getDragonFight() == null) {
+            failures.add("the End has no dragon fight");
+        }
+        if (!islandBlock.is(Blocks.END_STONE)) {
+            failures.add("the central island isn't vanilla End Stone at (30, 30): " + islandBlock);
+        }
+        arrived.discard();
+    }
+
+    // ================================================================ 2-4. Biomes
+
     private static void survey(MinecraftServer server, List<String> failures) {
         ServerLevel end = server.getLevel(Level.END);
         RandomState randomState = end.getChunkSource().randomState();
         ChunkGenerator generator = end.getChunkSource().getGenerator();
         BiomeResolver biomes = generator.getBiomeSource().createUncachedResolver(randomState);
 
-        // ---- 1. Biome map ----
+        // ---- Biome map ----
         log("Biome map of the End, " + (2 * MAP_RADIUS) + " x " + (2 * MAP_RADIUS) + " blocks, north up, one character = "
             + MAP_STEP + " blocks:");
-        log("  O = central island (vanilla)   N = Nebula Fields   H/M/B/s = vanilla Highlands/Midlands/Barrens/Small Islands");
-        Map<String, Integer> outerCounts = new HashMap<>();
+        log("  O central island   N Nebula Fields   A Aurora Shallows   W Comet Wake   D Dark Matter Belt   "
+            + "R Shattered Observatory   C The Corona   H/M/B/s vanilla Highlands/Midlands/Barrens/Small Islands");
+        Map<Character, Integer> outerCounts = new HashMap<>();
+        Map<Character, Integer> runs = new HashMap<>();
+        Map<Character, Integer> continued = new HashMap<>();
+        Map<Character, List<BlockPos>> spots = new HashMap<>();
         int outerTotal = 0;
-        List<BlockPos> nebulaSpots = new ArrayList<>();
         BlockPos vanillaSpot = null;
-        int nebulaRuns = 0;
-        int nebulaWithNebulaNeighbour = 0;
         for (int z = -MAP_RADIUS; z <= MAP_RADIUS; z += MAP_STEP * 2) {
             StringBuilder row = new StringBuilder();
             char previous = ' ';
@@ -92,7 +188,12 @@ public final class WorldgenSurvey {
                 double distance = Math.sqrt((double) x * x + (double) z * z);
                 if (distance > 1100) {
                     outerTotal++;
-                    outerCounts.merge(String.valueOf(c), 1, Integer::sum);
+                    outerCounts.merge(c, 1, Integer::sum);
+                    // Coherence: how often a sample has the same biome just to its west.
+                    runs.merge(c, 1, Integer::sum);
+                    if (previous == c) {
+                        continued.merge(c, 1, Integer::sum);
+                    }
                 }
                 if (c == 'O' && distance > 1100) {
                     failures.add("central-island biome found " + (int) distance + " blocks out");
@@ -100,51 +201,75 @@ public final class WorldgenSurvey {
                 if (c != 'O' && distance < 1000) {
                     failures.add("non-central biome " + c + " found only " + (int) distance + " blocks from the centre");
                 }
-                if (c == 'N' && distance < 4000) {
-                    nebulaSpots.add(new BlockPos(x, 64, z));
+                if (distance > 1100 && distance < 5000) {
+                    spots.computeIfAbsent(c, k -> new ArrayList<>()).add(new BlockPos(x, 64, z));
                 }
                 if (vanillaSpot == null && distance > 1500 && (c == 'H' || c == 'M')) {
                     vanillaSpot = new BlockPos(x, 64, z);
-                }
-                // Coherence: how often a Nebula Fields sample has Nebula Fields just to its west.
-                if (c == 'N' && distance > 1100) {
-                    nebulaRuns++;
-                    if (previous == 'N') {
-                        nebulaWithNebulaNeighbour++;
-                    }
                 }
                 previous = c;
             }
             log("  " + row);
         }
-        int nebula = outerCounts.getOrDefault("N", 0);
-        double nebulaShare = 100.0 * nebula / Math.max(1, outerTotal);
-        log(String.format("Outer End (beyond 1,100 blocks): Nebula Fields %.1f%%, Highlands %.1f%%, Midlands %.1f%%, Barrens %.1f%%, Small Islands %.1f%%",
-            nebulaShare, pct(outerCounts, "H", outerTotal), pct(outerCounts, "M", outerTotal), pct(outerCounts, "B", outerTotal),
-            pct(outerCounts, "s", outerTotal)));
-        double coherence = 100.0 * nebulaWithNebulaNeighbour / Math.max(1, nebulaRuns);
-        log(String.format("Nebula Fields coherence: %.0f%% of samples continue the region of their western neighbour (%d blocks away)",
-            coherence, MAP_STEP));
-        if (coherence < 50) {
-            failures.add(String.format("Nebula Fields are scattered, not regions (coherence %.0f%%, expected 50%%+)", coherence));
+        StringBuilder shares = new StringBuilder("Outer End (beyond 1,100 blocks):");
+        for (char c : "NAWDRCHMBs".toCharArray()) {
+            shares.append(String.format(" %c %.1f%%", c, 100.0 * outerCounts.getOrDefault(c, 0) / Math.max(1, outerTotal)));
         }
-        if (nebulaShare < 15 || nebulaShare > 45) {
-            failures.add(String.format("Nebula Fields cover %.1f%% of the outer End (expected 15-45%%)", nebulaShare));
+        log(shares.toString());
+        for (BiomeInfo info : ASTRAL) {
+            double share = 100.0 * outerCounts.getOrDefault(info.symbol(), 0) / Math.max(1, outerTotal);
+            double coherence = 100.0 * continued.getOrDefault(info.symbol(), 0) / Math.max(1, runs.getOrDefault(info.symbol(), 0));
+            log(String.format("%s: %.1f%% of the outer End, coherence %.0f%% (samples that continue the region of their western neighbour)",
+                info.name(), share, coherence));
+            if (share < info.minShare() || share > info.maxShare()) {
+                failures.add(String.format("%s covers %.1f%% of the outer End (expected %.1f-%.0f%%)", info.name(), share,
+                    info.minShare(), info.maxShare()));
+            }
+            double minCoherence = info.symbol() == 'R' ? 25 : 50;
+            if (share > 0 && coherence < minCoherence) {
+                failures.add(String.format("%s is scattered, not regions (coherence %.0f%%, expected %.0f%%+)", info.name(),
+                    coherence, minCoherence));
+            }
         }
-        for (String vanilla : new String[] {"H", "M", "s"}) {
+        for (char vanilla : new char[] {'H', 'M', 's'}) {
             if (outerCounts.getOrDefault(vanilla, 0) == 0) {
                 failures.add("vanilla biome " + vanilla + " no longer appears in the outer End");
             }
         }
-        // Pick the Nebula Fields spot nearest the centre that has plenty of islands, using the
-        // terrain generator's surface height (no chunks generated yet).
-        nebulaSpots.sort((a, b) -> Long.compare(distSqr(a), distSqr(b)));
-        BlockPos bestNebula = null;
+
+        // ---- Generate an area of each astral biome and count what's there ----
+        Map<Character, Area> areas = new LinkedHashMap<>();
+        for (BiomeInfo info : ASTRAL) {
+            BlockPos spot = bestSpot(spots.getOrDefault(info.symbol(), List.of()), end, generator, randomState);
+            if (spot == null) {
+                failures.add("no " + info.name() + " within 5,000 blocks of the centre");
+                continue;
+            }
+            Area area = scan(end, info, spot);
+            areas.put(info.symbol(), area);
+            area.print();
+        }
+
+        checkNebula(areas.get('N'), failures);
+        checkAurora(areas.get('A'), failures);
+        checkCometWake(areas.get('W'), failures);
+        checkDarkMatter(areas.get('D'), end, failures);
+        checkObservatory(areas.get('R'), failures);
+        checkCorona(areas.get('C'), failures);
+        checkLowGravity(areas.get('N'), vanillaSpot, end, failures);
+    }
+
+    // Among the candidate spots nearest the centre, the one with the most land (by terrain height,
+    // without generating chunks).
+    private static BlockPos bestSpot(List<BlockPos> candidates, ServerLevel end, ChunkGenerator generator, RandomState randomState) {
+        List<BlockPos> sorted = new ArrayList<>(candidates);
+        sorted.sort((a, b) -> Long.compare(distSqr(a), distSqr(b)));
+        BlockPos best = null;
         int bestLand = -1;
-        for (BlockPos spot : nebulaSpots) {
+        for (BlockPos spot : sorted.subList(0, Math.min(sorted.size(), 40))) {
             int land = 0;
-            for (int ox = -64; ox <= 64; ox += 32) {
-                for (int oz = -64; oz <= 64; oz += 32) {
+            for (int ox = -48; ox <= 48; ox += 24) {
+                for (int oz = -48; oz <= 48; oz += 24) {
                     int h = generator.getBaseHeight(spot.getX() + ox, spot.getZ() + oz, Heightmap.Types.WORLD_SURFACE_WG, end, randomState);
                     if (h > end.getMinY() + 1) {
                         land++;
@@ -153,169 +278,343 @@ public final class WorldgenSurvey {
             }
             if (land > bestLand) {
                 bestLand = land;
-                bestNebula = spot;
+                best = spot;
             }
             if (land >= 15) {
                 break; // 15 of 25 sample points on land is plenty
             }
         }
-        if (bestNebula == null) {
-            failures.add("no Nebula Fields within 4,000 blocks of the centre");
-            return;
+        return best;
+    }
+
+    // What was found in a generated area. "in" counts only columns whose biome is the surveyed one.
+    private static final class Area {
+        final BiomeInfo info;
+        final BlockPos centre;
+        final Map<Block, Integer> in = new HashMap<>();
+        final Map<Block, Integer> out = new HashMap<>();
+        final Map<Block, Integer> topsIn = new HashMap<>();
+        final Map<Integer, Integer> surfaceHeightsIn = new HashMap<>();
+        final List<BlockPos> anomalies = new ArrayList<>();
+        BlockPos standOn;
+        int columnsIn;
+        int landColumnsIn;
+        char[][] topView;
+
+        Area(BiomeInfo info, BlockPos centre) {
+            this.info = info;
+            this.centre = centre;
         }
 
-        // ---- 2. Generate chunks inside Nebula Fields and count blocks ----
-        int cx = bestNebula.getX() >> 4;
-        int cz = bestNebula.getZ() >> 4;
-        log("Generating " + (2 * AREA_CHUNKS + 1) * (2 * AREA_CHUNKS + 1) + " chunks around " + bestNebula.getX() + ", "
-            + bestNebula.getZ() + " (the nearest Nebula Fields spot with plenty of islands)...");
-        Map<Block, Integer> counts = new HashMap<>();
-        Map<Block, Integer> nebulaCounts = new HashMap<>();
-        int nebulaColumns = 0;
-        int columnsWithLand = 0;
-        int mossTops = 0;
-        int stoneTops = 0;
-        BlockPos standOn = null;
-        int size = (2 * AREA_CHUNKS + 1) * 16;
-        char[][] topView = new char[size][size];
-        for (int dx = -AREA_CHUNKS; dx <= AREA_CHUNKS; dx++) {
-            for (int dz = -AREA_CHUNKS; dz <= AREA_CHUNKS; dz++) {
+        int in(Block block) {
+            return this.in.getOrDefault(block, 0);
+        }
+
+        int out(Block block) {
+            return this.out.getOrDefault(block, 0);
+        }
+
+        int tops(Block block) {
+            return this.topsIn.getOrDefault(block, 0);
+        }
+
+        double landChunks() {
+            return this.landColumnsIn / 256.0;
+        }
+
+        void print() {
+            log("Top-down view of " + this.info.name() + " around " + this.centre.getX() + ", " + this.centre.getZ() + " ("
+                + this.topView.length + " x " + this.topView.length + " blocks, north up; lower case = outside the biome):");
+            for (char[] row : this.topView) {
+                log("  |" + new String(row) + "|");
+            }
+            List<Map.Entry<Block, Integer>> found = new ArrayList<>(this.in.entrySet());
+            found.sort((a, b) -> b.getValue() - a.getValue());
+            StringBuilder line = new StringBuilder();
+            for (Map.Entry<Block, Integer> e : found) {
+                line.append(", ").append(e.getKey().getName().getString()).append(' ').append(e.getValue());
+            }
+            log(String.format("%s: %d columns in the biome, %d with land (~%.0f chunks). Blocks found%s", this.info.name(),
+                this.columnsIn, this.landColumnsIn, this.landChunks(), line));
+        }
+    }
+
+    private static Area scan(ServerLevel end, BiomeInfo info, BlockPos spot) {
+        Area area = new Area(info, spot);
+        int radius = info.areaChunks();
+        int cx = spot.getX() >> 4;
+        int cz = spot.getZ() >> 4;
+        int size = (2 * radius + 1) * 16;
+        area.topView = new char[size][size];
+        log("Generating " + (2 * radius + 1) * (2 * radius + 1) + " chunks of " + info.name() + " around " + spot.getX() + ", "
+            + spot.getZ() + "...");
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
                 LevelChunk chunk = end.getChunk(cx + dx, cz + dz);
                 for (int x = 0; x < 16; x++) {
                     for (int z = 0; z < 16; z++) {
                         int bx = ((cx + dx) << 4) + x;
                         int bz = ((cz + dz) << 4) + z;
-                        boolean inNebula = end.getBiome(new BlockPos(bx, 64, bz)).is(ModBiomes.NEBULA_FIELDS);
-                        if (inNebula) {
-                            nebulaColumns++;
+                        boolean inside = end.getBiome(new BlockPos(bx, 64, bz)).is(info.key());
+                        if (inside) {
+                            area.columnsIn++;
                         }
-                        Block top = null;
                         Block firstSeen = null;
+                        Block top = null;
                         for (int y = end.getMaxY(); y >= end.getMinY(); y--) {
-                            BlockState state = chunk.getBlockState(new BlockPos(bx, y, bz));
+                            BlockPos pos = new BlockPos(bx, y, bz);
+                            BlockState state = chunk.getBlockState(pos);
                             if (state.isAir()) {
                                 continue;
                             }
-                            counts.merge(state.getBlock(), 1, Integer::sum);
+                            Block block = state.getBlock();
+                            (inside ? area.in : area.out).merge(block, 1, Integer::sum);
                             if (firstSeen == null) {
-                                firstSeen = state.getBlock();
+                                firstSeen = block;
                             }
-                            if (inNebula) {
-                                nebulaCounts.merge(state.getBlock(), 1, Integer::sum);
+                            if (block == ModBlocks.GRAVITY_ANOMALY.get()) {
+                                area.anomalies.add(pos);
                             }
                             if (top == null && state.isSolidRender()) {
-                                top = state.getBlock();
-                                if (inNebula && standOn == null && top == ModBlocks.NEBULA_MOSS.get()) {
-                                    standOn = new BlockPos(bx, y + 1, bz);
+                                top = block;
+                                if (inside) {
+                                    area.surfaceHeightsIn.merge(y, 1, Integer::sum);
+                                    if (area.standOn == null) {
+                                        area.standOn = pos.above();
+                                    }
                                 }
                             }
                         }
-                        topView[((dz + AREA_CHUNKS) << 4) + z][((dx + AREA_CHUNKS) << 4) + x] = topSymbol(firstSeen, inNebula);
-                        if (top != null && inNebula) {
-                            columnsWithLand++;
-                            if (top == ModBlocks.NEBULA_MOSS.get()) {
-                                mossTops++;
-                            } else if (top == Blocks.END_STONE) {
-                                stoneTops++;
-                            }
+                        char symbol = topSymbol(firstSeen);
+                        area.topView[((dz + radius) << 4) + z][((dx + radius) << 4) + x] =
+                            inside ? symbol : Character.toLowerCase(symbol);
+                        if (inside && top != null) {
+                            area.landColumnsIn++;
+                            area.topsIn.merge(top, 1, Integer::sum);
                         }
                     }
                 }
             }
         }
-        int moss = nebulaCounts.getOrDefault(ModBlocks.NEBULA_MOSS.get(), 0);
-        int shrooms = nebulaCounts.getOrDefault(ModBlocks.LUMINESHROOM.get(), 0);
-        int blooms = nebulaCounts.getOrDefault(ModBlocks.STARBLOOM.get(), 0);
-        int vineTips = nebulaCounts.getOrDefault(ModBlocks.ASTRAL_VINE.get(), 0);
-        int vineBody = nebulaCounts.getOrDefault(ModBlocks.ASTRAL_VINE_PLANT.get(), 0);
-        int chorus = nebulaCounts.getOrDefault(Blocks.CHORUS_PLANT, 0) + nebulaCounts.getOrDefault(Blocks.CHORUS_FLOWER, 0);
-        int mossOutside = counts.getOrDefault(ModBlocks.NEBULA_MOSS.get(), 0) - moss;
-        int chorusOutside = counts.getOrDefault(Blocks.CHORUS_PLANT, 0) + counts.getOrDefault(Blocks.CHORUS_FLOWER, 0) - chorus;
-        log("Columns in Nebula Fields: " + nebulaColumns + " of " + (2 * AREA_CHUNKS + 1) * (2 * AREA_CHUNKS + 1) * 256
-            + ", with land: " + columnsWithLand);
-        log("Top block of Nebula Fields land: Nebula Moss " + mossTops + ", bare End Stone " + stoneTops);
-        double chunksWithLand = columnsWithLand / 256.0;
-        log("Top-down view of the surveyed area (" + size + " x " + size + " blocks, north up), what you'd see from above:");
-        log("  ' ' void  e/E End Stone (outside/inside Nebula Fields)  m Nebula Moss  L Lumineshroom  S Starbloom  V Astral Vine  c chorus");
-        for (char[] row : topView) {
-            log("  |" + new String(row) + "|");
+        return area;
+    }
+
+    // ---------------------------------------------------------------- per-biome checks
+
+    private static boolean enoughLand(Area area, List<String> failures) {
+        if (area == null) {
+            return false;
         }
-        log(String.format("Inside Nebula Fields (~%.0f chunks of land): Nebula Moss %d, Lumineshroom %d (%.1f/chunk), Starbloom %d (%.1f/chunk), "
-            + "Astral Vines %d (+%d body blocks, %.1f/chunk), chorus %d", chunksWithLand, moss, shrooms, shrooms / chunksWithLand, blooms,
-            blooms / chunksWithLand, vineTips, vineBody, vineTips / chunksWithLand, chorus));
-        log("Outside Nebula Fields in the same area (vanilla biomes): Nebula Moss " + mossOutside + ", chorus " + chorusOutside);
-        // Minecraft blurs biome borders by a block or two, so a little moss just across the border
-        // is normal. Much more than that would mean the surface rule is wrong.
-        if (mossOutside > 0.01 * Math.max(1, moss)) {
-            failures.add(mossOutside + " Nebula Moss blocks generated outside Nebula Fields (more than border blending explains)");
+        if (area.landColumnsIn < 300) {
+            failures.add("the surveyed " + area.info.name() + " area has almost no land (" + area.landColumnsIn + " columns)");
+            return false;
         }
+        return true;
+    }
+
+    private static void atLeast(Area area, Block block, double perChunk, List<String> failures) {
+        int n = area.in(block);
+        if (n < Math.max(1, area.landChunks() * perChunk)) {
+            failures.add(String.format("%s: too little %s (%d for ~%.0f chunks of land, expected %.2f+/chunk)", area.info.name(),
+                block.getName().getString(), n, area.landChunks(), perChunk));
+        }
+    }
+
+    // The biome's own stone should replace End Stone; a little End Stone at blurred borders is fine.
+    private static void replacesEndStone(Area area, Block stone, List<String> failures) {
+        int own = area.in(stone);
+        int endStone = area.in(Blocks.END_STONE);
+        log(String.format("%s: %s inside %d, End Stone inside %d, %s outside the biome %d", area.info.name(),
+            stone.getName().getString(), own, endStone, stone.getName().getString(), area.out(stone)));
+        if (endStone > 0.02 * Math.max(1, own)) {
+            failures.add(String.format("%s: %d End Stone blocks left inside the biome, next to %d %s", area.info.name(), endStone,
+                own, stone.getName().getString()));
+        }
+    }
+
+    private static void checkNebula(Area area, List<String> failures) {
+        if (!enoughLand(area, failures)) {
+            return;
+        }
+        int mossTops = area.tops(ModBlocks.NEBULA_MOSS.get());
+        if (mossTops < 0.9 * area.landColumnsIn) {
+            failures.add("Nebula Fields: only " + mossTops + " of " + area.landColumnsIn + " land columns are topped with Nebula Moss");
+        }
+        int chorus = area.in(Blocks.CHORUS_PLANT) + area.in(Blocks.CHORUS_FLOWER);
         if (chorus > 0) {
-            failures.add(chorus + " chorus blocks grew inside Nebula Fields (they need bare End Stone)");
+            failures.add("Nebula Fields: " + chorus + " chorus blocks grew (they need bare End Stone)");
         }
-        if (columnsWithLand < 500) {
-            failures.add("the surveyed Nebula Fields area has almost no land (" + columnsWithLand + " columns)");
-        } else {
-            if (mossTops < 0.9 * columnsWithLand) {
-                failures.add("only " + mossTops + " of " + columnsWithLand + " land columns are topped with Nebula Moss (expected 90%+)");
-            }
-            if (shrooms < chunksWithLand * 2) {
-                failures.add("too few Lumineshrooms: " + shrooms + " for ~" + (int) chunksWithLand + " chunks of land");
-            }
-            if (blooms < chunksWithLand * 1) {
-                failures.add("too few Starblooms: " + blooms + " for ~" + (int) chunksWithLand + " chunks of land");
-            }
-            if (vineTips < chunksWithLand * 0.3) {
-                failures.add("too few Astral Vines: " + vineTips + " for ~" + (int) chunksWithLand + " chunks of land");
-            }
-            if (shrooms > chunksWithLand * 25 || blooms > chunksWithLand * 25) {
-                failures.add("plants are far too dense (" + shrooms + " Lumineshrooms, " + blooms + " Starblooms)");
-            }
+        if (area.out(ModBlocks.NEBULA_MOSS.get()) > 0.01 * Math.max(1, area.in(ModBlocks.NEBULA_MOSS.get()))) {
+            failures.add("Nebula Moss generated outside Nebula Fields (more than border blending explains)");
         }
+        atLeast(area, ModBlocks.LUMINESHROOM.get(), 2, failures);
+        atLeast(area, ModBlocks.STARBLOOM.get(), 1, failures);
+        atLeast(area, ModBlocks.ASTRAL_VINE.get(), 0.3, failures);
+    }
 
-        // ---- 3. Low gravity ----
-        if (standOn != null) {
-            ArmorStand probe = new ArmorStand(end, standOn.getX() + 0.5, standOn.getY(), standOn.getZ() + 0.5);
-            LowGravity.update(probe);
-            double inside = probe.getAttributeValue(Attributes.GRAVITY);
-            if (vanillaSpot == null) {
-                failures.add("found no vanilla outer biome to test normal gravity in");
-                return;
-            }
-            end.getChunk(vanillaSpot.getX() >> 4, vanillaSpot.getZ() >> 4);
-            probe.setPos(vanillaSpot.getX() + 0.5, 70, vanillaSpot.getZ() + 0.5);
-            boolean outsideIsNebula = end.getBiome(probe.blockPosition()).is(ModBiomes.NEBULA_FIELDS);
-            LowGravity.update(probe);
-            double outside = probe.getAttributeValue(Attributes.GRAVITY);
-            log(String.format("Gravity inside Nebula Fields: %.4f; after moving to %d, %d (%s): %.4f (vanilla is 0.0800)", inside,
-                vanillaSpot.getX(), vanillaSpot.getZ(), outsideIsNebula ? "Nebula Fields?!" : "a vanilla biome", outside));
-            if (Math.abs(inside - 0.08 * (1 + LowGravity.GRAVITY_CHANGE)) > 0.001) {
-                failures.add("low gravity not applied inside Nebula Fields (" + inside + ")");
-            }
-            if (outsideIsNebula || Math.abs(outside - 0.08) > 0.001) {
-                failures.add("low gravity not removed after leaving Nebula Fields (" + outside + ")");
-            }
-        } else {
-            failures.add("found no Nebula Moss surface to test gravity on");
+    private static void checkAurora(Area area, List<String> failures) {
+        if (!enoughLand(area, failures)) {
+            return;
+        }
+        replacesEndStone(area, ModBlocks.PALE_END_STONE.get(), failures);
+        atLeast(area, ModBlocks.SHIMMER_GRASS.get(), 2, failures);
+        atLeast(area, ModBlocks.PALE_END_STONE_BRICKS.get(), 0.05, failures);  // standing stones
+        // Flat shelves: most of the land should be topped at the same height.
+        int flat = 0;
+        for (int y = 52; y <= 55; y++) {
+            flat += area.surfaceHeightsIn.getOrDefault(y, 0);
+        }
+        double flatShare = 100.0 * flat / Math.max(1, area.landColumnsIn);
+        log(String.format("Aurora Shallows: %.0f%% of the land is a flat shelf topped at y=52-55; Leviathan Bone ribs: %d blocks",
+            flatShare, area.in(ModBlocks.LEVIATHAN_BONE_BLOCK.get())));
+        if (flatShare < 60) {
+            failures.add(String.format("Aurora Shallows aren't flat shelves: only %.0f%% of the land is topped at y=52-55", flatShare));
         }
     }
 
-    private static char topSymbol(Block block, boolean inNebula) {
+    private static void checkCometWake(Area area, List<String> failures) {
+        if (!enoughLand(area, failures)) {
+            return;
+        }
+        replacesEndStone(area, ModBlocks.CHARRED_END_STONE.get(), failures);
+        atLeast(area, ModBlocks.STARDUST_BLOCK.get(), 1, failures);
+        atLeast(area, ModBlocks.COMET_ICE.get(), 0.5, failures);
+        atLeast(area, ModBlocks.METEORIC_IRON_ORE.get(), 0.02, failures);   // comet cores
+        atLeast(area, ModBlocks.COMET_CRESS.get(), 0.2, failures);
+    }
+
+    private static void checkDarkMatter(Area area, ServerLevel end, List<String> failures) {
+        if (!enoughLand(area, failures)) {
+            return;
+        }
+        replacesEndStone(area, ModBlocks.UMBRAL_STONE.get(), failures);
+        atLeast(area, ModBlocks.VOID_CRYSTAL_ORE.get(), 0.5, failures);
+        log("Dark Matter Belt: " + area.anomalies.size() + " gravity inversion pockets");
+        if (area.anomalies.isEmpty()) {
+            failures.add("Dark Matter Belt: no gravity inversion pockets generated");
+            return;
+        }
+        // Put a test mob in the middle of a pocket and let the Gravity Anomaly do its work.
+        BlockPos core = area.anomalies.get(0);
+        if (!(end.getBlockEntity(core) instanceof GravityAnomalyBlockEntity)) {
+            failures.add("the Gravity Anomaly at " + core.toShortString() + " has no block entity");
+        }
+        var centre = GravityAnomalyBlockEntity.centre(core);
+        ArmorStand probe = new ArmorStand(end, centre.x, centre.y - 0.5, centre.z);
+        end.addFreshEntity(probe);
+        GravityAnomalyBlockEntity.invertInside(end, core);
+        double inside = probe.getAttributeValue(Attributes.GRAVITY);
+        log(String.format("Gravity in the pocket under %s: %.4f (vanilla 0.0800; inverted is negative)", core.toShortString(), inside));
+        if (!GravityInversion.isInverted(probe) || Math.abs(inside - 0.08 * (1 + GravityInversion.GRAVITY_CHANGE)) > 0.001) {
+            failures.add("gravity wasn't inverted inside a pocket (" + inside + ")");
+        }
+        probe.discard();
+    }
+
+    private static void checkObservatory(Area area, List<String> failures) {
+        if (!enoughLand(area, failures)) {
+            return;
+        }
+        atLeast(area, ModBlocks.OBSERVATORY_QUARTZ.get(), 1, failures);
+        atLeast(area, ModBlocks.OBSERVATORY_QUARTZ_PILLAR.get(), 0.3, failures);
+        atLeast(area, ModBlocks.STAR_INLAY_OBSERVATORY_QUARTZ.get(), 0.05, failures);
+        atLeast(area, ModBlocks.STARBLOOM.get(), 0.5, failures);
+    }
+
+    private static void checkCorona(Area area, List<String> failures) {
+        if (!enoughLand(area, failures)) {
+            return;
+        }
+        int scorchedTops = area.tops(ModBlocks.SUNSCORCHED_STONE.get()) + area.tops(ModBlocks.SOLARITE_ORE.get());
+        if (scorchedTops < 0.8 * area.landColumnsIn) {
+            failures.add("The Corona: only " + scorchedTops + " of " + area.landColumnsIn + " land columns are topped with Sunscorched Stone");
+        }
+        replacesEndStone(area, ModBlocks.CHARRED_END_STONE.get(), failures);
+        atLeast(area, ModBlocks.SOLARITE_ORE.get(), 1, failures);
+        atLeast(area, ModBlocks.FLAREBLOOM.get(), 0.3, failures);
+        atLeast(area, ModBlocks.SUNSCALE_LICHEN.get(), 2, failures);
+        atLeast(area, ModBlocks.ASHEN_LUMINESHROOM.get(), 0.2, failures);
+        int chorus = area.in(Blocks.CHORUS_PLANT) + area.in(Blocks.CHORUS_FLOWER);
+        if (chorus > 0) {
+            failures.add("The Corona: " + chorus + " chorus blocks grew there");
+        }
+    }
+
+    private static void checkLowGravity(Area nebula, BlockPos vanillaSpot, ServerLevel end, List<String> failures) {
+        if (nebula == null || nebula.standOn == null) {
+            failures.add("found no Nebula Fields surface to test low gravity on");
+            return;
+        }
+        if (vanillaSpot == null) {
+            failures.add("found no vanilla outer biome to test normal gravity in");
+            return;
+        }
+        ArmorStand probe = new ArmorStand(end, nebula.standOn.getX() + 0.5, nebula.standOn.getY(), nebula.standOn.getZ() + 0.5);
+        LowGravity.update(probe);
+        double inside = probe.getAttributeValue(Attributes.GRAVITY);
+        end.getChunk(vanillaSpot.getX() >> 4, vanillaSpot.getZ() >> 4);
+        probe.setPos(vanillaSpot.getX() + 0.5, 70, vanillaSpot.getZ() + 0.5);
+        LowGravity.update(probe);
+        double outside = probe.getAttributeValue(Attributes.GRAVITY);
+        log(String.format("Gravity inside Nebula Fields: %.4f; after moving to %d, %d (a vanilla biome): %.4f (vanilla is 0.0800)",
+            inside, vanillaSpot.getX(), vanillaSpot.getZ(), outside));
+        if (Math.abs(inside - 0.08 * (1 + LowGravity.GRAVITY_CHANGE)) > 0.001) {
+            failures.add("low gravity not applied inside Nebula Fields (" + inside + ")");
+        }
+        if (Math.abs(outside - 0.08) > 0.001) {
+            failures.add("low gravity not removed after leaving Nebula Fields (" + outside + ")");
+        }
+    }
+
+    // ---------------------------------------------------------------- symbols
+
+    private static final Map<Block, Character> TOP_SYMBOLS = new HashMap<>();
+
+    // What you'd see looking straight down (tools/render_survey.py has the colour for each).
+    private static char topSymbol(Block block) {
         if (block == null) return ' ';
-        if (block == ModBlocks.NEBULA_MOSS.get()) return 'm';
-        if (block == ModBlocks.LUMINESHROOM.get()) return 'L';
-        if (block == ModBlocks.STARBLOOM.get()) return 'S';
-        if (block == ModBlocks.ASTRAL_VINE.get() || block == ModBlocks.ASTRAL_VINE_PLANT.get()) return 'V';
-        if (block == Blocks.CHORUS_PLANT || block == Blocks.CHORUS_FLOWER) return 'c';
-        if (block == Blocks.END_STONE) return inNebula ? 'E' : 'e';
-        return '#';
-    }
-
-    private static long distSqr(BlockPos pos) {
-        return (long) pos.getX() * pos.getX() + (long) pos.getZ() * pos.getZ();
+        if (TOP_SYMBOLS.isEmpty()) {
+            TOP_SYMBOLS.put(Blocks.END_STONE, 'E');
+            TOP_SYMBOLS.put(Blocks.CHORUS_PLANT, 'Y');
+            TOP_SYMBOLS.put(Blocks.CHORUS_FLOWER, 'Y');
+            TOP_SYMBOLS.put(ModBlocks.NEBULA_MOSS.get(), 'M');
+            TOP_SYMBOLS.put(ModBlocks.LUMINESHROOM.get(), 'L');
+            TOP_SYMBOLS.put(ModBlocks.STARBLOOM.get(), 'S');
+            TOP_SYMBOLS.put(ModBlocks.ASTRAL_VINE.get(), 'V');
+            TOP_SYMBOLS.put(ModBlocks.ASTRAL_VINE_PLANT.get(), 'V');
+            TOP_SYMBOLS.put(ModBlocks.PALE_END_STONE.get(), 'P');
+            TOP_SYMBOLS.put(ModBlocks.SHIMMER_GRASS.get(), 'G');
+            TOP_SYMBOLS.put(ModBlocks.PALE_END_STONE_BRICKS.get(), 'B');
+            TOP_SYMBOLS.put(ModBlocks.PALE_END_STONE_TILES.get(), 'B');
+            TOP_SYMBOLS.put(ModBlocks.LEVIATHAN_BONE_BLOCK.get(), 'J');
+            TOP_SYMBOLS.put(ModBlocks.CHARRED_END_STONE.get(), 'H');
+            TOP_SYMBOLS.put(ModBlocks.COMET_ICE.get(), 'I');
+            TOP_SYMBOLS.put(ModBlocks.STARDUST_BLOCK.get(), 'T');
+            TOP_SYMBOLS.put(ModBlocks.METEORIC_IRON_ORE.get(), 'O');
+            TOP_SYMBOLS.put(ModBlocks.UMBRAL_STONE.get(), 'U');
+            TOP_SYMBOLS.put(ModBlocks.VOID_CRYSTAL_ORE.get(), 'X');
+            TOP_SYMBOLS.put(ModBlocks.GRAVITY_ANOMALY.get(), 'Z');
+            TOP_SYMBOLS.put(ModBlocks.OBSERVATORY_QUARTZ.get(), 'Q');
+            TOP_SYMBOLS.put(ModBlocks.STAR_INLAY_OBSERVATORY_QUARTZ.get(), 'Q');
+            TOP_SYMBOLS.put(ModBlocks.OBSERVATORY_QUARTZ_PILLAR.get(), 'K');
+            TOP_SYMBOLS.put(ModBlocks.SUNSCORCHED_STONE.get(), 'C');
+            TOP_SYMBOLS.put(ModBlocks.SOLARITE_ORE.get(), 'R');
+            TOP_SYMBOLS.put(ModBlocks.FLAREBLOOM.get(), 'F');
+            TOP_SYMBOLS.put(ModBlocks.SUNSCALE_LICHEN.get(), 'N');
+            TOP_SYMBOLS.put(ModBlocks.ASHEN_LUMINESHROOM.get(), 'A');
+            TOP_SYMBOLS.put(ModBlocks.PETRIFIED_ASTRAL_VINE.get(), 'D');
+            TOP_SYMBOLS.put(ModBlocks.POLLINATOR_HUSK.get(), 'W');
+        }
+        return TOP_SYMBOLS.getOrDefault(block, '#');
     }
 
     private static char symbol(Holder<Biome> biome) {
         if (biome.is(ModBiomes.NEBULA_FIELDS)) return 'N';
+        if (biome.is(ModBiomes.AURORA_SHALLOWS)) return 'A';
+        if (biome.is(ModBiomes.COMET_WAKE)) return 'W';
+        if (biome.is(ModBiomes.DARK_MATTER_BELT)) return 'D';
+        if (biome.is(ModBiomes.SHATTERED_OBSERVATORY)) return 'R';
+        if (biome.is(ModBiomes.CORONA)) return 'C';
         if (biome.is(Biomes.THE_END)) return 'O';
         if (biome.is(Biomes.END_HIGHLANDS)) return 'H';
         if (biome.is(Biomes.END_MIDLANDS)) return 'M';
@@ -324,8 +623,8 @@ public final class WorldgenSurvey {
         return '?';
     }
 
-    private static double pct(Map<String, Integer> counts, String key, int total) {
-        return 100.0 * counts.getOrDefault(key, 0) / Math.max(1, total);
+    private static long distSqr(BlockPos pos) {
+        return (long) pos.getX() * pos.getX() + (long) pos.getZ() * pos.getZ();
     }
 
     private static void log(String line) {

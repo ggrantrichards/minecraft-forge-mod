@@ -15,11 +15,10 @@ import net.minecraft.world.level.biome.Climate;
 
 // Decides which biome goes where in the End.
 //
-// Inside 1,024 blocks of the centre, and everywhere outside Nebula Fields regions, this is exactly
+// Inside 1,024 blocks of the centre, and everywhere outside the astral regions, this is exactly
 // vanilla's TheEndBiomeSource: the central island, then Highlands, Midlands, Barrens and Small
-// Islands chosen by the End's island noise. Beyond 1,024 blocks, a separate low-frequency noise
-// (the "temperature" slot of our noise settings, which doesn't shape terrain) marks out regions
-// of Nebula Fields a few hundred blocks across.
+// Islands chosen by the End's island noise. Beyond 1,024 blocks, slow region noises (see
+// AstralRegions) mark out the six astral biomes, each several hundred blocks across.
 public class AstralEndBiomeSource extends BiomeSource {
     public static final MapCodec<AstralEndBiomeSource> CODEC = RecordCodecBuilder.mapCodec(
         i -> i.group(
@@ -28,14 +27,16 @@ public class AstralEndBiomeSource extends BiomeSource {
                 RegistryOps.retrieveElement(Biomes.END_MIDLANDS),
                 RegistryOps.retrieveElement(Biomes.SMALL_END_ISLANDS),
                 RegistryOps.retrieveElement(Biomes.END_BARRENS),
-                RegistryOps.retrieveElement(ModBiomes.NEBULA_FIELDS)
+                RegistryOps.retrieveElement(ModBiomes.NEBULA_FIELDS),
+                RegistryOps.retrieveElement(ModBiomes.AURORA_SHALLOWS),
+                RegistryOps.retrieveElement(ModBiomes.COMET_WAKE),
+                RegistryOps.retrieveElement(ModBiomes.DARK_MATTER_BELT),
+                RegistryOps.retrieveElement(ModBiomes.SHATTERED_OBSERVATORY),
+                RegistryOps.retrieveElement(ModBiomes.CORONA)
             )
             .apply(i, i.stable(AstralEndBiomeSource::new))
     );
 
-    // Region noise above this value becomes Nebula Fields (checked by the worldgen survey:
-    // roughly a quarter to a third of the outer End).
-    public static final double NEBULA_THRESHOLD = 0.18;
     // Vanilla's inner radius, in chunks squared (64 chunks = 1,024 blocks).
     private static final long CENTRAL_RADIUS_SQR = 4096L;
 
@@ -45,20 +46,33 @@ public class AstralEndBiomeSource extends BiomeSource {
     private final Holder<Biome> islands;
     private final Holder<Biome> barrens;
     private final Holder<Biome> nebulaFields;
+    private final Holder<Biome> auroraShallows;
+    private final Holder<Biome> cometWake;
+    private final Holder<Biome> darkMatterBelt;
+    private final Holder<Biome> shatteredObservatory;
+    private final Holder<Biome> corona;
 
     private AstralEndBiomeSource(Holder<Biome> end, Holder<Biome> highlands, Holder<Biome> midlands,
-                                 Holder<Biome> islands, Holder<Biome> barrens, Holder<Biome> nebulaFields) {
+                                 Holder<Biome> islands, Holder<Biome> barrens, Holder<Biome> nebulaFields,
+                                 Holder<Biome> auroraShallows, Holder<Biome> cometWake, Holder<Biome> darkMatterBelt,
+                                 Holder<Biome> shatteredObservatory, Holder<Biome> corona) {
         this.end = end;
         this.highlands = highlands;
         this.midlands = midlands;
         this.islands = islands;
         this.barrens = barrens;
         this.nebulaFields = nebulaFields;
+        this.auroraShallows = auroraShallows;
+        this.cometWake = cometWake;
+        this.darkMatterBelt = darkMatterBelt;
+        this.shatteredObservatory = shatteredObservatory;
+        this.corona = corona;
     }
 
     @Override
     protected Stream<Holder<Biome>> collectPossibleBiomes() {
-        return Stream.of(this.end, this.highlands, this.midlands, this.islands, this.barrens, this.nebulaFields);
+        return Stream.of(this.end, this.highlands, this.midlands, this.islands, this.barrens, this.nebulaFields,
+            this.auroraShallows, this.cometWake, this.darkMatterBelt, this.shatteredObservatory, this.corona);
     }
 
     @Override
@@ -80,8 +94,14 @@ public class AstralEndBiomeSource extends BiomeSource {
         if ((long) chunkX * chunkX + (long) chunkZ * chunkZ <= CENTRAL_RADIUS_SQR) {
             return this.end;
         }
-        if (regionValue(sampler, blockX, blockZ) > NEBULA_THRESHOLD) {
-            return this.nebulaFields;
+        switch (region(sampler, blockX, blockZ)) {
+            case NEBULA_FIELDS: return this.nebulaFields;
+            case AURORA_SHALLOWS: return this.auroraShallows;
+            case COMET_WAKE: return this.cometWake;
+            case DARK_MATTER_BELT: return this.darkMatterBelt;
+            case SHATTERED_OBSERVATORY: return this.shatteredObservatory;
+            case CORONA: return this.corona;
+            case VANILLA: break;
         }
         // Vanilla's outer-End choice, unchanged.
         int weirdBlockX = (chunkX * 2 + 1) * 8;
@@ -96,8 +116,10 @@ public class AstralEndBiomeSource extends BiomeSource {
         }
     }
 
-    // The region noise at a block position; also used by the worldgen survey.
-    public static double regionValue(Climate.Sampler sampler, int blockX, int blockZ) {
-        return sampler.temperature().sampleValue(blockX, 0, blockZ);
+    // The astral region at a block position (ignoring the central 1,024 blocks); also used by the survey.
+    public static AstralRegions.Region region(Climate.Sampler sampler, int blockX, int blockZ) {
+        return AstralRegions.pick(sampler.temperature().sampleValue(blockX, 0, blockZ),
+            sampler.humidity().sampleValue(blockX, 0, blockZ),
+            sampler.weirdness().sampleValue(blockX, 0, blockZ));
     }
 }

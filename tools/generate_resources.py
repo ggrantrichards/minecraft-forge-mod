@@ -288,7 +288,9 @@ def cross_plant(name, item_texture=None):
 
 WG = DATA / "worldgen"
 
-VANILLA_END_FINAL_DENSITY = {
+# Vanilla's End final density, except that "minecraft:end/sloped_cheese" (islands + 3D noise) is
+# replaced by "astralend:terrain/shaped", which is the same thing outside the reshaped biomes.
+END_FINAL_DENSITY = {
     "type": "minecraft:add",
     "left": {"type": "minecraft:squeeze", "input": {
         "type": "minecraft:interpolated", "cell_size_xz": 8, "cell_size_y": 4, "input": {
@@ -303,7 +305,7 @@ VANILLA_END_FINAL_DENSITY = {
                     "alpha": {"type": "minecraft:gradient", "axis": "y", "from_coordinate": 56, "from_value": 1.0,
                               "to_coordinate": 312, "to_value": 0.0},
                     "first": -23.4375,
-                    "second": "minecraft:end/sloped_cheese",
+                    "second": "astralend:terrain/shaped",
                 },
             }},
             "right": 0.64,
@@ -341,6 +343,108 @@ def plant_patch(name, block, rarity, count, spread, vertical=2):
     ]})
 
 
+# ---- Terrain
+#
+# Region noises (also read by the biome source through the noise router; the thresholds here
+# must match AstralRegions.java):
+REGION_NEBULA = 0.18      # nebula > this: Nebula Fields
+REGION_COLD = -0.2        # nebula < this: the "cold" band (Aurora Shallows / Comet Wake)
+REGION_COLD_BELT = 0.2    # |belt| beyond this in the cold band
+REGION_MID_BELT = 0.3     # |belt| beyond this in the middle band (Dark Matter Belt / Corona)
+BLEND = 0.03              # terrain blends between shapes over +-this much noise at a border
+
+
+def df(name, obj):
+    write(WG / "density_function" / f"{name}.json", obj)
+
+
+def add(a, b):
+    return {"type": "minecraft:add", "left": a, "right": b}
+
+
+def sub(a, b):
+    return {"type": "minecraft:sub", "left": a, "right": b}
+
+
+def mul(a, b):
+    return {"type": "minecraft:mul", "left": a, "right": b}
+
+
+def dmin(a, b):
+    return {"type": "minecraft:min", "left": a, "right": b}
+
+
+def dmax(a, b):
+    return {"type": "minecraft:max", "left": a, "right": b}
+
+
+def clamp(x, lo, hi):
+    return {"type": "minecraft:clamp", "input": x, "min": lo, "max": hi}
+
+
+def lerp(alpha, first, second):
+    return {"type": "minecraft:lerp", "alpha": alpha, "first": first, "second": second}
+
+
+def y_line(y0, v0, y1, v1):
+    """A straight line in y: v0 at y0, v1 at y1 (clamped beyond those)."""
+    return {"type": "minecraft:gradient", "axis": "y", "from_coordinate": y0, "from_value": v0,
+            "to_coordinate": y1, "to_value": v1}
+
+
+def ramp(x, at, width=BLEND):
+    """0 below at-width, 1 above at+width, linear in between."""
+    return clamp(mul(add(x, -(at - width)), 1.0 / (2 * width)), 0.0, 1.0)
+
+
+def terrain():
+    nebula, belt, ruin = rid("region/nebula"), rid("region/belt"), rid("region/ruin")
+    df("region/nebula", {"type": "minecraft:noise", "noise": "minecraft:vegetation", "xz_scale": 0.25, "y_scale": 0.0})
+    df("region/belt", {"type": "minecraft:noise", "noise": "minecraft:temperature", "xz_scale": 1.0, "y_scale": 0.0})
+    df("region/ruin", {"type": "minecraft:noise", "noise": "minecraft:ridge", "xz_scale": 0.5, "y_scale": 0.0})
+
+    # Weights (0..1) of each reshaped biome. They are 0 within 1,024 blocks of the centre, so the
+    # main island and the gap around it are exactly vanilla.
+    outer = clamp(mul(add({"type": "minecraft:distance_to_point", "metric": "euclidean", "point": [0, 0, 0]},
+                          -1024.0), 1.0 / 64), 0.0, 1.0)
+    df("terrain/outer", outer)
+    cold = ramp(mul(nebula, -1.0), -REGION_COLD)
+    middle = mul(ramp(nebula, REGION_COLD), sub(1.0, ramp(nebula, REGION_NEBULA)))
+    df("terrain/weight/aurora_shallows", mul(rid("terrain/outer"), mul(cold, ramp(belt, REGION_COLD_BELT))))
+    df("terrain/weight/comet_wake", mul(rid("terrain/outer"), mul(cold, ramp(mul(belt, -1.0), REGION_COLD_BELT))))
+    df("terrain/weight/dark_matter_belt", mul(rid("terrain/outer"), mul(middle, ramp(belt, REGION_MID_BELT))))
+    df("terrain/weight/corona", mul(rid("terrain/outer"), mul(middle, ramp(mul(belt, -1.0), REGION_MID_BELT))))
+
+    islands, noise = "minecraft:end/islands", "minecraft:end/base_3d_noise"
+
+    # Aurora Shallows: wide, thin, flat-topped shelves. The top is level at y=54; the shelf is
+    # thickest (about 10 blocks) where vanilla would put an island's centre, and thins to a
+    # see-through edge well beyond where vanilla's island would end.
+    thickness = mul(add(add(islands, 0.12), mul(noise, 0.2)), 14.0)
+    df("terrain/aurora_shallows", dmin(y_line(0, 54.5 * 0.25, 128, (54.5 - 128) * 0.25),
+                                       add(y_line(0, -54.5 * 0.25, 128, (128 - 54.5) * 0.25), mul(thickness, 0.25))))
+
+    # Comet Wake: vanilla islands plus a river of small floating debris between y=30 and 70.
+    band = dmin(y_line(30, 0.0, 45, 1.0), y_line(55, 1.0, 70, 0.0))
+    debris = sub(add(mul({"type": "minecraft:noise", "noise": "minecraft:ridge", "xz_scale": 4.0, "y_scale": 4.0}, 3.0), -1.7),
+                 mul(sub(1.0, band), 5.0))
+    df("terrain/comet_wake", dmax("minecraft:end/sloped_cheese", debris))
+
+    # Dark Matter Belt: jagged rings. The middle of every big island is hollowed out, leaving a
+    # ring around an empty centre, and the 3D noise is stronger, making the rings ragged.
+    df("terrain/dark_matter_belt", sub(add("minecraft:end/sloped_cheese", mul(noise, 0.5)),
+                                       mul(dmax(add(islands, -0.2), 0.0), 6.0)))
+
+    # The Corona: smoother, lower-relief islands with few overhangs (less 3D noise), so there's
+    # little natural shelter from the flares.
+    df("terrain/corona", add(islands, mul(noise, 0.35)))
+
+    shaped = "minecraft:end/sloped_cheese"
+    for biome in ("corona", "dark_matter_belt", "comet_wake", "aurora_shallows"):
+        shaped = lerp(rid(f"terrain/weight/{biome}"), shaped, rid(f"terrain/{biome}"))
+    df("terrain/shaped", shaped)
+
+
 def worldgen():
     # The End dimension: vanilla dimension type, our biome source and noise settings.
     write(RES / "data/minecraft/dimension/the_end.json", {
@@ -348,8 +452,8 @@ def worldgen():
         "generator": {"type": "minecraft:noise", "biome_source": {"type": rid("astral_end")}, "settings": rid("end")},
     })
 
-    # Vanilla's End terrain, with a "temperature" noise added. It doesn't shape terrain; the biome
-    # source samples it to find Nebula Fields regions (patches several hundred blocks across).
+    # Vanilla's End terrain, reshaped in some astral biomes (see terrain() below), plus three region
+    # noises in the router's climate slots, which the biome source samples (see AstralRegions.java).
     write(WG / "noise_settings" / "end.json", {
         "default_block": "minecraft:end_stone",
         "default_fluid": "minecraft:air",
@@ -360,10 +464,10 @@ def worldgen():
         "noise_router": {
             "chunk_surface_level": 0.0, "continents": 0.0, "depth": 0.0,
             "erosion": "minecraft:end/islands",
-            "final_density": VANILLA_END_FINAL_DENSITY,
-            "ridges": 0.0,
-            "temperature": {"type": "minecraft:noise", "noise": "minecraft:vegetation", "xz_scale": 0.25, "y_scale": 0.0},
-            "vegetation": 0.0,
+            "final_density": END_FINAL_DENSITY,
+            "ridges": rid("region/ruin"),
+            "temperature": rid("region/nebula"),
+            "vegetation": rid("region/belt"),
         },
         "sea_level": 0,
         "spawn_target": [],
@@ -371,13 +475,27 @@ def worldgen():
 
     # Surface: the top block of every island floor in Nebula Fields becomes Nebula Moss;
     # everything else is End Stone, exactly like vanilla.
+    def in_biome(biome, rule):
+        return {"type": "minecraft:condition", "if_true": {"type": "minecraft:biome", "biome_is": [rid(biome)]},
+                "then_run": rule}
+
+    def block(name):
+        return {"type": "minecraft:block", "result_state": rid(name)}
+
     write(WG / "material_rule" / "end.json", {"type": "minecraft:sequence", "sequence": [
-        {"type": "minecraft:condition",
-         "if_true": {"type": "minecraft:biome", "biome_is": [rid("nebula_fields")]},
-         "then_run": {"type": "minecraft:condition", "if_true": "minecraft:on_floor",
-                      "then_run": {"type": "minecraft:block", "result_state": rid("nebula_moss")}}},
+        in_biome("nebula_fields", {"type": "minecraft:condition", "if_true": "minecraft:on_floor",
+                                   "then_run": block("nebula_moss")}),
+        # Whole islands of a different stone:
+        in_biome("aurora_shallows", block("pale_end_stone")),
+        in_biome("comet_wake", block("charred_end_stone")),
+        in_biome("dark_matter_belt", block("umbral_stone")),
+        # The Corona: a bleached crust of Sunscorched Stone over Charred End Stone.
+        in_biome("corona", {"type": "minecraft:sequence", "sequence": [
+            {"type": "minecraft:condition", "if_true": "minecraft:under_floor", "then_run": block("sunscorched_stone")},
+            block("charred_end_stone")]}),
         "minecraft:end",
     ]})
+    terrain()
 
     # Plants of the Nebula Fields.
     plant_patch("nebula_lumineshrooms", "lumineshroom", rarity=1, count=32, spread=6)
@@ -432,6 +550,8 @@ def worldgen():
     # Biomes in this tag get the End's low gravity. To turn it off, override this tag with an
     # empty list in a datapack.
     tag("worldgen/biome", f"{NS}:low_gravity", rid("nebula_fields"))
+    # Biomes where Gravity Anomalies flip gravity. Empty this tag in a datapack to turn it off.
+    tag("worldgen/biome", f"{NS}:gravity_inversion", rid("dark_matter_belt"))
     lang[f"biome.{NS}.nebula_fields"] = "Nebula Fields"
 
 
