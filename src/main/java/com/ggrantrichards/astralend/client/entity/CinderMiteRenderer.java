@@ -35,31 +35,41 @@ public class CinderMiteRenderer extends MobRenderer<CinderMite, LivingEntityRend
 
     @Override
     protected int getBlockLightLevel(CinderMite entity, BlockPos pos) {
-        return 15;
+        return Math.max(9, super.getBlockLightLevel(entity, pos));   // warm from inside
     }
 
-    // Its segments wriggle side to side as it scuttles.
+    // Six legs scuttle in two alternating sets of three, the abdomen sways and the tail flicks.
     public static class Model extends EntityModel<LivingEntityRenderState> {
         private final ModelPart head;
-        private final ModelPart body;
+        private final ModelPart abdomen;
         private final ModelPart tail;
+        private final ModelPart[] legs = new ModelPart[6];
 
         public Model(ModelPart root) {
             super(root);
             this.head = root.getChild("head");
-            this.body = root.getChild("body");
-            this.tail = root.getChild("tail");
+            this.abdomen = root.getChild("abdomen");
+            this.tail = this.abdomen.getChild("tail");
+            String[] names = {"right_leg_1", "left_leg_2", "right_leg_3", "left_leg_1", "right_leg_2", "left_leg_3"};
+            for (int i = 0; i < 6; i++) {
+                this.legs[i] = root.getChild(names[i]);
+            }
         }
 
         @Override
         public void setupAnim(LivingEntityRenderState state) {
             super.setupAnim(state);
-            float t = state.ageInTicks * 0.9F;
-            this.head.yRot = Mth.cos(t) * 0.12F;
-            this.head.x = Mth.sin(t) * 0.4F;
-            this.body.yRot = Mth.cos(t + 1.0F) * 0.08F;
-            this.tail.yRot = Mth.cos(t + 2.0F) * 0.25F;
-            this.tail.x = Mth.sin(t + 2.0F) * 0.6F;
+            float t = state.ageInTicks;
+            float pos = state.walkAnimationPos * 1.6F;
+            float speed = Math.min(1.0F, state.walkAnimationSpeed * 2.0F);
+            for (int i = 0; i < 6; i++) {
+                float phase = i < 3 ? 0.0F : Mth.PI;         // two tripods, like a real insect
+                this.legs[i].yRot += Mth.cos(pos + phase) * 0.45F * speed;
+                this.legs[i].zRot += Math.max(0.0F, Mth.sin(pos + phase)) * 0.3F * speed * (this.legs[i].x < 0 ? -1 : 1);
+            }
+            this.head.yRot += Mth.sin(t * 0.2F) * 0.08F;
+            this.abdomen.yRot += Mth.sin(pos * 0.5F) * 0.08F * speed + Mth.sin(t * 0.1F) * 0.03F;
+            this.tail.xRot += -0.15F + Mth.sin(t * 0.25F) * 0.12F;
         }
     }
 }

@@ -275,80 +275,101 @@ POLLINATOR = Mob("pollinator", (32, 32), [
 ], egg=(hexc("7fd9d0"), hexc("b48cf0")))
 
 
-# ---- Void Wanderer: an old survey probe, a crystal octahedron with one lens
-W_SHELL = [hexc("3a3350"), hexc("423a5c"), hexc("4d456b"), hexc("352e49")]
+# ---- Void Wanderer: a Cartographer survey drone that is still running. A rounded bronze body
+# gone green with verdigris in patches (like vanilla's weathering copper), riveted panels, one big
+# glass lens, an antenna with a signal light, two small stabiliser fins and a gimbal ring that
+# spins around it.
+BRONZE = [hexc("4a2e18"), hexc("6e4526"), hexc("8e5c32"), hexc("b07a44"), hexc("d19c5e"), hexc("f0c888")]
+PATINA = [hexc("2f6b5c"), hexc("45907a"), hexc("68b89c")]
 
 
-W_FACET = [hexc("1d1830"), hexc("2c2548"), hexc("3d3462"), hexc("51477e"), hexc("6c62a0"), hexc("a79cf0")]
-
-
-def wanderer_shell(face, px, py, fw, fh, rnd):
-    """Dark crystal facets, mottled, lit along their top/left edges and shadowed below."""
+def bronze(face, px, py, fw, fh, rnd, panels=True):
     t = n()
-    i = 1 + int(t * 3.4)
+    i = 1 + int(t * 3.0)
     if face == "up":
         i += 1
     elif face == "down":
         i -= 1
     if py == 0 or px == 0:
-        i += 1          # lit edge of the facet
+        i += 1
     if py == fh - 1 or px == fw - 1:
-        i -= 1          # shadowed edge
-    c = W_FACET[max(0, min(4, i))]
-    if face == "up" and (px, py) == (1, 1):
-        c = W_FACET[5]  # a glint
+        i -= 1
+    c = BRONZE[max(0, min(5, i))]
+    if t > 0.7:
+        c = PATINA[min(2, int((t - 0.7) * 10))]          # verdigris patches
+    if panels and face in ("north", "south", "east", "west") and fh >= 6 and py == fh // 2:
+        c = BRONZE[0]                                     # the panel seam round its middle
+    if panels and fw >= 6 and fh >= 6 and (px, py) in ((1, 1), (fw - 2, 1), (1, fh - 2), (fw - 2, fh - 2)):
+        c = BRONZE[5]                                     # rivets
     return c
 
 
-def wanderer_shell_glow(face, px, py, fw, fh, rnd):
-    # circuitry running round the probe's middle
-    if face in ("north", "south", "east", "west") and fh >= 2 and py == fh // 2 and px % 4 != 3:
-        return hexc("8ff5ff") if px % 4 else hexc("d8fdff")
-    if face == "up" and fw >= 5 and (px == fw // 2 or py == fh // 2) and (px + py) % 2 == 0:
-        return hexc("5fd8e8")
+def bronze_plain(face, px, py, fw, fh, rnd):
+    return bronze(face, px, py, fw, fh, rnd, panels=False)
+
+
+def drone_glow(face, px, py, fw, fh, rnd):
+    if face in ("east", "west", "south") and fh >= 6 and py == fh // 2 and px % 3 == 1:
+        return hexc("7ff3ff")                             # status lights along the seam
     return None
 
 
-def wanderer_lens(face, px, py, fw, fh, rnd):
-    if face == "north":
-        return [hexc("1f6b7a"), hexc("5ff0ff"), hexc("1f6b7a")][px] if py == 1 else hexc("2c9fb3")
-    return hexc("2b2440")
+def lens_housing(face, px, py, fw, fh, rnd):
+    return BRONZE[1] if face != "north" or edge_dist(px, py, fw, fh) == 0 else BRONZE[0]
 
 
-def wanderer_lens_glow(face, px, py, fw, fh, rnd):
+def lens_glass(face, px, py, fw, fh, rnd):
+    if face != "north":
+        return hexc("1d4e62")
+    d = math.hypot(px - 1.5, py - 1.5)
+    if d < 0.8:
+        return hexc("0a1a24")                             # pupil
+    return hexc("7fe9f5") if (px + py) % 3 else hexc("3fb8d0")
+
+
+def lens_glow(face, px, py, fw, fh, rnd):
     if face == "north":
-        return hexc("ffffff") if (px, py) == (1, 1) else hexc("5ff0ff")
+        d = math.hypot(px - 1.5, py - 1.5)
+        if d >= 0.8:
+            return hexc("aef8ff") if (px, py) != (1, 1) else hexc("ffffff")
     return None
 
 
-def wanderer_ring(face, px, py, fw, fh, rnd):
-    if face not in ("up", "down"):
-        return None
-    cx, cy = (fw - 1) / 2, (fh - 1) / 2
-    r = math.hypot(px - cx, py - cy)
-    return hexc("6c63a0") if 3.6 <= r <= 4.5 else None
+def antenna_tip(face, px, py, fw, fh, rnd):
+    return hexc("ff9a5a")
 
 
-def wanderer_ring_glow(face, px, py, fw, fh, rnd):
-    if face not in ("up", "down"):
-        return None
-    cx, cy = (fw - 1) / 2, (fh - 1) / 2
-    r = math.hypot(px - cx, py - cy)
-    a = math.atan2(py - cy, px - cx)
-    return hexc("9ff8ff") if 3.6 <= r <= 4.5 and int((a + math.pi) * 3) % 2 == 0 else None
+def ring_bar(face, px, py, fw, fh, rnd):
+    t = n()
+    c = BRONZE[2 + int(t * 2.9)]
+    if (px + py) % 4 == 0:
+        c = BRONZE[5]
+    return c
 
 
-WANDERER = Mob("void_wanderer", (64, 32), [
-    Part("shell", (0, 14, 0, 0, math.pi / 4, 0), [
-        Box(0, 0, -1, -5, -1, 2, 2, 2, paint=wanderer_shell),
-        Box(0, 4, -2.5, -3, -2.5, 5, 2, 5, paint=wanderer_shell),
-        Box(0, 11, -3.5, -1, -3.5, 7, 2, 7, paint=wanderer_shell, glow=wanderer_shell_glow),
-        Box(0, 4, -2.5, 1, -2.5, 5, 2, 5, paint=wanderer_shell),
-        Box(0, 0, -1, 3, -1, 2, 2, 2, paint=wanderer_shell),
+WANDERER = Mob("void_wanderer", (64, 64), [
+    Part("body", (0, 14, 0), [
+        Box(0, 0, -4, -4, -4, 8, 8, 8, paint=bronze, glow=drone_glow),
+        Box(32, 0, -3, -5, -3, 6, 1, 6, paint=bronze_plain),       # rounded top
+        Box(32, 0, -3, 4, -3, 6, 1, 6, paint=bronze_plain),        # and bottom
+        Box(0, 16, -5, -3, -3, 1, 6, 6, paint=bronze_plain),       # rounded sides
+        Box(0, 16, 4, -3, -3, 1, 6, 6, mirror=True, paint=bronze_plain),
+        Box(14, 16, -3, -3, 4, 6, 6, 1, paint=bronze_plain),       # rounded back
+        Box(28, 16, -2.5, -2.5, -5, 5, 5, 1, paint=lens_housing),  # the lens housing
+        Box(40, 16, -2, -2, -5.6, 4, 4, 1, paint=lens_glass, glow=lens_glow),
+        Box(56, 0, -0.5, -8, -0.5, 1, 3, 1, paint=bronze_plain),   # antenna
+        Box(50, 16, -1, -9, -1, 2, 1, 2, paint=antenna_tip, glow=antenna_tip),
+    ], [
+        Part("left_fin", (5, 1, 1), [Box(0, 28, 0, -1, -2, 3, 2, 5, paint=bronze_plain)]),
+        Part("right_fin", (-5, 1, 1), [Box(0, 28, -3, -1, -2, 3, 2, 5, mirror=True, paint=bronze_plain)]),
     ]),
-    Part("lens", (0, 14, 0), [Box(0, 20, -1.5, -1.5, -5.2, 3, 3, 1, paint=wanderer_lens, glow=wanderer_lens_glow)]),
-    Part("ring", (0, 14, 0, 0.3, 0, 0.15), [Box(32, 0, -4.5, 0, -4.5, 9, 0, 9, paint=wanderer_ring, glow=wanderer_ring_glow)]),
-], egg=(hexc("3a3350"), hexc("5ff0ff")))
+    Part("ring", (0, 14, 0), [
+        Box(16, 28, -7, -0.5, -7, 14, 1, 1, paint=ring_bar),
+        Box(16, 28, -7, -0.5, 6, 14, 1, 1, paint=ring_bar),
+        Box(16, 30, -7, -0.5, -6, 1, 1, 12, paint=ring_bar),
+        Box(16, 30, 6, -0.5, -6, 1, 1, 12, paint=ring_bar),
+    ]),
+], egg=(hexc("8e5c32"), hexc("68b89c")))
 
 
 # ---- Umbral Stalker: a hunched, almost invisible predator of the Dark Matter Belts. It walks on
@@ -473,44 +494,75 @@ STALKER = Mob("umbral_stalker", (64, 64), [
 ], egg=(hexc("140f22"), hexc("7d5fd0")))
 
 
-# ---- Cinder Mite: a small glowing burrower of the Corona
-M_CRUST = [hexc("2a1a14"), hexc("3b2418"), hexc("33201a"), hexc("4a2c1c")]
+# ---- Cinder Mite: a small burrower of the Corona. A basalt-shelled insect in three segments, with
+# six legs, mandibles and a stinger; embers glow only in the thin cracks between its plates and in
+# its eyes, like a coal that's still hot inside.
+BASALT = [hexc("120c0a"), hexc("1f1612"), hexc("2d211b"), hexc("3d2d24"), hexc("50392c")]
 
 
-def mite_crust(face, px, py, fw, fh, rnd):
-    c = rnd.choice(M_CRUST)
-    if face == "down":
-        c = hexc("1c110c")
-    if rnd.random() < 0.18 and face != "down":
-        c = hexc("b8461a")  # cracks
+def basalt(face, px, py, fw, fh, rnd, plates=True):
+    t = n()
+    i = 1 + int(t * 3.2)
+    if face == "up":
+        i += 1
+    elif face == "down":
+        i -= 1
+    c = BASALT[max(0, min(4, i))]
+    if plates and face in ("up", "east", "west") and (py if face == "up" else px) % 3 == 2:
+        c = BASALT[0]                                     # the seams between plates
     return c
 
 
-def mite_glow(face, px, py, fw, fh, rnd):
-    if face in ("up", "north", "south", "east", "west") and rnd.random() < 0.28:
-        return rnd.choice([hexc("ff7a1a"), hexc("ffb03a"), hexc("ff9a2a")])
+def basalt_plain(face, px, py, fw, fh, rnd):
+    return basalt(face, px, py, fw, fh, rnd, plates=False)
+
+
+def ember_seams(face, px, py, fw, fh, rnd):
+    if face in ("up", "east", "west") and (py if face == "up" else px) % 3 == 2 and n() > 0.45:
+        return hexc("ff7a1f") if n() < 0.65 else hexc("ffb347")
     return None
 
 
 def mite_head(face, px, py, fw, fh, rnd):
     if face == "north" and py == 1 and px in (0, 3):
-        return hexc("ffd27a")
-    return mite_crust(face, px, py, fw, fh, rnd)
+        return hexc("ffcf6a")                             # eyes
+    return basalt_plain(face, px, py, fw, fh, rnd)
 
 
-def mite_head_glow(face, px, py, fw, fh, rnd):
+def mite_eyes(face, px, py, fw, fh, rnd):
     if face == "north" and py == 1 and px in (0, 3):
-        return hexc("fff0b0")
+        return hexc("ffe9a8")
     return None
 
 
-CINDER_MITE = Mob("cinder_mite", (32, 16), [
-    Part("head", (0, 22.5, -3.5), [Box(0, 0, -2, -1.5, -1, 4, 3, 2, paint=mite_head, glow=mite_head_glow)]),
-    Part("body", (0, 22, -0.5), [Box(0, 5, -3, -2, -2, 6, 4, 4, paint=mite_crust, glow=mite_glow)]),
-    Part("tail", (0, 22.5, 3), [Box(20, 5, -1.5, -1.5, -1.5, 3, 3, 3, paint=mite_crust, glow=mite_glow)], [
-        Part("stinger", (0, 0.5, 2), [Box(24, 0, -1, -1, 0, 2, 2, 2, paint=mite_crust, glow=mite_glow)]),
+def mandible(face, px, py, fw, fh, rnd):
+    return hexc("5a3a26") if face != "north" else hexc("8a5a36")
+
+
+def leg(face, px, py, fw, fh, rnd):
+    return BASALT[2] if px < fw - 1 else BASALT[4]
+
+
+CINDER_MITE = Mob("cinder_mite", (64, 32), [
+    Part("head", (0, 21.5, -3.5), [
+        Box(0, 0, -2, -1.5, -3, 4, 3, 3, paint=mite_head, glow=mite_eyes),
+        Box(14, 0, -2, 0.5, -5, 1, 1, 2, paint=mandible),
+        Box(14, 0, 1, 0.5, -5, 1, 1, 2, mirror=True, paint=mandible),
     ]),
-], egg=(hexc("3b2418"), hexc("ff7a1a")))
+    Part("thorax", (0, 21.5, -1), [Box(0, 6, -2.5, -2, -1, 5, 4, 3, paint=basalt, glow=ember_seams)]),
+    Part("abdomen", (0, 21.5, 2), [Box(0, 13, -3, -2.5, 0, 6, 5, 5, paint=basalt, glow=ember_seams)], [
+        Part("tail", (0, 0, 5), [
+            Box(22, 13, -1.5, -1.5, 0, 3, 3, 3, paint=basalt, glow=ember_seams),
+            Box(24, 0, -0.5, -1, 3, 1, 1, 2, paint=mandible),
+        ]),
+    ]),
+    Part("right_leg_1", (-2.5, 22.5, -1.5, 0, 0.4, 0.7), [Box(34, 0, -4, 0, -0.5, 4, 1, 1, mirror=True, paint=leg)]),
+    Part("right_leg_2", (-2.8, 22.5, 0.5, 0, 0, 0.7), [Box(34, 0, -4, 0, -0.5, 4, 1, 1, mirror=True, paint=leg)]),
+    Part("right_leg_3", (-2.8, 22.5, 2.5, 0, -0.4, 0.7), [Box(34, 0, -4, 0, -0.5, 4, 1, 1, mirror=True, paint=leg)]),
+    Part("left_leg_1", (2.5, 22.5, -1.5, 0, -0.4, -0.7), [Box(34, 0, 0, 0, -0.5, 4, 1, 1, paint=leg)]),
+    Part("left_leg_2", (2.8, 22.5, 0.5, 0, 0, -0.7), [Box(34, 0, 0, 0, -0.5, 4, 1, 1, paint=leg)]),
+    Part("left_leg_3", (2.8, 22.5, 2.5, 0, 0.4, -0.7), [Box(34, 0, 0, 0, -0.5, 4, 1, 1, paint=leg)]),
+], egg=(hexc("2d211b"), hexc("ff7a1f")))
 
 
 # ---- Corona Skimmer: a flat, manta-shaped flier that rests looking like stone
@@ -720,32 +772,109 @@ WHALE = Mob("drift_whale", (128, 64), [
 ], egg=(hexc("3a4fa8"), hexc("dbe6ff")))
 
 
-# ---- The Watcher: a tall, still silhouette
-def watcher_skin(face, px, py, fw, fh, rnd):
-    return rnd.choice([hexc("0a0a0f"), hexc("0d0c14"), hexc("08080c")])
+# ---- The Watcher: a tall hooded figure in a long cloak, standing perfectly still. Its cloak is the
+# colour of the void and faintly embroidered with constellations; where its face should be there
+# are only a few stars. A thin astrolabe ring hangs behind its head like a halo, and it leans on a
+# tall staff topped with a pale light.
+CLOAK = [hexc("06070f"), hexc("0b0d1c"), hexc("11152b"), hexc("181d3a")]
+# Constellations stitched into the cloak (in texture pixels of each face).
+STARS = {(2, 3), (5, 5), (7, 2), (3, 9), (6, 11), (8, 8), (1, 13), (4, 15), (7, 17)}
 
 
-def watcher_head(face, px, py, fw, fh, rnd):
-    if face == "north" and py == 4 and px in (1, 4):
-        return hexc("e8e8ff")
-    return watcher_skin(face, px, py, fw, fh, rnd)
+def cloak(face, px, py, fw, fh, rnd, hem=False):
+    t = n()
+    c = CLOAK[min(3, int(t * 3.6))]
+    if face in ("north", "south", "east", "west") and px % 3 == 0 and t < 0.55:
+        c = CLOAK[0]                                      # the folds
+    if hem and face in ("north", "south", "east", "west"):
+        if py == fh - 1 and px % 3 != 1 or py == fh - 2 and px % 5 == 0:
+            return None                                   # a ragged hem
+    if face == "north" and (px, py) in STARS:
+        c = hexc("59628f")
+    return c
 
 
-def watcher_head_glow(face, px, py, fw, fh, rnd):
-    if face == "north" and py == 4 and px in (1, 4):
-        return hexc("ffffff")
+def cloak_hem(face, px, py, fw, fh, rnd):
+    return cloak(face, px, py, fw, fh, rnd, hem=True)
+
+
+def cloak_stars(face, px, py, fw, fh, rnd):
+    if face == "north" and (px, py) in STARS:
+        return hexc("a9b6e8")
     return None
 
 
+def mantle(face, px, py, fw, fh, rnd):
+    if face in ("north", "south", "east", "west") and py == fh - 1:
+        return hexc("8a7440")                             # a thin, tarnished gold trim
+    return cloak(face, px, py, fw, fh, rnd)
+
+
+def hood(face, px, py, fw, fh, rnd):
+    if face == "north":
+        if edge_dist(px, py, fw, fh) == 0:
+            return CLOAK[2]                               # the hood's rim
+        return hexc("020206")                             # the darkness inside it
+    return cloak(face, px, py, fw, fh, rnd)
+
+
+FACE_STARS = {(2, 3): hexc("ffffff"), (4, 3): hexc("ffffff"), (3, 5): hexc("9fb4ff"), (5, 6): hexc("6f80c8"),
+              (1, 6): hexc("6f80c8")}
+
+
+def hood_glow(face, px, py, fw, fh, rnd):
+    if face == "north":
+        return FACE_STARS.get((px, py))
+    return None
+
+
+def halo(face, px, py, fw, fh, rnd):
+    if face not in ("north", "south"):
+        return None
+    d = math.hypot(px - (fw - 1) / 2, py - (fh - 1) / 2)
+    if 4.7 <= d <= 5.6:
+        return hexc("c9b26a")
+    return None
+
+
+def halo_glow(face, px, py, fw, fh, rnd):
+    if face not in ("north", "south"):
+        return None
+    cx, cy = (fw - 1) / 2, (fh - 1) / 2
+    d = math.hypot(px - cx, py - cy)
+    a = math.atan2(py - cy, px - cx)
+    if 4.7 <= d <= 5.6 and int((a + math.pi) / (math.pi / 4)) % 2 == 0 and abs((a + math.pi) % (math.pi / 4)) < 0.25:
+        return hexc("fff4c8")                             # stars set into the ring
+    return None
+
+
+def staff(face, px, py, fw, fh, rnd):
+    if py % 10 == 0:
+        return hexc("9aa2b8")                             # silver bands
+    return hexc("241e2c") if px % 2 else hexc("2f2838")
+
+
+def orb(face, px, py, fw, fh, rnd):
+    return hexc("d6e6ff")
+
+
+def hand(face, px, py, fw, fh, rnd):
+    return hexc("0b0d1c")
+
+
 WATCHER = Mob("watcher", (64, 64), [
-    Part("body", (0, 0, 0), [Box(0, 16, -3, -16, -2, 6, 16, 3, paint=watcher_skin)], [
-        Part("head", (0, -16, 0), [Box(0, 0, -3, -8, -3, 6, 8, 6, paint=watcher_head, glow=watcher_head_glow)]),
-        Part("right_arm", (-4, -15, 0), [Box(32, 16, -1, 0, -1, 2, 26, 2, paint=watcher_skin)]),
-        Part("left_arm", (4, -15, 0), [Box(32, 16, -1, 0, -1, 2, 26, 2, mirror=True, paint=watcher_skin)]),
+    Part("cloak_lower", (0, 24, 0), [Box(0, 43, -5, -14, -3.5, 10, 14, 7, paint=cloak_hem, glow=cloak_stars)]),
+    Part("cloak_upper", (0, 10, 0), [Box(0, 15, -4, -12, -3, 8, 12, 6, paint=cloak, glow=cloak_stars)]),
+    Part("mantle", (0, -2, 0), [Box(0, 33, -5.5, 0, -3.5, 11, 3, 7, paint=mantle)]),
+    Part("hood", (0, -1, 0), [Box(0, 0, -3.5, -8, -4, 7, 8, 7, paint=hood, glow=hood_glow)], [
+        Part("halo", (0, -4, 4.5), [Box(28, 0, -6, -6, 0, 12, 12, 0, paint=halo, glow=halo_glow)]),
     ]),
-    Part("right_leg", (-1.5, 0, 0), [Box(24, 16, -1, 0, -1, 2, 24, 2, paint=watcher_skin)]),
-    Part("left_leg", (1.5, 0, 0), [Box(24, 16, -1, 0, -1, 2, 24, 2, mirror=True, paint=watcher_skin)]),
-], egg=(hexc("0a0a0f"), hexc("e8e8ff")))
+    Part("staff", (6.5, 24, -1.5), [
+        Box(56, 0, -0.5, -40, -0.5, 1, 40, 1, paint=staff),
+        Box(28, 12, -1.5, -43, -1.5, 3, 3, 3, paint=orb, glow=orb),
+    ]),
+    Part("hand", (6.5, 5, -1.5), [Box(40, 12, -1, -1, -1, 2, 2, 2, paint=hand)]),
+], egg=(hexc("0b0d1c"), hexc("c9b26a")))
 
 
 MOBS = [POLLINATOR, WANDERER, STALKER, CINDER_MITE, SKIMMER, GUARDIAN, WHALE, WATCHER]

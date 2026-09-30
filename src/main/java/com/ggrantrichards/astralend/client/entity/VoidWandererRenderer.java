@@ -45,18 +45,20 @@ public class VoidWandererRenderer extends MobRenderer<VoidWanderer, VoidWanderer
         public boolean hostile;
     }
 
-    // The crystal shell turns slowly, the ring spins (fast while scanning or angry), and the whole
-    // probe bobs as it floats.
+    // The drone bobs as it floats; its gimbal ring spins (fast while it scans you or is angry), and
+    // its little fins trim its balance.
     public static class Model extends EntityModel<State> {
-        private final ModelPart shell;
-        private final ModelPart lens;
+        private final ModelPart body;
         private final ModelPart ring;
+        private final ModelPart leftFin;
+        private final ModelPart rightFin;
 
         public Model(ModelPart root) {
             super(root);
-            this.shell = root.getChild("shell");
-            this.lens = root.getChild("lens");
+            this.body = root.getChild("body");
             this.ring = root.getChild("ring");
+            this.leftFin = this.body.getChild("left_fin");
+            this.rightFin = this.body.getChild("right_fin");
         }
 
         @Override
@@ -64,13 +66,13 @@ public class VoidWandererRenderer extends MobRenderer<VoidWanderer, VoidWanderer
             super.setupAnim(state);
             float t = state.ageInTicks;
             float bob = Mth.sin(t * 0.1F) * 1.0F;
-            this.shell.y += bob;
-            this.lens.y += bob;
+            this.body.y += bob;
             this.ring.y += bob;
-            this.shell.yRot += t * 0.02F;
-            this.ring.yRot = t * (state.scanning || state.hostile ? 0.4F : 0.06F);
-            this.lens.yRot = state.yRot * Mth.DEG_TO_RAD;
-            this.lens.xRot = state.xRot * Mth.DEG_TO_RAD;
+            this.body.xRot += state.xRot * Mth.DEG_TO_RAD * 0.5F;
+            this.ring.yRot += t * (state.scanning || state.hostile ? 0.35F : 0.05F);
+            this.ring.xRot += Mth.sin(t * 0.05F) * 0.12F;
+            this.leftFin.zRot += Mth.sin(t * 0.3F) * 0.15F;
+            this.rightFin.zRot -= Mth.sin(t * 0.3F) * 0.15F;
         }
     }
 }

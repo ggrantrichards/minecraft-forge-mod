@@ -33,7 +33,7 @@ public final class ModEntities {
         () -> EntityType.Builder.of(UmbralStalker::new, MobCategory.MONSTER).sized(1.0F, 2.0F).eyeHeight(1.7F)
             .clientTrackingRange(8).build(ENTITY_TYPES.key("umbral_stalker")));
     public static final RegistryObject<EntityType<CinderMite>> CINDER_MITE = ENTITY_TYPES.register("cinder_mite",
-        () -> EntityType.Builder.of(CinderMite::new, MobCategory.MONSTER).sized(0.4F, 0.3F).eyeHeight(0.13F).fireImmune()
+        () -> EntityType.Builder.of(CinderMite::new, MobCategory.MONSTER).sized(0.6F, 0.35F).eyeHeight(0.2F).fireImmune()
             .clientTrackingRange(8).build(ENTITY_TYPES.key("cinder_mite")));
     public static final RegistryObject<EntityType<CoronaSkimmer>> CORONA_SKIMMER = ENTITY_TYPES.register("corona_skimmer",
         () -> EntityType.Builder.of(CoronaSkimmer::new, MobCategory.CREATURE).sized(1.3F, 0.35F).eyeHeight(0.2F).fireImmune()

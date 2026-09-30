@@ -63,7 +63,7 @@ def faces_of(part, transform, out):
         faces_of(c, local, out)
 
 
-def render(mob, texture, yaw, pitch, size=260):
+def render(mob, texture, yaw, pitch, size=260, glow=None):
     faces = []
     for part in mob.parts:
         faces_of(part, lambda v: v, faces)
@@ -84,6 +84,7 @@ def render(mob, texture, yaw, pitch, size=260):
     px = img.load()
     depth = [[1e9] * size for _ in range(size)]
     tex = texture.load()
+    gl = glow.load() if glow else None
     tw, th = texture.size
     for corners, (u, v, w, h) in faces:
         pts = [((c[0] - cx) * scale + size / 2, (c[1] - cy) * scale + size / 2, c[2]) for c in corners]
@@ -112,6 +113,8 @@ def render(mob, texture, yaw, pitch, size=260):
                     c = tex[ix, iy]
                     if c[3] < 20:
                         continue
+                    if gl and gl[ix, iy][3] > 20:
+                        c = gl[ix, iy][:3] + (255,)       # glowing parts, at full brightness
                     depth[yy][xx] = z
                     base = px[xx, yy]
                     a = c[3] / 255
@@ -127,9 +130,12 @@ def main():
     sheet = Image.new("RGBA", (size * len(views), (size + 18) * len(mobs)), (30, 30, 38, 255))
     draw = ImageDraw.Draw(sheet)
     for row, mob in enumerate(mobs):
-        texture = Image.open(make_mobs.TEX / "entity" / mob.name / f"{mob.name}.png").convert("RGBA")
+        folder = make_mobs.TEX / "entity" / mob.name
+        texture = Image.open(folder / f"{mob.name}.png").convert("RGBA")
+        glow_file = folder / f"{mob.name}_glow.png"
+        glow = Image.open(glow_file).convert("RGBA") if glow_file.exists() else None
         for col, (yaw, pitch) in enumerate(views):
-            sheet.paste(render(mob, texture, yaw, pitch, size), (col * size, row * (size + 18)))
+            sheet.paste(render(mob, texture, yaw, pitch, size, glow), (col * size, row * (size + 18)))
         draw.text((6, row * (size + 18) + size + 2), mob.name, fill=(230, 230, 236))
     OUT.parent.mkdir(parents=True, exist_ok=True)
     sheet.save(OUT if not wanted else OUT.with_name("mob_models_" + "_".join(wanted) + ".png"))

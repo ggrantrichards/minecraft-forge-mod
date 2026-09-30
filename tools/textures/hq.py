@@ -187,17 +187,21 @@ def sunscale_lichen():
 # ------------------------------------------------------------------ foliage
 
 def lumine_cap():
-    """The cap of a giant Lumineshroom: deep teal flesh with fine mottling, studded with glowing
-    spots that stand out like the white spots of a vanilla red mushroom block."""
-    base = ramp("0b3a45", "3fb8b0", 5, hue_shift=0.02)
-    img = rock(204, base, shares=[1, 2, 4, 3, 2], octaves=((2, 0.35), (4, 0.4), (8, 0.25)))
-    glow = {"r": hexc("1d6f78"), "m": hexc("47bdb4"), "l": hexc("98ece2"), "h": hexc("dcfff9")}
-    big = [".mm.", "mlhm", "mllm", ".mm."]
-    mid = [".m.", "mlm", ".m."]
-    small = ["lm", "mr"]
-    for (x, y, s) in ((2, 2, big), (11, 9, mid), (5, 11, small), (12, 2, small)):
-        shadow_below(img, x, y, s, 0.35)
-        stamp(img, x, y, s, glow)
+    """The cap of a giant Lumineshroom: deep indigo like the night sky, softly mottled, freckled with
+    glowing cyan spots of a few sizes (the light it gives off). Low contrast in the indigo so the
+    caps read cleanly from a distance; the spots are what catch the eye."""
+    base = ramp("2c2a74", "5552b8", 4, hue_shift=0.02)
+    img = rock(302, base, shares=[1, 4, 4, 1], octaves=((2, 0.6), (4, 0.4)))
+    glow = {"m": hexc("3fc8d8"), "l": hexc("a6f6ff"), "h": hexc("ffffff"), "d": hexc("2f8aa8")}
+    shapes = {
+        "big": [".mm.", "mhlm", "mllm", ".mm."],
+        "mid": [".m.", "mhm", ".m."],
+        "small": ["hm", "md"],
+        "tiny": ["l"],
+    }
+    for (x, y, k) in ((2, 3, "big"), (10, 9, "mid"), (12, 1, "small"), (5, 12, "tiny"), (14, 13, "tiny"),
+                      (8, 5, "tiny"), (1, 9, "small"), (14, 6, "tiny")):
+        stamp(img, x, y, shapes[k], glow)
     return img
 
 
