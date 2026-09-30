@@ -1,10 +1,10 @@
-# The Astral Reaches: an End update
+# The Astral End: an End update
 
 A design plan for expanding the End into a sparse, mysterious network of floating
 "astral" regions, built as a Forge mod for Minecraft 26.3. Nothing here is final; every
 biome, mob and number is a starting point for playtesting.
 
-**Working name:** *The Astral Reaches*. **Suggested mod ID:** `astralreaches`.
+**Mod:** *The Astral End*, mod ID `astralend`, built in this repository.
 
 ---
 
@@ -77,7 +77,7 @@ Echo Logs and the behaviour of mobs.
 The new lore is built to **explain** what vanilla already shows, never to contradict it.
 Vanilla facts it hooks into:
 
-| Vanilla fact | How the Astral Reaches explains or uses it |
+| Vanilla fact | How the Astral End explains or uses it |
 |---|---|
 | The End has **no day/night cycle, no weather**, and a static sky texture | The sky is the dead star's afterimage. Stellar Flares become the End's only weather; the sky moves only very slowly. |
 | **Compasses and clocks spin** in the End; **beds explode** | Space here is "bent" by the collapse. Starblooms are the only thing that points reliably (to the central island). Beds still explode. |
@@ -375,11 +375,19 @@ central island is never affected.
 | **Afterglow** | ~2 minutes | Everything glows softly and settles. |
 
 **Effects during the Flare phase:**
-- **Danger:** players with open sky above them take small, periodic "radiant burn"
-  damage, like standing near a campfire.
-  - Any solid block overhead blocks it, and so does a Radiant Starforge upgrade (§9).
-  - The point is to give shelter a purpose, as rain and thunder do. It's never a death
-    sentence on its own.
+- **Danger: flares burn you unless you're properly protected.**
+  - **Flare Burn:** a status effect on anyone with open sky above them. It deals half a
+    heart every 3 seconds at first, then a full heart after 30 seconds of exposure.
+  - **Protection** (any one is enough):
+    - **Cover:** any solid block or glass overhead. Astral Glass lets you watch the
+      flare safely.
+    - **Radiant Starforge upgrade** (§9) on 2 or more armour pieces.
+    - **Potion of Flare Ward** (Awkward Potion + Comet Ice; 3 minutes, or 8 minutes when
+      extended).
+  - The warning phase gives about a minute to get protected, so a prepared player is
+    never caught out.
+  - The point is to make preparation matter, as the Nether's fire and the Deep Dark's
+    Warden do.
 - **Solar wind:** elytra flight gets a push in the flare's direction, so flying with
   it is fast and flying against it is slow.
 - **Wanderers malfunction,** and Pollinators drop more spores.
@@ -430,7 +438,7 @@ something you can interact with, without the lag and bugs of moving islands.
 | **Meteoric Iron** | Meteoric Iron Ore in Comet Cores (Comet Wake), live comets | Mine with a diamond pickaxe. Smelt the raw chunks. | Starforge Alloy, Gravity Wells, the Astral Forge |
 | **Temporal Crystal** | Loot only: craters, station vaults, maze rewards | Can't be mined or farmed | Portal Lens, Temporal upgrade, Maw repair |
 | **Stardust** | Stardust Blocks (Comet Wake), comet tails | Shovel, or fly through a comet tail | Building, Astral Glass, Comet Cress farms |
-| **Orrery Bronze** | Salvaged from Orbital Stations | Mine station hull blocks | Station-style building, Telescope Mounts |
+| **Orrery Bronze** | Salvaged from Orbital Stations | Mine station hull blocks | Station-style building, lamps and grates |
 
 **Starforge Alloy** = 2 Void Crystal + 2 Meteoric Iron Ingot + 1 Glowing Spore, crafted
 at the Astral Forge (§9).
@@ -476,11 +484,9 @@ chiseled.
   - reads Echo Logs from Data Shards;
   - is also the key used to wake and link Maws.
 - **Telescope use:**
-  - Constellation Mazes are designed around a telescope: star-bridges appear only while
-    you look through it (§10).
-  - **If Minecraft 26.3 has a vanilla telescope, the mod uses it directly.** If not, the
-    mod adds a **Telescope Mount**: a placeable Orrery Bronze block you look through.
-  - Either way, the Portal Lens also works, at shorter range.
+  - Constellation Mazes are built around **vanilla 26.3's telescope**: star-bridges
+    appear only while you look through it (§10).
+  - The Portal Lens also works, at shorter range.
 - **Star Chart**: a lore map found in ruins or given by the Watcher.
 - **Stalker Cloak**: a cape worn in the chest slot, like an elytra. Mobs lose track of
   you faster, but you give up both your chestplate and your elytra to wear it.
@@ -645,7 +651,7 @@ What it would look like if ancient aliens built in Minecraft's style: a giant **
 10. **Long tail:** link every Maw, complete the Drift Whale chain, collect every Echo Log
     and constellation, and experiment with Starforge builds and Alignments.
 
-**Advancement tab: "The Astral Reaches".** About 25 advancements, including:
+**Advancement tab: "The Astral End".** About 25 advancements, including:
 - *Falling Upward*: use a Stardust block.
 - *Hold Still*: get scanned by a Void Wanderer.
 - *Weather the Storm*: survive a Stellar Flare outdoors.
@@ -718,18 +724,18 @@ upward; an animated texture), and prove out the art style before any worldgen wo
 
 ---
 
-## 15. Open questions
+## 15. Decisions made
 
-1. **Telescope:** does Minecraft 26.3 have a vanilla telescope? Check by opening
-   `~/minecraft-source` and pressing Cmd+P, then typing `Telescope`. If it exists,
-   Constellation Mazes use it directly; if not, the mod adds a Telescope Mount.
-2. **Mod name and ID:** `astralreaches` in a new repository, or rename `rubymod` and
-   build it here?
-3. **Where the new biomes start:** beyond 1,000 blocks, or only beyond 2,000–3,000
-   blocks, so early End exploration stays exactly vanilla?
-4. **Flare damage:** keep it (shelter matters) or make flares purely an opportunity,
-   with no damage?
-5. **Is one hostile mob plus the Sentinel enough,** or should Comet Wake get a small
+| Question | Decision |
+|---|---|
+| Telescope | Minecraft 26.3 has one. Constellation Mazes and the Watcher use the vanilla telescope. |
+| Mod name and ID | **The Astral End**, mod ID `astralend`. The former `rubymod` project was renamed; its Ruby example content stays until Phase 1 replaces it. |
+| Flare damage | **On.** Flares burn anyone who isn't protected (cover, Radiant upgrade or Flare Ward potion). Servers can turn it off in the config. |
+| Where new biomes start | **Beyond 1,000 blocks**, the same distance where vanilla's outer islands begin. |
+
+## 16. Open questions
+
+1. **Is one hostile mob plus the Sentinel enough,** or should Comet Wake get a small
    threat too (for example, burning "Cinder Mites" in hot craters)?
-6. **Art:** should textures be drawn first (in Blockbench/Piskel), or should we start with
+2. **Art:** should textures be drawn first (in Blockbench/Piskel), or should we start with
    placeholder textures and replace them later?

@@ -3,7 +3,7 @@
   "pools": [
     {
       "rolls": 1,
-      "entries": [{ "type": "minecraft:item", "name": "rubymod:ruby_block" }],
+      "entries": [{ "type": "minecraft:item", "name": "astralend:ruby_block" }],
       "conditions": [{ "condition": "minecraft:survives_explosion" }]
     }
   ]

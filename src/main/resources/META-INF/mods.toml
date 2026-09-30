@@ -5,20 +5,20 @@ loaderVersion="[66,)"
 license="All Rights Reserved"
 
 [[mods]]
-modId="rubymod"             # must match RubyMod.MODID; lowercase letters, numbers, underscores
+modId="astralend"             # must match AstralEnd.MODID; lowercase letters, numbers, underscores
 version="1.0.0"
-displayName="Ruby Mod"
-authors="YourNameHere"
-description='''My first Forge mod: adds rubies and a ruby block.'''
+displayName="The Astral End"
+authors="ggrantrichards"
+description='''Expands the End into a sparse, mysterious network of astral islands. Early development: currently only the example Ruby content.'''
 
-[[dependencies.rubymod]]
+[[dependencies.astralend]]
     modId="forge"
     mandatory=true
     versionRange="[66,)"
     ordering="NONE"
     side="BOTH"
 
-[[dependencies.rubymod]]
+[[dependencies.astralend]]
     modId="minecraft"
     mandatory=true
     versionRange="[26.3,26.4)"
