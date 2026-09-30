@@ -249,10 +249,170 @@ def cross_plant(name, item_texture=None):
     item_def(name, rid(f"item/{name}"))
 
 
+# ------------------------------------------------------------------ world generation (Phase 2)
+#
+# How the End is built:
+#  - data/minecraft/dimension/the_end.json swaps the End's biome source for ours
+#    (astralend:astral_end, see AstralEndBiomeSource.java) and its noise settings for ours.
+#  - Our noise settings are vanilla's End terrain unchanged, plus a "temperature" noise that the
+#    biome source reads to decide where Nebula Fields go, and a material rule that tops islands
+#    in Nebula Fields with Nebula Moss.
+#  - The Nebula Fields biome lists the features (plants) that decorate it.
+
+WG = DATA / "worldgen"
+
+VANILLA_END_FINAL_DENSITY = {
+    "type": "minecraft:add",
+    "left": {"type": "minecraft:squeeze", "input": {
+        "type": "minecraft:interpolated", "cell_size_xz": 8, "cell_size_y": 4, "input": {
+            "type": "minecraft:mul",
+            "left": {"type": "minecraft:blend_density", "input": {
+                "type": "minecraft:lerp",
+                "alpha": {"type": "minecraft:gradient", "axis": "y", "from_coordinate": 4, "from_value": 0.0,
+                          "to_coordinate": 32, "to_value": 1.0},
+                "first": -0.234375,
+                "second": {
+                    "type": "minecraft:lerp",
+                    "alpha": {"type": "minecraft:gradient", "axis": "y", "from_coordinate": 56, "from_value": 1.0,
+                              "to_coordinate": 312, "to_value": 0.0},
+                    "first": -23.4375,
+                    "second": "minecraft:end/sloped_cheese",
+                },
+            }},
+            "right": 0.64,
+        }}},
+    "right": {"type": "minecraft:beardifier"},
+}
+
+
+def placed(name, obj):
+    write(WG / "placed_feature" / f"{name}.json", obj)
+
+
+def feature(name, obj):
+    write(WG / "feature" / f"{name}.json", obj)
+
+
+def trapezoid(n):
+    return {"type": "minecraft:trapezoid", "max": n, "min": -n, "plateau": 0}
+
+
+def plant_patch(name, block, rarity, count, spread, vertical=2):
+    """A patch of plants, placed exactly like vanilla's mushroom and flower patches."""
+    feature(block, {"type": "minecraft:simple_block", "to_place": {"id": rid(block)}})
+    placed(name, {"feature": rid(block), "placement": [
+        {"type": "minecraft:rarity_filter", "chance": rarity},
+        {"type": "minecraft:in_square"},
+        {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"},
+        {"type": "minecraft:biome"},
+        {"type": "minecraft:count", "count": count},
+        {"type": "minecraft:offset", "x": trapezoid(spread), "y": trapezoid(vertical), "z": trapezoid(spread)},
+        {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
+            {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
+            {"type": "minecraft:would_survive", "state": rid(block)},
+        ]}},
+    ]})
+
+
+def worldgen():
+    # The End dimension: vanilla dimension type, our biome source and noise settings.
+    write(RES / "data/minecraft/dimension/the_end.json", {
+        "type": "minecraft:the_end",
+        "generator": {"type": "minecraft:noise", "biome_source": {"type": rid("astral_end")}, "settings": rid("end")},
+    })
+
+    # Vanilla's End terrain, with a "temperature" noise added. It doesn't shape terrain; the biome
+    # source samples it to find Nebula Fields regions (~500-block patches).
+    write(WG / "noise_settings" / "end.json", {
+        "default_block": "minecraft:end_stone",
+        "default_fluid": "minecraft:air",
+        "disable_mob_generation": True,
+        "legacy_random_source": True,
+        "material_rule": rid("end"),
+        "noise": {"height": 128, "min_y": 0},
+        "noise_router": {
+            "chunk_surface_level": 0.0, "continents": 0.0, "depth": 0.0,
+            "erosion": "minecraft:end/islands",
+            "final_density": VANILLA_END_FINAL_DENSITY,
+            "ridges": 0.0,
+            "temperature": {"type": "minecraft:noise", "noise": "minecraft:vegetation", "xz_scale": 0.5, "y_scale": 0.0},
+            "vegetation": 0.0,
+        },
+        "sea_level": 0,
+        "spawn_target": [],
+    })
+
+    # Surface: the top block of every island floor in Nebula Fields becomes Nebula Moss;
+    # everything else is End Stone, exactly like vanilla.
+    write(WG / "material_rule" / "end.json", {"type": "minecraft:sequence", "sequence": [
+        {"type": "minecraft:condition",
+         "if_true": {"type": "minecraft:biome", "biome_is": [rid("nebula_fields")]},
+         "then_run": {"type": "minecraft:condition", "if_true": "minecraft:on_floor",
+                      "then_run": {"type": "minecraft:block", "result_state": rid("nebula_moss")}}},
+        "minecraft:end",
+    ]})
+
+    # Plants of the Nebula Fields.
+    plant_patch("nebula_lumineshrooms", "lumineshroom", rarity=2, count=24, spread=6)
+    plant_patch("nebula_starblooms", "starbloom", rarity=3, count=20, spread=6)
+    feature("astral_vine", {
+        "type": "minecraft:block_column",
+        "allowed_placement": {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
+        "direction": "up",
+        "layers": [
+            {"height": {"type": "minecraft:uniform", "min_inclusive": 0, "max_inclusive": 5},
+             "provider": {"id": rid("astral_vine_plant")}},
+            {"height": 1, "provider": {"type": "minecraft:randomized_int", "property": "age",
+                                       "source": {"id": rid("astral_vine"), "properties": {"age": "0"}},
+                                       "values": {"type": "minecraft:uniform", "min_inclusive": 17, "max_inclusive": 25}}},
+        ],
+        "prioritize_tip": True,
+    })
+    placed("nebula_astral_vines", {"feature": rid("astral_vine"), "placement": [
+        {"type": "minecraft:rarity_filter", "chance": 2},
+        {"type": "minecraft:in_square"},
+        {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"},
+        {"type": "minecraft:biome"},
+        {"type": "minecraft:count", "count": 10},
+        {"type": "minecraft:offset", "x": trapezoid(5), "y": trapezoid(1), "z": trapezoid(5)},
+        {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
+            {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
+            {"type": "minecraft:matching_blocks", "blocks": [rid("nebula_moss")], "offset": [0, -1, 0]},
+        ]}},
+    ]})
+
+    # The biome itself. Endermen spawn as in the rest of the End; violet fog and drifting motes.
+    write(WG / "biome" / "nebula_fields.json", {
+        "attributes": {
+            "minecraft:gameplay/natural_mob_spawns": {"argument": {"spawn_costs": {}, "spawns_by_category": {
+                "monster": [{"type": "minecraft:enderman", "count": 4, "weight": 10}]}}, "modifier": "overlay"},
+            "minecraft:visual/ambient_particles": {"argument": [
+                {"particle": {"type": "minecraft:reverse_portal"}, "probability": 0.004}], "modifier": "append"},
+            "minecraft:visual/fog_color": "#2b1d45",
+        },
+        "carvers": [],
+        "downfall": 0.5,
+        "effects": {"water_color": "#7a5fc4"},
+        # Features by generation step. Step 4 (surface structures) has the return gateway, the
+        # same as in the End Highlands; step 9 (vegetal decoration) has the plants.
+        "features": [[], [], [], [], ["minecraft:end_gateway_return"], [], [], [], [],
+                     [rid("nebula_lumineshrooms"), rid("nebula_starblooms"), rid("nebula_astral_vines")]],
+        "has_precipitation": False,
+        "temperature": 0.5,
+    })
+
+    tag("worldgen/biome", "minecraft:is_end", rid("nebula_fields"))
+    # Biomes in this tag get the End's low gravity. To turn it off, override this tag with an
+    # empty list in a datapack.
+    tag("worldgen/biome", f"{NS}:low_gravity", rid("nebula_fields"))
+    lang[f"biome.{NS}.nebula_fields"] = "Nebula Fields"
+
+
 def main():
     # Clear previously generated folders so renamed/removed content doesn't linger.
     for folder in (ASSETS / "blockstates", ASSETS / "models", ASSETS / "items", DATA / "loot_table",
-                   DATA / "recipe", RES / "data" / NS / "tags", MC_DATA / "tags"):
+                   DATA / "recipe", RES / "data" / NS / "tags", MC_DATA / "tags", DATA / "worldgen",
+                   MC_DATA / "dimension"):
         shutil.rmtree(folder, ignore_errors=True)
 
     family_variants = {}
@@ -405,6 +565,8 @@ def main():
     recipe("yellow_dye_from_starbloom", {"type": "minecraft:crafting_shapeless", "category": "misc",
                                          "group": "yellow_dye", "ingredients": [rid("starbloom")],
                                          "result": {"id": "minecraft:yellow_dye"}})
+
+    worldgen()
 
     # ---------------------------------------------------------------- write tags + lang
     for (registry, name), values in tags.items():

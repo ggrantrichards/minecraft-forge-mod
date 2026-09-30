@@ -22,10 +22,6 @@ jobs:
       - name: Check resources
         run: python3 tools/check_resources.py
 
-      - name: API probe (temporary)
-        if: hashFiles('.github/probe/probe.sh') != ''
-        run: ./gradlew -q javaToolchains > /dev/null && .github/probe/probe.sh
-
       - name: Build
         run: ./gradlew build --stacktrace
 
@@ -44,6 +40,19 @@ jobs:
             echo "::error::the server logged problems with astralend's data (see above)"; exit 1
           fi
 
+      # Starts a real server with a fixed seed, maps the End's biomes, generates a patch of Nebula
+      # Fields, counts what grew there and checks low gravity (dev/WorldgenSurvey.java).
+      - name: Survey the generated End
+        timeout-minutes: 15
+        run: |
+          echo "eula=true" > run/eula.txt
+          printf "level-seed=astralend-ci\nlevel-name=survey-world\nonline-mode=false\n" > run/server.properties
+          timeout 800 ./gradlew runServer -PastralendSurvey > survey-console.log 2>&1 || true
+          cp run/logs/latest.log survey.log
+          grep "AstralEnd survey" survey.log | sed 's/.*\[AstralEnd survey\] //' || { tail -60 survey-console.log; exit 1; }
+          if grep -E "(WARN|ERROR).*astralend" survey.log; then echo "::error::the survey server logged problems with astralend"; exit 1; fi
+          grep -q "SURVEY PASSED" survey.log || { echo "::error::the worldgen survey failed (see above)"; exit 1; }
+
       # Boots the real game client on a virtual screen, waits until every texture and model has
       # loaded, then fails if the game reported anything missing for this mod.
       - name: Load the mod in the real client
@@ -60,6 +69,7 @@ jobs:
           path: |
             build/libs/*.jar
             server.log
+            survey.log
             client.log
             client-console.log
           if-no-files-found: ignore

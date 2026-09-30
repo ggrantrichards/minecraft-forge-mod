@@ -182,6 +182,36 @@ for name in sorted(items):
 # ------------------------------------------------------------------ data files only reference real things
 
 known = {f"{NS}:{n}" for n in blocks | items}
+# World generation entries (biomes, features, noise settings...) are registered by their JSON files,
+# plus the biome source type registered in Java.
+WORLDGEN = RES / "data" / NS / "worldgen"
+worldgen_ids = {}
+for file in sorted(WORLDGEN.rglob("*.json")) if WORLDGEN.exists() else []:
+    kind = file.relative_to(WORLDGEN).parts[0]
+    worldgen_ids.setdefault(kind, set()).add(f"{NS}:{file.stem}")
+    known.add(f"{NS}:{file.stem}")
+known |= {f"{NS}:{n}" for n in re.findall(r'BIOME_SOURCES\.register\("([a-z0-9_]+)"',
+                                           (JAVA / "world/ModWorldgen.java").read_text())}
+
+
+def need(kind, ref, where):
+    if ref.startswith(f"{NS}:") and ref not in worldgen_ids.get(kind, set()):
+        err(f"{where}: {ref} is not a {kind} (no data/{NS}/worldgen/{kind}/{ref.split(':')[1]}.json)")
+
+
+for file in sorted((WORLDGEN / "placed_feature").glob("*.json")) if WORLDGEN.exists() else []:
+    need("feature", (load(file) or {}).get("feature", ""), file.relative_to(ROOT))
+for file in sorted((WORLDGEN / "biome").glob("*.json")) if WORLDGEN.exists() else []:
+    for step in (load(file) or {}).get("features", []):
+        for ref in step:
+            need("placed_feature", ref, file.relative_to(ROOT))
+    if f"biome.{NS}.{file.stem}" not in lang:
+        err(f"biome {NS}:{file.stem}: missing English name biome.{NS}.{file.stem}")
+for file in sorted((WORLDGEN / "noise_settings").glob("*.json")) if WORLDGEN.exists() else []:
+    need("material_rule", (load(file) or {}).get("material_rule", ""), file.relative_to(ROOT))
+for file in sorted((RES / "data/minecraft/dimension").glob("*.json")):
+    gen = (load(file) or {}).get("generator", {})
+    need("noise_settings", gen.get("settings", ""), file.relative_to(ROOT))
 for file in sorted((RES / "data").rglob("*.json")):
     text = file.read_text()
     load(file)
@@ -194,6 +224,7 @@ for file in sorted((RES / "data").rglob("*.json")):
 for file in sorted(ASSETS.rglob("*.json")):
     load(file)
 for extra in sorted(set(lang) - {f"block.{NS}.{n}" for n in blocks} - {f"item.{NS}.{n}" for n in items}
+                    - {f"biome.{NS}.{b.split(':')[1]}" for b in worldgen_ids.get("biome", set())}
                     - {"itemGroup.astralend"}):
     err(f"lang/en_us.json: {extra} doesn't match anything registered")
 
@@ -202,4 +233,5 @@ if errors:
     for e in errors:
         print("  -", e)
     sys.exit(1)
-print(f"OK: {len(blocks)} blocks and {len(items)} items all have blockstates, models, textures, names and loot tables.")
+print(f"OK: {len(blocks)} blocks and {len(items)} items all have blockstates, models, textures, names and loot tables; "
+      f"{sum(len(v) for v in worldgen_ids.values())} world generation files all point at things that exist.")

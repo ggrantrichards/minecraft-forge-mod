@@ -1,5 +1,8 @@
 package com.ggrantrichards.astralend;
 
+import com.ggrantrichards.astralend.dev.WorldgenSurvey;
+import com.ggrantrichards.astralend.world.LowGravity;
+import com.ggrantrichards.astralend.world.ModWorldgen;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -21,6 +24,10 @@ public final class AstralEnd {
         ModBlocks.BLOCKS.register(modBusGroup);
         ModItems.ITEMS.register(modBusGroup);
         ModCreativeTabs.TABS.register(modBusGroup);
+        ModWorldgen.BIOME_SOURCES.register(modBusGroup);
+
+        LowGravity.register();
+        WorldgenSurvey.register(); // does nothing unless started with -Dastralend.survey=true
 
         FMLCommonSetupEvent.getBus(modBusGroup).addListener(this::commonSetup);
     }

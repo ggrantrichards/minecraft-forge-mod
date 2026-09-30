@@ -1,0 +1,39 @@
+{
+  "type": "minecraft:block_column",
+  "allowed_placement": {
+    "type": "minecraft:matching_block_tag",
+    "tag": "minecraft:air"
+  },
+  "direction": "up",
+  "layers": [
+    {
+      "height": {
+        "type": "minecraft:uniform",
+        "min_inclusive": 0,
+        "max_inclusive": 5
+      },
+      "provider": {
+        "id": "astralend:astral_vine_plant"
+      }
+    },
+    {
+      "height": 1,
+      "provider": {
+        "type": "minecraft:randomized_int",
+        "property": "age",
+        "source": {
+          "id": "astralend:astral_vine",
+          "properties": {
+            "age": "0"
+          }
+        },
+        "values": {
+          "type": "minecraft:uniform",
+          "min_inclusive": 17,
+          "max_inclusive": 25
+        }
+      }
+    }
+  ],
+  "prioritize_tip": true
+}

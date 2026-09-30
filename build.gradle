@@ -36,6 +36,10 @@ minecraft {
 
         register('server') {        // ./gradlew runServer  -> launches a dedicated server
             args '--nogui'
+            // ./gradlew runServer -PastralendSurvey  -> generates part of the End, prints a report
+            // (biome map, block counts, gravity check) and stops. Used by CI; see dev/WorldgenSurvey.java.
+            if (providers.gradleProperty('astralendSurvey').isPresent())
+                systemProperty 'astralend.survey', 'true'
         }
 
         register('gameTestServer')
