@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "astralend:block/pale_end_stone_slab"
+    },
+    "type=double": {
+      "model": "astralend:block/pale_end_stone"
+    },
+    "type=top": {
+      "model": "astralend:block/pale_end_stone_slab_top"
+    }
+  }
+}

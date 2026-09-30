@@ -15,6 +15,8 @@ public final class ModItems {
     public static final RegistryObject<Item> RAW_METEORIC_IRON = simple("raw_meteoric_iron");
     public static final RegistryObject<Item> METEORIC_IRON_INGOT = simple("meteoric_iron_ingot");
     public static final RegistryObject<Item> METEORIC_IRON_NUGGET = simple("meteoric_iron_nugget");
+    public static final RegistryObject<Item> RAW_SOLARITE = simple("raw_solarite");
+    public static final RegistryObject<Item> SOLARITE_INGOT = simple("solarite_ingot");
 
     // Comet Cress is both a food and the "seed" you plant under Stardust, like a carrot.
     public static final RegistryObject<Item> COMET_CRESS = ITEMS.register("comet_cress",

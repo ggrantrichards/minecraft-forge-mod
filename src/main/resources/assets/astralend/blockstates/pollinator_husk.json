@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "astralend:block/pollinator_husk",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "astralend:block/pollinator_husk"
+    },
+    "axis=z": {
+      "model": "astralend:block/pollinator_husk",
+      "x": 90
+    }
+  }
+}

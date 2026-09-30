@@ -1,7 +1,14 @@
 {
   "replace": false,
   "values": [
+    "astralend:charred_end_stone_wall",
+    "astralend:observatory_quartz_wall",
+    "astralend:pale_end_stone_brick_wall",
+    "astralend:pale_end_stone_wall",
+    "astralend:polished_sunscorched_stone_wall",
     "astralend:polished_umbral_stone_wall",
+    "astralend:sunscorched_stone_brick_wall",
+    "astralend:sunscorched_stone_wall",
     "astralend:umbral_stone_brick_wall",
     "astralend:umbral_stone_wall"
   ]

@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "astralend:charred_end_stone",
+    "astralend:nebula_moss",
+    "astralend:pale_end_stone",
+    "astralend:sunscorched_stone",
+    "astralend:umbral_stone",
+    "minecraft:end_stone"
+  ]
+}

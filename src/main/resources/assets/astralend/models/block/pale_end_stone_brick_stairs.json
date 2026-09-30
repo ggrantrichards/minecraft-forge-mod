@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "astralend:block/pale_end_stone_bricks",
+    "side": "astralend:block/pale_end_stone_bricks",
+    "top": "astralend:block/pale_end_stone_bricks"
+  }
+}

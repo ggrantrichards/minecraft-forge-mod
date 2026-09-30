@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "astralend:block/observatory_quartz",
+    "side": "astralend:block/observatory_quartz",
+    "top": "astralend:block/observatory_quartz"
+  }
+}

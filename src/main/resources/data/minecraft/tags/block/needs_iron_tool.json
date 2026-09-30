@@ -3,6 +3,8 @@
   "values": [
     "astralend:meteoric_iron_block",
     "astralend:raw_meteoric_iron_block",
+    "astralend:raw_solarite_block",
+    "astralend:solarite_block",
     "astralend:void_crystal_block",
     "astralend:void_crystal_ore"
   ]

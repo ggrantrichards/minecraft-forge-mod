@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "astralend:block/observatory_quartz"
+    }
+  }
+}

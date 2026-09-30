@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "astralend:charred_end_stone",
+  "result": {
+    "id": "astralend:charred_end_stone_wall"
+  }
+}

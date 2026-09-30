@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "astralend:block/observatory_quartz_pillar_top",
+    "side": "astralend:block/observatory_quartz_pillar_side"
+  }
+}

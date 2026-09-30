@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "astralend:block/charred_end_stone",
+    "side": "astralend:block/charred_end_stone",
+    "top": "astralend:block/charred_end_stone"
+  }
+}

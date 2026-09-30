@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "astralend:observatory_quartz",
+  "result": {
+    "id": "astralend:star_inlay_observatory_quartz"
+  }
+}

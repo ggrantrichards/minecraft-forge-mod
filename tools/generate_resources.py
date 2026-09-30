@@ -27,6 +27,14 @@ STONE_FAMILIES = [
     ("umbral_stone", "Umbral Stone", True),
     ("polished_umbral_stone", "Polished Umbral Stone", True),
     ("umbral_stone_bricks", "Umbral Stone Bricks", True),
+    # Phase 3
+    ("pale_end_stone", "Pale End Stone", True),
+    ("pale_end_stone_bricks", "Pale End Stone Bricks", True),
+    ("charred_end_stone", "Charred End Stone", True),
+    ("sunscorched_stone", "Sunscorched Stone", True),
+    ("polished_sunscorched_stone", "Polished Sunscorched Stone", True),
+    ("sunscorched_stone_bricks", "Sunscorched Stone Bricks", True),
+    ("observatory_quartz", "Observatory Quartz", True),
 ]
 SIMPLE_CUBES = [
     ("chiseled_umbral_stone", "Chiseled Umbral Stone"),
@@ -38,18 +46,37 @@ SIMPLE_CUBES = [
     ("stardust_block", "Stardust"),
     ("astral_glass", "Astral Glass"),
     ("nebula_moss", "Nebula Moss"),
+    # Phase 3
+    ("pale_end_stone_tiles", "Pale End Stone Tiles"),
+    ("comet_ice", "Comet Ice"),
+    ("solarite_ore", "Solarite Ore"),
+    ("solarite_block", "Block of Solarite"),
+    ("raw_solarite_block", "Block of Raw Solarite"),
+    ("star_inlay_observatory_quartz", "Star Inlay Observatory Quartz"),
+    ("gravity_anomaly", "Gravity Anomaly"),
 ]
-PILLARS = [("leviathan_bone_block", "Leviathan Bone Block", "leviathan_bone")]
-CROSS_PLANTS = [("lumineshroom", "Lumineshroom"), ("starbloom", "Starbloom")]
+PILLARS = [
+    ("leviathan_bone_block", "Leviathan Bone Block", "leviathan_bone"),
+    ("observatory_quartz_pillar", "Observatory Quartz Pillar", "observatory_quartz_pillar"),
+    ("pollinator_husk", "Pollinator Husk", "pollinator_husk"),
+]
+CROSS_PLANTS = [
+    ("lumineshroom", "Lumineshroom"), ("starbloom", "Starbloom"),
+    ("shimmer_grass", "Shimmer Grass"), ("ashen_lumineshroom", "Ashen Lumineshroom"),
+    ("petrified_astral_vine", "Petrified Astral Vine"),
+]
 ITEMS = [
     ("void_crystal", "Void Crystal"),
     ("raw_meteoric_iron", "Raw Meteoric Iron"),
     ("meteoric_iron_ingot", "Meteoric Iron Ingot"),
     ("meteoric_iron_nugget", "Meteoric Iron Nugget"),
     ("comet_cress", "Comet Cress"),
+    ("raw_solarite", "Raw Solarite"),
+    ("solarite_ingot", "Solarite Ingot"),
 ]
 
-PLURAL = {"umbral_stone_bricks": "umbral_stone_brick"}  # "bricks" -> "brick_stairs", like vanilla
+PLURAL = {"umbral_stone_bricks": "umbral_stone_brick", "pale_end_stone_bricks": "pale_end_stone_brick",
+          "sunscorched_stone_bricks": "sunscorched_stone_brick"}  # "bricks" -> "brick_stairs", like vanilla
 
 
 def variant_id(base, kind):
@@ -467,6 +494,35 @@ def main():
             "rolls": 1,
         }])
 
+    # Flarebloom: a two-block-tall flower (like a lilac). Only the lower half drops the item.
+    blockstate("flarebloom", {"variants": {
+        "half=lower": {"model": rid("block/flarebloom_bottom")},
+        "half=upper": {"model": rid("block/flarebloom_top")},
+    }})
+    for half in ("bottom", "top"):
+        block_model(f"flarebloom_{half}", {"parent": "minecraft:block/cross",
+                                           "textures": {"cross": rid(f"block/flarebloom_{half}")}})
+    item_model("flarebloom", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("block/flarebloom_top")}})
+    item_def("flarebloom", rid("item/flarebloom"))
+    lang[f"block.{NS}.flarebloom"] = "Flarebloom"
+    loot("flarebloom", [{
+        "condition": {"type": "minecraft:all_of", "terms": [
+            {"type": "minecraft:match_block", "blocks": rid("flarebloom"), "state": {"half": "lower"}},
+            {"type": "minecraft:survives_explosion"},
+        ]},
+        "entries": [{"type": "minecraft:item", "name": rid("flarebloom")}],
+        "rolls": 1,
+    }])
+    tag("block", "minecraft:tall_flowers", rid("flarebloom"))
+    tag("item", "minecraft:tall_flowers", rid("flarebloom"))
+
+    # Sunscale Lichen: a carpet.
+    blockstate("sunscale_lichen", {"variants": {"": {"model": rid("block/sunscale_lichen")}}})
+    block_model("sunscale_lichen", {"parent": "minecraft:block/carpet", "textures": {"wool": rid("block/sunscale_lichen")}})
+    item_def("sunscale_lichen", rid("block/sunscale_lichen"))
+    lang[f"block.{NS}.sunscale_lichen"] = "Sunscale Lichen"
+    drop_self("sunscale_lichen")
+
     # Comet Cress: a crop that hangs from the underside of Stardust, so its models are
     # turned upside down (x: 180) and it grows downward.
     blockstate("comet_cress", {"variants": {
@@ -499,9 +555,16 @@ def main():
 
     # ---------------------------------------------------------------- loot for the rest
     for name in ("chiseled_umbral_stone", "void_crystal_block", "meteoric_iron_block",
-                 "raw_meteoric_iron_block", "stardust_block", "nebula_moss", "lumineshroom", "starbloom"):
+                 "raw_meteoric_iron_block", "stardust_block", "nebula_moss", "lumineshroom", "starbloom",
+                 "pale_end_stone_tiles", "solarite_block", "raw_solarite_block", "star_inlay_observatory_quartz",
+                 "ashen_lumineshroom", "petrified_astral_vine"):
         drop_self(name)
-    for ore, drop in (("void_crystal_ore", "void_crystal"), ("meteoric_iron_ore", "raw_meteoric_iron")):
+    # Like blue ice and vanilla grass: nothing without Silk Touch / shears.
+    for name, tool in (("comet_ice", "minecraft:tool/can_silk_touch"), ("gravity_anomaly", "minecraft:tool/can_silk_touch"),
+                       ("shimmer_grass", "minecraft:tool/can_shear")):
+        loot(name, [{"condition": tool, "entries": [{"type": "minecraft:item", "name": rid(name)}], "rolls": 1}])
+    for ore, drop in (("void_crystal_ore", "void_crystal"), ("meteoric_iron_ore", "raw_meteoric_iron"),
+                      ("solarite_ore", "raw_solarite")):
         loot(ore, [{
             "entries": [{"type": "minecraft:alternatives", "children": [
                 {"type": "minecraft:item", "condition": "minecraft:tool/can_silk_touch", "name": rid(ore)},
@@ -525,6 +588,22 @@ def main():
     for name in ("void_crystal_ore", "void_crystal_block", "meteoric_iron_block", "raw_meteoric_iron_block"):
         tag("block", "minecraft:needs_iron_tool", rid(name))
     tag("block", "minecraft:needs_diamond_tool", rid("meteoric_iron_ore"))
+    for name in ("pale_end_stone_tiles", "comet_ice", "solarite_ore", "solarite_block", "raw_solarite_block",
+                 "star_inlay_observatory_quartz", "gravity_anomaly"):
+        tag("block", "minecraft:mineable/pickaxe", rid(name))
+    for name in ("solarite_ore", "gravity_anomaly"):
+        tag("block", "minecraft:needs_diamond_tool", rid(name))
+    for name in ("solarite_block", "raw_solarite_block"):
+        tag("block", "minecraft:needs_iron_tool", rid(name))
+    tag("block", "minecraft:mineable/hoe", rid("sunscale_lichen"))
+    tag("block", "minecraft:replaceable_by_trees", rid("shimmer_grass"))
+    tag("block", "minecraft:sword_efficient", rid("shimmer_grass"))
+    tag("block", "minecraft:beacon_base_blocks", rid("solarite_block"))
+    tag("block", "minecraft:beacon_base_blocks", rid("meteoric_iron_block"))
+    # What the End's plants grow on.
+    for name in ("minecraft:end_stone", rid("nebula_moss"), rid("umbral_stone"), rid("pale_end_stone"),
+                 rid("charred_end_stone"), rid("sunscorched_stone")):
+        tag("block", f"{NS}:astral_soil", name)
     tag("block", "minecraft:mineable/shovel", rid("stardust_block"))
     tag("block", "minecraft:mineable/hoe", rid("nebula_moss"))
     tag("block", "minecraft:small_flowers", rid("starbloom"))
@@ -548,6 +627,40 @@ def main():
     stonecutting("polished_umbral_stone", "umbral_stone_bricks")
     for result, count in (("umbral_stone_brick_stairs", 1), ("umbral_stone_brick_slab", 2), ("umbral_stone_brick_wall", 1)):
         stonecutting("polished_umbral_stone", result, count)
+
+    # Phase 3 building blocks
+    shaped("pale_end_stone_bricks", "pale_end_stone_bricks", ["##", "##"], {"#": rid("pale_end_stone")}, count=4)
+    shaped("pale_end_stone_tiles", "pale_end_stone_tiles", ["##", "##"], {"#": rid("pale_end_stone_bricks")}, count=4)
+    shaped("polished_sunscorched_stone", "polished_sunscorched_stone", ["##", "##"], {"#": rid("sunscorched_stone")}, count=4)
+    shaped("sunscorched_stone_bricks", "sunscorched_stone_bricks", ["##", "##"], {"#": rid("polished_sunscorched_stone")}, count=4)
+    shaped("observatory_quartz_pillar", "observatory_quartz_pillar", ["#", "#"], {"#": rid("observatory_quartz")}, count=2)
+    shaped("star_inlay_observatory_quartz", "star_inlay_observatory_quartz", ["#", "#"], {"#": rid("observatory_quartz_slab")})
+    for src, results in (
+        ("pale_end_stone", ["pale_end_stone_bricks", "pale_end_stone_brick_stairs", "pale_end_stone_brick_slab",
+                            "pale_end_stone_brick_wall", "pale_end_stone_tiles"]),
+        ("pale_end_stone_bricks", ["pale_end_stone_tiles"]),
+        ("sunscorched_stone", ["polished_sunscorched_stone", "polished_sunscorched_stone_stairs", "polished_sunscorched_stone_slab",
+                               "polished_sunscorched_stone_wall", "sunscorched_stone_bricks", "sunscorched_stone_brick_stairs",
+                               "sunscorched_stone_brick_slab", "sunscorched_stone_brick_wall"]),
+        ("polished_sunscorched_stone", ["sunscorched_stone_bricks", "sunscorched_stone_brick_stairs",
+                                        "sunscorched_stone_brick_slab", "sunscorched_stone_brick_wall"]),
+        ("observatory_quartz", ["observatory_quartz_pillar", "star_inlay_observatory_quartz"]),
+    ):
+        for result in results:
+            stonecutting(src, result, 2 if result.endswith("_slab") else 1)
+    # End Stone scorched by a comet or a flare can be made on purpose, too.
+    cooking("charred_end_stone", "smelting", "minecraft:end_stone", "charred_end_stone", 0.1, 200)
+
+    shaped("solarite_block", "solarite_block", ["###", "###", "###"], {"#": rid("solarite_ingot")})
+    shapeless("solarite_ingot_from_solarite_block", "solarite_ingot", [rid("solarite_block")], count=9)
+    shaped("raw_solarite_block", "raw_solarite_block", ["###", "###", "###"], {"#": rid("raw_solarite")})
+    shapeless("raw_solarite", "raw_solarite", [rid("raw_solarite_block")], count=9)
+    for kind, time in (("smelting", 200), ("blasting", 100)):
+        cooking(f"solarite_ingot_from_{kind}_raw_solarite", kind, rid("raw_solarite"), "solarite_ingot", 1.0, time)
+        cooking(f"solarite_ingot_from_{kind}_solarite_ore", kind, rid("solarite_ore"), "solarite_ingot", 1.0, time)
+    recipe("orange_dye_from_flarebloom", {"type": "minecraft:crafting_shapeless", "category": "misc",
+                                          "group": "orange_dye", "ingredients": [rid("flarebloom")],
+                                          "result": {"count": 2, "id": "minecraft:orange_dye"}})
 
     shaped("void_crystal_block", "void_crystal_block", ["###", "###", "###"], {"#": rid("void_crystal")})
     shapeless("void_crystal", "void_crystal", [rid("void_crystal_block")], count=9)

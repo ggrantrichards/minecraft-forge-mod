@@ -611,6 +611,319 @@ ECLIPSE = [
 ]
 
 
+
+# ---------------------------------------------------------------- Phase 3 palettes
+
+PALE = [hexc("9e9dab"), hexc("b4b3c0"), hexc("c8c7d2"), hexc("d9d8e1"), hexc("e8e7ee")]
+CHARRED = [hexc("1f1c18"), hexc("2c2822"), hexc("3a352c"), hexc("4a4436"), hexc("5f5842")]
+CHARRED_EMBER = hexc("8a5a2a")
+ICE = [hexc("6f93c4"), hexc("86a9d6"), hexc("9fbfe4"), hexc("bcd6f0"), hexc("e3f0fc")]
+SUNSCORCHED = [hexc("a8967a"), hexc("bfae90"), hexc("d3c4a7"), hexc("e3d7be"), hexc("f1e9d6")]
+OBS_QUARTZ = [hexc("b3bccb"), hexc("c8d0dc"), hexc("dae0e9"), hexc("e8ecf2"), hexc("f5f7fa")]
+SOLAR = {
+    "o": hexc("4a1d05"),
+    "d": hexc("a4400b"),
+    "m": hexc("e67912"),
+    "l": hexc("ffb52e"),
+    "h": hexc("ffe88a"),
+    "w": hexc("fffbe0"),
+    "b": hexc("c85a0e"),
+}
+RAW_SOLAR = dict(SOLAR, r=hexc("6e5a44"), R=hexc("8c7657"))
+ASH = {"c": hexc("5e5b58"), "C": hexc("77736e"), "w": hexc("8f8a84"), "d": hexc("47443f"),
+       "s": hexc("8d8880"), "S": hexc("a39e95")}
+PETRIFIED = {"v": hexc("6b6660"), "V": hexc("8a847b"), "b": hexc("a9a298"), "B": hexc("c4bdb1")}
+
+
+def cracks(img, colour, seed, n=4, length=(3, 7)):
+    """Thin wandering cracks, like cracked stone bricks or dripstone."""
+    rnd = random.Random(seed)
+    px = img.load()
+    for _ in range(n):
+        x, y = rnd.randrange(16), rnd.randrange(16)
+        dx, dy = rnd.choice([(1, 0), (0, 1), (1, 1), (1, -1)])
+        for _ in range(rnd.randint(*length)):
+            px[x % 16, y % 16] = colour
+            if rnd.random() < 0.35:
+                dx, dy = rnd.choice([(1, 0), (0, 1), (1, 1), (1, -1), (-1, 1)])
+            x += dx
+            y += dy
+    return img
+
+
+def tiles(pal, seed):
+    """Four 8x8 tiles with dark grout and lit top-left edges, like deepslate tiles."""
+    rnd = random.Random(seed)
+    img = Image.new("RGBA", (16, 16), pal[2])
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            if rnd.random() < 0.2:
+                px[x, y] = rnd.choice([pal[1], pal[3]])
+    for t in (0, 8):
+        for i in range(16):
+            px[i, t + 7] = pal[0]
+            px[t + 7, i] = pal[0]
+            if i % 8 != 7:
+                px[i, t] = pal[4]
+                px[t, i] = pal[3]
+    return img
+
+
+def pillar_side(pal, seed):
+    """Vertical fluting like a quartz pillar."""
+    rnd = random.Random(seed)
+    img = Image.new("RGBA", (16, 16), pal[2])
+    px = img.load()
+    shade = [pal[0], pal[4], pal[3], pal[2], pal[2], pal[3], pal[2], pal[1],
+             pal[3], pal[2], pal[2], pal[3], pal[2], pal[2], pal[1], pal[0]]
+    for x in range(16):
+        for y in range(16):
+            px[x, y] = shade[x] if rnd.random() > 0.08 else pal[1]
+    return img
+
+
+def pillar_top(pal):
+    img = Image.new("RGBA", (16, 16), pal[2])
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            d = max(abs(x - 7.5), abs(y - 7.5))
+            px[x, y] = pal[0] if d > 7 else pal[4] if d > 6 else pal[2] if d > 2.5 else pal[3] if d > 1 else pal[1]
+    return img
+
+
+def smooth(pal, seed, noise=0.12):
+    """Near-flat stone like smooth quartz or calcite, with a faint grain."""
+    rnd = random.Random(seed)
+    img = Image.new("RGBA", (16, 16), pal[2])
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            r = rnd.random()
+            if r < noise:
+                px[x, y] = pal[3]
+            elif r < noise * 1.6:
+                px[x, y] = pal[1]
+    return img
+
+
+STAR_INLAY = [
+    "LLLLLLLLLLLLLLLL",
+    "L..............D",
+    "L..............D",
+    "L.......g......D",
+    "L.......g......D",
+    "L......gGg.....D",
+    "L...gggGyGggg..D",
+    "L....ggGyGgg...D",
+    "L......gGg.....D",
+    "L.....g.g.g....D",
+    "L....g..g..g...D",
+    "L.......g......D",
+    "L.......g......D",
+    "L..............D",
+    "L..............D",
+    "DDDDDDDDDDDDDDDD",
+]
+INLAY_PAL = {"L": OBS_QUARTZ[4], "D": OBS_QUARTZ[0], "g": hexc("3b5a9a"), "G": hexc("6f8fd6"), "y": hexc("f3d77a")}
+
+ORE_SOLAR = [
+    "................",
+    "..oo............",
+    ".ohlo.......oo..",
+    ".olmdo.....ohlo.",
+    "..odd.....ohwmdo",
+    "...........odd..",
+    "......oo........",
+    ".....ohlo.......",
+    "....ohwmdo......",
+    ".....olmdo....o.",
+    "......odo....ohl",
+    "..o..........omd",
+    ".ohl..........o.",
+    ".omd.....oo.....",
+    "..o.....ohlo....",
+    ".........odo....",
+]
+
+RAW_SOLARITE = [
+    "................",
+    "................",
+    "......oo........",
+    ".....ohlo.......",
+    "....ohlmmoo.....",
+    "...ohlmRrmdo....",
+    "..ohwlmmmmhlo...",
+    "..olmmrRmmlmdo..",
+    ".ohlmmmmmmmmdo..",
+    ".olmmRmmmrRmdo..",
+    ".odmmrmmmmmddo..",
+    "..oddmmmmmddo...",
+    "...ooddddddo....",
+    ".....oooooo.....",
+    "................",
+    "................",
+]
+
+SOLARITE_INGOT = [
+    "................",
+    "................",
+    "................",
+    "................",
+    ".......ooooooo..",
+    ".....oowhhhhlo..",
+    "...oohhlllllmdo.",
+    "..ohwllllllmmdo.",
+    ".ohlllllmmmmddo.",
+    ".olllmmmmmbddo..",
+    ".odmmmmmbddoo...",
+    ".oddddddddo.....",
+    "..oooooooo......",
+    "................",
+    "................",
+    "................",
+]
+
+SHIMMER_GRASS = [
+    "................",
+    "................",
+    "................",
+    "................",
+    "..........w.....",
+    "...w......s.....",
+    "...s..w..sS..w..",
+    "...Ss.s..S...s..",
+    "....S.Ss.S..sS..",
+    ".w..S..S.S..S...",
+    ".s..Ss.S.S.sS...",
+    ".Ss..S.SsS.S..w.",
+    "..S..S..SS.S..s.",
+    "..Sg.Sg.Sg.Sg.S.",
+    "..gG.gG.gGgGg.g.",
+    ".gGG.GG.GGGGG.G.",
+]
+SHIMMER_PAL = {"w": hexc("f4fbff"), "s": hexc("bfe8e6"), "S": hexc("8ccbd0"), "g": hexc("6aa3b2"), "G": hexc("4f8296")}
+
+FLAREBLOOM_TOP = [
+    "................",
+    "................",
+    "................",
+    "................",
+    ".......h........",
+    "......hlh.......",
+    ".....hlmlh......",
+    ".....lmmml......",
+    "....hlmdmlh.....",
+    "....lmmdmml.....",
+    "....lmddmml.....",
+    ".....mdddm......",
+    ".....mdddm......",
+    "......ddd.......",
+    ".......s........",
+    ".......s........",
+]
+FLAREBLOOM_BOTTOM = [
+    ".......s........",
+    ".......s........",
+    ".......S........",
+    ".......s..ll....",
+    "...l...sLll.....",
+    "...lL..sL.......",
+    "....lL.s........",
+    ".....LLs........",
+    ".......S........",
+    ".......s..L.....",
+    ".......s.LlL....",
+    "...L...sLl......",
+    "...lL..s........",
+    "....lLLs........",
+    ".......S........",
+    ".......s........",
+]
+FLAREBLOOM_PAL = {"h": hexc("ffb347"), "l": hexc("e8612a"), "m": hexc("b8321c"), "d": hexc("6e1414"),
+                  "s": hexc("7b6a4a"), "S": hexc("9b8762"), "L": hexc("a6865a")}
+
+
+def sunscale_lichen():
+    """Overlapping scales, gold at the edges and ember-red in the middle."""
+    img = new()
+    px = img.load()
+    rnd = random.Random(61)
+    edge, mid, deep, glow = hexc("f2c14e"), hexc("d98a2b"), hexc("9b4a1c"), hexc("ffe9a3")
+    for y in range(16):
+        for x in range(16):
+            if rnd.random() < 0.18:
+                continue  # gaps show the stone underneath
+            cx = x % 4
+            row = (y + (2 if (x // 4) % 2 else 0)) % 4
+            px[x, y] = edge if row == 0 else glow if (row == 1 and cx == 1) else mid if row < 3 else deep
+    return img
+
+
+def ashen_lumineshroom():
+    rows = [r.replace(".", ".") for r in LUMINESHROOM]
+    rows[5] = "....cCCdCCcc...."
+    rows[6] = "...cCCC.CcCCc..."
+    rows[7] = "...cCcCCC..Cc..."
+    return from_map(rows, ASH)
+
+
+def pollinator_husk_side():
+    """Bleached, segmented chitin, like a fossil shell."""
+    img = Image.new("RGBA", (16, 16), BONE[3])
+    px = img.load()
+    rnd = random.Random(71)
+    for y in range(16):
+        seg = y % 5
+        for x in range(16):
+            c = [BONE[1], BONE[4], BONE[3], BONE[3], BONE[2]][seg]
+            px[x, y] = c if rnd.random() > 0.1 else rnd.choice([BONE[2], BONE[4]])
+    for y in range(16):
+        px[0, y] = BONE[1]
+        px[15, y] = BONE[0]
+        if y % 5 == 2:
+            px[7, y] = BONE[1]
+            px[8, y] = BONE[1]
+    return img
+
+
+def pollinator_husk_top():
+    img = Image.new("RGBA", (16, 16), BONE[2])
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+            ring = int(d) % 3
+            px[x, y] = BONE[1] if d > 7.2 else [BONE[4], BONE[3], BONE[1]][ring]
+    for x, y in [(6, 6), (9, 6), (6, 9), (9, 9)]:
+        px[x, y] = BONE[0]
+    return img
+
+
+def gravity_anomaly_frame(phase):
+    """A dark core with violet light spiralling into it. phase 0..1 rotates the spiral."""
+    import math
+    img = Image.new("RGBA", (16, 16), UMBRAL[0])
+    px = img.load()
+    arm, glow, core = hexc("5b3fa8"), hexc("9c7bf0"), hexc("050308")
+    for y in range(16):
+        for x in range(16):
+            dx, dy = x - 7.5, y - 7.5
+            r = (dx * dx + dy * dy) ** 0.5
+            a = math.atan2(dy, dx) / (2 * math.pi) + 0.5
+            spiral = (a * 2 + r / 6 - phase) % 1.0
+            if r < 2.2:
+                px[x, y] = core
+            elif spiral < 0.12 and r < 8:
+                px[x, y] = glow if r < 5 else arm
+            elif spiral < 0.22 and r < 8:
+                px[x, y] = arm
+            elif (x in (0, 15)) or (y in (0, 15)):
+                px[x, y] = UMBRAL[1]
+    return img
+
+
 # ---------------------------------------------------------------- write everything
 
 def save(img, rel):
@@ -666,6 +979,57 @@ def main():
     out.append(save(from_map(METEORIC_INGOT, METAL), "item/meteoric_iron_ingot.png"))
     out.append(save(from_map(METEORIC_NUGGET, METAL), "item/meteoric_iron_nugget.png"))
     out.append(save(from_map(COMET_CRESS, CRESS_PAL), "item/comet_cress.png"))
+
+
+    # ---- Phase 3: Aurora Shallows
+    out.append(save(stone(PALE, 101, blotches=20, specks=14), "block/pale_end_stone.png"))
+    out.append(save(bricks(PALE, 102), "block/pale_end_stone_bricks.png"))
+    out.append(save(tiles(PALE, 103), "block/pale_end_stone_tiles.png"))
+    out.append(save(from_map(SHIMMER_GRASS, SHIMMER_PAL), "block/shimmer_grass.png"))
+    # ---- Comet Wake
+    charred = stone(CHARRED, 111, blotches=24, specks=16, glint=CHARRED_EMBER, glints=3)
+    out.append(save(charred, "block/charred_end_stone.png"))
+    out.append(save(cracks(stone(ICE, 112, blotches=16, specks=10), ICE[4], 113, n=5), "block/comet_ice.png"))
+    # ---- The Corona
+    out.append(save(cracks(stone(SUNSCORCHED, 121, blotches=18, specks=12), SUNSCORCHED[0], 122, n=4), "block/sunscorched_stone.png"))
+    out.append(save(polished(SUNSCORCHED, 123), "block/polished_sunscorched_stone.png"))
+    out.append(save(bricks(SUNSCORCHED, 124), "block/sunscorched_stone_bricks.png"))
+    out.append(save(overlay(cracks(stone(SUNSCORCHED, 125, blotches=18, specks=12), SUNSCORCHED[0], 126, n=3), ORE_SOLAR, SOLAR),
+                    "block/solarite_ore.png"))
+    out.append(save(metal_block(SOLAR, 127), "block/solarite_block.png"))
+    rs = raw_metal_block(128)
+    rs_px = rs.load()
+    for y in range(16):
+        for x in range(16):
+            c = rs_px[x, y]
+            # recolour the raw-metal noise into Solarite's palette
+            rs_px[x, y] = {RAW_METAL["m"]: SOLAR["m"], RAW_METAL["l"]: SOLAR["l"], RAW_METAL["d"]: SOLAR["d"],
+                           RAW_METAL["r"]: RAW_SOLAR["r"], RAW_METAL["R"]: RAW_SOLAR["R"], RAW_METAL["h"]: SOLAR["h"]}.get(c, c)
+    out.append(save(rs, "block/raw_solarite_block.png"))
+    out.append(save(from_map(FLAREBLOOM_TOP, FLAREBLOOM_PAL), "block/flarebloom_top.png"))
+    out.append(save(from_map(FLAREBLOOM_BOTTOM, FLAREBLOOM_PAL), "block/flarebloom_bottom.png"))
+    out.append(save(sunscale_lichen(), "block/sunscale_lichen.png"))
+    out.append(save(ashen_lumineshroom(), "block/ashen_lumineshroom.png"))
+    out.append(save(pollinator_husk_side(), "block/pollinator_husk_side.png"))
+    out.append(save(pollinator_husk_top(), "block/pollinator_husk_top.png"))
+    out.append(save(from_map(ASTRAL_VINE_TIP, PETRIFIED), "block/petrified_astral_vine.png"))
+    # ---- Shattered Observatory
+    out.append(save(smooth(OBS_QUARTZ, 131), "block/observatory_quartz.png"))
+    out.append(save(pillar_side(OBS_QUARTZ, 132), "block/observatory_quartz_pillar_side.png"))
+    out.append(save(pillar_top(OBS_QUARTZ), "block/observatory_quartz_pillar_top.png"))
+    out.append(save(overlay(smooth(OBS_QUARTZ, 133), STAR_INLAY, INLAY_PAL), "block/star_inlay_observatory_quartz.png"))
+    # ---- Dark Matter Belt: the core of a gravity inversion pocket (animated, 8 frames)
+    frames = 8
+    strip = Image.new("RGBA", (16, 16 * frames), CLEAR)
+    for i in range(frames):
+        strip.paste(gravity_anomaly_frame(i / frames), (0, 16 * i))
+    save(strip, "block/gravity_anomaly.png")
+    (TEX / "block/gravity_anomaly.png.mcmeta").write_text(
+        json.dumps({"animation": {"frametime": 3}}, indent=2) + "\n")
+    out.append(("block/gravity_anomaly.png (frame 1 of 8)", gravity_anomaly_frame(0)))
+    # ---- Phase 3 items
+    out.append(save(from_map(RAW_SOLARITE, RAW_SOLAR), "item/raw_solarite.png"))
+    out.append(save(from_map(SOLARITE_INGOT, SOLAR), "item/solarite_ingot.png"))
 
     write_preview(out)
     print(f"Wrote {len(out)} textures to {TEX.relative_to(ROOT)} and a preview to {PREVIEW.relative_to(ROOT)}")

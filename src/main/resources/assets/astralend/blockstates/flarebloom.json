@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "astralend:block/flarebloom_bottom"
+    },
+    "half=upper": {
+      "model": "astralend:block/flarebloom_top"
+    }
+  }
+}

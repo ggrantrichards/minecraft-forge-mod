@@ -3,16 +3,23 @@ package com.ggrantrichards.astralend;
 import com.ggrantrichards.astralend.block.AstralVineBlock;
 import com.ggrantrichards.astralend.block.AstralVinePlantBlock;
 import com.ggrantrichards.astralend.block.CometCressBlock;
+import com.ggrantrichards.astralend.block.EndPlantBlock;
+import com.ggrantrichards.astralend.block.FlarebloomBlock;
+import com.ggrantrichards.astralend.block.GravityAnomalyBlock;
 import com.ggrantrichards.astralend.block.LumineshroomBlock;
 import com.ggrantrichards.astralend.block.StarbloomBlock;
 import com.ggrantrichards.astralend.block.StardustBlock;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CarpetBlock;
 import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
@@ -32,6 +39,10 @@ import net.minecraftforge.registries.RegistryObject;
 // BlockItem so they can sit in your inventory. Properties mirror the closest vanilla block.
 public final class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, AstralEnd.MODID);
+
+    // The End's natural ground blocks, which its plants grow on (a block tag, so datapacks can add to it).
+    public static final TagKey<Block> ASTRAL_SOIL = TagKey.create(Registries.BLOCK,
+        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "astral_soil"));
 
     // ---- Umbral Stone: the dark stone of the Dark Matter Belts (deepslate-like) ----
     public static final RegistryObject<Block> UMBRAL_STONE = register("umbral_stone", Block::new,
@@ -116,11 +127,118 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).noCollision().randomTicks().instabreak()
             .sound(SoundType.CROP).pushReaction(PushReaction.POPPED));
 
+    // ================================================================ Phase 3
+
+    // ---- Aurora Shallows: pale, wide shelf islands ----
+    public static final RegistryObject<Block> PALE_END_STONE = register("pale_end_stone", Block::new,
+        () -> endStone(MapColor.TERRACOTTA_WHITE));
+    public static final RegistryObject<Block> PALE_END_STONE_STAIRS = stairs("pale_end_stone_stairs", PALE_END_STONE);
+    public static final RegistryObject<Block> PALE_END_STONE_SLAB = slab("pale_end_stone_slab", PALE_END_STONE);
+    public static final RegistryObject<Block> PALE_END_STONE_WALL = wall("pale_end_stone_wall", PALE_END_STONE);
+    public static final RegistryObject<Block> PALE_END_STONE_BRICKS = register("pale_end_stone_bricks", Block::new,
+        () -> endStone(MapColor.TERRACOTTA_WHITE));
+    public static final RegistryObject<Block> PALE_END_STONE_BRICK_STAIRS = stairs("pale_end_stone_brick_stairs", PALE_END_STONE_BRICKS);
+    public static final RegistryObject<Block> PALE_END_STONE_BRICK_SLAB = slab("pale_end_stone_brick_slab", PALE_END_STONE_BRICKS);
+    public static final RegistryObject<Block> PALE_END_STONE_BRICK_WALL = wall("pale_end_stone_brick_wall", PALE_END_STONE_BRICKS);
+    public static final RegistryObject<Block> PALE_END_STONE_TILES = register("pale_end_stone_tiles", Block::new,
+        () -> endStone(MapColor.TERRACOTTA_WHITE));
+    // Shimmer Grass: short, pale grass. Like vanilla grass, it drops only when sheared.
+    public static final RegistryObject<Block> SHIMMER_GRASS = register("shimmer_grass",
+        p -> new EndPlantBlock(Block.column(12.0, 0.0, 13.0), ASTRAL_SOIL, p),
+        () -> plant(MapColor.COLOR_LIGHT_BLUE, SoundType.GRASS).replaceable().offsetType(BlockBehaviour.OffsetType.XYZ));
+
+    // ---- Comet Wake: scorched islands, stardust and comet ice ----
+    public static final RegistryObject<Block> CHARRED_END_STONE = register("charred_end_stone", Block::new,
+        () -> endStone(MapColor.COLOR_BLACK));
+    public static final RegistryObject<Block> CHARRED_END_STONE_STAIRS = stairs("charred_end_stone_stairs", CHARRED_END_STONE);
+    public static final RegistryObject<Block> CHARRED_END_STONE_SLAB = slab("charred_end_stone_slab", CHARRED_END_STONE);
+    public static final RegistryObject<Block> CHARRED_END_STONE_WALL = wall("charred_end_stone_wall", CHARRED_END_STONE);
+    // Comet Ice never melts and is as slippery as blue ice (same friction). Silk Touch to collect.
+    public static final RegistryObject<Block> COMET_ICE = register("comet_ice", Block::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.ICE).strength(2.8F).friction(0.989F).sound(SoundType.GLASS));
+
+    // ---- The Corona: bleached stone, Solarite, and the life that adapted (or didn't) ----
+    public static final RegistryObject<Block> SUNSCORCHED_STONE = register("sunscorched_stone", Block::new,
+        () -> endStone(MapColor.SAND));
+    public static final RegistryObject<Block> SUNSCORCHED_STONE_STAIRS = stairs("sunscorched_stone_stairs", SUNSCORCHED_STONE);
+    public static final RegistryObject<Block> SUNSCORCHED_STONE_SLAB = slab("sunscorched_stone_slab", SUNSCORCHED_STONE);
+    public static final RegistryObject<Block> SUNSCORCHED_STONE_WALL = wall("sunscorched_stone_wall", SUNSCORCHED_STONE);
+    public static final RegistryObject<Block> POLISHED_SUNSCORCHED_STONE = register("polished_sunscorched_stone", Block::new,
+        () -> endStone(MapColor.SAND));
+    public static final RegistryObject<Block> POLISHED_SUNSCORCHED_STONE_STAIRS = stairs("polished_sunscorched_stone_stairs", POLISHED_SUNSCORCHED_STONE);
+    public static final RegistryObject<Block> POLISHED_SUNSCORCHED_STONE_SLAB = slab("polished_sunscorched_stone_slab", POLISHED_SUNSCORCHED_STONE);
+    public static final RegistryObject<Block> POLISHED_SUNSCORCHED_STONE_WALL = wall("polished_sunscorched_stone_wall", POLISHED_SUNSCORCHED_STONE);
+    public static final RegistryObject<Block> SUNSCORCHED_STONE_BRICKS = register("sunscorched_stone_bricks", Block::new,
+        () -> endStone(MapColor.SAND));
+    public static final RegistryObject<Block> SUNSCORCHED_STONE_BRICK_STAIRS = stairs("sunscorched_stone_brick_stairs", SUNSCORCHED_STONE_BRICKS);
+    public static final RegistryObject<Block> SUNSCORCHED_STONE_BRICK_SLAB = slab("sunscorched_stone_brick_slab", SUNSCORCHED_STONE_BRICKS);
+    public static final RegistryObject<Block> SUNSCORCHED_STONE_BRICK_WALL = wall("sunscorched_stone_brick_wall", SUNSCORCHED_STONE_BRICKS);
+    // Solarite: only in the Corona. Diamond pickaxe; XP comes from smelting, like Meteoric Iron.
+    public static final RegistryObject<Block> SOLARITE_ORE = register("solarite_ore",
+        p -> new DropExperienceBlock(ConstantInt.of(0), p),
+        () -> endStone(MapColor.SAND).strength(4.5F, 9.0F).lightLevel(state -> 3));
+    public static final RegistryObject<Block> RAW_SOLARITE_BLOCK = register("raw_solarite_block", Block::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).instrument(NoteBlockInstrument.BASEDRUM)
+            .requiresCorrectToolForDrops().strength(5.0F, 6.0F));
+    public static final RegistryObject<Block> SOLARITE_BLOCK = register("solarite_block", Block::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).instrument(NoteBlockInstrument.BELL)
+            .requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.METAL).lightLevel(state -> 7));
+    // Flarebloom: a two-block-tall flower, shut tight.
+    public static final RegistryObject<Block> FLAREBLOOM = register("flarebloom", FlarebloomBlock::new,
+        () -> plant(MapColor.COLOR_ORANGE, SoundType.GRASS).offsetType(BlockBehaviour.OffsetType.XZ));
+    // Sunscale Lichen: a scaly ground cover (a carpet) that holds a faint glow.
+    public static final RegistryObject<Block> SUNSCALE_LICHEN = register("sunscale_lichen", CarpetBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(0.1F).sound(SoundType.MOSS_CARPET)
+            .lightLevel(state -> 5).pushReaction(PushReaction.DESTROY));
+    // Life that died out: grey husks of the Nebula Fields' mushrooms and vines, and Pollinator shells.
+    public static final RegistryObject<Block> ASHEN_LUMINESHROOM = register("ashen_lumineshroom",
+        p -> new EndPlantBlock(Block.column(6.0, 0.0, 10.0), ASTRAL_SOIL, p),
+        () -> plant(MapColor.COLOR_GRAY, SoundType.FUNGUS));
+    public static final RegistryObject<Block> PETRIFIED_ASTRAL_VINE = register("petrified_astral_vine",
+        p -> new EndPlantBlock(Block.column(8.0, 0.0, 15.0), ASTRAL_SOIL, p),
+        () -> plant(MapColor.COLOR_GRAY, SoundType.DRIPSTONE_BLOCK));
+    public static final RegistryObject<Block> POLLINATOR_HUSK = register("pollinator_husk", RotatedPillarBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).instrument(NoteBlockInstrument.XYLOPHONE)
+            .strength(1.5F).sound(SoundType.BONE_BLOCK));
+
+    // ---- Shattered Observatory: the ruins' cut stone ----
+    public static final RegistryObject<Block> OBSERVATORY_QUARTZ = register("observatory_quartz", Block::new,
+        () -> quartz());
+    public static final RegistryObject<Block> OBSERVATORY_QUARTZ_STAIRS = stairs("observatory_quartz_stairs", OBSERVATORY_QUARTZ);
+    public static final RegistryObject<Block> OBSERVATORY_QUARTZ_SLAB = slab("observatory_quartz_slab", OBSERVATORY_QUARTZ);
+    public static final RegistryObject<Block> OBSERVATORY_QUARTZ_WALL = wall("observatory_quartz_wall", OBSERVATORY_QUARTZ);
+    public static final RegistryObject<Block> OBSERVATORY_QUARTZ_PILLAR = register("observatory_quartz_pillar", RotatedPillarBlock::new,
+        () -> quartz());
+    public static final RegistryObject<Block> STAR_INLAY_OBSERVATORY_QUARTZ = register("star_inlay_observatory_quartz", Block::new,
+        () -> quartz());
+
+    // ---- Dark Matter Belt: the core of a gravity inversion pocket ----
+    // Gravity flips inside a sphere below it (see GravityAnomalyBlockEntity). Silk Touch to collect.
+    public static final RegistryObject<Block> GRAVITY_ANOMALY = register("gravity_anomaly", GravityAnomalyBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).instrument(NoteBlockInstrument.BASEDRUM)
+            .requiresCorrectToolForDrops().strength(25.0F, 600.0F).sound(SoundType.SCULK_CATALYST).lightLevel(state -> 2));
+
     // ---- helpers ----
 
     private static BlockBehaviour.Properties stone(SoundType sound) {
         return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLACK).instrument(NoteBlockInstrument.BASEDRUM)
             .requiresCorrectToolForDrops().strength(3.5F, 6.0F).sound(sound);
+    }
+
+    // Like vanilla End Stone (hardness 3, blast resistance 9).
+    private static BlockBehaviour.Properties endStone(MapColor color) {
+        return BlockBehaviour.Properties.of().mapColor(color).instrument(NoteBlockInstrument.BASEDRUM)
+            .requiresCorrectToolForDrops().strength(3.0F, 9.0F);
+    }
+
+    private static BlockBehaviour.Properties quartz() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).instrument(NoteBlockInstrument.BASEDRUM)
+            .requiresCorrectToolForDrops().strength(0.8F);
+    }
+
+    private static BlockBehaviour.Properties plant(MapColor color, SoundType sound) {
+        return BlockBehaviour.Properties.of().mapColor(color).noCollision().instabreak().sound(sound)
+            .pushReaction(PushReaction.DESTROY);
     }
 
     private static BlockBehaviour.Properties vine() {

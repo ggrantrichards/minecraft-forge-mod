@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "astralend:block/sunscorched_stone",
+    "side": "astralend:block/sunscorched_stone",
+    "top": "astralend:block/sunscorched_stone"
+  }
+}

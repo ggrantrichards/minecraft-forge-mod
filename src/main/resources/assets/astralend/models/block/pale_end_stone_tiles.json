@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "astralend:block/pale_end_stone_tiles"
+  }
+}
