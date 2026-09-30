@@ -79,8 +79,12 @@ public final class WorldgenSurvey {
         Map<String, Integer> outerCounts = new HashMap<>();
         int outerTotal = 0;
         List<BlockPos> nebulaSpots = new ArrayList<>();
+        BlockPos vanillaSpot = null;
+        int nebulaRuns = 0;
+        int nebulaWithNebulaNeighbour = 0;
         for (int z = -MAP_RADIUS; z <= MAP_RADIUS; z += MAP_STEP * 2) {
             StringBuilder row = new StringBuilder();
+            char previous = ' ';
             for (int x = -MAP_RADIUS; x <= MAP_RADIUS; x += MAP_STEP) {
                 Holder<Biome> biome = biomes.getNoiseBiome(QuartPos.fromBlock(x), QuartPos.fromBlock(64), QuartPos.fromBlock(z));
                 char c = symbol(biome);
@@ -99,6 +103,17 @@ public final class WorldgenSurvey {
                 if (c == 'N' && distance < 4000) {
                     nebulaSpots.add(new BlockPos(x, 64, z));
                 }
+                if (vanillaSpot == null && distance > 1500 && (c == 'H' || c == 'M')) {
+                    vanillaSpot = new BlockPos(x, 64, z);
+                }
+                // Coherence: how often a Nebula Fields sample has Nebula Fields just to its west.
+                if (c == 'N' && distance > 1100) {
+                    nebulaRuns++;
+                    if (previous == 'N') {
+                        nebulaWithNebulaNeighbour++;
+                    }
+                }
+                previous = c;
             }
             log("  " + row);
         }
@@ -107,6 +122,12 @@ public final class WorldgenSurvey {
         log(String.format("Outer End (beyond 1,100 blocks): Nebula Fields %.1f%%, Highlands %.1f%%, Midlands %.1f%%, Barrens %.1f%%, Small Islands %.1f%%",
             nebulaShare, pct(outerCounts, "H", outerTotal), pct(outerCounts, "M", outerTotal), pct(outerCounts, "B", outerTotal),
             pct(outerCounts, "s", outerTotal)));
+        double coherence = 100.0 * nebulaWithNebulaNeighbour / Math.max(1, nebulaRuns);
+        log(String.format("Nebula Fields coherence: %.0f%% of samples continue the region of their western neighbour (%d blocks away)",
+            coherence, MAP_STEP));
+        if (coherence < 50) {
+            failures.add(String.format("Nebula Fields are scattered, not regions (coherence %.0f%%, expected 50%%+)", coherence));
+        }
         if (nebulaShare < 15 || nebulaShare > 45) {
             failures.add(String.format("Nebula Fields cover %.1f%% of the outer End (expected 15-45%%)", nebulaShare));
         }
@@ -149,6 +170,7 @@ public final class WorldgenSurvey {
         log("Generating " + (2 * AREA_CHUNKS + 1) * (2 * AREA_CHUNKS + 1) + " chunks around " + bestNebula.getX() + ", "
             + bestNebula.getZ() + " (the nearest Nebula Fields spot with plenty of islands)...");
         Map<Block, Integer> counts = new HashMap<>();
+        Map<Block, Integer> nebulaCounts = new HashMap<>();
         int nebulaColumns = 0;
         int columnsWithLand = 0;
         int mossTops = 0;
@@ -172,6 +194,9 @@ public final class WorldgenSurvey {
                                 continue;
                             }
                             counts.merge(state.getBlock(), 1, Integer::sum);
+                            if (inNebula) {
+                                nebulaCounts.merge(state.getBlock(), 1, Integer::sum);
+                            }
                             if (top == null && state.isSolidRender()) {
                                 top = state.getBlock();
                                 if (inNebula && standOn == null && top == ModBlocks.NEBULA_MOSS.get()) {
@@ -191,34 +216,44 @@ public final class WorldgenSurvey {
                 }
             }
         }
-        int moss = counts.getOrDefault(ModBlocks.NEBULA_MOSS.get(), 0);
-        int shrooms = counts.getOrDefault(ModBlocks.LUMINESHROOM.get(), 0);
-        int blooms = counts.getOrDefault(ModBlocks.STARBLOOM.get(), 0);
-        int vineTips = counts.getOrDefault(ModBlocks.ASTRAL_VINE.get(), 0);
-        int vineBody = counts.getOrDefault(ModBlocks.ASTRAL_VINE_PLANT.get(), 0);
-        int chorus = counts.getOrDefault(Blocks.CHORUS_PLANT, 0) + counts.getOrDefault(Blocks.CHORUS_FLOWER, 0);
+        int moss = nebulaCounts.getOrDefault(ModBlocks.NEBULA_MOSS.get(), 0);
+        int shrooms = nebulaCounts.getOrDefault(ModBlocks.LUMINESHROOM.get(), 0);
+        int blooms = nebulaCounts.getOrDefault(ModBlocks.STARBLOOM.get(), 0);
+        int vineTips = nebulaCounts.getOrDefault(ModBlocks.ASTRAL_VINE.get(), 0);
+        int vineBody = nebulaCounts.getOrDefault(ModBlocks.ASTRAL_VINE_PLANT.get(), 0);
+        int chorus = nebulaCounts.getOrDefault(Blocks.CHORUS_PLANT, 0) + nebulaCounts.getOrDefault(Blocks.CHORUS_FLOWER, 0);
+        int mossOutside = counts.getOrDefault(ModBlocks.NEBULA_MOSS.get(), 0) - moss;
+        int chorusOutside = counts.getOrDefault(Blocks.CHORUS_PLANT, 0) + counts.getOrDefault(Blocks.CHORUS_FLOWER, 0) - chorus;
         log("Columns in Nebula Fields: " + nebulaColumns + " of " + (2 * AREA_CHUNKS + 1) * (2 * AREA_CHUNKS + 1) * 256
             + ", with land: " + columnsWithLand);
         log("Top block of Nebula Fields land: Nebula Moss " + mossTops + ", bare End Stone " + stoneTops);
-        log("Blocks: End Stone " + counts.getOrDefault(Blocks.END_STONE, 0) + ", Nebula Moss " + moss + ", Lumineshroom " + shrooms
-            + ", Starbloom " + blooms + ", Astral Vine tips " + vineTips + " (+" + vineBody + " vine body), chorus " + chorus);
         double chunksWithLand = columnsWithLand / 256.0;
+        log(String.format("Inside Nebula Fields (~%.0f chunks of land): Nebula Moss %d, Lumineshroom %d (%.1f/chunk), Starbloom %d (%.1f/chunk), "
+            + "Astral Vines %d (+%d body blocks, %.1f/chunk), chorus %d", chunksWithLand, moss, shrooms, shrooms / chunksWithLand, blooms,
+            blooms / chunksWithLand, vineTips, vineBody, vineTips / chunksWithLand, chorus));
+        log("Outside Nebula Fields in the same area (vanilla biomes): Nebula Moss " + mossOutside + ", chorus " + chorusOutside);
+        if (mossOutside > 0) {
+            failures.add(mossOutside + " Nebula Moss blocks generated outside Nebula Fields");
+        }
+        if (chorus > 0) {
+            failures.add(chorus + " chorus blocks grew inside Nebula Fields (they need bare End Stone)");
+        }
         if (columnsWithLand < 500) {
             failures.add("the surveyed Nebula Fields area has almost no land (" + columnsWithLand + " columns)");
         } else {
             if (mossTops < 0.9 * columnsWithLand) {
                 failures.add("only " + mossTops + " of " + columnsWithLand + " land columns are topped with Nebula Moss (expected 90%+)");
             }
-            if (shrooms < chunksWithLand * 0.5) {
+            if (shrooms < chunksWithLand * 2) {
                 failures.add("too few Lumineshrooms: " + shrooms + " for ~" + (int) chunksWithLand + " chunks of land");
             }
-            if (blooms < chunksWithLand * 0.3) {
+            if (blooms < chunksWithLand * 1) {
                 failures.add("too few Starblooms: " + blooms + " for ~" + (int) chunksWithLand + " chunks of land");
             }
-            if (vineTips < chunksWithLand * 0.1) {
+            if (vineTips < chunksWithLand * 0.3) {
                 failures.add("too few Astral Vines: " + vineTips + " for ~" + (int) chunksWithLand + " chunks of land");
             }
-            if (shrooms > chunksWithLand * 40 || blooms > chunksWithLand * 40) {
+            if (shrooms > chunksWithLand * 25 || blooms > chunksWithLand * 25) {
                 failures.add("plants are far too dense (" + shrooms + " Lumineshrooms, " + blooms + " Starblooms)");
             }
         }
@@ -228,17 +263,22 @@ public final class WorldgenSurvey {
             ArmorStand probe = new ArmorStand(end, standOn.getX() + 0.5, standOn.getY(), standOn.getZ() + 0.5);
             LowGravity.update(probe);
             double inside = probe.getAttributeValue(Attributes.GRAVITY);
-            probe.setPos(1500.5, 70, 0.5);
+            if (vanillaSpot == null) {
+                failures.add("found no vanilla outer biome to test normal gravity in");
+                return;
+            }
+            end.getChunk(vanillaSpot.getX() >> 4, vanillaSpot.getZ() >> 4);
+            probe.setPos(vanillaSpot.getX() + 0.5, 70, vanillaSpot.getZ() + 0.5);
             boolean outsideIsNebula = end.getBiome(probe.blockPosition()).is(ModBiomes.NEBULA_FIELDS);
             LowGravity.update(probe);
             double outside = probe.getAttributeValue(Attributes.GRAVITY);
-            log(String.format("Gravity inside Nebula Fields: %.4f, at (1500, 0) %s: %.4f (vanilla is 0.0800)", inside,
-                outsideIsNebula ? "[also Nebula Fields]" : "[not Nebula Fields]", outside));
+            log(String.format("Gravity inside Nebula Fields: %.4f; after moving to %d, %d (%s): %.4f (vanilla is 0.0800)", inside,
+                vanillaSpot.getX(), vanillaSpot.getZ(), outsideIsNebula ? "Nebula Fields?!" : "a vanilla biome", outside));
             if (Math.abs(inside - 0.08 * (1 + LowGravity.GRAVITY_CHANGE)) > 0.001) {
                 failures.add("low gravity not applied inside Nebula Fields (" + inside + ")");
             }
-            if (!outsideIsNebula && Math.abs(outside - 0.08) > 0.001) {
-                failures.add("low gravity not removed outside Nebula Fields (" + outside + ")");
+            if (outsideIsNebula || Math.abs(outside - 0.08) > 0.001) {
+                failures.add("low gravity not removed after leaving Nebula Fields (" + outside + ")");
             }
         } else {
             failures.add("found no Nebula Moss surface to test gravity on");

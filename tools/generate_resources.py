@@ -322,7 +322,7 @@ def worldgen():
     })
 
     # Vanilla's End terrain, with a "temperature" noise added. It doesn't shape terrain; the biome
-    # source samples it to find Nebula Fields regions (~500-block patches).
+    # source samples it to find Nebula Fields regions (patches several hundred blocks across).
     write(WG / "noise_settings" / "end.json", {
         "default_block": "minecraft:end_stone",
         "default_fluid": "minecraft:air",
@@ -335,7 +335,7 @@ def worldgen():
             "erosion": "minecraft:end/islands",
             "final_density": VANILLA_END_FINAL_DENSITY,
             "ridges": 0.0,
-            "temperature": {"type": "minecraft:noise", "noise": "minecraft:vegetation", "xz_scale": 0.5, "y_scale": 0.0},
+            "temperature": {"type": "minecraft:noise", "noise": "minecraft:vegetation", "xz_scale": 0.25, "y_scale": 0.0},
             "vegetation": 0.0,
         },
         "sea_level": 0,
@@ -353,8 +353,8 @@ def worldgen():
     ]})
 
     # Plants of the Nebula Fields.
-    plant_patch("nebula_lumineshrooms", "lumineshroom", rarity=2, count=24, spread=6)
-    plant_patch("nebula_starblooms", "starbloom", rarity=3, count=20, spread=6)
+    plant_patch("nebula_lumineshrooms", "lumineshroom", rarity=1, count=32, spread=6)
+    plant_patch("nebula_starblooms", "starbloom", rarity=2, count=28, spread=6)
     feature("astral_vine", {
         "type": "minecraft:block_column",
         "allowed_placement": {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
