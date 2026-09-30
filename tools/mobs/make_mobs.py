@@ -279,20 +279,33 @@ POLLINATOR = Mob("pollinator", (32, 32), [
 W_SHELL = [hexc("3a3350"), hexc("423a5c"), hexc("4d456b"), hexc("352e49")]
 
 
+W_FACET = [hexc("1d1830"), hexc("2c2548"), hexc("3d3462"), hexc("51477e"), hexc("6c62a0"), hexc("a79cf0")]
+
+
 def wanderer_shell(face, px, py, fw, fh, rnd):
-    c = rnd.choice(W_SHELL)
+    """Dark crystal facets, mottled, lit along their top/left edges and shadowed below."""
+    t = n()
+    i = 1 + int(t * 3.4)
     if face == "up":
-        c = mix(c, hexc("7d74a8"), 0.35)
-    if face == "down":
-        c = mix(c, hexc("1c1829"), 0.5)
-    if edge_dist(px, py, fw, fh) == 0 and face in ("north", "south", "east", "west"):
-        c = mix(c, hexc("8f86c4"), 0.45)
+        i += 1
+    elif face == "down":
+        i -= 1
+    if py == 0 or px == 0:
+        i += 1          # lit edge of the facet
+    if py == fh - 1 or px == fw - 1:
+        i -= 1          # shadowed edge
+    c = W_FACET[max(0, min(4, i))]
+    if face == "up" and (px, py) == (1, 1):
+        c = W_FACET[5]  # a glint
     return c
 
 
 def wanderer_shell_glow(face, px, py, fw, fh, rnd):
-    if face in ("north", "south", "east", "west") and fh >= 2 and py == fh // 2 and px % 3 == 1:
-        return hexc("8ff5ff")
+    # circuitry running round the probe's middle
+    if face in ("north", "south", "east", "west") and fh >= 2 and py == fh // 2 and px % 4 != 3:
+        return hexc("8ff5ff") if px % 4 else hexc("d8fdff")
+    if face == "up" and fw >= 5 and (px == fw // 2 or py == fh // 2) and (px + py) % 2 == 0:
+        return hexc("5fd8e8")
     return None
 
 
@@ -505,9 +518,20 @@ K_STONE = [hexc("c9a86a"), hexc("b8965a"), hexc("d4b476"), hexc("a8864e")]
 K_MEMBRANE = [hexc("e8913a"), hexc("d97e2c"), hexc("f0a04a")]
 
 
+K_CRUST = [hexc("6e4521"), hexc("a8783e"), hexc("c49a5a"), hexc("dcb676"), hexc("efd29a")]
+
+
+def crust(px, py):
+    """The Skimmer's camouflage: the same cracked, sun-baked crust as the Corona's ground."""
+    t = n()
+    if 0.48 < t < 0.53:
+        return K_CRUST[0]                      # a crack
+    return K_CRUST[1 + min(3, int(t * 4))]
+
+
 def skimmer_body(face, px, py, fw, fh, rnd):
     if face == "up":
-        return rnd.choice(K_STONE)
+        return crust(px, py)
     if face == "down":
         return mix(rnd.choice(K_MEMBRANE), hexc("7a3a12"), 0.35)
     return mix(rnd.choice(K_STONE), hexc("6b4e2a"), 0.4)
@@ -515,9 +539,11 @@ def skimmer_body(face, px, py, fw, fh, rnd):
 
 def skimmer_wing(face, px, py, fw, fh, rnd):
     if face == "up":
-        c = rnd.choice(K_STONE)
-        if px % 3 == 0 and rnd.random() < 0.7:
-            c = mix(c, hexc("8a6a3a"), 0.4)  # ribs
+        if py in (0, fh - 1) or px == fw - 1:
+            return K_CRUST[0]                  # the wing's dark rim
+        c = crust(px, py)
+        if px % 3 == 0:
+            c = mix(c, K_CRUST[0], 0.35)       # ribs under the skin
         return c
     if face == "down":
         c = rnd.choice(K_MEMBRANE)

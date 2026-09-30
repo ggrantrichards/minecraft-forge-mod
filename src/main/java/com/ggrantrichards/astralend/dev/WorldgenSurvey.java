@@ -344,7 +344,7 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('C'), end, "cinder_mite", 1.5, 0.0, 0.7);
         mobShot(lines, areas.get('C'), end, "corona_skimmer", 3.0, 0.0, 1.6);
         mobShot(lines, areas.get('W'), end, "black_hole_guardian", 3.0, 1.6, 2.0);
-        mobShot(lines, areas.get('A'), end, "drift_whale side", 15.0, 7.0, 7.5);
+        mobShot(lines, areas.get('A'), end, "drift_whale side", 11.0, 7.0, 7.5);
         mobShot(lines, areas.get('R'), end, "watcher", 6.0, 0.0, 2.2);
         try {
             java.nio.file.Files.write(java.nio.file.Path.of("astralend-shots.txt"), lines);

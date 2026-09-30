@@ -377,7 +377,10 @@ src/main/resources/
     minecraft/dimension/the_end.json  plugs our biome source into the End
 tools/
   textures/make_textures.py   draws every texture, plus docs/images/textures.png
+  textures/pixelart.py        pixel-art building blocks (noise, ramps, lit cells, ores, leaves)
+  textures/hq.py              the textures themselves, drawn with those building blocks
   mobs/make_mobs.py           each mob's model and its textures, from one description
+  mobs/preview_mobs.py        renders the mob models to docs/images/mob_models.png
   generate_resources.py       writes all the JSON above from one list
   check_resources.py          checks nothing is missing (run before launching)
   render_survey.py            turns the survey's maps into the pictures in this README
@@ -396,9 +399,10 @@ The JSON files are generated, so you rarely write them by hand:
    `ModItems.java` (an item only). Copy a similar line, like `NEBULA_MOSS` or `VOID_CRYSTAL`.
    It appears in the **The Astral End** creative tab automatically (the tab lists every block
    and item the mod registers, in the order they're declared).
-2. **Texture:** draw it in `tools/textures/make_textures.py` (or save a 16×16 PNG into
-   `src/main/resources/assets/astralend/textures/block/` or `item/` using Aseprite, Piskel or
-   LibreSprite), then run `python3 tools/textures/make_textures.py`.
+2. **Texture:** add a function to `tools/textures/hq.py` and list it in `TEXTURES` at the bottom
+   (or save a 16×16 PNG into `src/main/resources/assets/astralend/textures/block/` or `item/`
+   using Aseprite, Piskel or LibreSprite), then run `python3 tools/textures/make_textures.py`.
+   Follow the texture rules below.
 3. **JSON:** add it to the right list at the top of `tools/generate_resources.py`, then run
    `python3 tools/generate_resources.py`. That writes its blockstate, models, item
    definition, loot table, tags and English name.
@@ -406,6 +410,28 @@ The JSON files are generated, so you rarely write them by hand:
 5. `./dev.sh` to see it in game.
 
 The scripts need Python 3 and Pillow (`pip3 install pillow`).
+
+### Texture rules (every texture, in every phase)
+
+Textures must hold up next to vanilla Minecraft's. `tools/textures/pixelart.py` has the
+building blocks for this; `hq.py` shows them in use.
+
+- **No per-pixel random noise.** Use smooth, tileable noise quantized to a colour ramp
+  (`rock()`, `quantize()`), so tones form patches the way vanilla stone and sand do.
+- **Short, hue-shifted ramps:** 4-6 tones from `ramp()`: shadows cooler, highlights warmer.
+- **Light from the top-left.** Lumps, plates, bricks, leaves and nuggets get a lighter top/left
+  edge and a darker bottom/right (`chunks()`, `cell_light()`, `shadow_below()`, `ore()`).
+- **Deliberate details:** ore nuggets, pits, cracks and glints go in hand-picked places, a few
+  of each; plants are drawn blade by blade or petal by petal, not stamped from noise.
+- **Check it tiled and in the world.** `make_textures.py` writes `docs/images/textures.png`
+  and `docs/images/textures_tiled.png` (3×3 tiling shows seams and repetition). A texture that
+  covers the ground must stay calm from a distance: high-contrast lines or bright dots turn into
+  a grid.
+- **Mobs** are described once in `tools/mobs/make_mobs.py` (model boxes and how to paint each
+  face). Use the smooth noise `n()` for skin, not random pixels.
+  `python3 tools/mobs/preview_mobs.py` renders the models from three angles
+  (`docs/images/mob_models.png`) without starting the game. The CI screenshots are the final
+  check.
 
 If something shows as a **purple/black checkerboard**, a model or texture path is wrong
 (`check_resources.py` finds these). If it shows as **`block.astralend.something`**, its English

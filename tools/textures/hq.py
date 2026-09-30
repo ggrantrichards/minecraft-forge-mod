@@ -31,9 +31,9 @@ def sunscorched_stone():
             up, left = ids[(y - 1) % SIZE][x], ids[y][(x - 1) % SIZE]
             if right != me or down != me:
                 # the crack: dark where it runs deep, a shade lighter where it's shallow
-                put(img, x, y, pal[1] if border[y][x] < 0.6 else pal[2])
+                put(img, x, y, pal[1] if border[y][x] < 0.25 else pal[2])
             elif up != me or left != me:
-                put(img, x, y, shade(get(img, x, y), 0.18))   # sunlit lip of the plate
+                put(img, x, y, shade(get(img, x, y), 0.08))   # sunlit lip of the plate
     speckle(img, 123, [pal[2], pal[6]], 6)
     return img
 
@@ -191,12 +191,11 @@ def lumine_cap():
     spots that stand out like the white spots of a vanilla red mushroom block."""
     base = ramp("0b3a45", "3fb8b0", 5, hue_shift=0.02)
     img = rock(204, base, shares=[1, 2, 4, 3, 2], octaves=((2, 0.35), (4, 0.4), (8, 0.25)))
-    glow = {"r": hexc("1f7f86"), "m": hexc("5fe3d6"), "l": hexc("b8fff4"), "h": hexc("ffffff")}
+    glow = {"r": hexc("1d6f78"), "m": hexc("47bdb4"), "l": hexc("98ece2"), "h": hexc("dcfff9")}
     big = [".mm.", "mlhm", "mllm", ".mm."]
     mid = [".m.", "mlm", ".m."]
     small = ["lm", "mr"]
-    for (x, y, s) in ((1, 1, big), (9, 3, mid), (12, 10, big), (4, 9, mid), (8, 13, small), (14, 1, small),
-                      (1, 14, small)):
+    for (x, y, s) in ((2, 2, big), (11, 9, mid), (5, 11, small), (12, 2, small)):
         shadow_below(img, x, y, s, 0.35)
         stamp(img, x, y, s, glow)
     return img
