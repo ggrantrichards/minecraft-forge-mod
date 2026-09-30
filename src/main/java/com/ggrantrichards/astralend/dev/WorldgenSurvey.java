@@ -87,6 +87,11 @@ public final class WorldgenSurvey {
             failures.forEach(f -> log("FAIL: " + f));
             log("SURVEY FAILED");
         }
+        // The screenshot client (dev/ClientScreenshots) opens this world next. Minecraft asks once per
+        // world about "experimental settings" (any datapack-changed dimension counts); answer it here.
+        if (server.getWorldData() instanceof net.minecraft.world.level.storage.PrimaryLevelData data) {
+            data.withConfirmedWarning(true);
+        }
         server.halt(false);
     }
 
