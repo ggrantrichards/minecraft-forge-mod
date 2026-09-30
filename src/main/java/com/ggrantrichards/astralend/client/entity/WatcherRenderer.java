@@ -33,24 +33,20 @@ public class WatcherRenderer extends MobRenderer<Watcher, LivingEntityRenderStat
         poseStack.scale(1.45F, 1.45F, 1.45F);   // a head taller than an Enderman
     }
 
-    // It doesn't move. Only its hood turns, slowly, to follow you, and the ring behind its head
-    // turns on its own.
+    // It doesn't move: arms crossed, robe still. Only its hood turns, slowly, to follow you.
     public static class Model extends EntityModel<LivingEntityRenderState> {
-        private final ModelPart hood;
-        private final ModelPart halo;
+        private final ModelPart head;
 
         public Model(ModelPart root) {
             super(root);
-            this.hood = root.getChild("hood");
-            this.halo = this.hood.getChild("halo");
+            this.head = root.getChild("head");
         }
 
         @Override
         public void setupAnim(LivingEntityRenderState state) {
             super.setupAnim(state);
-            this.hood.yRot += state.yRot * Mth.DEG_TO_RAD;
-            this.hood.xRot += state.xRot * Mth.DEG_TO_RAD * 0.5F;
-            this.halo.zRot += state.ageInTicks * 0.01F;
+            this.head.yRot += state.yRot * Mth.DEG_TO_RAD;
+            this.head.xRot += state.xRot * Mth.DEG_TO_RAD * 0.5F;
         }
     }
 }

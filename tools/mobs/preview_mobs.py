@@ -41,8 +41,9 @@ def faces_of(part, transform, out):
         return transform(tuple(a + b for a, b in zip(rot_zyx(v, xr, yr, zr), (px, py, pz))))
 
     for b in part.boxes:
-        x0, y0, z0 = b.x, b.y, b.z
-        x1, y1, z1 = x0 + b.w, y0 + b.h, z0 + b.d
+        g = getattr(b, "inflate", 0.0)
+        x0, y0, z0 = b.x - g, b.y - g, b.z - g
+        x1, y1, z1 = b.x + b.w + g, b.y + b.h + g, b.z + b.d + g
         rects = b.faces()
         # (corners in texture order: top-left, top-right, bottom-right, bottom-left), texture rect
         quads = {

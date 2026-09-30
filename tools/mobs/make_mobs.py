@@ -38,7 +38,8 @@ def mix(a, b, t):
 # ------------------------------------------------------------------ model description
 
 class Box:
-    def __init__(self, u, v, x, y, z, w, h, d, mirror=False, paint=None, glow=None):
+    def __init__(self, u, v, x, y, z, w, h, d, mirror=False, paint=None, glow=None, inflate=0.0):
+        self.inflate = inflate  # grows the box without changing its texture size, like vanilla's overlays
         self.u, self.v = u, v
         self.x, self.y, self.z = x, y, z
         self.w, self.h, self.d = w, h, d
@@ -87,7 +88,8 @@ def java_part(part, parent_var, out, indent):
         cubes += f".texOffs({b.u}, {b.v})"
         if b.mirror:
             cubes += ".mirror()"
-        cubes += f".addBox({fnum(b.x)}, {fnum(b.y)}, {fnum(b.z)}, {fnum(b.w)}, {fnum(b.h)}, {fnum(b.d)})"
+        deform = f", new CubeDeformation({fnum(b.inflate)})" if b.inflate else ""
+        cubes += f".addBox({fnum(b.x)}, {fnum(b.y)}, {fnum(b.z)}, {fnum(b.w)}, {fnum(b.h)}, {fnum(b.d)}{deform})"
         if b.mirror:
             cubes += ".mirror(false)"
     p = part.pose
@@ -109,6 +111,7 @@ def write_java(mobs):
         "package com.ggrantrichards.astralend.client.model;",
         "",
         "import net.minecraft.client.model.geom.PartPose;",
+        "import net.minecraft.client.model.geom.builders.CubeDeformation;",
         "import net.minecraft.client.model.geom.builders.CubeListBuilder;",
         "import net.minecraft.client.model.geom.builders.LayerDefinition;",
         "import net.minecraft.client.model.geom.builders.MeshDefinition;",
@@ -376,126 +379,136 @@ WANDERER = Mob("void_wanderer", (64, 64), [
 ], egg=(hexc("8e5c32"), hexc("68b89c")))
 
 
-# ---- Umbral Stalker: a hunched, almost invisible predator of the Dark Matter Belts. It walks on
-# its knuckles and on backward-bent legs, with a long skull, a whip of a tail, bone claws, and torn
-# membranes slung between its arms and body. (Its membranes are what it drops.)
-S_HIDE = [hexc("0c0914"), hexc("16101f"), hexc("1f1730"), hexc("2a2042"), hexc("3a2d5a")]
-S_BONE = [hexc("6f6680"), hexc("a39bb4"), hexc("d6cfe2")]
+# ---- Umbral Stalker: a gaunt shadow predator of the Dark Matter Belts, built and painted the way
+# vanilla builds the Warden and the Creaking: chunky symmetric boxes, a body that is almost flat
+# near-black violet, and a few strong features that glow - slanted eyes, a jagged mouth, an
+# eclipse sigil on its chest with veins running from it. Bone horns and claws, and a ragged cape of
+# shadow (the Umbral Membrane it drops) trailing from its shoulders.
+SH = [hexc("0b0814"), hexc("120d1f"), hexc("1a1330"), hexc("251b42")]
+BONE = [hexc("5e5670"), hexc("8f86a3"), hexc("c4bcd4"), hexc("e6e0f0")]
+VEIN = hexc("9c7ae8")
 
 
-def stalker_hide(face, px, py, fw, fh, rnd):
-    t = n()
-    i = 1 + int(t * 3.2)                       # 1..4, in smooth patches
-    if face == "up":
-        i = min(4, i + 1)
-    elif face == "down":
-        i = max(0, i - 1)
-    c = S_HIDE[i]
-    if face in ("east", "west", "north", "south") and px % 3 == 1 and 0.45 < t < 0.6:
-        c = S_HIDE[4]                          # sinews showing through
-    return c
+def shade_flat(face):
+    """Vanilla-style face shading: top a shade lighter, bottom darker, sides the base."""
+    return {"up": 1, "down": -1}.get(face, 0)
 
 
-def stalker_head(face, px, py, fw, fh, rnd):
-    c = stalker_hide(face, px, py, fw, fh, rnd)
+def stalker_skin(face, px, py, fw, fh, rnd):
+    i = 1 + shade_flat(face) + (1 if n() > 0.72 else 0)     # mostly one tone, a few lighter patches
+    return SH[max(0, min(3, i))]
+
+
+EYES = {(1, 3), (2, 4), (6, 3), (5, 4)}                      # slanted inward: a scowl
+MOUTH = {(2, 6), (3, 7), (4, 6), (5, 7)}
+
+
+def stalker_face(face, px, py, fw, fh, rnd):
     if face == "north":
-        if (px, py) in ((1, 2), (3, 2), (2, 1)):
-            return hexc("6a4fb0")              # three eyes in a triangle
-        if py == fh - 1:
-            return S_BONE[0]
-    if face in ("east", "west") and py == fh - 1 and px % 2 == 0:
-        return S_BONE[1]                       # teeth along the jawline
-    if face == "up" and px == fw // 2:
-        return S_HIDE[4]                       # a ridge down the skull
-    return c
+        if (px, py) in EYES:
+            return hexc("c9a8ff")
+        if (px, py) in MOUTH:
+            return hexc("3a2766")
+        return SH[0] if py >= 5 else SH[1]                      # the lower face falls into shadow
+    return stalker_skin(face, px, py, fw, fh, rnd)
 
 
-def stalker_eyes(face, px, py, fw, fh, rnd):
-    if face == "north" and (px, py) in ((1, 2), (3, 2)):
-        return hexc("e2ccff")
-    if face == "north" and (px, py) == (2, 1):
-        return hexc("b48cf0")
+def stalker_face_glow(face, px, py, fw, fh, rnd):
+    if face == "north":
+        if (px, py) in ((1, 3), (6, 3)):
+            return hexc("ffffff")
+        if (px, py) in EYES:
+            return hexc("d6bcff")
+        if (px, py) in MOUTH:
+            return hexc("7a56d0")
     return None
 
 
-def stalker_jaw(face, px, py, fw, fh, rnd):
-    if face in ("north", "east", "west") and py == 0:
-        return S_BONE[2] if px % 2 == 0 else S_BONE[1]   # fangs
-    return stalker_hide(face, px, py, fw, fh, rnd)
+def _sigil(px, py):
+    """The chest sigil: an eclipse (a ring with a bright crescent) and veins running down."""
+    d = math.hypot(px - 4.5, py - 4.5)
+    if 2.0 <= d <= 3.0:
+        return "ring"
+    if px in (4, 5) and 8 <= py <= 13 and (py % 2 == 0) == (px == 4):
+        return "vein"
+    if (px, py) in ((2, 8), (1, 10), (7, 8), (8, 10)):
+        return "vein"
+    return None
 
 
-def bone(face, px, py, fw, fh, rnd):
+def stalker_body(face, px, py, fw, fh, rnd):
+    if face == "north" and _sigil(px, py):
+        return hexc("4a3480")
+    return stalker_skin(face, px, py, fw, fh, rnd)
+
+
+def stalker_body_glow(face, px, py, fw, fh, rnd):
+    if face == "north":
+        k = _sigil(px, py)
+        if k == "ring":
+            return hexc("e8d8ff") if px <= 4 and py <= 4 else VEIN   # the lit crescent
+        if k == "vein":
+            return VEIN
+    return None
+
+
+def stalker_arm(face, px, py, fw, fh, rnd):
+    if py >= fh - 3:                                           # bone claws, with gaps between
+        if face == "down":
+            return BONE[0]
+        if px == 1 and face in ("north", "south", "east", "west"):
+            return None if py == fh - 1 else SH[0]
+        return BONE[3] if py == fh - 1 else BONE[2] if py == fh - 2 else BONE[1]
+    return stalker_skin(face, px, py, fw, fh, rnd)
+
+
+def stalker_arm_glow(face, px, py, fw, fh, rnd):
+    if face == "north" and px == 1 and 12 <= py <= fh - 4:
+        return hexc("7a5cc8")                                 # a vein down the forearm to the claws
+    if face == "north" and (px, py) in ((0, 11), (2, 16)):
+        return hexc("5a42a0")                                 # where it branches
+    return None
+
+
+def stalker_leg(face, px, py, fw, fh, rnd):
+    if py == fh - 1 and face != "down":
+        return SH[2]                                          # the foot
+    return stalker_skin(face, px, py, fw, fh, rnd)
+
+
+def horn(face, px, py, fw, fh, rnd):
     if face == "up":
-        return S_BONE[2]
-    if face == "down":
-        return S_BONE[0]
-    return S_BONE[2] if py < fh // 2 and px == 0 else S_BONE[1] if py < fh - 1 else S_BONE[0]
+        return BONE[3]
+    return BONE[3] if py == 0 else BONE[2] if py == 1 else BONE[1]
 
 
-def stalker_limb(face, px, py, fw, fh, rnd):
-    c = stalker_hide(face, px, py, fw, fh, rnd)
-    if face in ("north", "south", "east", "west") and py == 0:
-        c = S_HIDE[4]                          # joint
-    return c
-
-
-def membrane(face, px, py, fw, fh, rnd):
-    """A torn, see-through membrane: dark, veined, ragged at its lower edge."""
-    if face not in ("east", "west"):
+def shadow_cape(face, px, py, fw, fh, rnd):
+    if face not in ("north", "south"):
         return None
-    edge = fh - 1 - int(2 * abs(math.sin(px * 1.7)) + (px % 3 == 0))
-    if py > edge or (py > fh - 5 and (px * 5 + py * 3) % 11 == 0):
-        return None                            # the torn edge and holes
-    if px == 0 or (px - py // 3) % 4 == 0 and py > 1:
-        return hexc("4a3a78", 230)             # veins
-    return mix(hexc("1c1430", 205), hexc("2c2048", 205), n())
+    ragged = fh - 1 - (2 if px % 3 == 0 else 0) - (1 if px % 4 == 1 else 0)
+    if py > ragged:
+        return None
+    if px in (0, fw - 1):
+        return hexc("3a2a66", 220)                            # a faint lit edge
+    return hexc("140e24", 215) if (px + py // 4) % 3 else hexc("1d1535", 215)
 
 
 STALKER = Mob("umbral_stalker", (64, 64), [
-    Part("hips", (0, 11, 3), [Box(0, 0, -2.5, -3, -1, 5, 5, 6, paint=stalker_hide)], [
-        Part("torso", (0, -1, -1, 1.0, 0, 0), [Box(0, 11, -4, -12, -3, 8, 12, 6, paint=stalker_hide)], [
-            Part("head", (0, -12, 0, -0.85, 0, 0), [
-                Box(28, 0, -2.5, -3, -7, 5, 5, 7, paint=stalker_head, glow=stalker_eyes),
-                Box(52, 0, -0.5, -5, -4, 1, 2, 1, paint=bone),
-                Box(52, 0, -0.5, -4.5, -1, 1, 2, 1, paint=bone),
-            ], [
-                Part("jaw", (0, 2, 0), [Box(28, 12, -2, 0, -6, 4, 1, 5, paint=stalker_jaw)]),
-            ]),
-            Part("spines", (0, -6, 3), [Box(52, 0, -0.5, -1, 0, 1, 2, 1, paint=bone),
-                                        Box(52, 0, -0.5, 3, 0, 1, 2, 1, paint=bone)]),
-            Part("right_arm", (-4.5, -10, 0, -1.2, 0, 0.15), [Box(0, 29, -1, -1, -1, 2, 11, 2, paint=stalker_limb)], [
-                Part("right_forearm", (0, 10, 0, -0.3, 0, 0), [Box(8, 29, -1, 0, -1, 2, 10, 2, paint=stalker_limb)], [
-                    Part("right_claws", (0, 10, 0), [Box(56, 0, -1.5, 0, -1.5, 1, 4, 1, paint=bone),
-                                                     Box(56, 0, 0.5, 0, -1.5, 1, 4, 1, paint=bone),
-                                                     Box(56, 0, -0.5, 0, -0.5, 1, 3, 1, paint=bone)]),
-                ]),
-                Part("right_membrane", (-0.5, 1, 1), [Box(40, 36, 0, 0, 0, 0, 12, 8, paint=membrane)]),
-            ]),
-            Part("left_arm", (4.5, -10, 0, -1.2, 0, -0.15), [Box(0, 29, -1, -1, -1, 2, 11, 2, mirror=True, paint=stalker_limb)], [
-                Part("left_forearm", (0, 10, 0, -0.3, 0, 0), [Box(8, 29, -1, 0, -1, 2, 10, 2, mirror=True, paint=stalker_limb)], [
-                    Part("left_claws", (0, 10, 0), [Box(56, 0, -1.5, 0, -1.5, 1, 4, 1, paint=bone),
-                                                    Box(56, 0, 0.5, 0, -1.5, 1, 4, 1, paint=bone),
-                                                    Box(56, 0, -0.5, 0, -0.5, 1, 3, 1, paint=bone)]),
-                ]),
-                Part("left_membrane", (0.5, 1, 1), [Box(40, 36, 0, 0, 0, 0, 12, 8, paint=membrane)]),
-            ]),
+    Part("body", (0, 10, 0, 0.08, 0, 0), [Box(0, 16, -5, -14, -3, 10, 14, 6, paint=stalker_body, glow=stalker_body_glow)], [
+        Part("head", (0, -14, -1), [
+            Box(0, 0, -4, -8, -5, 8, 8, 8, paint=stalker_face, glow=stalker_face_glow),
+            Box(32, 0, -4, -11, -2, 2, 3, 2, paint=horn),
+            Box(32, 0, 2, -11, -2, 2, 3, 2, mirror=True, paint=horn),
         ]),
-        Part("right_thigh", (-2.5, 0, 1, -0.7, 0, 0), [Box(16, 29, -1, 0, -1, 2, 7, 2, paint=stalker_limb)], [
-            Part("right_shin", (0, 7, 0, 1.4, 0, 0), [Box(24, 29, -1, 0, -1, 2, 7, 2, paint=stalker_limb)], [
-                Part("right_foot", (0, 7, 0, -0.7, 0, 0), [Box(32, 29, -1, 0, -3, 2, 2, 4, paint=stalker_limb)]),
-            ]),
-        ]),
-        Part("left_thigh", (2.5, 0, 1, -0.7, 0, 0), [Box(16, 29, -1, 0, -1, 2, 7, 2, mirror=True, paint=stalker_limb)], [
-            Part("left_shin", (0, 7, 0, 1.4, 0, 0), [Box(24, 29, -1, 0, -1, 2, 7, 2, mirror=True, paint=stalker_limb)], [
-                Part("left_foot", (0, 7, 0, -0.7, 0, 0), [Box(32, 29, -1, 0, -3, 2, 2, 4, mirror=True, paint=stalker_limb)]),
-            ]),
-        ]),
-        Part("tail", (0, -1, 5, 0.45, 0, 0), [Box(0, 44, -1, -1, 0, 2, 2, 8, paint=stalker_hide)], [
-            Part("tail_tip", (0, 0, 8, -0.55, 0, 0), [Box(20, 44, -0.5, -0.5, 0, 1, 1, 8, paint=stalker_hide),
-                                                   Box(56, 0, -0.5, -1.5, 7, 1, 2, 1, paint=bone)]),
-        ]),
+        Part("spines", (0, -12, 3), [Box(40, 0, -1, -1, 0, 2, 3, 2, paint=horn), Box(40, 0, -1, 4, 0, 2, 3, 2, paint=horn)]),
+        Part("right_arm", (-6.5, -12, 0, -0.08, 0, 0), [Box(32, 16, -1.5, 0, -1.5, 3, 24, 3, paint=stalker_arm, glow=stalker_arm_glow)]),
+        Part("left_arm", (6.5, -12, 0, -0.08, 0, 0), [Box(32, 16, -1.5, 0, -1.5, 3, 24, 3, mirror=True, paint=stalker_arm,
+                                                         glow=stalker_arm_glow)]),
+        Part("cape", (0, -13, 3.2, 0.12, 0, 0), [Box(0, 36, -5, 0, 0, 10, 16, 0, paint=shadow_cape)]),
     ]),
-], egg=(hexc("140f22"), hexc("7d5fd0")))
+    Part("right_leg", (-2.8, 10, 0), [Box(44, 16, -2, 0, -2, 4, 14, 4, paint=stalker_leg)]),
+    Part("left_leg", (2.8, 10, 0), [Box(44, 16, -2, 0, -2, 4, 14, 4, mirror=True, paint=stalker_leg)]),
+], egg=(hexc("120d1f"), hexc("9c7ae8")))
 
 
 # ---- Cinder Mite: a small burrower of the Corona. A basalt-shelled insect in three segments, with
@@ -774,109 +787,117 @@ WHALE = Mob("drift_whale", (128, 64), [
 ], egg=(hexc("3a4fa8"), hexc("dbe6ff")))
 
 
-# ---- The Watcher: a tall hooded figure in a long cloak, standing perfectly still. Its cloak is the
-# colour of the void and faintly embroidered with constellations; where its face should be there
-# are only a few stars. A thin astrolabe ring hangs behind its head like a halo, and it leans on a
-# tall staff topped with a pale light.
-CLOAK = [hexc("06070f"), hexc("0b0d1c"), hexc("11152b"), hexc("181d3a")]
-# Constellations stitched into the cloak (in texture pixels of each face).
-STARS = {(2, 3), (5, 5), (7, 2), (3, 9), (6, 11), (8, 8), (1, 13), (4, 15), (7, 17)}
+# ---- The Watcher: built on vanilla's Illager body (the Evoker and Illusioner): a head inside a
+# hood overlay, a long robe over the body, arms crossed. Painted like the Evoker too - flat colour
+# fields with a crisp gold trim - but its robe is midnight blue stitched with constellations, and
+# inside the hood there is no face at all: only darkness and two stars for eyes.
+ROBE = [hexc("080b1a"), hexc("0f1430"), hexc("161c40"), hexc("1f2752")]
+GOLD = [hexc("6e5a2c"), hexc("a8893f"), hexc("d8b865")]
+STAR, STAR_DIM, THREAD = hexc("cfd8ff"), hexc("7a86c8"), hexc("2c3670")
+# Two constellations stitched on the robe's front panels (robe front face is 8 x 20).
+CONSTELLATION = [(1, 4), (2, 7), (1, 10), (6, 5), (5, 8), (6, 12), (2, 14)]
+THREADS = {(1, 5), (1, 6), (2, 8), (2, 9), (6, 6), (6, 7), (5, 9), (5, 10), (6, 11)}
 
 
-def cloak(face, px, py, fw, fh, rnd, hem=False):
-    t = n()
-    c = CLOAK[min(3, int(t * 3.6))]
-    if face in ("north", "south", "east", "west") and px % 3 == 0 and t < 0.55:
-        c = CLOAK[0]                                      # the folds
-    if hem and face in ("north", "south", "east", "west"):
-        if py == fh - 1 and px % 3 != 1 or py == fh - 2 and px % 5 == 0:
-            return None                                   # a ragged hem
-    if face == "north" and (px, py) in STARS:
-        c = hexc("59628f")
-    return c
+def robe_base(face, px, py, fw, fh):
+    i = 1 + shade_flat(face)
+    if face in ("north", "south", "east", "west") and px % 4 == 3:
+        i -= 1                                                # the folds
+    return ROBE[max(0, min(3, i + (1 if n() > 0.8 else 0)))]
 
 
-def cloak_hem(face, px, py, fw, fh, rnd):
-    return cloak(face, px, py, fw, fh, rnd, hem=True)
+def robe(face, px, py, fw, fh, rnd):
+    if face in ("north", "south", "east", "west") and py >= fh - 2:
+        return GOLD[1] if py == fh - 2 else GOLD[0]           # the hem band
+    if face == "north":
+        if px in (3, 4):
+            return GOLD[2] if px == 3 else GOLD[1]            # trim down the front, like the Evoker's
+        if (px, py) in CONSTELLATION:
+            return STAR_DIM
+        if (px, py) in THREADS:
+            return THREAD
+    return robe_base(face, px, py, fw, fh)
 
 
-def cloak_stars(face, px, py, fw, fh, rnd):
-    if face == "north" and (px, py) in STARS:
-        return hexc("a9b6e8")
+def robe_glow(face, px, py, fw, fh, rnd):
+    if face == "north" and (px, py) in CONSTELLATION and px not in (3, 4):
+        return STAR
+    if face in ("north", "south", "east", "west") and py == fh - 2 and px % 4 == 1:
+        return hexc("fff0b8")                                 # small stars along the hem
     return None
 
 
-def mantle(face, px, py, fw, fh, rnd):
-    if face in ("north", "south", "east", "west") and py == fh - 1:
-        return hexc("8a7440")                             # a thin, tarnished gold trim
-    return cloak(face, px, py, fw, fh, rnd)
+def robe_top(face, px, py, fw, fh, rnd):
+    """The body under the robe: only its top (the shoulders) shows."""
+    if face == "north" and px in (3, 4):
+        return GOLD[2] if px == 3 else GOLD[1]
+    return robe_base(face, px, py, fw, fh)
 
 
 def hood(face, px, py, fw, fh, rnd):
     if face == "north":
-        if edge_dist(px, py, fw, fh) == 0:
-            return CLOAK[2]                               # the hood's rim
-        return hexc("020206")                             # the darkness inside it
-    return cloak(face, px, py, fw, fh, rnd)
+        if 1 <= px <= 6 and 2 <= py <= 9:
+            return None                                       # the open front of the hood
+        if (px in (0, 7) and 1 <= py <= 10) or (py in (1, 10) and 0 <= px <= 7):
+            return GOLD[1]                                    # gold rim round the opening
+    if face == "up":
+        return ROBE[2]
+    return robe_base(face, px, py, fw, fh)
 
 
-FACE_STARS = {(2, 3): hexc("ffffff"), (4, 3): hexc("ffffff"), (3, 5): hexc("9fb4ff"), (5, 6): hexc("6f80c8"),
-              (1, 6): hexc("6f80c8")}
-
-
-def hood_glow(face, px, py, fw, fh, rnd):
+def faceless(face, px, py, fw, fh, rnd):
     if face == "north":
-        return FACE_STARS.get((px, py))
+        if (px, py) in ((2, 4), (5, 4)):
+            return hexc("aab8ff")
+        return hexc("030409")                                 # darkness where a face should be
+    return ROBE[0]
+
+
+def faceless_glow(face, px, py, fw, fh, rnd):
+    if face == "north":
+        if (px, py) in ((2, 4), (5, 4)):
+            return hexc("ffffff")
+        if (px, py) in ((1, 7), (4, 6), (6, 8)):
+            return hexc("4a58a8")                             # faint stars deeper in
     return None
 
 
-def halo(face, px, py, fw, fh, rnd):
-    if face not in ("north", "south"):
-        return None
-    d = math.hypot(px - (fw - 1) / 2, py - (fh - 1) / 2)
-    if 4.7 <= d <= 5.6:
-        return hexc("c9b26a")
-    return None
+def sleeve(face, px, py, fw, fh, rnd):
+    if py >= fh - 2 and face in ("north", "south", "east", "west"):
+        return GOLD[1] if py == fh - 2 else GOLD[0]           # cuffs
+    return robe_base(face, px, py, fw, fh)
 
 
-def halo_glow(face, px, py, fw, fh, rnd):
-    if face not in ("north", "south"):
-        return None
-    cx, cy = (fw - 1) / 2, (fh - 1) / 2
-    d = math.hypot(px - cx, py - cy)
-    a = math.atan2(py - cy, px - cx)
-    if 4.7 <= d <= 5.6 and int((a + math.pi) / (math.pi / 4)) % 2 == 0 and abs((a + math.pi) % (math.pi / 4)) < 0.25:
-        return hexc("fff4c8")                             # stars set into the ring
-    return None
+def folded_arms(face, px, py, fw, fh, rnd):
+    if face in ("north", "up", "down") and px in (0, 1, fw - 2, fw - 1):
+        return GOLD[1] if px in (1, fw - 2) else ROBE[1]      # cuffs at both ends
+    if face == "north" and 3 <= px <= fw - 4:
+        return hexc("06070f")                                 # hands hidden in the sleeves
+    return robe_base(face, px, py, fw, fh)
 
 
-def staff(face, px, py, fw, fh, rnd):
-    if py % 10 == 0:
-        return hexc("9aa2b8")                             # silver bands
-    return hexc("241e2c") if px % 2 else hexc("2f2838")
-
-
-def orb(face, px, py, fw, fh, rnd):
-    return hexc("d6e6ff")
-
-
-def hand(face, px, py, fw, fh, rnd):
-    return hexc("0b0d1c")
+def watcher_leg(face, px, py, fw, fh, rnd):
+    return ROBE[0]
 
 
 WATCHER = Mob("watcher", (64, 64), [
-    Part("cloak_lower", (0, 24, 0), [Box(0, 43, -5, -14, -3.5, 10, 14, 7, paint=cloak_hem, glow=cloak_stars)]),
-    Part("cloak_upper", (0, 10, 0), [Box(0, 15, -4, -12, -3, 8, 12, 6, paint=cloak, glow=cloak_stars)]),
-    Part("mantle", (0, -2, 0), [Box(0, 33, -5.5, 0, -3.5, 11, 3, 7, paint=mantle)]),
-    Part("hood", (0, -1, 0), [Box(0, 0, -3.5, -8, -4, 7, 8, 7, paint=hood, glow=hood_glow)], [
-        Part("halo", (0, -4, 4.5), [Box(28, 0, -6, -6, 0, 12, 12, 0, paint=halo, glow=halo_glow)]),
+    Part("head", (0, 0, 0), [
+        Box(0, 0, -4, -10, -4, 8, 10, 8, paint=faceless, glow=faceless_glow),
+        Box(32, 0, -4, -10, -4, 8, 12, 8, inflate=0.45, paint=hood),
     ]),
-    Part("staff", (6.5, 24, -1.5), [
-        Box(56, 0, -0.5, -40, -0.5, 1, 40, 1, paint=staff),
-        Box(28, 12, -1.5, -43, -1.5, 3, 3, 3, paint=orb, glow=orb),
+    Part("body", (0, 0, 0), [
+        Box(16, 20, -4, 0, -3, 8, 12, 6, paint=robe_top),
+        Box(0, 38, -4, 0, -3, 8, 20, 6, inflate=0.5, paint=robe, glow=robe_glow),
     ]),
-    Part("hand", (6.5, 5, -1.5), [Box(40, 12, -1, -1, -1, 2, 2, 2, paint=hand)]),
-], egg=(hexc("0b0d1c"), hexc("c9b26a")))
+    Part("arms", (0, 3, -1, -0.75, 0, 0), [
+        Box(44, 22, -8, -2, -2, 4, 8, 4, paint=sleeve),
+        Box(40, 38, -4, 2, -2, 8, 4, 4, paint=folded_arms),
+    ], [
+        Part("left_shoulder", (0, 0, 0), [Box(44, 22, 4, -2, -2, 4, 8, 4, mirror=True, paint=sleeve)]),
+    ]),
+    Part("right_leg", (-2, 12, 0), [Box(0, 22, -2, 0, -2, 4, 12, 4, paint=watcher_leg)]),
+    Part("left_leg", (2, 12, 0), [Box(0, 22, -2, 0, -2, 4, 12, 4, mirror=True, paint=watcher_leg)]),
+], egg=(hexc("0f1430"), hexc("d8b865")))
 
 
 MOBS = [POLLINATOR, WANDERER, STALKER, CINDER_MITE, SKIMMER, GUARDIAN, WHALE, WATCHER]
