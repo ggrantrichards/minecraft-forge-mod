@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 1.0,
+  "group": "void_crystal",
+  "ingredient": "astralend:void_crystal_ore",
+  "result": {
+    "id": "astralend:void_crystal"
+  }
+}

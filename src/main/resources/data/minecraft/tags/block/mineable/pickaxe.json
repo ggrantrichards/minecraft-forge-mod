@@ -1,1 +1,24 @@
-{ "replace": false, "values": ["astralend:ruby_block"] }
+{
+  "replace": false,
+  "values": [
+    "astralend:chiseled_umbral_stone",
+    "astralend:leviathan_bone_block",
+    "astralend:meteoric_iron_block",
+    "astralend:meteoric_iron_ore",
+    "astralend:polished_umbral_stone",
+    "astralend:polished_umbral_stone_slab",
+    "astralend:polished_umbral_stone_stairs",
+    "astralend:polished_umbral_stone_wall",
+    "astralend:raw_meteoric_iron_block",
+    "astralend:umbral_stone",
+    "astralend:umbral_stone_brick_slab",
+    "astralend:umbral_stone_brick_stairs",
+    "astralend:umbral_stone_brick_wall",
+    "astralend:umbral_stone_bricks",
+    "astralend:umbral_stone_slab",
+    "astralend:umbral_stone_stairs",
+    "astralend:umbral_stone_wall",
+    "astralend:void_crystal_block",
+    "astralend:void_crystal_ore"
+  ]
+}

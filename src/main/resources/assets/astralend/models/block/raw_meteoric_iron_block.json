@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "astralend:block/raw_meteoric_iron_block"
+  }
+}

@@ -1,7 +1,0 @@
-{
-  "type": "minecraft:crafting_shaped",
-  "category": "building",
-  "pattern": ["###", "###", "###"],
-  "key": { "#": "astralend:ruby" },
-  "result": { "id": "astralend:ruby_block", "count": 1 }
-}

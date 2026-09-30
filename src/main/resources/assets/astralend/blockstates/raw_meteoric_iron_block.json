@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "astralend:block/raw_meteoric_iron_block"
+    }
+  }
+}

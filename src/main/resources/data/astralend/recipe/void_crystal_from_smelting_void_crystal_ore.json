@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 1.0,
+  "group": "void_crystal",
+  "ingredient": "astralend:void_crystal_ore",
+  "result": {
+    "id": "astralend:void_crystal"
+  }
+}

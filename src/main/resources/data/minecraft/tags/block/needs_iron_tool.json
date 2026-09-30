@@ -1,1 +1,9 @@
-{ "replace": false, "values": ["astralend:ruby_block"] }
+{
+  "replace": false,
+  "values": [
+    "astralend:meteoric_iron_block",
+    "astralend:raw_meteoric_iron_block",
+    "astralend:void_crystal_block",
+    "astralend:void_crystal_ore"
+  ]
+}

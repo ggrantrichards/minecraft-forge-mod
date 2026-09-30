@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "astralend:umbral_stone",
+  "result": {
+    "id": "astralend:umbral_stone_brick_stairs"
+  }
+}

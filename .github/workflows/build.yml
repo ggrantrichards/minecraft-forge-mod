@@ -17,27 +17,55 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Java toolchains
-        run: ./gradlew -q javaToolchains
-
-      - name: API probe (temporary)
-        if: hashFiles('.github/probe/probe.sh') != ''
-        run: .github/probe/probe.sh
+      # Every block/item has a blockstate, model, texture, name and loot table, and no JSON
+      # points at a file that doesn't exist (the cause of purple-and-black textures).
+      - name: Check resources
+        run: python3 tools/check_resources.py
 
       - name: Build
         run: ./gradlew build --stacktrace
 
       # Boots a headless Minecraft server with the mod loaded, runs its game tests (none yet) and exits.
-      # This is the closest thing to runClient that works without a screen.
+      # This loads all recipes, loot tables and tags, so broken data files show up here.
       - name: Load the mod in a server
         run: timeout 900 ./gradlew runGameTestServer --stacktrace
 
-      # Forge prints these when the mod's assets/ and data/ folders didn't load (no textures, recipes, loot).
-      - name: Check the mod's resources loaded
+      - name: Check the server loaded everything
         run: |
-          if grep -E "Missing (metadata|data pack).*astralend|Could not find resource pack for mod file" run/logs/latest.log; then
+          cp run/logs/latest.log server.log
+          if grep -E "Missing (metadata|data pack).*astralend|Could not find resource pack for mod file" server.log; then
             echo "::error::astralend's resources did not load"; exit 1
           fi
+          if grep -E "(WARN|ERROR).*astralend" server.log; then
+            echo "::error::the server logged problems with astralend's data (see above)"; exit 1
+          fi
+
+      # Boots the real game client on a virtual screen, waits until every texture and model has
+      # loaded, then fails if the game reported anything missing for this mod.
+      - name: Load the mod in the real client
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb libgl1-mesa-dri mesa-vulkan-drivers > /dev/null
+          rm -f run/logs/latest.log
+          export LIBGL_ALWAYS_SOFTWARE=1
+          xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClient > client-console.log 2>&1 &
+          for i in $(seq 1 120); do
+            sleep 5
+            if grep -q "Sound engine started" run/logs/latest.log 2>/dev/null && grep -q "textures/atlas/items" run/logs/latest.log; then
+              echo "Client finished loading after ~$((i * 5))s"; sleep 10; break
+            fi
+            if grep -q -E "Crash report saved|Minecraft Crash Report" client-console.log run/logs/latest.log 2>/dev/null; then
+              echo "::error::the client crashed"; tail -80 client-console.log; exit 1
+            fi
+          done
+          pkill -f runClient || true; pkill -f java || true
+          cp run/logs/latest.log client.log 2>/dev/null || { echo "::error::the client never started"; tail -80 client-console.log; exit 1; }
+          grep -q "textures/atlas/items" client.log || { echo "::error::the client didn't finish loading"; tail -60 client.log; exit 1; }
+          echo "Atlases built:"; grep "Created:" client.log | sed 's/.*Created: //'
+          if grep -i -E "astralend" client.log | grep -i -E "WARN|ERROR|missing|unable|couldn't|failed"; then
+            echo "::error::the client reported missing or broken models/textures for astralend (see above)"; exit 1
+          fi
+          echo "No missing models or textures reported for astralend."
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -45,5 +73,7 @@ jobs:
           name: astralend
           path: |
             build/libs/*.jar
-            run/logs/
+            server.log
+            client.log
+            client-console.log
           if-no-files-found: ignore

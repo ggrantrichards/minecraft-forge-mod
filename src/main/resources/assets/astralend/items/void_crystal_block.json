@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "astralend:block/void_crystal_block"
+  }
+}

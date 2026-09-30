@@ -1,6 +1,0 @@
-{
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": ["astralend:ruby_block"],
-  "result": { "id": "astralend:ruby", "count": 9 }
-}
