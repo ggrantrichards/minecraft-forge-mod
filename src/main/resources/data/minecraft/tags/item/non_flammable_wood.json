@@ -1,0 +1,31 @@
+{
+  "replace": false,
+  "values": [
+    "astralend:lumine_button",
+    "astralend:lumine_door",
+    "astralend:lumine_fence",
+    "astralend:lumine_fence_gate",
+    "astralend:lumine_hyphae",
+    "astralend:lumine_planks",
+    "astralend:lumine_pressure_plate",
+    "astralend:lumine_slab",
+    "astralend:lumine_stairs",
+    "astralend:lumine_stem",
+    "astralend:lumine_trapdoor",
+    "astralend:nullwood_button",
+    "astralend:nullwood_door",
+    "astralend:nullwood_fence",
+    "astralend:nullwood_fence_gate",
+    "astralend:nullwood_log",
+    "astralend:nullwood_planks",
+    "astralend:nullwood_pressure_plate",
+    "astralend:nullwood_slab",
+    "astralend:nullwood_stairs",
+    "astralend:nullwood_trapdoor",
+    "astralend:nullwood_wood",
+    "astralend:stripped_lumine_hyphae",
+    "astralend:stripped_lumine_stem",
+    "astralend:stripped_nullwood_log",
+    "astralend:stripped_nullwood_wood"
+  ]
+}

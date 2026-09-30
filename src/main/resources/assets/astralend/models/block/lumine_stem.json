@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "astralend:block/lumine_stem_top",
+    "side": "astralend:block/lumine_stem"
+  }
+}

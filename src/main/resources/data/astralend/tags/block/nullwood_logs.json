@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "astralend:nullwood_log",
+    "astralend:nullwood_wood",
+    "astralend:stripped_nullwood_log",
+    "astralend:stripped_nullwood_wood"
+  ]
+}

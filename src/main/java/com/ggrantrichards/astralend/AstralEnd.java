@@ -1,10 +1,12 @@
 package com.ggrantrichards.astralend;
 
+import com.ggrantrichards.astralend.client.ClientScreenshots;
 import com.ggrantrichards.astralend.client.SpectatorOverlayFix;
 import com.ggrantrichards.astralend.dev.WorldgenSurvey;
 import com.ggrantrichards.astralend.world.GravityInversion;
 import com.ggrantrichards.astralend.world.LowGravity;
 import com.ggrantrichards.astralend.world.ModWorldgen;
+import com.ggrantrichards.astralend.world.WoodStripping;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.api.distmarker.Dist;
@@ -34,8 +36,10 @@ public final class AstralEnd {
 
         LowGravity.register();
         GravityInversion.register();
+        WoodStripping.register();
         if (FMLEnvironment.dist == Dist.CLIENT) {
             SpectatorOverlayFix.register();  // client-only code; the server never loads it
+            ClientScreenshots.register();    // does nothing unless started with -Dastralend.screenshots=true
         }
         WorldgenSurvey.register(); // does nothing unless started with -Dastralend.survey=true
 

@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write     # to publish the in-game screenshots to the ci-screenshots branch
     steps:
       - uses: actions/checkout@v4
 
@@ -69,6 +71,23 @@ jobs:
           xvfb-run -a -s "-screen 0 1280x720x24 +extension GLX" glxinfo -B | grep -E "OpenGL (renderer|core profile version)" || true
           .github/scripts/client-check.sh
 
+      # Opens the survey's world in the real client and photographs every astral biome, then
+      # publishes the pictures to the ci-screenshots branch (browse them on GitHub).
+      - name: In-game screenshots of every biome
+        timeout-minutes: 20
+        run: .github/scripts/screenshots.sh
+
+      - name: Publish the screenshots
+        if: always() && hashFiles('run/screenshots/astralend-*.png') != ''
+        run: |
+          mkdir -p /tmp/shots && cp run/screenshots/astralend-*.png /tmp/shots/
+          cd /tmp/shots
+          printf "# In-game screenshots\n\nFrom commit ${GITHUB_SHA::7} on ${GITHUB_REF_NAME}.\n\n" > README.md
+          for f in astralend-*.png; do printf "### ${f}\n\n![](${f})\n\n" >> README.md; done
+          git init -q && git checkout -q -b ci-screenshots && git add . \
+            && git -c user.name="CI" -c user.email="ci@users.noreply.github.com" commit -qm "Screenshots from ${GITHUB_SHA::7}" \
+            && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-screenshots
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -79,4 +98,6 @@ jobs:
             survey.log
             client.log
             client-console.log
+            screenshots.log
+            run/screenshots/
           if-no-files-found: ignore

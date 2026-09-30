@@ -51,8 +51,8 @@ import org.slf4j.Logger;
 public final class WorldgenSurvey {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String TAG = "[AstralEnd survey] ";
-    private static final int MAP_RADIUS = 6000;
-    private static final int MAP_STEP = 150;
+    private static final int MAP_RADIUS = 12000;
+    private static final int MAP_STEP = 250;
 
     // Map symbol for each astral biome, and how much of the outer End it should cover (percent).
     private record BiomeInfo(ResourceKey<Biome> key, char symbol, String name, double minShare, double maxShare, int areaChunks) {}
@@ -201,7 +201,7 @@ public final class WorldgenSurvey {
                 if (c != 'O' && distance < 1000) {
                     failures.add("non-central biome " + c + " found only " + (int) distance + " blocks from the centre");
                 }
-                if (distance > 1100 && distance < 5000) {
+                if (distance > 1100 && distance < 9000) {
                     spots.computeIfAbsent(c, k -> new ArrayList<>()).add(new BlockPos(x, 64, z));
                 }
                 if (vanillaSpot == null && distance > 1500 && (c == 'H' || c == 'M')) {
@@ -242,7 +242,7 @@ public final class WorldgenSurvey {
         for (BiomeInfo info : ASTRAL) {
             BlockPos spot = bestSpot(spots.getOrDefault(info.symbol(), List.of()), end, generator, randomState);
             if (spot == null) {
-                failures.add("no " + info.name() + " within 5,000 blocks of the centre");
+                failures.add("no " + info.name() + " within 9,000 blocks of the centre");
                 continue;
             }
             Area area = scan(end, info, spot);
@@ -264,6 +264,7 @@ public final class WorldgenSurvey {
                 }
             }
         }
+        writeViewpoints(areas.values());
         checkNebula(areas.get('N'), failures);
         checkAurora(areas.get('A'), failures);
         checkCometWake(areas.get('W'), failures);
@@ -271,6 +272,25 @@ public final class WorldgenSurvey {
         checkObservatory(areas.get('R'), failures);
         checkCorona(areas.get('C'), failures);
         checkLowGravity(areas.get('N'), vanillaSpot, end, failures);
+    }
+
+    // Two camera positions per biome for dev/ClientScreenshots: one looking across the land from
+    // just above it, and one high aerial view. Written to astralend-shots.txt as "name x y z yaw pitch".
+    private static void writeViewpoints(java.util.Collection<Area> areas) {
+        List<String> lines = new ArrayList<>();
+        for (Area area : areas) {
+            int top = area.surfaceHeightsIn.keySet().stream().max(Integer::compare).orElse(60);
+            String slug = area.info.name().toLowerCase().replace("the ", "").replace(' ', '_');
+            // Yaw -45 looks south-east (+x, +z), across the area from its north-west corner.
+            lines.add(String.format("%s %d %d %d -45 22", slug, area.centre.getX() - 26, top + 10, area.centre.getZ() - 26));
+            lines.add(String.format("%s_aerial %d %d %d -45 38", slug, area.centre.getX() - 64, top + 48, area.centre.getZ() - 64));
+        }
+        try {
+            java.nio.file.Files.write(java.nio.file.Path.of("astralend-shots.txt"), lines);
+            log("Wrote " + lines.size() + " screenshot viewpoints to astralend-shots.txt");
+        } catch (java.io.IOException e) {
+            LOGGER.error(TAG + "couldn't write viewpoints", e);
+        }
     }
 
     // Among the candidate spots nearest the centre, the one with the most land (by terrain height,
@@ -311,6 +331,7 @@ public final class WorldgenSurvey {
         final Map<Integer, Integer> surfaceHeightsIn = new HashMap<>();
         final List<BlockPos> anomalies = new ArrayList<>();
         final List<String> profiles = new ArrayList<>();
+        int decayingLeaves;
         BlockPos standOn;
         int columnsIn;
         int landColumnsIn;
@@ -403,6 +424,10 @@ public final class WorldgenSurvey {
                             if (block == ModBlocks.GRAVITY_ANOMALY.get()) {
                                 area.anomalies.add(pos);
                             }
+                            if (block == ModBlocks.NULLWOOD_LEAVES.get()
+                                && state.getValue(net.minecraft.world.level.block.LeavesBlock.DISTANCE) >= 7) {
+                                area.decayingLeaves++;
+                            }
                             if (top == null && state.isSolidRender()) {
                                 top = block;
                                 if (inside) {
@@ -467,10 +492,24 @@ public final class WorldgenSurvey {
         }
     }
 
+    // Big landmasses: at least this share of the biome's columns should have land.
+    private static void landCoverage(Area area, double minPercent, List<String> failures) {
+        double land = 100.0 * area.landColumnsIn / Math.max(1, area.columnsIn);
+        log(String.format("%s: land under %.0f%% of the biome", area.info.name(), land));
+        if (land < minPercent) {
+            failures.add(String.format("%s: only %.0f%% of it is land (expected big islands, %.0f%%+)", area.info.name(), land, minPercent));
+        }
+    }
+
     private static void checkNebula(Area area, List<String> failures) {
         if (!enoughLand(area, failures)) {
             return;
         }
+        landCoverage(area, 45, failures);
+        atLeast(area, ModBlocks.LUMINE.log().get(), 5, failures);       // giant Lumineshroom stems
+        atLeast(area, ModBlocks.LUMINE_CAP.get(), 20, failures);
+        atLeast(area, ModBlocks.NEBULA_TUFTS.get(), 20, failures);
+        atLeast(area, ModBlocks.NEBULA_TENDRIL.get(), 1, failures);
         int mossTops = area.tops(ModBlocks.NEBULA_MOSS.get());
         if (mossTops < 0.9 * area.landColumnsIn) {
             failures.add("Nebula Fields: only " + mossTops + " of " + area.landColumnsIn + " land columns are topped with Nebula Moss");
@@ -492,7 +531,9 @@ public final class WorldgenSurvey {
             return;
         }
         replacesEndStone(area, ModBlocks.PALE_END_STONE.get(), failures);
-        atLeast(area, ModBlocks.SHIMMER_GRASS.get(), 2, failures);
+        landCoverage(area, 40, failures);
+        atLeast(area, ModBlocks.SHIMMER_GRASS.get(), 15, failures);
+        atLeast(area, ModBlocks.SHIMMER_REED.get(), 1, failures);
         atLeast(area, ModBlocks.PALE_END_STONE_BRICKS.get(), 0.05, failures);  // standing stones
         // Flat shelves: most of the land should be topped at the same height.
         int flat = 0;
@@ -524,6 +565,13 @@ public final class WorldgenSurvey {
         }
         replacesEndStone(area, ModBlocks.UMBRAL_STONE.get(), failures);
         atLeast(area, ModBlocks.VOID_CRYSTAL_ORE.get(), 0.5, failures);
+        atLeast(area, ModBlocks.NULLWOOD.log().get(), 15, failures);
+        atLeast(area, ModBlocks.NULLWOOD_LEAVES.get(), 40, failures);
+        int leaves = area.in(ModBlocks.NULLWOOD_LEAVES.get());
+        log(String.format("Dark Matter Belt: %d of %d Nullwood leaves are too far from a log and would decay", area.decayingLeaves, leaves));
+        if (area.decayingLeaves > 0.05 * Math.max(1, leaves)) {
+            failures.add("Dark Matter Belt: " + area.decayingLeaves + " Nullwood leaves would decay (trees would lose their leaves)");
+        }
         log("Dark Matter Belt: " + area.anomalies.size() + " gravity inversion pockets");
         if (area.anomalies.isEmpty()) {
             failures.add("Dark Matter Belt: no gravity inversion pockets generated");
@@ -550,6 +598,7 @@ public final class WorldgenSurvey {
         if (!enoughLand(area, failures)) {
             return;
         }
+        landCoverage(area, 40, failures);
         atLeast(area, ModBlocks.OBSERVATORY_QUARTZ.get(), 1, failures);
         atLeast(area, ModBlocks.OBSERVATORY_QUARTZ_PILLAR.get(), 0.3, failures);
         atLeast(area, ModBlocks.STAR_INLAY_OBSERVATORY_QUARTZ.get(), 0.05, failures);
@@ -565,9 +614,11 @@ public final class WorldgenSurvey {
             failures.add("The Corona: only " + scorchedTops + " of " + area.landColumnsIn + " land columns are topped with Sunscorched Stone");
         }
         replacesEndStone(area, ModBlocks.CHARRED_END_STONE.get(), failures);
+        landCoverage(area, 45, failures);
+        atLeast(area, ModBlocks.PETRIFIED_STALK.get(), 5, failures);
         atLeast(area, ModBlocks.SOLARITE_ORE.get(), 1, failures);
-        atLeast(area, ModBlocks.FLAREBLOOM.get(), 0.3, failures);
-        atLeast(area, ModBlocks.SUNSCALE_LICHEN.get(), 2, failures);
+        atLeast(area, ModBlocks.FLAREBLOOM.get(), 2, failures);
+        atLeast(area, ModBlocks.SUNSCALE_LICHEN.get(), 15, failures);
         atLeast(area, ModBlocks.ASHEN_LUMINESHROOM.get(), 0.2, failures);
         int chorus = area.in(Blocks.CHORUS_PLANT) + area.in(Blocks.CHORUS_FLOWER);
         if (chorus > 0) {
@@ -639,6 +690,12 @@ public final class WorldgenSurvey {
             TOP_SYMBOLS.put(ModBlocks.ASHEN_LUMINESHROOM.get(), 'A');
             TOP_SYMBOLS.put(ModBlocks.PETRIFIED_ASTRAL_VINE.get(), 'D');
             TOP_SYMBOLS.put(ModBlocks.POLLINATOR_HUSK.get(), 'W');
+            TOP_SYMBOLS.put(ModBlocks.LUMINE_CAP.get(), 'L');
+            TOP_SYMBOLS.put(ModBlocks.NEBULA_TUFTS.get(), 'M');
+            TOP_SYMBOLS.put(ModBlocks.NULLWOOD_LEAVES.get(), 'V');
+            TOP_SYMBOLS.put(ModBlocks.NULLWOOD.log().get(), 'U');
+            TOP_SYMBOLS.put(ModBlocks.SHIMMER_REED.get(), 'G');
+            TOP_SYMBOLS.put(ModBlocks.PETRIFIED_STALK.get(), 'D');
         }
         return TOP_SYMBOLS.getOrDefault(block, '#');
     }

@@ -21,7 +21,7 @@
           "particle": {
             "type": "minecraft:reverse_portal"
           },
-          "probability": 0.004
+          "probability": 0.012
         }
       ],
       "modifier": "append"
@@ -46,9 +46,12 @@
     [],
     [],
     [
+      "astralend:nebula_giant_lumineshrooms",
       "astralend:nebula_lumineshrooms",
       "astralend:nebula_starblooms",
-      "astralend:nebula_astral_vines"
+      "astralend:nebula_astral_vines",
+      "astralend:nebula_tufts",
+      "astralend:nebula_tendrils"
     ]
   ],
   "has_precipitation": false,

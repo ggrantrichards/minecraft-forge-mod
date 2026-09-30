@@ -22,7 +22,7 @@
           "particle": {
             "type": "minecraft:ash"
           },
-          "probability": 0.004
+          "probability": 0.01
         }
       ],
       "modifier": "append"
@@ -40,7 +40,9 @@
     [],
     [
       "minecraft:end_gateway_return",
+      "astralend:comet_wake_craters",
       "astralend:comet_wake_comet_cores",
+      "astralend:comet_wake_ice_spires",
       "astralend:comet_wake_ice_shards"
     ],
     [],

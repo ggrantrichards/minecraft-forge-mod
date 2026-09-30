@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "astralend:block/stripped_nullwood_log",
+    "side": "astralend:block/stripped_nullwood_log"
+  }
+}

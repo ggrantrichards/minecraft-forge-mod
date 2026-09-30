@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "astralend:block/lumine_planks",
+    "side": "astralend:block/lumine_planks",
+    "top": "astralend:block/lumine_planks"
+  }
+}

@@ -22,7 +22,7 @@
           "particle": {
             "type": "minecraft:enchant"
           },
-          "probability": 0.002
+          "probability": 0.006
         }
       ],
       "modifier": "append"
@@ -40,6 +40,7 @@
     [],
     [
       "minecraft:end_gateway_return",
+      "astralend:observatory_great_rings",
       "astralend:observatory_ruins"
     ],
     [],

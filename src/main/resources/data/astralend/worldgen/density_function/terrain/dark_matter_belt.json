@@ -1,25 +1,99 @@
 {
-  "type": "minecraft:sub",
+  "type": "minecraft:max",
   "left": {
-    "type": "minecraft:add",
-    "left": "minecraft:end/sloped_cheese",
+    "type": "minecraft:sub",
+    "left": {
+      "type": "minecraft:add",
+      "left": "minecraft:end/sloped_cheese",
+      "right": {
+        "type": "minecraft:mul",
+        "left": "minecraft:end/base_3d_noise",
+        "right": 0.5
+      }
+    },
     "right": {
       "type": "minecraft:mul",
-      "left": "minecraft:end/base_3d_noise",
-      "right": 0.5
+      "left": {
+        "type": "minecraft:max",
+        "left": {
+          "type": "minecraft:add",
+          "left": "minecraft:end/islands",
+          "right": -0.2
+        },
+        "right": 0.0
+      },
+      "right": 6.0
     }
   },
   "right": {
     "type": "minecraft:mul",
     "left": {
-      "type": "minecraft:max",
+      "type": "minecraft:min",
       "left": {
-        "type": "minecraft:add",
-        "left": "minecraft:end/islands",
-        "right": -0.2
+        "type": "minecraft:sub",
+        "left": {
+          "type": "minecraft:add",
+          "left": 58.0,
+          "right": {
+            "type": "minecraft:mul",
+            "left": "astralend:terrain/hills",
+            "right": 4.0
+          }
+        },
+        "right": {
+          "type": "minecraft:gradient",
+          "axis": "y",
+          "from_coordinate": 0,
+          "from_value": 0.0,
+          "to_coordinate": 128,
+          "to_value": 128.0
+        }
       },
-      "right": 0.0
+      "right": {
+        "type": "minecraft:sub",
+        "left": {
+          "type": "minecraft:gradient",
+          "axis": "y",
+          "from_coordinate": 0,
+          "from_value": 0.0,
+          "to_coordinate": 128,
+          "to_value": 128.0
+        },
+        "right": {
+          "type": "minecraft:sub",
+          "left": {
+            "type": "minecraft:add",
+            "left": 58.0,
+            "right": {
+              "type": "minecraft:mul",
+              "left": "astralend:terrain/hills",
+              "right": 4.0
+            }
+          },
+          "right": {
+            "type": "minecraft:clamp",
+            "input": {
+              "type": "minecraft:mul",
+              "left": {
+                "type": "minecraft:sub",
+                "left": 0.1,
+                "right": {
+                  "type": "minecraft:abs",
+                  "input": {
+                    "type": "minecraft:add",
+                    "left": "astralend:terrain/mask",
+                    "right": -0.18
+                  }
+                }
+              },
+              "right": 200.0
+            },
+            "min": 0.0,
+            "max": 30.0
+          }
+        }
+      }
     },
-    "right": 6.0
+    "right": 0.4
   }
 }

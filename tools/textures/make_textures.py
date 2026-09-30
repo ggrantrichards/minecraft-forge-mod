@@ -1345,7 +1345,7 @@ def main():
     out.append(save(from_map(TENDRIL_PLANT, TENDRIL_PAL), "block/nebula_tendril_plant.png"))
     out.append(save(from_map(SHIMMER_REED_TOP, REED_PAL), "block/shimmer_reed_top.png"))
     out.append(save(from_map(SHIMMER_REED_BOTTOM, REED_PAL), "block/shimmer_reed_bottom.png"))
-    out.append(save(petrified_stalk_side(), "block/petrified_stalk.png"))
+    out.append(save(petrified_stalk_side(), "block/petrified_stalk_side.png"))
     out.append(save(petrified_stalk_top(), "block/petrified_stalk_top.png"))
 
     write_preview(out)

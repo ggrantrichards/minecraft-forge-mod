@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "astralend:shimmer_grass"
+    "astralend:shimmer_grass",
+    "astralend:shimmer_reed"
   ]
 }

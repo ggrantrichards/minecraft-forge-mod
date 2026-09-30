@@ -27,8 +27,14 @@ VANILLA_PARENTS = {
     "minecraft:block/stairs", "minecraft:block/inner_stairs", "minecraft:block/outer_stairs",
     "minecraft:block/template_wall_post", "minecraft:block/template_wall_side",
     "minecraft:block/template_wall_side_tall", "minecraft:block/wall_inventory",
-    "minecraft:item/generated", "minecraft:item/handheld", "minecraft:block/carpet",
-}
+    "minecraft:item/generated", "minecraft:item/handheld", "minecraft:block/carpet", "minecraft:block/leaves",
+    "minecraft:block/fence_post", "minecraft:block/fence_side", "minecraft:block/fence_inventory",
+    "minecraft:block/template_fence_gate", "minecraft:block/template_fence_gate_open",
+    "minecraft:block/template_fence_gate_wall", "minecraft:block/template_fence_gate_wall_open",
+    "minecraft:block/template_orientable_trapdoor_bottom", "minecraft:block/template_orientable_trapdoor_top",
+    "minecraft:block/template_orientable_trapdoor_open", "minecraft:block/button", "minecraft:block/button_pressed",
+    "minecraft:block/button_inventory", "minecraft:block/pressure_plate_up", "minecraft:block/pressure_plate_down",
+} | {f"minecraft:block/door_{part}_{hinge}{op}" for part in ("bottom", "top") for hinge in ("left", "right") for op in ("", "_open")}
 
 errors = []
 
@@ -64,7 +70,13 @@ blocks_src = (JAVA / "ModBlocks.java").read_text()
 items_src = (JAVA / "ModItems.java").read_text()
 blocks_with_item = set(re.findall(r'\b(?:register|stairs|slab|wall)\("([a-z0-9_]+)"', blocks_src))
 blocks_no_item = set(re.findall(r'\bregisterNoItem\("([a-z0-9_]+)"', blocks_src)) - {"name"}
-blocks_with_item -= {"name"}
+blocks_with_item = {b for b in blocks_with_item if b != "name" and not b.endswith("_")}  # skip "stripped_" + name
+# Wood sets are registered by one helper call: woodSet("lumine", "stem", "hyphae", ...).
+WOOD_PARTS = ["{n}_{log}", "{n}_{wood}", "stripped_{n}_{log}", "stripped_{n}_{wood}", "{n}_planks", "{n}_stairs", "{n}_slab",
+              "{n}_fence", "{n}_fence_gate", "{n}_door", "{n}_trapdoor", "{n}_button", "{n}_pressure_plate"]
+wood_sets = re.findall(r'woodSet\("([a-z0-9_]+)", "([a-z]+)", "([a-z]+)"', blocks_src)
+for n, log, wood in wood_sets:
+    blocks_with_item |= {part.format(n=n, log=log, wood=wood) for part in WOOD_PARTS}
 blocks = blocks_with_item | blocks_no_item
 plain_items = set(re.findall(r'\b(?:simple|ITEMS\.register)\("([a-z0-9_]+)"', items_src))
 items = blocks_with_item | plain_items
@@ -132,8 +144,13 @@ REQUIRED = {
     "minecraft:block/outer_stairs": {"bottom", "top", "side"}, "minecraft:block/template_wall_post": {"wall"},
     "minecraft:block/template_wall_side": {"wall"}, "minecraft:block/template_wall_side_tall": {"wall"},
     "minecraft:block/wall_inventory": {"wall"}, "minecraft:item/generated": {"layer0"},
-    "minecraft:block/carpet": {"wool"},
+    "minecraft:block/carpet": {"wool"}, "minecraft:block/leaves": {"all"},
 }
+
+# Every other vanilla template used here takes one "texture" (doors take "bottom" and "top").
+for parent in VANILLA_PARENTS - set(REQUIRED):
+    REQUIRED[parent] = {"bottom", "top"} if "/door_" in parent else {"texture"} if "template" in parent or any(
+        k in parent for k in ("fence", "button", "pressure_plate")) else set()
 
 for file in sorted((ASSETS / "models").rglob("*.json")):
     rel = file.relative_to(ASSETS / "models").with_suffix("").as_posix()

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "astralend:block/shimmer_reed_bottom"
+    },
+    "half=upper": {
+      "model": "astralend:block/shimmer_reed_top"
+    }
+  }
+}

@@ -2,6 +2,8 @@
   "replace": false,
   "values": [
     "astralend:charred_end_stone_slab",
+    "astralend:lumine_slab",
+    "astralend:nullwood_slab",
     "astralend:observatory_quartz_slab",
     "astralend:pale_end_stone_brick_slab",
     "astralend:pale_end_stone_slab",

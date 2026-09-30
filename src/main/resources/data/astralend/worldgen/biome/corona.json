@@ -22,7 +22,7 @@
           "particle": {
             "type": "minecraft:white_ash"
           },
-          "probability": 0.01
+          "probability": 0.03
         }
       ],
       "modifier": "append"
@@ -49,6 +49,7 @@
     ],
     [],
     [
+      "astralend:corona_petrified_stalks",
       "astralend:corona_sunscale_lichen",
       "astralend:corona_flareblooms",
       "astralend:corona_ashen_lumineshrooms",

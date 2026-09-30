@@ -22,7 +22,7 @@
           "particle": {
             "type": "minecraft:end_rod"
           },
-          "probability": 0.0006
+          "probability": 0.002
         }
       ],
       "modifier": "append"
@@ -40,6 +40,7 @@
     [],
     [
       "minecraft:end_gateway_return",
+      "astralend:aurora_ribcages",
       "astralend:aurora_standing_stones",
       "astralend:aurora_leviathan_ribs"
     ],
@@ -48,6 +49,7 @@
     [],
     [],
     [
+      "astralend:aurora_shimmer_reeds",
       "astralend:aurora_shimmer_grass"
     ]
   ],

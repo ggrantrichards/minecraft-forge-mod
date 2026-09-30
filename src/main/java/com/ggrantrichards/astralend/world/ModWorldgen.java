@@ -2,6 +2,14 @@ package com.ggrantrichards.astralend.world;
 
 import com.ggrantrichards.astralend.AstralEnd;
 import com.ggrantrichards.astralend.world.feature.CometCoreFeature;
+import com.ggrantrichards.astralend.world.feature.CometIceSpireFeature;
+import com.ggrantrichards.astralend.world.feature.CraterFeature;
+import com.ggrantrichards.astralend.world.feature.GiantLumineshroomFeature;
+import com.ggrantrichards.astralend.world.feature.LeviathanRibcageFeature;
+import com.ggrantrichards.astralend.world.feature.NullwoodTreeFeature;
+import com.ggrantrichards.astralend.world.feature.ObservatoryRingFeature;
+import com.ggrantrichards.astralend.world.feature.PetrifiedStalkFeature;
+import com.ggrantrichards.astralend.world.feature.TendrilUndersideFeature;
 import com.ggrantrichards.astralend.world.feature.InversionPocketFeature;
 import com.ggrantrichards.astralend.world.feature.ObservatoryRuinFeature;
 import com.ggrantrichards.astralend.world.feature.StardustUnderhangFeature;
@@ -30,6 +38,14 @@ public final class ModWorldgen {
         FEATURE_TYPES.register("stardust_underhang", () -> StardustUnderhangFeature.CODEC);
         FEATURE_TYPES.register("inversion_pocket", () -> InversionPocketFeature.CODEC);
         FEATURE_TYPES.register("observatory_ruin", () -> ObservatoryRuinFeature.CODEC);
+        FEATURE_TYPES.register("giant_lumineshroom", () -> GiantLumineshroomFeature.CODEC);
+        FEATURE_TYPES.register("tendril_underside", () -> TendrilUndersideFeature.CODEC);
+        FEATURE_TYPES.register("nullwood_tree", () -> NullwoodTreeFeature.CODEC);
+        FEATURE_TYPES.register("leviathan_ribcage", () -> LeviathanRibcageFeature.CODEC);
+        FEATURE_TYPES.register("comet_ice_spire", () -> CometIceSpireFeature.CODEC);
+        FEATURE_TYPES.register("crater", () -> CraterFeature.CODEC);
+        FEATURE_TYPES.register("petrified_stalk", () -> PetrifiedStalkFeature.CODEC);
+        FEATURE_TYPES.register("observatory_ring", () -> ObservatoryRingFeature.CODEC);
     }
 
     private ModWorldgen() {}

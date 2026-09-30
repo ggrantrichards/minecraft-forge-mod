@@ -32,6 +32,12 @@ minecraft {
             // "Unable to initialize SDL: No available video device".
             if (System.getProperty('os.name').toLowerCase().contains('mac'))
                 jvmArgs '-XstartOnFirstThread'
+            // ./gradlew runClient -PastralendScreenshots  -> opens the world the survey generated,
+            // photographs every astral biome and quits. Used by CI; see dev/ClientScreenshots.java.
+            if (providers.gradleProperty('astralendScreenshots').isPresent()) {
+                args '--quickPlaySingleplayer', 'survey-world'
+                systemProperty 'astralend.screenshots', 'true'
+            }
         }
 
         register('server') {        // ./gradlew runServer  -> launches a dedicated server

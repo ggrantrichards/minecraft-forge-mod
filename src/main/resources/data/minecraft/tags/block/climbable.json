@@ -2,6 +2,8 @@
   "replace": false,
   "values": [
     "astralend:astral_vine",
-    "astralend:astral_vine_plant"
+    "astralend:astral_vine_plant",
+    "astralend:nebula_tendril",
+    "astralend:nebula_tendril_plant"
   ]
 }

@@ -55,16 +55,19 @@ SIMPLE_CUBES = [
     ("raw_solarite_block", "Block of Raw Solarite"),
     ("star_inlay_observatory_quartz", "Star Inlay Observatory Quartz"),
     ("gravity_anomaly", "Gravity Anomaly"),
+    ("lumine_cap", "Lumine Cap"),
 ]
 PILLARS = [
     ("leviathan_bone_block", "Leviathan Bone Block", "leviathan_bone"),
     ("observatory_quartz_pillar", "Observatory Quartz Pillar", "observatory_quartz_pillar"),
     ("pollinator_husk", "Pollinator Husk", "pollinator_husk"),
+    ("petrified_stalk", "Petrified Stalk", "petrified_stalk"),
 ]
 CROSS_PLANTS = [
     ("lumineshroom", "Lumineshroom"), ("starbloom", "Starbloom"),
     ("shimmer_grass", "Shimmer Grass"), ("ashen_lumineshroom", "Ashen Lumineshroom"),
     ("petrified_astral_vine", "Petrified Astral Vine"),
+    ("nebula_tufts", "Nebula Tufts"), ("nullwood_sapling", "Nullwood Sapling"),
 ]
 ITEMS = [
     ("void_crystal", "Void Crystal"),
@@ -209,9 +212,13 @@ def stairs_variants(name):
     return {"variants": variants}
 
 
-def stone_family(base, english, texture=None):
+def stone_family(base, english, texture=None, with_wall=True, stem=None, tool="pickaxe"):
+    """Stairs, slab and (usually) wall for a base block. stem: name prefix for them, if not the base's."""
     tex = rid(f"block/{texture or base}")
-    stairs, slab, wall = variant_id(base, "stairs"), variant_id(base, "slab"), variant_id(base, "wall")
+    if stem:
+        stairs, slab, wall = f"{stem}_stairs", f"{stem}_slab", f"{stem}_wall"
+    else:
+        stairs, slab, wall = variant_id(base, "stairs"), variant_id(base, "slab"), variant_id(base, "wall")
 
     blockstate(stairs, stairs_variants(stairs))
     for suffix, parent in (("", "stairs"), ("_inner", "inner_stairs"), ("_outer", "outer_stairs")):
@@ -228,27 +235,32 @@ def stone_family(base, english, texture=None):
     block_model(slab + "_top", {"parent": "minecraft:block/slab_top", "textures": {"bottom": tex, "side": tex, "top": tex}})
     item_def(slab, rid(f"block/{slab}"))
 
+    kinds = (("stairs", stairs), ("slab", slab)) + ((("wall", wall),) if with_wall else ())
+    if not with_wall:
+        wall = None
     parts = [{"apply": {"model": rid(f"block/{wall}_post")}, "when": {"up": "true"}}]
-    for height, model in (("low", f"{wall}_side"), ("tall", f"{wall}_side_tall")):
+    for height, model in (("low", f"{wall}_side"), ("tall", f"{wall}_side_tall")) if wall else ():
         for side, y in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
             apply = {"model": rid(f"block/{model}"), "uvlock": True}
             if y:
                 apply["y"] = y
             parts.append({"apply": apply, "when": {side: height}})
-    blockstate(wall, {"multipart": parts})
-    for suffix, parent in (("_post", "template_wall_post"), ("_side", "template_wall_side"),
-                           ("_side_tall", "template_wall_side_tall"), ("_inventory", "wall_inventory")):
-        block_model(wall + suffix, {"parent": f"minecraft:block/{parent}", "textures": {"wall": tex}})
-    item_def(wall, rid(f"block/{wall}_inventory"))
+    if wall:
+        blockstate(wall, {"multipart": parts})
+        for suffix, parent in (("_post", "template_wall_post"), ("_side", "template_wall_side"),
+                               ("_side_tall", "template_wall_side_tall"), ("_inventory", "wall_inventory")):
+            block_model(wall + suffix, {"parent": f"minecraft:block/{parent}", "textures": {"wall": tex}})
+        item_def(wall, rid(f"block/{wall}_inventory"))
 
-    for kind, bid in (("stairs", stairs), ("slab", slab), ("wall", wall)):
+    for kind, bid in kinds:
         lang[f"block.{NS}.{bid}"] = english_variant(english, kind)
-        tag("block", "minecraft:mineable/pickaxe", rid(bid))
+        tag("block", f"minecraft:mineable/{tool}", rid(bid))
         tag_name = {"stairs": "minecraft:stairs", "slab": "minecraft:slabs", "wall": "minecraft:walls"}[kind]
         tag("block", tag_name, rid(bid))
         tag("item", tag_name, rid(bid))
     drop_self(stairs)
-    drop_self(wall)
+    if wall:
+        drop_self(wall)
     loot(slab, [{
         "entries": [{
             "type": "minecraft:item",
@@ -264,8 +276,202 @@ def stone_family(base, english, texture=None):
 
     shaped(stairs, stairs, ["#  ", "## ", "###"], {"#": rid(base)}, count=4)
     shaped(slab, slab, ["###"], {"#": rid(base)}, count=6)
-    shaped(wall, wall, ["###", "###"], {"#": rid(base)}, count=6, category="misc")
+    if wall:
+        shaped(wall, wall, ["###", "###"], {"#": rid(base)}, count=6, category="misc")
     return stairs, slab, wall
+
+
+# ------------------------------------------------------------------ wood sets (Phase 3.5)
+#
+# (name, log word, wood word, English name, English log, English wood). Mushroom wood uses "stem" and
+# "hyphae", like vanilla's crimson and warped wood. Must match the woodSet(...) calls in ModBlocks.java.
+WOOD_SETS = [
+    ("lumine", "stem", "hyphae", "Lumine", "Lumine Stem", "Lumine Hyphae"),
+    ("nullwood", "log", "wood", "Nullwood", "Nullwood Log", "Nullwood"),
+]
+
+FACING_Y = {"north": 0, "east": 90, "south": 180, "west": 270}
+
+
+def wood_set(n, log_word, wood_word, english, english_log, english_wood):
+    log, wood = f"{n}_{log_word}", f"{n}_{wood_word}"
+    slog, swood = f"stripped_{log}", f"stripped_{wood}"
+    planks = f"{n}_planks"
+    tex = lambda t: rid(f"block/{t}")
+    # nullwood's "wood" block is just "nullwood", so its textures are named after the log
+    for name, side, end in ((log, log, f"{log}_top"), (wood, log, log), (slog, slog, f"{slog}_top"), (swood, slog, slog)):
+        blockstate(name, {"variants": {
+            "axis=x": {"model": rid(f"block/{name}"), "x": 90, "y": 90},
+            "axis=y": {"model": rid(f"block/{name}")},
+            "axis=z": {"model": rid(f"block/{name}"), "x": 90},
+        }})
+        block_model(name, {"parent": "minecraft:block/cube_column", "textures": {"end": tex(end), "side": tex(side)}})
+        item_def(name, rid(f"block/{name}"))
+        drop_self(name)
+    lang[f"block.{NS}.{log}"] = english_log
+    lang[f"block.{NS}.{wood}"] = english_wood
+    lang[f"block.{NS}.{slog}"] = f"Stripped {english_log}"
+    lang[f"block.{NS}.{swood}"] = f"Stripped {english_wood}"
+    cube(planks)
+    lang[f"block.{NS}.{planks}"] = f"{english} Planks"
+    drop_self(planks)
+    stairs, slab, _ = stone_family(planks, f"{english} Planks", with_wall=False, stem=n, tool="axe")
+    lang[f"block.{NS}.{stairs}"] = f"{english} Stairs"
+    lang[f"block.{NS}.{slab}"] = f"{english} Slab"
+    ptex = tex(planks)
+
+    fence, gate = f"{n}_fence", f"{n}_fence_gate"
+    parts = [{"apply": {"model": rid(f"block/{fence}_post")}}]
+    for side, y in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+        apply = {"model": rid(f"block/{fence}_side"), "uvlock": True}
+        if y:
+            apply["y"] = y
+        parts.append({"apply": apply, "when": {side: "true"}})
+    blockstate(fence, {"multipart": parts})
+    for suffix, parent in (("_post", "fence_post"), ("_side", "fence_side"), ("_inventory", "fence_inventory")):
+        block_model(fence + suffix, {"parent": f"minecraft:block/{parent}", "textures": {"texture": ptex}})
+    item_def(fence, rid(f"block/{fence}_inventory"))
+
+    gate_y = {"south": 0, "west": 90, "north": 180, "east": 270}
+    variants = {}
+    for facing, y in gate_y.items():
+        for in_wall in ("false", "true"):
+            for open_ in ("false", "true"):
+                model = gate + ("_wall" if in_wall == "true" else "") + ("_open" if open_ == "true" else "")
+                v = {"model": rid(f"block/{model}"), "uvlock": True}
+                if y:
+                    v["y"] = y
+                variants[f"facing={facing},in_wall={in_wall},open={open_}"] = v
+    blockstate(gate, {"variants": variants})
+    for suffix, parent in (("", "template_fence_gate"), ("_open", "template_fence_gate_open"),
+                           ("_wall", "template_fence_gate_wall"), ("_wall_open", "template_fence_gate_wall_open")):
+        block_model(gate + suffix, {"parent": f"minecraft:block/{parent}", "textures": {"texture": ptex}})
+    item_def(gate, rid(f"block/{gate}"))
+
+    door = f"{n}_door"
+    variants = {}
+    base_y = {"east": 0, "south": 90, "west": 180, "north": 270}
+    for facing, y0 in base_y.items():
+        for half, part in (("lower", "bottom"), ("upper", "top")):
+            for hinge in ("left", "right"):
+                for open_ in ("false", "true"):
+                    model = f"{door}_{part}_{hinge}" + ("_open" if open_ == "true" else "")
+                    y = y0 if open_ == "false" else (y0 + (90 if hinge == "left" else 270)) % 360
+                    v = {"model": rid(f"block/{model}")}
+                    if y:
+                        v["y"] = y
+                    variants[f"facing={facing},half={half},hinge={hinge},open={open_}"] = v
+    blockstate(door, {"variants": variants})
+    for part in ("bottom", "top"):
+        for hinge in ("left", "right"):
+            for op in ("", "_open"):
+                block_model(f"{door}_{part}_{hinge}{op}", {"parent": f"minecraft:block/door_{part}_{hinge}{op}",
+                                                          "textures": {"bottom": tex(f"{door}_bottom"), "top": tex(f"{door}_top")}})
+    item_model(door, {"parent": "minecraft:item/generated", "textures": {"layer0": rid(f"item/{door}")}})
+    item_def(door, rid(f"item/{door}"))
+    loot(door, [{"condition": {"type": "minecraft:survives_explosion"},
+                 "entries": [{"type": "minecraft:item", "name": rid(door), "condition": {
+                     "type": "minecraft:match_block", "blocks": rid(door), "state": {"half": "lower"}}}],
+                 "rolls": 1}])
+
+    trap = f"{n}_trapdoor"
+    variants = {}
+    for facing, y in FACING_Y.items():
+        for half in ("bottom", "top"):
+            for open_ in ("false", "true"):
+                if open_ == "false":
+                    v = {"model": rid(f"block/{trap}_{half}")}
+                    if y:
+                        v["y"] = y
+                elif half == "bottom":
+                    v = {"model": rid(f"block/{trap}_open")}
+                    if y:
+                        v["y"] = y
+                else:
+                    v = {"model": rid(f"block/{trap}_open"), "x": 180}
+                    if (y + 180) % 360:
+                        v["y"] = (y + 180) % 360
+                variants[f"facing={facing},half={half},open={open_}"] = v
+    blockstate(trap, {"variants": variants})
+    for suffix in ("bottom", "top", "open"):
+        block_model(f"{trap}_{suffix}", {"parent": f"minecraft:block/template_orientable_trapdoor_{suffix}",
+                                         "textures": {"texture": tex(trap)}})
+    item_def(trap, rid(f"block/{trap}_bottom"))
+
+    button = f"{n}_button"
+    variants = {}
+    ceiling_y = {"south": 0, "west": 90, "north": 180, "east": 270}
+    for face in ("floor", "wall", "ceiling"):
+        for facing, y in FACING_Y.items():
+            for powered in ("false", "true"):
+                v = {"model": rid(f"block/{button}" + ("_pressed" if powered == "true" else ""))}
+                if face == "wall":
+                    v["x"] = 90
+                    v["uvlock"] = True
+                elif face == "ceiling":
+                    v["x"] = 180
+                    y = ceiling_y[facing]
+                if y:
+                    v["y"] = y
+                variants[f"face={face},facing={facing},powered={powered}"] = v
+    blockstate(button, {"variants": variants})
+    for suffix, parent in (("", "button"), ("_pressed", "button_pressed"), ("_inventory", "button_inventory")):
+        block_model(button + suffix, {"parent": f"minecraft:block/{parent}", "textures": {"texture": ptex}})
+    item_def(button, rid(f"block/{button}_inventory"))
+
+    plate = f"{n}_pressure_plate"
+    blockstate(plate, {"variants": {"powered=false": {"model": rid(f"block/{plate}")},
+                                    "powered=true": {"model": rid(f"block/{plate}_down")}}})
+    block_model(plate, {"parent": "minecraft:block/pressure_plate_up", "textures": {"texture": ptex}})
+    block_model(plate + "_down", {"parent": "minecraft:block/pressure_plate_down", "textures": {"texture": ptex}})
+    item_def(plate, rid(f"block/{plate}"))
+
+    for name, english_name in ((fence, f"{english} Fence"), (gate, f"{english} Fence Gate"), (door, f"{english} Door"),
+                               (trap, f"{english} Trapdoor"), (button, f"{english} Button"),
+                               (plate, f"{english} Pressure Plate")):
+        lang[f"block.{NS}.{name}"] = english_name
+        if name != door:
+            drop_self(name)
+
+    # Tags: axes mine it; it counts as logs, planks, and each kind of wooden block for vanilla's
+    # recipes and mechanics (sticks, crafting tables, villagers opening doors...). End wood doesn't burn.
+    logs_tag = f"{NS}:{n}_{log_word}s"
+    for t in ("block", "item"):
+        for name in (log, wood, slog, swood):
+            tag(t, logs_tag, rid(name))
+        tag(t, "minecraft:logs", f"#{logs_tag}")
+        tag(t, "minecraft:planks", rid(planks))
+        tag(t, "minecraft:wooden_stairs", rid(stairs))
+        tag(t, "minecraft:wooden_slabs", rid(slab))
+        tag(t, "minecraft:wooden_fences", rid(fence))
+        tag(t, "minecraft:fence_gates", rid(gate))
+        tag(t, "minecraft:wooden_doors", rid(door))
+        tag(t, "minecraft:wooden_trapdoors", rid(trap))
+        tag(t, "minecraft:wooden_buttons", rid(button))
+        tag(t, "minecraft:wooden_pressure_plates", rid(plate))
+    for name in (log, wood, slog, swood, planks, stairs, slab, fence, gate, door, trap, button, plate):
+        tag("block", "minecraft:mineable/axe", rid(name))
+        tag("item", "minecraft:non_flammable_wood", rid(name))
+
+    # Recipes, exactly like vanilla's wood.
+    recipe(planks, {"type": "minecraft:crafting_shapeless", "category": "building", "group": "planks",
+                    "ingredients": [f"#{logs_tag}"], "result": {"count": 4, "id": rid(planks)}})
+    for result, src in ((wood, log), (swood, slog)):
+        recipe(result, {"type": "minecraft:crafting_shaped", "category": "building", "group": "bark",
+                        "key": {"#": rid(src)}, "pattern": ["##", "##"], "result": {"count": 3, "id": rid(result)}})
+    recipe(door, {"type": "minecraft:crafting_shaped", "category": "redstone", "group": "wooden_door", "key": {"#": rid(planks)},
+                  "pattern": ["##", "##", "##"], "result": {"count": 3, "id": rid(door)}})
+    recipe(trap, {"type": "minecraft:crafting_shaped", "category": "redstone", "group": "wooden_trapdoor", "key": {"#": rid(planks)},
+                  "pattern": ["###", "###"], "result": {"count": 2, "id": rid(trap)}})
+    recipe(fence, {"type": "minecraft:crafting_shaped", "category": "misc", "group": "wooden_fence",
+                   "key": {"#": "minecraft:stick", "W": rid(planks)}, "pattern": ["W#W", "W#W"],
+                   "result": {"count": 3, "id": rid(fence)}})
+    recipe(gate, {"type": "minecraft:crafting_shaped", "category": "redstone", "group": "wooden_fence_gate",
+                  "key": {"#": "minecraft:stick", "W": rid(planks)}, "pattern": ["#W#", "#W#"], "result": {"id": rid(gate)}})
+    recipe(button, {"type": "minecraft:crafting_shapeless", "category": "redstone", "group": "wooden_button",
+                    "ingredients": [rid(planks)], "result": {"id": rid(button)}})
+    recipe(plate, {"type": "minecraft:crafting_shaped", "category": "redstone", "group": "wooden_pressure_plate",
+                   "key": {"#": rid(planks)}, "pattern": ["##"], "result": {"id": rid(plate)}})
 
 
 # ------------------------------------------------------------------ plants
@@ -345,6 +551,34 @@ def plant_patch(name, block, rarity, count, spread, vertical=2, on=None):
     ]})
 
 
+def ground_cover(name, block, count, on=None):
+    """Plants scattered evenly over the whole chunk (not in clumps), like grass on a plains."""
+    feature(block, {"type": "minecraft:simple_block", "to_place": {"id": rid(block)}})
+    placed(name, {"feature": rid(block), "placement": [
+        {"type": "minecraft:count", "count": count},
+        {"type": "minecraft:in_square"},
+        {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"},
+        {"type": "minecraft:biome"},
+        {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
+            {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
+            {"type": "minecraft:would_survive", "state": rid(block)},
+        ] + ([{"type": "minecraft:matching_blocks", "blocks": on, "offset": [0, -1, 0]}] if on else [])}},
+    ]})
+
+
+def big_feature(name, feature_name, count=1, rarity=1, heightmap="MOTION_BLOCKING"):
+    """A large Java feature (tree, spire...) placed on the surface: `count` per chunk, in 1 of `rarity` chunks."""
+    feature(feature_name, {"type": rid(feature_name)})
+    placement = []
+    if rarity > 1:
+        placement.append({"type": "minecraft:rarity_filter", "chance": rarity})
+    if count > 1:
+        placement.append({"type": "minecraft:count", "count": count})
+    placement += [{"type": "minecraft:in_square"}, {"type": "minecraft:heightmap", "heightmap": heightmap},
+                  {"type": "minecraft:biome"}]
+    placed(name, {"feature": rid(feature_name), "placement": placement})
+
+
 # ---- Terrain
 #
 # Region noises (also read by the biome source through the noise router; the thresholds here
@@ -353,6 +587,7 @@ REGION_NEBULA = 0.18      # nebula > this: Nebula Fields
 REGION_COLD = -0.2        # nebula < this: the "cold" band (Aurora Shallows / Comet Wake)
 REGION_COLD_BELT = 0.2    # |belt| beyond this in the cold band
 REGION_MID_BELT = 0.3     # |belt| beyond this in the middle band (Dark Matter Belt / Corona)
+REGION_RUIN = 0.55        # ruin > this, in what would be vanilla: Shattered Observatory
 BLEND = 0.03              # terrain blends between shapes over +-this much noise at a border
 
 
@@ -401,43 +636,74 @@ def ramp(x, at, width=BLEND):
 
 def terrain():
     nebula, belt, ruin = rid("region/nebula"), rid("region/belt"), rid("region/ruin")
-    df("region/nebula", {"type": "minecraft:noise", "noise": "minecraft:vegetation", "xz_scale": 0.25, "y_scale": 0.0})
-    df("region/belt", {"type": "minecraft:noise", "noise": "minecraft:temperature", "xz_scale": 1.0, "y_scale": 0.0})
-    df("region/ruin", {"type": "minecraft:noise", "noise": "minecraft:ridge", "xz_scale": 0.12, "y_scale": 0.0})
+    # Region noises: large and slow, so each biome is a territory a few thousand blocks across.
+    df("region/nebula", {"type": "minecraft:noise", "noise": "minecraft:vegetation", "xz_scale": 0.08, "y_scale": 0.0})
+    df("region/belt", {"type": "minecraft:noise", "noise": "minecraft:temperature", "xz_scale": 0.3, "y_scale": 0.0})
+    df("region/ruin", {"type": "minecraft:noise", "noise": "minecraft:ridge", "xz_scale": 0.05, "y_scale": 0.0})
 
-    # Weights (0..1) of each reshaped biome. They are 0 within 1,024 blocks of the centre, so the
+    # Weights (0..1) of each biome's terrain. They are 0 within 1,024 blocks of the centre, so the
     # main island and the gap around it are exactly vanilla.
     outer = clamp(mul(add({"type": "minecraft:distance_to_point", "metric": "euclidean", "point": [0, 0, 0]},
                           -1024.0), 1.0 / 64), 0.0, 1.0)
     df("terrain/outer", outer)
-    cold = ramp(mul(nebula, -1.0), -REGION_COLD)
-    middle = mul(ramp(nebula, REGION_COLD), sub(1.0, ramp(nebula, REGION_NEBULA)))
-    df("terrain/weight/aurora_shallows", mul(rid("terrain/outer"), mul(cold, ramp(belt, REGION_COLD_BELT))))
-    df("terrain/weight/comet_wake", mul(rid("terrain/outer"), mul(cold, ramp(mul(belt, -1.0), REGION_COLD_BELT))))
-    df("terrain/weight/dark_matter_belt", mul(rid("terrain/outer"), mul(middle, ramp(belt, REGION_MID_BELT))))
+    not_nebula = sub(1.0, ramp(nebula, REGION_NEBULA))
+    cold = mul(ramp(mul(nebula, -1.0), -REGION_COLD), not_nebula)
+    middle = mul(ramp(nebula, REGION_COLD), not_nebula)
+    raw = {
+        "aurora_shallows": mul(cold, ramp(belt, REGION_COLD_BELT)),
+        "comet_wake": mul(cold, ramp(mul(belt, -1.0), REGION_COLD_BELT)),
+        "dark_matter_belt": mul(middle, ramp(belt, REGION_MID_BELT)),
+        "corona": mul(middle, ramp(mul(belt, -1.0), REGION_MID_BELT)),
+    }
+    vanilla_share = sub(sub(sub(sub(not_nebula, raw["aurora_shallows"]), raw["comet_wake"]), raw["dark_matter_belt"]), raw["corona"])
+    raw["shattered_observatory"] = mul(vanilla_share, ramp(ruin, REGION_RUIN))
+    raw["nebula_fields"] = ramp(nebula, REGION_NEBULA)
+    for biome, weight in raw.items():
+        df(f"terrain/weight/{biome}", mul(rid("terrain/outer"), weight))
 
-    islands, noise = "minecraft:end/islands", "minecraft:end/base_3d_noise"
+    islands, noise, vanilla = "minecraft:end/islands", "minecraft:end/base_3d_noise", "minecraft:end/sloped_cheese"
+    y = y_line(0, 0.0, 128, 128.0)
+    # Big landmasses: where a slow noise ("mask", features ~500 blocks) is high, an island with a
+    # surface at `top` and a tapering underside whose depth grows toward the island's middle.
+    df("terrain/mask", {"type": "minecraft:noise", "noise": "minecraft:erosion", "xz_scale": 1.0, "y_scale": 0.0})
+    df("terrain/hills", {"type": "minecraft:noise", "noise": "minecraft:surface", "xz_scale": 1.0, "y_scale": 0.0})
+    mask, hills = rid("terrain/mask"), rid("terrain/hills")
 
-    # Aurora Shallows: wide, thin, flat-topped shelves. The top is level at y=54; the shelf is
-    # thickest (about 10 blocks) where vanilla would put an island's centre, and thins to a
-    # see-through edge well beyond where vanilla's island would end.
-    thickness = mul(add(add(islands, 0.12), mul(noise, 0.2)), 14.0)
-    df("terrain/aurora_shallows", dmin(y_line(0, 54.5 * 0.25, 128, (54.5 - 128) * 0.25),
-                                       add(y_line(0, -54.5 * 0.25, 128, (128 - 54.5) * 0.25), mul(thickness, 0.25))))
+    def landmass(top, thickness):
+        return mul(dmin(sub(top, y), sub(y, sub(top, thickness))), 0.4)
 
-    # Comet Wake: vanilla islands plus a river of small floating debris between y=30 and 70.
+    def depth_from(m, scale, most):
+        return clamp(mul(m, scale), 0.0, most)
+
+    # Nebula Fields: rolling hills of moss on wide islands.
+    df("terrain/nebula_fields", dmax(vanilla, landmass(add(60.0, mul(hills, 7.0)), depth_from(add(mask, -0.02), 120.0, 40.0))))
+
+    # Aurora Shallows: wide, thin, flat-topped shelves (level at y=54) that thin to a see-through edge.
+    shelf_islands = mul(add(add(islands, 0.12), mul(noise, 0.2)), 14.0)
+    shelves = dmin(y_line(0, 54.5 * 0.25, 128, (54.5 - 128) * 0.25),
+                   add(y_line(0, -54.5 * 0.25, 128, (128 - 54.5) * 0.25), mul(shelf_islands, 0.25)))
+    df("terrain/aurora_shallows", dmax(shelves, landmass(54.5, depth_from(add(mask, 0.05), 40.0, 10.0))))
+
+    # Comet Wake: broad scorched islands, plus a river of small floating debris between y=30 and 70.
     band = dmin(y_line(30, 0.0, 45, 1.0), y_line(55, 1.0, 70, 0.0))
     debris = sub(add(mul({"type": "minecraft:noise", "noise": "minecraft:ridge", "xz_scale": 4.0, "y_scale": 4.0}, 3.0), -1.7),
                  mul(sub(1.0, band), 5.0))
-    df("terrain/comet_wake", dmax("minecraft:end/sloped_cheese", debris))
+    df("terrain/comet_wake", dmax(dmax(vanilla, debris), landmass(add(58.0, mul(hills, 3.0)), depth_from(add(mask, -0.02), 100.0, 36.0))))
 
-    # Dark Matter Belt: jagged rings. The middle of every big island is hollowed out, leaving a
-    # ring around an empty centre, and the 3D noise is stronger, making the rings ragged.
-    df("terrain/dark_matter_belt", sub(add("minecraft:end/sloped_cheese", mul(noise, 0.5)),
-                                       mul(dmax(add(islands, -0.2), 0.0), 6.0)))
+    # Dark Matter Belt: ring archipelagos. Land follows a band along the mask's contour, which traces
+    # broken rings and arcs around empty centres; vanilla islands are hollowed out the same way.
+    ring = clamp(mul(sub(0.1, {"type": "minecraft:abs", "input": add(mask, -0.18)}), 200.0), 0.0, 30.0)
+    hollowed = sub(add(vanilla, mul(noise, 0.5)), mul(dmax(add(islands, -0.2), 0.0), 6.0))
+    df("terrain/dark_matter_belt", dmax(hollowed, landmass(add(58.0, mul(hills, 4.0)), ring)))
 
-    shaped = "minecraft:end/sloped_cheese"
-    for biome in ("dark_matter_belt", "comet_wake", "aurora_shallows"):
+    # The Corona: flat-topped mesas with sheer cliffs, so there's little natural shelter.
+    df("terrain/corona", dmax(vanilla, landmass(add(62.0, mul(hills, 1.5)), depth_from(add(mask, -0.02), 400.0, 30.0))))
+
+    # Shattered Observatory: one large island for the ruins.
+    df("terrain/shattered_observatory", dmax(vanilla, landmass(add(60.0, mul(hills, 3.0)), depth_from(mask, 120.0, 36.0))))
+
+    shaped = vanilla
+    for biome in ("nebula_fields", "corona", "dark_matter_belt", "comet_wake", "aurora_shallows", "shattered_observatory"):
         shaped = lerp(rid(f"terrain/weight/{biome}"), shaped, rid(f"terrain/{biome}"))
     df("terrain/shaped", shaped)
 
@@ -495,8 +761,14 @@ def worldgen():
     terrain()
 
     # Plants of the Nebula Fields.
-    plant_patch("nebula_lumineshrooms", "lumineshroom", rarity=1, count=32, spread=6)
-    plant_patch("nebula_starblooms", "starbloom", rarity=2, count=28, spread=6)
+    plant_patch("nebula_lumineshrooms", "lumineshroom", rarity=1, count=40, spread=6)
+    plant_patch("nebula_starblooms", "starbloom", rarity=1, count=32, spread=6)
+    # A forest of giant Lumineshrooms over a carpet of Nebula Tufts, with tendrils hanging below.
+    big_feature("nebula_giant_lumineshrooms", "giant_lumineshroom", count=3)
+    ground_cover("nebula_tufts", "nebula_tufts", 110)
+    feature("tendril_underside", {"type": rid("tendril_underside")})
+    placed("nebula_tendrils", {"feature": rid("tendril_underside"), "placement": [
+        {"type": "minecraft:count", "count": 14}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
     feature("astral_vine", {
         "type": "minecraft:block_column",
         "allowed_placement": {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
@@ -529,7 +801,7 @@ def worldgen():
             "minecraft:gameplay/natural_mob_spawns": {"argument": {"spawn_costs": {}, "spawns_by_category": {
                 "monster": [{"type": "minecraft:enderman", "count": 4, "weight": 10}]}}, "modifier": "overlay"},
             "minecraft:visual/ambient_particles": {"argument": [
-                {"particle": {"type": "minecraft:reverse_portal"}, "probability": 0.004}], "modifier": "append"},
+                {"particle": {"type": "minecraft:reverse_portal"}, "probability": 0.012}], "modifier": "append"},
             "minecraft:visual/fog_color": "#2b1d45",
         },
         "carvers": [],
@@ -538,7 +810,8 @@ def worldgen():
         # Features by generation step. Step 4 (surface structures) has the return gateway, the
         # same as in the End Highlands; step 9 (vegetal decoration) has the plants.
         "features": [[], [], [], [], ["minecraft:end_gateway_return"], [], [], [], [],
-                     [rid("nebula_lumineshrooms"), rid("nebula_starblooms"), rid("nebula_astral_vines")]],
+                     [rid("nebula_giant_lumineshrooms"), rid("nebula_lumineshrooms"), rid("nebula_starblooms"),
+                      rid("nebula_astral_vines"), rid("nebula_tufts"), rid("nebula_tendrils")]],
         "has_precipitation": False,
         "temperature": 0.5,
     })
@@ -622,7 +895,9 @@ def worldgen_phase3():
     air = {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"}
 
     # ---- Aurora Shallows: Pale End Stone shelves, Shimmer Grass, standing stones, bone ribs
-    plant_patch("aurora_shimmer_grass", "shimmer_grass", rarity=1, count=40, spread=7)
+    ground_cover("aurora_shimmer_grass", "shimmer_grass", 90)
+    plant_patch("aurora_shimmer_reeds", "shimmer_reed", rarity=1, count=24, spread=5)
+    big_feature("aurora_ribcages", "leviathan_ribcage", rarity=7, heightmap="WORLD_SURFACE_WG")
     feature("standing_stone", {"type": "minecraft:block_column", "allowed_placement": air, "direction": "up",
                                "layers": [{"height": {"type": "minecraft:uniform", "min_inclusive": 1, "max_inclusive": 3},
                                            "provider": {"id": rid("pale_end_stone_bricks")}},
@@ -646,8 +921,9 @@ def worldgen_phase3():
         {"type": "minecraft:biome"},
     ]})
     end_biome("aurora_shallows", "Aurora Shallows", fog="#1f3b4d", water="#5fc8c2",
-              features_step4=[rid("aurora_standing_stones"), rid("aurora_leviathan_ribs")],
-              features_step9=[rid("aurora_shimmer_grass")], particle="minecraft:end_rod", particle_chance=0.0006)
+              features_step4=[rid("aurora_ribcages"), rid("aurora_standing_stones"), rid("aurora_leviathan_ribs")],
+              features_step9=[rid("aurora_shimmer_reeds"), rid("aurora_shimmer_grass")],
+              particle="minecraft:end_rod", particle_chance=0.002)
 
     # ---- Comet Wake: Charred End Stone, Stardust veins, Comet Ice, Comet Cores, Comet Cress
     ore("stardust_vein", "stardust_block", rid("charred_end_stone"), size=14)
@@ -658,13 +934,16 @@ def worldgen_phase3():
     surface_feature("comet_wake_ice_shards", "comet_ice_shard", rarity=3)
     java_feature("comet_core")
     surface_feature("comet_wake_comet_cores", "comet_core", rarity=6)
+    big_feature("comet_wake_craters", "crater", rarity=5, heightmap="WORLD_SURFACE_WG")
+    big_feature("comet_wake_ice_spires", "comet_ice_spire", rarity=2, heightmap="WORLD_SURFACE_WG")
     java_feature("stardust_underhang")
     placed("comet_wake_stardust_underhangs", {"feature": rid("stardust_underhang"), "placement": [
         {"type": "minecraft:count", "count": 3}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
     end_biome("comet_wake", "Comet Wake", fog="#2d2533", water="#8f7fb0",
-              features_step4=[rid("comet_wake_comet_cores"), rid("comet_wake_ice_shards")],
+              features_step4=[rid("comet_wake_craters"), rid("comet_wake_comet_cores"), rid("comet_wake_ice_spires"),
+                              rid("comet_wake_ice_shards")],
               features_step7=[rid("comet_wake_stardust_veins")],
-              features_step9=[rid("comet_wake_stardust_underhangs")], particle="minecraft:ash", particle_chance=0.004)
+              features_step9=[rid("comet_wake_stardust_underhangs")], particle="minecraft:ash", particle_chance=0.01)
 
     # ---- Dark Matter Belt: Umbral Stone rings, Void Crystal Ore, gravity inversion pockets
     ore("void_crystal_vein", "void_crystal_ore", rid("umbral_stone"), size=5, discard=0.5)
@@ -672,13 +951,17 @@ def worldgen_phase3():
     java_feature("inversion_pocket")
     placed("dark_matter_inversion_pockets", {"feature": rid("inversion_pocket"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 3}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
+    big_feature("dark_matter_nullwood_trees", "nullwood_tree", count=5)
     end_biome("dark_matter_belt", "Dark Matter Belt", fog="#07060b", water="#1a1030",
               features_step4=[rid("dark_matter_inversion_pockets")],
-              features_step7=[rid("dark_matter_void_crystal")])
+              features_step7=[rid("dark_matter_void_crystal")],
+              features_step9=[rid("dark_matter_nullwood_trees")],
+              particle="minecraft:reverse_portal", particle_chance=0.002)
 
     # ---- Shattered Observatory: quartz ruins, overgrown with vines and Starblooms
     java_feature("observatory_ruin")
     surface_feature("observatory_ruins", "observatory_ruin", rarity=2)
+    big_feature("observatory_great_rings", "observatory_ring", rarity=6, heightmap="WORLD_SURFACE_WG")
     plant_patch("observatory_starblooms", "starbloom", rarity=1, count=24, spread=6)
     placed("observatory_astral_vines", {"feature": rid("astral_vine"), "placement": [
         {"type": "minecraft:in_square"},
@@ -691,17 +974,18 @@ def worldgen_phase3():
                   "offset": [0, -1, 0]}]}},
     ]})
     end_biome("shattered_observatory", "Shattered Observatory", fog="#262a47", water="#6b7fd6",
-              features_step4=[rid("observatory_ruins")],
+              features_step4=[rid("observatory_great_rings"), rid("observatory_ruins")],
               features_step9=["minecraft:chorus_plant", rid("observatory_starblooms"), rid("observatory_astral_vines")],
-              particle="minecraft:enchant", particle_chance=0.002)
+              particle="minecraft:enchant", particle_chance=0.006)
 
     # ---- The Corona: Sunscorched Stone over Charred End Stone; Solarite; adapted and dead life
     ore("solarite_surface_vein", "solarite_ore", rid("sunscorched_stone"), size=8)
     surface_feature("corona_solarite_surface", "solarite_surface_vein", count=5, y_offset=-3)
     ore("solarite_deep_vein", "solarite_ore", rid("charred_end_stone"), size=3)
     placed_ore("corona_solarite_deep", "solarite_deep_vein", count=2, min_y=10, max_y=70)
-    plant_patch("corona_flareblooms", "flarebloom", rarity=2, count=14, spread=6)
-    plant_patch("corona_sunscale_lichen", "sunscale_lichen", rarity=1, count=36, spread=7)
+    plant_patch("corona_flareblooms", "flarebloom", rarity=1, count=40, spread=7)
+    ground_cover("corona_sunscale_lichen", "sunscale_lichen", 70)
+    big_feature("corona_petrified_stalks", "petrified_stalk", count=2)
     plant_patch("corona_ashen_lumineshrooms", "ashen_lumineshroom", rarity=2, count=10, spread=5)
     plant_patch("corona_petrified_vines", "petrified_astral_vine", rarity=3, count=6, spread=5)
     plant_patch("corona_pollinator_husks", "pollinator_husk", rarity=12, count=2, spread=3, vertical=1,
@@ -709,9 +993,9 @@ def worldgen_phase3():
     end_biome("corona", "The Corona", fog="#4a2616", water="#d9823b",
               features_step7=[rid("corona_solarite_deep")],
               features_step4=[rid("corona_solarite_surface")],
-              features_step9=[rid("corona_sunscale_lichen"), rid("corona_flareblooms"), rid("corona_ashen_lumineshrooms"),
+              features_step9=[rid("corona_petrified_stalks"), rid("corona_sunscale_lichen"), rid("corona_flareblooms"), rid("corona_ashen_lumineshrooms"),
                               rid("corona_petrified_vines"), rid("corona_pollinator_husks")],
-              particle="minecraft:white_ash", particle_chance=0.01)
+              particle="minecraft:white_ash", particle_chance=0.03)
 
 
 def main():
@@ -747,6 +1031,9 @@ def main():
         tag("block", "minecraft:mineable/pickaxe", rid(name))
         drop_self(name)
 
+    for spec in WOOD_SETS:
+        wood_set(*spec)
+
     for name, english in CROSS_PLANTS:
         cross_plant(name)
         lang[f"block.{NS}.{name}"] = english
@@ -773,25 +1060,66 @@ def main():
             "rolls": 1,
         }])
 
-    # Flarebloom: a two-block-tall flower (like a lilac). Only the lower half drops the item.
-    blockstate("flarebloom", {"variants": {
-        "half=lower": {"model": rid("block/flarebloom_bottom")},
-        "half=upper": {"model": rid("block/flarebloom_top")},
-    }})
-    for half in ("bottom", "top"):
-        block_model(f"flarebloom_{half}", {"parent": "minecraft:block/cross",
-                                           "textures": {"cross": rid(f"block/flarebloom_{half}")}})
-    item_model("flarebloom", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("block/flarebloom_top")}})
-    item_def("flarebloom", rid("item/flarebloom"))
-    lang[f"block.{NS}.flarebloom"] = "Flarebloom"
-    loot("flarebloom", [{
-        "condition": {"type": "minecraft:survives_explosion"},
-        "entries": [{"type": "minecraft:item", "name": rid("flarebloom"), "condition": {
-            "type": "minecraft:match_block", "blocks": rid("flarebloom"), "state": {"half": "lower"}}}],
-        "rolls": 1,
-    }])
+    # Two-block-tall plants (like a lilac). Only the lower half drops the item.
+    for name, english in (("flarebloom", "Flarebloom"), ("shimmer_reed", "Shimmer Reed")):
+        blockstate(name, {"variants": {
+            "half=lower": {"model": rid(f"block/{name}_bottom")},
+            "half=upper": {"model": rid(f"block/{name}_top")},
+        }})
+        for half in ("bottom", "top"):
+            block_model(f"{name}_{half}", {"parent": "minecraft:block/cross", "textures": {"cross": rid(f"block/{name}_{half}")}})
+        item_model(name, {"parent": "minecraft:item/generated", "textures": {"layer0": rid(f"block/{name}_top")}})
+        item_def(name, rid(f"item/{name}"))
+        lang[f"block.{NS}.{name}"] = english
+        loot(name, [{
+            "condition": {"type": "minecraft:survives_explosion"},
+            "entries": [{"type": "minecraft:item", "name": rid(name), "condition": {
+                "type": "minecraft:match_block", "blocks": rid(name), "state": {"half": "lower"}}}],
+            "rolls": 1,
+        }])
     tag("block", "minecraft:tall_flowers", rid("flarebloom"))
     tag("item", "minecraft:tall_flowers", rid("flarebloom"))
+    tag("block", "minecraft:replaceable_by_trees", rid("shimmer_reed"))
+
+    # Nebula Tendrils: hang down like weeping vines; climbable.
+    for name, texture in (("nebula_tendril", "nebula_tendril"), ("nebula_tendril_plant", "nebula_tendril_plant")):
+        blockstate(name, {"variants": {"": {"model": rid(f"block/{name}")}}})
+        block_model(name, {"parent": "minecraft:block/cross", "textures": {"cross": rid(f"block/{texture}")}})
+        tag("block", "minecraft:climbable", rid(name))
+        loot(name, [{"entries": [{"type": "minecraft:item", "condition": {"type": "minecraft:any_of", "terms": [
+            "minecraft:tool/can_shear", "minecraft:tool/can_silk_touch"]}, "name": rid("nebula_tendril")}], "rolls": 1}])
+    item_model("nebula_tendril", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("block/nebula_tendril")}})
+    item_def("nebula_tendril", rid("item/nebula_tendril"))
+    lang[f"block.{NS}.nebula_tendril"] = "Nebula Tendril"
+    lang[f"block.{NS}.nebula_tendril_plant"] = "Nebula Tendril Plant"
+
+    # Nullwood leaves: like vanilla leaves (shears or Silk Touch keep them; otherwise saplings and sticks).
+    blockstate("nullwood_leaves", {"variants": {"": {"model": rid("block/nullwood_leaves")}}})
+    block_model("nullwood_leaves", {"parent": "minecraft:block/leaves", "textures": {"all": rid("block/nullwood_leaves")}})
+    item_def("nullwood_leaves", rid("block/nullwood_leaves"))
+    lang[f"block.{NS}.nullwood_leaves"] = "Nullwood Leaves"
+    keep = {"type": "minecraft:any_of", "terms": ["minecraft:tool/can_shear", "minecraft:tool/can_silk_touch"]}
+    loot("nullwood_leaves", [
+        {"entries": [{"type": "minecraft:alternatives", "children": [
+            {"type": "minecraft:item", "condition": keep, "name": rid("nullwood_leaves")},
+            {"type": "minecraft:item", "condition": {"type": "minecraft:all_of", "terms": [
+                {"type": "minecraft:survives_explosion"},
+                {"type": "minecraft:table_bonus", "chances": [0.05, 0.0625, 0.083333336, 0.1], "enchantment": "minecraft:fortune"}]},
+             "name": rid("nullwood_sapling")}]}], "rolls": 1},
+        {"condition": {"type": "minecraft:inverted", "term": keep}, "entries": [{
+            "type": "minecraft:item",
+            "condition": {"type": "minecraft:table_bonus", "chances": [0.02, 0.022222223, 0.025, 0.033333335, 0.1],
+                          "enchantment": "minecraft:fortune"},
+            "modifier": [{"type": "minecraft:set_count", "count": {"type": "minecraft:uniform", "max": 2, "min": 1}},
+                         {"type": "minecraft:explosion_decay"}],
+            "name": "minecraft:stick"}], "rolls": 1},
+    ])
+    for t in ("block", "item"):
+        tag(t, "minecraft:leaves", rid("nullwood_leaves"))
+        tag(t, "minecraft:saplings", rid("nullwood_sapling"))
+    tag("block", "minecraft:mineable/hoe", rid("nullwood_leaves"))
+    tag("block", "minecraft:mineable/axe", rid("lumine_cap"))
+    tag("block", "minecraft:mineable/pickaxe", rid("petrified_stalk"))
 
     # Sunscale Lichen: a carpet.
     blockstate("sunscale_lichen", {"variants": {"": {"model": rid("block/sunscale_lichen")}}})
@@ -834,11 +1162,11 @@ def main():
     for name in ("chiseled_umbral_stone", "void_crystal_block", "meteoric_iron_block",
                  "raw_meteoric_iron_block", "stardust_block", "nebula_moss", "lumineshroom", "starbloom",
                  "pale_end_stone_tiles", "solarite_block", "raw_solarite_block", "star_inlay_observatory_quartz",
-                 "ashen_lumineshroom", "petrified_astral_vine"):
+                 "ashen_lumineshroom", "petrified_astral_vine", "lumine_cap", "nullwood_sapling"):
         drop_self(name)
     # Like blue ice and vanilla grass: nothing without Silk Touch / shears.
     for name, tool in (("comet_ice", "minecraft:tool/can_silk_touch"), ("gravity_anomaly", "minecraft:tool/can_silk_touch"),
-                       ("shimmer_grass", "minecraft:tool/can_shear")):
+                       ("shimmer_grass", "minecraft:tool/can_shear"), ("nebula_tufts", "minecraft:tool/can_shear")):
         loot(name, [{"condition": tool, "entries": [{"type": "minecraft:item", "name": rid(name)}], "rolls": 1}])
     for ore, drop in (("void_crystal_ore", "void_crystal"), ("meteoric_iron_ore", "raw_meteoric_iron"),
                       ("solarite_ore", "raw_solarite")):
@@ -882,10 +1210,15 @@ def main():
     # belongs in it, like vanilla's stone, glass, stairs, slabs and walls; plants, vines, carpets
     # and crops don't (vanilla leaves out grass and moss carpet too).
     not_solid = {"lumineshroom", "starbloom", "astral_vine", "astral_vine_plant", "comet_cress", "shimmer_grass",
-                 "flarebloom", "sunscale_lichen", "ashen_lumineshroom", "petrified_astral_vine"}
+                 "flarebloom", "sunscale_lichen", "ashen_lumineshroom", "petrified_astral_vine", "nebula_tufts",
+                 "nebula_tendril", "nebula_tendril_plant", "nullwood_leaves", "nullwood_sapling", "shimmer_reed"}
     solid = sorted(set(re.findall(r'\b(?:register|registerNoItem|stairs|slab|wall)\("([a-z0-9_]+)"',
                                   (ROOT / "src/main/java/com/ggrantrichards/astralend/ModBlocks.java").read_text()))
                    - not_solid - {"name"})
+    solid = [b for b in solid if not b.endswith("_")]  # "stripped_" + name, in the wood-set helper
+    for n, log_word, wood_word, *_ in WOOD_SETS:
+        solid += [f"{n}_{log_word}", f"{n}_{wood_word}", f"stripped_{n}_{log_word}", f"stripped_{n}_{wood_word}",
+                  f"{n}_planks", f"{n}_stairs", f"{n}_slab", f"{n}_fence", f"{n}_fence_gate", f"{n}_door", f"{n}_trapdoor"]
     for name in solid:
         tag("block", "minecraft:blocks_motion_no_leaves", rid(name))
 

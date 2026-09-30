@@ -15,7 +15,18 @@
       },
       "modifier": "overlay"
     },
-    "minecraft:visual/fog_color": "#07060b"
+    "minecraft:visual/fog_color": "#07060b",
+    "minecraft:visual/ambient_particles": {
+      "argument": [
+        {
+          "particle": {
+            "type": "minecraft:reverse_portal"
+          },
+          "probability": 0.002
+        }
+      ],
+      "modifier": "append"
+    }
   },
   "carvers": [],
   "downfall": 0.5,
@@ -37,7 +48,9 @@
       "astralend:dark_matter_void_crystal"
     ],
     [],
-    []
+    [
+      "astralend:dark_matter_nullwood_trees"
+    ]
   ],
   "has_precipitation": false,
   "temperature": 0.5

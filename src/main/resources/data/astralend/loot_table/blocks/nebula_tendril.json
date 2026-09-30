@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:any_of",
+            "terms": [
+              "minecraft:tool/can_shear",
+              "minecraft:tool/can_silk_touch"
+            ]
+          },
+          "name": "astralend:nebula_tendril"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "astralend:blocks/nebula_tendril"
+}

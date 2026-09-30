@@ -4,9 +4,12 @@ import com.ggrantrichards.astralend.block.AstralVineBlock;
 import com.ggrantrichards.astralend.block.AstralVinePlantBlock;
 import com.ggrantrichards.astralend.block.CometCressBlock;
 import com.ggrantrichards.astralend.block.EndPlantBlock;
-import com.ggrantrichards.astralend.block.FlarebloomBlock;
+import com.ggrantrichards.astralend.block.EndTallPlantBlock;
 import com.ggrantrichards.astralend.block.GravityAnomalyBlock;
 import com.ggrantrichards.astralend.block.LumineshroomBlock;
+import com.ggrantrichards.astralend.block.NebulaTendrilBlock;
+import com.ggrantrichards.astralend.block.NebulaTendrilPlantBlock;
+import com.ggrantrichards.astralend.block.NullwoodSaplingBlock;
 import com.ggrantrichards.astralend.block.StarbloomBlock;
 import com.ggrantrichards.astralend.block.StardustBlock;
 import java.util.function.Function;
@@ -19,7 +22,14 @@ import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ButtonBlock;
 import net.minecraft.world.level.block.CarpetBlock;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.FenceBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.PressurePlateBlock;
+import net.minecraft.world.level.block.TintedParticleLeavesBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
@@ -27,6 +37,8 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.WallBlock;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
@@ -184,7 +196,7 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).instrument(NoteBlockInstrument.BELL)
             .requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.METAL).lightLevel(state -> 7));
     // Flarebloom: a two-block-tall flower, shut tight.
-    public static final RegistryObject<Block> FLAREBLOOM = register("flarebloom", FlarebloomBlock::new,
+    public static final RegistryObject<Block> FLAREBLOOM = register("flarebloom", EndTallPlantBlock::new,
         () -> plant(MapColor.COLOR_ORANGE, SoundType.GRASS).offsetType(BlockBehaviour.OffsetType.XZ));
     // Sunscale Lichen: a scaly ground cover (a carpet) that holds a faint glow.
     public static final RegistryObject<Block> SUNSCALE_LICHEN = register("sunscale_lichen", CarpetBlock::new,
@@ -218,11 +230,87 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).instrument(NoteBlockInstrument.BASEDRUM)
             .requiresCorrectToolForDrops().strength(25.0F, 600.0F).sound(SoundType.SCULK_CATALYST).lightLevel(state -> 2));
 
+    // ================================================================ Phase 3.5: the biome worlds
+
+    // ---- Nebula Fields: giant Lumineshrooms and their wood (like the Nether's huge fungi) ----
+    public static final RegistryObject<Block> LUMINE_CAP = register("lumine_cap", Block::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).instrument(NoteBlockInstrument.BASS).strength(1.0F)
+            .sound(SoundType.SHROOMLIGHT).lightLevel(state -> 12));
+    public static final WoodSet LUMINE = woodSet("lumine", "stem", "hyphae", MapColor.COLOR_LIGHT_BLUE, MapColor.COLOR_PURPLE,
+        SoundType.STEM, BlockSetType.CRIMSON, WoodType.CRIMSON);
+    public static final RegistryObject<Block> NEBULA_TUFTS = register("nebula_tufts",
+        p -> new EndPlantBlock(Block.column(12.0, 0.0, 10.0), ASTRAL_SOIL, p),
+        () -> plant(MapColor.COLOR_PURPLE, SoundType.GRASS).replaceable().offsetType(BlockBehaviour.OffsetType.XZ));
+    // Nebula Tendrils hang from island undersides and glow at the tip.
+    public static final RegistryObject<Block> NEBULA_TENDRIL = register("nebula_tendril", NebulaTendrilBlock::new,
+        () -> tendril().randomTicks().lightLevel(state -> 9));
+    public static final RegistryObject<Block> NEBULA_TENDRIL_PLANT = registerNoItem("nebula_tendril_plant", NebulaTendrilPlantBlock::new,
+        () -> tendril());
+
+    // ---- Dark Matter Belt: twisted Nullwood trees ----
+    public static final WoodSet NULLWOOD = woodSet("nullwood", "log", "wood", MapColor.COLOR_BLACK, MapColor.COLOR_PURPLE,
+        SoundType.WOOD, BlockSetType.DARK_OAK, WoodType.DARK_OAK);
+    public static final RegistryObject<Block> NULLWOOD_LEAVES = register("nullwood_leaves", p -> new TintedParticleLeavesBlock(0.01F, p),
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.2F).randomTicks().sound(SoundType.GRASS)
+            .noOcclusion().isValidSpawn((state, level, pos, type) -> false).isSuffocating((state, level, pos) -> false)
+            .isViewBlocking((state, level, pos, aabb) -> false).pushReaction(PushReaction.POPPED)
+            .isRedstoneConductor((state, level, pos) -> false));
+    public static final RegistryObject<Block> NULLWOOD_SAPLING = register("nullwood_sapling", NullwoodSaplingBlock::new,
+        () -> plant(MapColor.COLOR_PURPLE, SoundType.GRASS).randomTicks());
+
+    // ---- Aurora Shallows and the Corona ----
+    public static final RegistryObject<Block> SHIMMER_REED = register("shimmer_reed", EndTallPlantBlock::new,
+        () -> plant(MapColor.COLOR_LIGHT_BLUE, SoundType.GRASS).replaceable().offsetType(BlockBehaviour.OffsetType.XZ));
+    // The stone-hard trunk of a giant Astral Vine that died in the Corona long ago.
+    public static final RegistryObject<Block> PETRIFIED_STALK = register("petrified_stalk", RotatedPillarBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).instrument(NoteBlockInstrument.BASEDRUM)
+            .requiresCorrectToolForDrops().strength(2.0F, 6.0F).sound(SoundType.DRIPSTONE_BLOCK));
+
     // ---- helpers ----
 
     private static BlockBehaviour.Properties stone(SoundType sound) {
         return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLACK).instrument(NoteBlockInstrument.BASEDRUM)
             .requiresCorrectToolForDrops().strength(3.5F, 6.0F).sound(sound);
+    }
+
+
+    // Every block of one wood type. "log"/"wood" are called "stem"/"hyphae" for mushroom wood.
+    public record WoodSet(RegistryObject<Block> log, RegistryObject<Block> wood, RegistryObject<Block> strippedLog,
+                          RegistryObject<Block> strippedWood, RegistryObject<Block> planks, RegistryObject<Block> stairs,
+                          RegistryObject<Block> slab, RegistryObject<Block> fence, RegistryObject<Block> fenceGate,
+                          RegistryObject<Block> door, RegistryObject<Block> trapdoor, RegistryObject<Block> button,
+                          RegistryObject<Block> pressurePlate) {}
+
+    // Registers a whole wood set, with the same properties vanilla gives its own woods.
+    private static WoodSet woodSet(String name, String logWord, String woodWord, MapColor bark, MapColor planksColor,
+                                   SoundType logSound, BlockSetType setType, WoodType woodType) {
+        Supplier<BlockBehaviour.Properties> log = () -> BlockBehaviour.Properties.of().mapColor(bark)
+            .instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(logSound);
+        Supplier<BlockBehaviour.Properties> wood = () -> BlockBehaviour.Properties.of().mapColor(planksColor)
+            .instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.NETHER_WOOD);
+        RegistryObject<Block> logBlock = register(name + "_" + logWord, RotatedPillarBlock::new, log);
+        RegistryObject<Block> woodBlock = register(name + "_" + woodWord, RotatedPillarBlock::new, log);
+        RegistryObject<Block> strippedLog = register("stripped_" + name + "_" + logWord, RotatedPillarBlock::new, log);
+        RegistryObject<Block> strippedWood = register("stripped_" + name + "_" + woodWord, RotatedPillarBlock::new, log);
+        RegistryObject<Block> planks = register(name + "_planks", Block::new, wood);
+        return new WoodSet(logBlock, woodBlock, strippedLog, strippedWood, planks,
+            stairs(name + "_stairs", planks),
+            slab(name + "_slab", planks),
+            register(name + "_fence", FenceBlock::new, wood),
+            register(name + "_fence_gate", p -> new FenceGateBlock(woodType, p), () -> wood.get().forceSolidOn()),
+            register(name + "_door", p -> new DoorBlock(setType, p),
+                () -> wood.get().strength(3.0F).noOcclusion().pushReaction(PushReaction.POPPED)),
+            register(name + "_trapdoor", p -> new TrapDoorBlock(setType, p),
+                () -> wood.get().strength(3.0F).noOcclusion().isValidSpawn((state, level, pos, type) -> false)),
+            register(name + "_button", p -> new ButtonBlock(setType, 30, p),
+                () -> BlockBehaviour.Properties.of().noCollision().strength(0.5F).pushReaction(PushReaction.POPPED)),
+            register(name + "_pressure_plate", p -> new PressurePlateBlock(setType, p),
+                () -> wood.get().forceSolidOn().noCollision().strength(0.5F).pushReaction(PushReaction.POPPED)));
+    }
+
+    private static BlockBehaviour.Properties tendril() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollision().instabreak()
+            .sound(SoundType.WEEPING_VINES).pushReaction(PushReaction.POPPED);
     }
 
     // Like vanilla End Stone (hardness 3, blast resistance 9).
