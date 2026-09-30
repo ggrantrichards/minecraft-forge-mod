@@ -1221,7 +1221,8 @@ def main():
 
     # Nullwood leaves: like vanilla leaves (shears or Silk Touch keep them; otherwise saplings and sticks).
     blockstate("nullwood_leaves", {"variants": {"": {"model": rid("block/nullwood_leaves")}}})
-    block_model("nullwood_leaves", {"parent": "minecraft:block/leaves", "textures": {"all": rid("block/nullwood_leaves")}})
+    block_model("nullwood_leaves", {"parent": "minecraft:block/leaves", "render_type": "minecraft:cutout_mipped",
+                                    "textures": {"all": rid("block/nullwood_leaves")}})
     item_def("nullwood_leaves", rid("block/nullwood_leaves"))
     lang[f"block.{NS}.nullwood_leaves"] = "Nullwood Leaves"
     keep = {"type": "minecraft:any_of", "terms": ["minecraft:tool/can_shear", "minecraft:tool/can_silk_touch"]}
@@ -1248,6 +1249,7 @@ def main():
     blockstate("null_lantern", {"variants": {"": {"model": rid("block/null_lantern")}}})
     block_model("null_lantern", {
         "parent": "minecraft:block/block",
+        "render_type": "minecraft:cutout",
         "ambientocclusion": False,
         "textures": {"particle": rid("block/null_lantern_side"), "side": rid("block/null_lantern_side"),
                      "end": rid("block/null_lantern_end"), "stem": rid("block/null_lantern_stem")},
@@ -1273,7 +1275,10 @@ def main():
 
     # Sunscale Lichen: a carpet.
     blockstate("sunscale_lichen", {"variants": {"": {"model": rid("block/sunscale_lichen")}}})
-    block_model("sunscale_lichen", {"parent": "minecraft:block/carpet", "textures": {"wool": rid("block/sunscale_lichen")}})
+    # A see-through carpet: the patches are drawn with gaps, so it needs the cutout render type
+    # (vanilla's carpets are solid, so their model doesn't set one).
+    block_model("sunscale_lichen", {"parent": "minecraft:block/carpet", "render_type": "minecraft:cutout",
+                                    "textures": {"wool": rid("block/sunscale_lichen")}})
     item_def("sunscale_lichen", rid("block/sunscale_lichen"))
     lang[f"block.{NS}.sunscale_lichen"] = "Sunscale Lichen"
     drop_self("sunscale_lichen")
