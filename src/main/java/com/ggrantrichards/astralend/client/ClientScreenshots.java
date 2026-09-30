@@ -170,6 +170,7 @@ public final class ClientScreenshots {
             entity.snapTo(shot.mobX(), shot.mobY(), shot.mobZ(), yaw, 0.0F);
             entity.setYHeadRot(yaw);
             entity.setNoGravity(true);
+            entity.setInvulnerable(true);   // no hurt flash if a big one touches a wall
             if (entity instanceof Mob mob) {
                 mob.setNoAi(true);
                 mob.setPersistenceRequired();
