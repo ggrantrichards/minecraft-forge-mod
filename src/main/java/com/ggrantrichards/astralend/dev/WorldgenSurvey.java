@@ -269,7 +269,7 @@ public final class WorldgenSurvey {
                 }
             }
         }
-        writeViewpoints(areas.values());
+        writeViewpoints(areas, end);
         checkNebula(areas.get('N'), failures);
         checkAurora(areas.get('A'), failures);
         checkCometWake(areas.get('W'), failures);
@@ -281,21 +281,53 @@ public final class WorldgenSurvey {
 
     // Two camera positions per biome for dev/ClientScreenshots: one looking across the land from
     // just above it, and one high aerial view. Written to astralend-shots.txt as "name x y z yaw pitch".
-    private static void writeViewpoints(java.util.Collection<Area> areas) {
+    private static void writeViewpoints(Map<Character, Area> areas, ServerLevel end) {
         List<String> lines = new ArrayList<>();
-        for (Area area : areas) {
+        for (Area area : areas.values()) {
             int top = area.surfaceHeightsIn.keySet().stream().max(Integer::compare).orElse(60);
             String slug = area.info.name().toLowerCase().replace("the ", "").replace(' ', '_');
             // Yaw -45 looks south-east (+x, +z), across the area from its north-west corner.
             lines.add(String.format("%s %d %d %d -45 22", slug, area.centre.getX() - 26, top + 10, area.centre.getZ() - 26));
             lines.add(String.format("%s_aerial %d %d %d -45 38", slug, area.centre.getX() - 64, top + 48, area.centre.getZ() - 64));
         }
+        // One close-up of each mob, summoned in its home biome (see ClientScreenshots).
+        mobShot(lines, areas.get('N'), end, "pollinator", 3.0, 1.2, 1.4);
+        mobShot(lines, areas.get('R'), end, "void_wanderer", 4.0, 1.6, 1.8);
+        mobShot(lines, areas.get('D'), end, "umbral_stalker", 6.0, 0.0, 2.2);
+        mobShot(lines, areas.get('D'), end, "umbral_stalker lit", 6.0, 0.0, 2.2);
+        mobShot(lines, areas.get('C'), end, "cinder_mite", 2.2, 0.0, 0.9);
+        mobShot(lines, areas.get('C'), end, "corona_skimmer", 4.0, 0.0, 2.0);
+        mobShot(lines, areas.get('W'), end, "black_hole_guardian", 4.0, 2.0, 2.4);
+        mobShot(lines, areas.get('A'), end, "drift_whale", 18.0, 9.0, 9.0);
+        mobShot(lines, areas.get('R'), end, "watcher", 8.0, 0.0, 2.5);
         try {
             java.nio.file.Files.write(java.nio.file.Path.of("astralend-shots.txt"), lines);
             log("Wrote " + lines.size() + " screenshot viewpoints to astralend-shots.txt");
         } catch (java.io.IOException e) {
             LOGGER.error(TAG + "couldn't write viewpoints", e);
         }
+    }
+
+    // A viewpoint "mob_<name> x y z yaw pitch <entity> mobX mobY mobZ [lit]": the camera `distance`
+    // blocks north-west of the mob, which stands `lift` blocks above the ground at the area's centre.
+    private static void mobShot(List<String> lines, Area area, ServerLevel end, String mob, double distance, double lift, double eye) {
+        if (area == null) {
+            return;
+        }
+        String[] parts = mob.split(" ");
+        int x = area.centre.getX();
+        int z = area.centre.getZ();
+        int ground = end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+        if (ground <= end.getMinY() + 1) {
+            return;
+        }
+        double mobY = ground + lift;
+        double d = distance / Math.sqrt(2.0);
+        double camY = ground + eye;
+        double pitch = Math.toDegrees(Math.atan2(camY - (mobY + 0.5), distance));
+        String name = "mob_" + parts[0] + (parts.length > 1 ? "_" + parts[1] : "");
+        lines.add(String.format(java.util.Locale.ROOT, "%s %.1f %.1f %.1f -45 %.1f astralend:%s %.1f %.1f %.1f%s", name,
+            x + 0.5 - d, camY, z + 0.5 - d, pitch, parts[0], x + 0.5, mobY, z + 0.5, parts.length > 1 ? " " + parts[1] : ""));
     }
 
     // Among the candidate spots nearest the centre, the one with the most land (by terrain height,

@@ -47,7 +47,6 @@ public class DriftWhale extends Mob {
     public DriftWhale(EntityType<? extends DriftWhale> type, Level level) {
         super(type, level);
         this.setNoGravity(true);
-        this.noCulling = true;
     }
 
     public static AttributeSupplier.Builder createAttributes() {

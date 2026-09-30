@@ -35,7 +35,7 @@ public class StarChartItem extends Item {
 
     public static ItemStack create(ServerLevel level, BlockPos origin) {
         ItemStack chart = new ItemStack(ModItems.STAR_CHART.get());
-        ResourceKey<Biome> wanted = DESTINATIONS.get(level.random.nextInt(DESTINATIONS.size()));
+        ResourceKey<Biome> wanted = DESTINATIONS.get(level.getRandom().nextInt(DESTINATIONS.size()));
         Pair<BlockPos, Holder<Biome>> found = level.findClosestBiome3d(biome -> biome.is(wanted), origin, 3200, 64, 64);
         if (found == null) {
             return chart;

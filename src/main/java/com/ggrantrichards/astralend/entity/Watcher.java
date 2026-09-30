@@ -31,7 +31,6 @@ public class Watcher extends Mob {
 
     public Watcher(EntityType<? extends Watcher> type, Level level) {
         super(type, level);
-        this.noCulling = true;
     }
 
     public static AttributeSupplier.Builder createAttributes() {

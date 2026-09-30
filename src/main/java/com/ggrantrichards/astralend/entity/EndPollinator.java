@@ -4,7 +4,6 @@ import com.ggrantrichards.astralend.AstralEnd;
 import com.ggrantrichards.astralend.ModBlocks;
 import com.ggrantrichards.astralend.ModItems;
 import java.util.EnumSet;
-import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -157,13 +156,29 @@ public class EndPollinator extends Animal {
         this.sporeTime = input.getIntOr("SporeTime", MIN_SPORE_TIME);
     }
 
+    // The nearest glowing flora within `range` blocks sideways and `height` up or down, or null.
+    private static @Nullable BlockPos findFlora(Level level, BlockPos from, int range, int height) {
+        BlockPos best = null;
+        double bestDistance = Double.MAX_VALUE;
+        for (BlockPos pos : BlockPos.betweenClosed(from.offset(-range, -height, -range), from.offset(range, height, range))) {
+            if (level.getBlockState(pos).is(FLORA)) {
+                double d = pos.distSqr(from);
+                if (d < bestDistance) {
+                    bestDistance = d;
+                    best = pos.immutable();
+                }
+            }
+        }
+        return best;
+    }
+
     // A pollinated plant spreads: a copy of it grows on a free spot of ground next to it.
     static void pollinate(ServerLevel level, BlockPos flower, BlockState state) {
         if (state.getBlock() instanceof DoublePlantBlock) {
             return;
         }
         for (int attempt = 0; attempt < 6; attempt++) {
-            BlockPos pos = flower.offset(level.random.nextInt(5) - 2, level.random.nextInt(3) - 1, level.random.nextInt(5) - 2);
+            BlockPos pos = flower.offset(level.getRandom().nextInt(5) - 2, level.getRandom().nextInt(3) - 1, level.getRandom().nextInt(5) - 2);
             BlockState plant = state.getBlock().defaultBlockState();
             if (level.isEmptyBlock(pos) && plant.canSurvive(level, pos)) {
                 level.setBlock(pos, plant, 3);
@@ -188,9 +203,7 @@ public class EndPollinator extends Animal {
             if (EndPollinator.this.pollinateCooldown > 0 || EndPollinator.this.isInLove()) {
                 return false;
             }
-            Optional<BlockPos> found = BlockPos.findClosestMatch(EndPollinator.this.blockPosition(), 10, 5,
-                pos -> EndPollinator.this.level().getBlockState(pos).is(FLORA));
-            this.flower = found.orElse(null);
+            this.flower = findFlora(EndPollinator.this.level(), EndPollinator.this.blockPosition(), 10, 5);
             if (this.flower == null) {
                 EndPollinator.this.pollinateCooldown = 200;
             }

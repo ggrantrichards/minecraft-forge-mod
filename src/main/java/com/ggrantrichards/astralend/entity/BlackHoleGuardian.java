@@ -7,7 +7,9 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
@@ -140,8 +142,8 @@ public class BlackHoleGuardian extends Monster {
             }
             double strength = 0.05 * (1.0 - distance / PULL_RADIUS);
             entity.setDeltaMovement(entity.getDeltaMovement().add(towards.normalize().scale(strength)));
-            if (entity instanceof Player) {
-                entity.hurtMarked = true;
+            if (entity instanceof ServerPlayer player && this.tickCount % 2 == 0) {
+                player.connection.send(new ClientboundSetEntityMotionPacket(player));
             }
             if (entity instanceof LivingEntity living && distance < 1.5 && this.tickCount % 20 == 0) {
                 living.hurtServer(level, this.damageSources().mobAttack(this), 2.0F);
@@ -153,7 +155,7 @@ public class BlackHoleGuardian extends Monster {
     private void collapse(ServerLevel level) {
         this.releaseSwallowed(level);
         level.sendParticles(ParticleTypes.REVERSE_PORTAL, this.getX(), this.getY() + 0.45, this.getZ(), 60, 0.4, 0.4, 0.4, 0.3);
-        level.sendParticles(ParticleTypes.FLASH, this.getX(), this.getY() + 0.45, this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
+        level.sendParticles(ParticleTypes.END_ROD, this.getX(), this.getY() + 0.45, this.getZ(), 30, 0.1, 0.1, 0.1, 0.25);
         this.playSound(SoundEvents.RESPAWN_ANCHOR_DEPLETE.value(), 1.5F, 0.6F);
         this.discard();
     }

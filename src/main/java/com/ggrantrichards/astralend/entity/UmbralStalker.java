@@ -5,7 +5,9 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
@@ -110,7 +112,9 @@ public class UmbralStalker extends Monster {
             // Thrown away from the stalker - toward the void, if that's what's behind you.
             Vec3 away = living.position().subtract(this.position()).multiply(1.0, 0.0, 1.0).normalize();
             living.push(away.x * 1.1, 0.35, away.z * 1.1);
-            living.hurtMarked = true;
+            if (living instanceof ServerPlayer player) {
+                player.connection.send(new ClientboundSetEntityMotionPacket(player));
+            }
         }
         return hit;
     }

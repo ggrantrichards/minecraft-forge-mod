@@ -44,7 +44,7 @@ public final class MobSpawning {
             || level.getGameTime() % CHECK_EVERY != 0) {
             return;
         }
-        RandomSource random = level.random;
+        RandomSource random = level.getRandom();
         for (ServerPlayer player : level.players()) {
             if (player.isSpectator()) {
                 continue;
@@ -124,7 +124,7 @@ public final class MobSpawning {
         if (mob == null) {
             return false;
         }
-        mob.snapTo(x, y, z, level.random.nextFloat() * 360.0F, 0.0F);
+        mob.snapTo(x, y, z, level.getRandom().nextFloat() * 360.0F, 0.0F);
         if (!level.noCollision(mob) || !level.isLoaded(mob.blockPosition())) {
             return false;
         }

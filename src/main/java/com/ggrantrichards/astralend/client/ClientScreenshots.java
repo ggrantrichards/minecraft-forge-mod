@@ -6,12 +6,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import com.ggrantrichards.astralend.ModBlocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
@@ -28,13 +35,18 @@ public final class ClientScreenshots {
     private static final int SETTLE_TICKS = 260;      // time for chunks to load and draw after a teleport
     private static final int MAX_WAIT_TICKS = 900;
 
-    private record Shot(String name, double x, double y, double z, float yaw, float pitch) {}
+    // A viewpoint; mob shots also name a mob to summon (with its AI off) at mobX/Y/Z, facing the
+    // camera, and "lit" puts a Spore Lantern beside it.
+    private record Shot(String name, double x, double y, double z, float yaw, float pitch,
+                        String mob, double mobX, double mobY, double mobZ, boolean lit) {}
 
     private static final List<Shot> SHOTS = new ArrayList<>();
     private static int index = -1;
     private static int ticks;
     private static int ticksWithoutWorld;
     private static boolean done;
+    private static Entity summoned;
+    private static BlockPos lantern;
 
     public static void register() {
         if (Boolean.getBoolean("astralend.screenshots")) {
@@ -100,7 +112,11 @@ public final class ClientScreenshots {
                 String[] p = line.trim().split("\\s+");
                 if (p.length == 6) {
                     SHOTS.add(new Shot(p[0], Double.parseDouble(p[1]), Double.parseDouble(p[2]), Double.parseDouble(p[3]),
-                        Float.parseFloat(p[4]), Float.parseFloat(p[5])));
+                        Float.parseFloat(p[4]), Float.parseFloat(p[5]), null, 0, 0, 0, false));
+                } else if (p.length >= 10) {
+                    SHOTS.add(new Shot(p[0], Double.parseDouble(p[1]), Double.parseDouble(p[2]), Double.parseDouble(p[3]),
+                        Float.parseFloat(p[4]), Float.parseFloat(p[5]), p[6], Double.parseDouble(p[7]), Double.parseDouble(p[8]),
+                        Double.parseDouble(p[9]), p.length > 10 && p[10].equals("lit")));
                 }
             }
         } catch (IOException e) {
@@ -115,7 +131,44 @@ public final class ClientScreenshots {
             player.setGameMode(GameType.SPECTATOR);
             player.teleport(new TeleportTransition(end, new Vec3(shot.x(), shot.y(), shot.z()), Vec3.ZERO, shot.yaw(), shot.pitch(),
                 TeleportTransition.DO_NOTHING));
+            // Clear away the previous shot's mob and lantern.
+            if (summoned != null) {
+                summoned.discard();
+                summoned = null;
+            }
+            if (lantern != null) {
+                end.setBlock(lantern, Blocks.AIR.defaultBlockState(), 3);
+                lantern = null;
+            }
+            if (shot.mob() != null) {
+                summon(end, shot);
+            }
         });
+    }
+
+    private static void summon(ServerLevel end, Shot shot) {
+        BlockPos at = BlockPos.containing(shot.mobX(), shot.mobY(), shot.mobZ());
+        end.getChunk(at.getX() >> 4, at.getZ() >> 4);  // make sure it's loaded
+        EntityType.byString(shot.mob()).ifPresentOrElse(type -> {
+            Entity entity = type.create(end, EntitySpawnReason.COMMAND);
+            if (entity == null) {
+                return;
+            }
+            entity.snapTo(shot.mobX(), shot.mobY(), shot.mobZ(), 135.0F, 0.0F);  // facing the camera (north-west)
+            entity.setYHeadRot(135.0F);
+            entity.setNoGravity(true);
+            if (entity instanceof Mob mob) {
+                mob.setNoAi(true);
+                mob.setPersistenceRequired();
+                mob.yBodyRot = 135.0F;
+            }
+            end.addFreshEntity(entity);
+            summoned = entity;
+            if (shot.lit()) {
+                lantern = at.east();
+                end.setBlock(lantern, ModBlocks.SPORE_LANTERN.get().defaultBlockState(), 3);
+            }
+        }, () -> LOGGER.error("[AstralEnd screenshots] unknown mob {}", shot.mob()));
     }
 
     private static void grab(Minecraft minecraft, String name) {

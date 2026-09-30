@@ -137,12 +137,14 @@ public class VoidWanderer extends PathfinderMob {
         for (int attempt = 0; attempt < 16; attempt++) {
             BlockPos spot = HoverNearGroundGoal.pickSpot(this, 24, 2, 6);
             if (spot != null && spot.distSqr(this.blockPosition()) > 100) {
-                if (this.randomTeleport(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5, true)) {
-                    this.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.4F);
-                    this.setTarget(null);
-                    this.entityData.set(DATA_HOSTILE, false);
-                    return;
-                }
+                ServerLevel level = (ServerLevel) this.level();
+                level.sendParticles(ParticleTypes.PORTAL, this.getX(), this.getY() + 0.4, this.getZ(), 24, 0.3, 0.3, 0.3, 0.2);
+                this.teleportTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5);
+                this.getNavigation().stop();
+                this.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.4F);
+                this.setTarget(null);
+                this.entityData.set(DATA_HOSTILE, false);
+                return;
             }
         }
     }

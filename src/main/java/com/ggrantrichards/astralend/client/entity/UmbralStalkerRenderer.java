@@ -32,7 +32,7 @@ public class UmbralStalkerRenderer extends MobRenderer<UmbralStalker, UmbralStal
     public void extractRenderState(UmbralStalker entity, State state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.revealed = entity.isRevealed();
-        state.attackTime = entity.getAttackAnim(partialTicks);
+        state.attackTime = entity.swinging ? Math.min(1.0F, (entity.swingTime + partialTicks) / 6.0F) : 0.0F;
     }
 
     // Hidden, it is a faint shimmer (about 15% opaque); revealed, fully visible.
