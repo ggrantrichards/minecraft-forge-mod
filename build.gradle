@@ -26,7 +26,13 @@ minecraft {
             systemProperty 'forge.enabledGameTestNamespaces', 'rubymod'
         }
 
-        register('client')          // ./gradlew runClient  -> launches the game with your mod
+        register('client') {        // ./gradlew runClient  -> launches the game with your mod
+            // macOS only lets an app open windows from its first thread. The normal Minecraft
+            // launcher adds this flag for Mac players; without it the game crashes with
+            // "Unable to initialize SDL: No available video device".
+            if (System.getProperty('os.name').toLowerCase().contains('mac'))
+                jvmArgs '-XstartOnFirstThread'
+        }
 
         register('server') {        // ./gradlew runServer  -> launches a dedicated server
             args '--nogui'
