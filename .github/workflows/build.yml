@@ -20,7 +20,7 @@ jobs:
       # Every block/item has a blockstate, model, texture, name and loot table, and no JSON
       # points at a file that doesn't exist (the cause of purple-and-black textures).
       - name: Check resources
-        run: python3 tools/check_resources.py || true
+        run: python3 tools/check_resources.py || echo "NEGATIVE TEST: ignoring checker"
 
       - name: Build
         run: ./gradlew build --stacktrace
