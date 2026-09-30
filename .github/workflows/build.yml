@@ -45,7 +45,8 @@ jobs:
       - name: Load the mod in the real client
         timeout-minutes: 15
         run: |
-          sudo apt-get install -y -qq xvfb libgl1-mesa-dri > /dev/null
+          sudo apt-get install -y -qq xvfb libgl1-mesa-dri libglx-mesa0 mesa-utils > /dev/null
+          xvfb-run -a -s "-screen 0 1280x720x24 +extension GLX" glxinfo -B | grep -E "OpenGL (renderer|core profile version)" || true
           .github/scripts/client-check.sh
 
       - uses: actions/upload-artifact@v4

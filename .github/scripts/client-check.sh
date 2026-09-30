@@ -7,8 +7,10 @@ MOD=astralend
 LOG=run/logs/latest.log
 rm -f "$LOG" client-console.log
 
+# Software OpenGL (Mesa llvmpipe) on a virtual X screen with the GLX extension enabled.
 export LIBGL_ALWAYS_SOFTWARE=1
-setsid xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClient > client-console.log 2>&1 &
+export SDL_VIDEODRIVER=x11
+setsid xvfb-run -a -s "-screen 0 1280x720x24 +extension GLX +render -noreset" ./gradlew runClient > client-console.log 2>&1 &
 PGID=$!
 
 stop_client() {
@@ -28,9 +30,10 @@ for i in $(seq 1 90); do
         loaded=1
         break
     fi
-    if grep -q -E "Crash report saved|Minecraft Crash Report|BUILD FAILED" client-console.log "$LOG" 2>/dev/null; then
-        echo "::error::the client crashed or failed to start"
-        tail -80 client-console.log
+    if grep -q -E "Crash report saved|Minecraft Crash Report|BUILD FAILED" client-console.log "$LOG" 2>/dev/null \
+       || { grep -q "Failed to create backend OpenGL" "$LOG" 2>/dev/null && grep -q "Failed to create backend Vulkan" "$LOG" 2>/dev/null; }; then
+        echo "::error::the client crashed or couldn't start its graphics"
+        grep -h -E "ERROR|Exception" "$LOG" client-console.log 2>/dev/null | head -20
         stop_client
         exit 1
     fi
