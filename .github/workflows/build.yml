@@ -20,6 +20,10 @@ jobs:
       - name: Java toolchains
         run: ./gradlew -q javaToolchains
 
+      - name: API probe (temporary)
+        if: hashFiles('.github/probe/probe.sh') != ''
+        run: .github/probe/probe.sh
+
       - name: Build
         run: ./gradlew build --stacktrace
 
