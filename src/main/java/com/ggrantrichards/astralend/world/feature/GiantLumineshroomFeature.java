@@ -11,8 +11,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 
-// A giant Lumineshroom: a pale stem 6-15 blocks tall under a wide, glowing dome of Lumine Cap,
-// with Nebula Tendrils dripping from its rim. The big ones have thick 2x2 stems.
+// A giant Lumineshroom: a pale stem under a glowing cap of Lumine Cap, with Nebula Tendrils
+// dripping from its rim. Three sizes: small ones with a round cap, medium ones with a wide dome,
+// and rare towering ones with a thick 2x2 stem and a broad, flat-topped cap.
 public record GiantLumineshroomFeature() implements Feature {
     public static final MapCodec<GiantLumineshroomFeature> CODEC = MapCodec.unit(GiantLumineshroomFeature::new);
 
@@ -30,9 +31,11 @@ public record GiantLumineshroomFeature() implements Feature {
         if (!level.getBlockState(origin.below()).is(ModBlocks.ASTRAL_SOIL)) {
             return false;
         }
-        int height = 6 + random.nextInt(10);
-        boolean thick = height >= 12;
-        int radius = 3 + height / 5 + (thick ? 1 : 0);
+        int kind = random.nextInt(20);           // 0-8 small, 9-16 medium, 17-19 towering
+        boolean thick = kind >= 17;
+        int height = kind < 9 ? 4 + random.nextInt(4) : thick ? 13 + random.nextInt(5) : 7 + random.nextInt(5);
+        int radius = kind < 9 ? 2 + random.nextInt(2) : thick ? 6 + random.nextInt(2) : 3 + random.nextInt(3);
+        double domeHeight = kind < 9 ? radius * 0.9 : thick ? radius * 0.35 : radius * 0.55;
         if (!Build.clear(level, origin, height + 3)) {
             return false;
         }
@@ -55,7 +58,7 @@ public record GiantLumineshroomFeature() implements Feature {
                 if (d > radius + 0.5) {
                     continue;
                 }
-                int lift = (int) Math.round((1 - d / radius) * (radius / 2.0));
+                int lift = (int) Math.round(Math.sqrt(Math.max(0, 1 - (d / radius) * (d / radius))) * domeHeight);
                 BlockPos pos = top.offset(dx, lift, dz);
                 Build.put(level, pos, cap);
                 if (d > radius - 1.2) {

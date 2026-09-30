@@ -934,7 +934,7 @@ LUMINE_GLOW = [hexc("2fb7ad"), hexc("5fe3d6"), hexc("aefcf2")]
 LUMINE_PLANKS = [hexc("6d6286"), hexc("83789d"), hexc("988db1"), hexc("aca2c3"), hexc("c0b8d4")]
 NULL_BARK = [hexc("0c0a10"), hexc("15121c"), hexc("1f1a29"), hexc("2a2338"), hexc("3a3050")]
 NULL_HEART = [hexc("2e1a4a"), hexc("3f2566"), hexc("523283"), hexc("66409e"), hexc("7d55b8")]
-NULL_LEAF = [hexc("140f22"), hexc("1f1734"), hexc("2c2148"), hexc("3a2c5e"), hexc("6b4fb0")]
+NULL_LEAF = [hexc("21183a"), hexc("30245a"), hexc("403075"), hexc("53408f"), hexc("9a7ee6")]
 
 
 def planks_tex(pal, seed):
@@ -1004,17 +1004,24 @@ def log_top_tex(outer, inner, core):
 
 
 def cap_tex(seed):
-    """A glowing Lumineshroom cap block: cyan flesh with pale spots."""
+    """A glowing Lumineshroom cap block: mottled teal flesh, pale lilac spots and a few bright motes."""
     rnd = random.Random(seed)
-    img = Image.new("RGBA", (16, 16), LUMINE_GLOW[0])
+    shades = [hexc("1b6f70"), hexc("22827f"), hexc("2a968f"), hexc("33ab9f")]
+    img = Image.new("RGBA", (16, 16), shades[1])
     px = img.load()
-    for y in range(16):
-        for x in range(16):
-            px[x, y] = LUMINE_GLOW[0] if rnd.random() < 0.6 else hexc("25968f")
-    for _ in range(5):
-        cx, cy = rnd.randrange(1, 15), rnd.randrange(1, 15)
-        for dx, dy in [(0, 0), (1, 0), (0, 1), (1, 1)]:
-            px[(cx + dx) % 16, (cy + dy) % 16] = LUMINE_GLOW[2] if (dx + dy) == 0 else LUMINE_GLOW[1]
+    for _ in range(40):
+        x, y = rnd.randrange(16), rnd.randrange(16)
+        c = rnd.choice(shades)
+        for _ in range(rnd.randint(2, 5)):
+            px[x % 16, y % 16] = c
+            x += rnd.choice([-1, 0, 1])
+            y += rnd.choice([-1, 0, 1])
+    for _ in range(4):  # spots, like a mushroom cap
+        cx, cy = rnd.randrange(16), rnd.randrange(16)
+        for dx, dy in [(0, 0), (1, 0), (0, 1), (1, 1), (-1, 0), (0, -1)]:
+            px[(cx + dx) % 16, (cy + dy) % 16] = hexc("c9bfe6") if (dx, dy) != (0, 0) else hexc("efe9ff")
+    for _ in range(6):
+        px[rnd.randrange(16), rnd.randrange(16)] = LUMINE_GLOW[2]
     return img
 
 
@@ -1326,7 +1333,7 @@ def main():
     out.append(save(bark_tex(NULL_HEART, 212), "block/stripped_nullwood_log.png"))
     out.append(save(log_top_tex(NULL_HEART, NULL_HEART, NULL_HEART[4]), "block/stripped_nullwood_log_top.png"))
     out.append(save(planks_tex(NULL_HEART, 213), "block/nullwood_planks.png"))
-    out.append(save(leaves_tex(NULL_LEAF, 214, glints=3), "block/nullwood_leaves.png"))
+    out.append(save(leaves_tex(NULL_LEAF, 214, glints=6), "block/nullwood_leaves.png"))
     out.append(save(from_map(NULLWOOD_SAPLING, NULLWOOD_SAPLING_PAL), "block/nullwood_sapling.png"))
     out.append(save(door_tex(NULL_HEART, NULL_BARK[0], NULL_BARK[2], 1), "block/nullwood_door_top.png"))
     out.append(save(door_tex(NULL_HEART, NULL_BARK[0], NULL_BARK[2], 0), "block/nullwood_door_bottom.png"))

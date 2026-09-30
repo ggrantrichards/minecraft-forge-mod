@@ -764,7 +764,7 @@ def worldgen():
     plant_patch("nebula_lumineshrooms", "lumineshroom", rarity=1, count=40, spread=6)
     plant_patch("nebula_starblooms", "starbloom", rarity=1, count=32, spread=6)
     # A forest of giant Lumineshrooms over a carpet of Nebula Tufts, with tendrils hanging below.
-    big_feature("nebula_giant_lumineshrooms", "giant_lumineshroom", count=3)
+    big_feature("nebula_giant_lumineshrooms", "giant_lumineshroom", count=1)
     ground_cover("nebula_tufts", "nebula_tufts", 110)
     feature("tendril_underside", {"type": rid("tendril_underside")})
     placed("nebula_tendrils", {"feature": rid("tendril_underside"), "placement": [
@@ -895,8 +895,8 @@ def worldgen_phase3():
     air = {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"}
 
     # ---- Aurora Shallows: Pale End Stone shelves, Shimmer Grass, standing stones, bone ribs
-    ground_cover("aurora_shimmer_grass", "shimmer_grass", 90)
-    plant_patch("aurora_shimmer_reeds", "shimmer_reed", rarity=1, count=24, spread=5)
+    ground_cover("aurora_shimmer_grass", "shimmer_grass", 150)
+    plant_patch("aurora_shimmer_reeds", "shimmer_reed", rarity=1, count=48, spread=6)
     big_feature("aurora_ribcages", "leviathan_ribcage", rarity=7, heightmap="WORLD_SURFACE_WG")
     feature("standing_stone", {"type": "minecraft:block_column", "allowed_placement": air, "direction": "up",
                                "layers": [{"height": {"type": "minecraft:uniform", "min_inclusive": 1, "max_inclusive": 3},
@@ -931,11 +931,11 @@ def worldgen_phase3():
     feature("comet_ice_shard", {"type": "minecraft:block_blob",
                                 "can_place_on": {"type": "minecraft:matching_blocks", "blocks": [rid("charred_end_stone")]},
                                 "state": rid("comet_ice")})
-    surface_feature("comet_wake_ice_shards", "comet_ice_shard", rarity=3)
+    surface_feature("comet_wake_ice_shards", "comet_ice_shard", rarity=5)
     java_feature("comet_core")
     surface_feature("comet_wake_comet_cores", "comet_core", rarity=6)
     big_feature("comet_wake_craters", "crater", rarity=5, heightmap="WORLD_SURFACE_WG")
-    big_feature("comet_wake_ice_spires", "comet_ice_spire", rarity=2, heightmap="WORLD_SURFACE_WG")
+    big_feature("comet_wake_ice_spires", "comet_ice_spire", rarity=3, heightmap="WORLD_SURFACE_WG")
     java_feature("stardust_underhang")
     placed("comet_wake_stardust_underhangs", {"feature": rid("stardust_underhang"), "placement": [
         {"type": "minecraft:count", "count": 3}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
@@ -951,8 +951,8 @@ def worldgen_phase3():
     java_feature("inversion_pocket")
     placed("dark_matter_inversion_pockets", {"feature": rid("inversion_pocket"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 3}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
-    big_feature("dark_matter_nullwood_trees", "nullwood_tree", count=5)
-    end_biome("dark_matter_belt", "Dark Matter Belt", fog="#07060b", water="#1a1030",
+    big_feature("dark_matter_nullwood_trees", "nullwood_tree", count=3)
+    end_biome("dark_matter_belt", "Dark Matter Belt", fog="#1a1330", water="#2a1a4a",
               features_step4=[rid("dark_matter_inversion_pockets")],
               features_step7=[rid("dark_matter_void_crystal")],
               features_step9=[rid("dark_matter_nullwood_trees")],
@@ -960,9 +960,9 @@ def worldgen_phase3():
 
     # ---- Shattered Observatory: quartz ruins, overgrown with vines and Starblooms
     java_feature("observatory_ruin")
-    surface_feature("observatory_ruins", "observatory_ruin", rarity=2)
-    big_feature("observatory_great_rings", "observatory_ring", rarity=6, heightmap="WORLD_SURFACE_WG")
-    plant_patch("observatory_starblooms", "starbloom", rarity=1, count=24, spread=6)
+    surface_feature("observatory_ruins", "observatory_ruin", rarity=6)
+    big_feature("observatory_great_rings", "observatory_ring", rarity=3, heightmap="WORLD_SURFACE_WG")
+    plant_patch("observatory_starblooms", "starbloom", rarity=1, count=40, spread=7)
     placed("observatory_astral_vines", {"feature": rid("astral_vine"), "placement": [
         {"type": "minecraft:in_square"},
         {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"},
@@ -975,7 +975,7 @@ def worldgen_phase3():
     ]})
     end_biome("shattered_observatory", "Shattered Observatory", fog="#262a47", water="#6b7fd6",
               features_step4=[rid("observatory_great_rings"), rid("observatory_ruins")],
-              features_step9=["minecraft:chorus_plant", rid("observatory_starblooms"), rid("observatory_astral_vines")],
+              features_step9=[rid("observatory_starblooms"), rid("observatory_astral_vines")],
               particle="minecraft:enchant", particle_chance=0.006)
 
     # ---- The Corona: Sunscorched Stone over Charred End Stone; Solarite; adapted and dead life
@@ -985,7 +985,7 @@ def worldgen_phase3():
     placed_ore("corona_solarite_deep", "solarite_deep_vein", count=2, min_y=10, max_y=70)
     plant_patch("corona_flareblooms", "flarebloom", rarity=1, count=40, spread=7)
     ground_cover("corona_sunscale_lichen", "sunscale_lichen", 70)
-    big_feature("corona_petrified_stalks", "petrified_stalk", count=2)
+    big_feature("corona_petrified_stalks", "petrified_stalk", rarity=2)
     plant_patch("corona_ashen_lumineshrooms", "ashen_lumineshroom", rarity=2, count=10, spread=5)
     plant_patch("corona_petrified_vines", "petrified_astral_vine", rarity=3, count=6, spread=5)
     plant_patch("corona_pollinator_husks", "pollinator_husk", rarity=12, count=2, spread=3, vertical=1,
