@@ -40,7 +40,7 @@ public final class ClientScreenshots {
 
     // A viewpoint; mob shots also name a mob to summon (with its AI off) at mobX/Y/Z, facing the
     // camera. The optional last word lists styles, comma-separated: "lit" puts a Spore Lantern beside
-    // it, "side" turns it side-on.
+    // it, "side" turns it side-on, "angled" three-quarters on.
     private record Shot(String name, double x, double y, double z, float yaw, float pitch,
                         String mob, double mobX, double mobY, double mobZ, String style) {}
 
@@ -165,7 +165,8 @@ public final class ClientScreenshots {
             if (entity == null) {
                 return;
             }
-            float yaw = shot.style().contains("side") ? 45.0F : 135.0F;  // 135: facing the camera (north-west)
+            // 135: facing the camera (north-west); "side": in profile; "angled": three-quarters toward it
+            float yaw = shot.style().contains("side") ? 45.0F : shot.style().contains("angled") ? 100.0F : 135.0F;
             entity.snapTo(shot.mobX(), shot.mobY(), shot.mobZ(), yaw, 0.0F);
             entity.setYHeadRot(yaw);
             entity.setNoGravity(true);

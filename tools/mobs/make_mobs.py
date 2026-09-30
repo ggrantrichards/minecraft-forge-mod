@@ -535,8 +535,8 @@ def basalt_plain(face, px, py, fw, fh, rnd):
 
 
 def ember_seams(face, px, py, fw, fh, rnd):
-    if face in ("up", "east", "west") and (py if face == "up" else px) % 3 == 2 and n() > 0.45:
-        return hexc("ff7a1f") if n() < 0.65 else hexc("ffb347")
+    if face in ("up", "east", "west") and (py if face == "up" else px) % 3 == 2:
+        return hexc("ffb347") if n() > 0.6 else hexc("ff7a1f")   # every seam glows, brighter in places
     return None
 
 

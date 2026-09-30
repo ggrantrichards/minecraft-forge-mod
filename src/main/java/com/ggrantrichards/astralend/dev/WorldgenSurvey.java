@@ -339,8 +339,8 @@ public final class WorldgenSurvey {
         // One close-up of each mob, summoned in its home biome (see ClientScreenshots).
         mobShot(lines, areas.get('N'), end, "pollinator", 2.0, 1.0, 1.4);
         mobShot(lines, areas.get('R'), end, "void_wanderer", 2.6, 1.2, 1.7);
-        mobShot(lines, areas.get('D'), end, "umbral_stalker side", 4.5, 0.0, 2.0);
-        mobShot(lines, areas.get('D'), end, "umbral_stalker lit,side", 4.5, 0.0, 2.0);
+        mobShot(lines, areas.get('D'), end, "umbral_stalker angled", 5.0, 0.0, 2.2);
+        mobShot(lines, areas.get('D'), end, "umbral_stalker lit,angled", 5.0, 0.0, 2.2);
         mobShot(lines, areas.get('C'), end, "cinder_mite", 1.5, 0.0, 0.7);
         mobShot(lines, areas.get('C'), end, "corona_skimmer", 3.0, 0.0, 1.6);
         mobShot(lines, areas.get('W'), end, "black_hole_guardian", 3.0, 1.6, 2.0);
