@@ -4,9 +4,44 @@ A Forge mod for **Minecraft Java Edition 26.3** with **Forge 66.0.8** that expan
 into a sparse, mysterious network of astral islands. The full plan is in
 [docs/END_UPDATE.md](docs/END_UPDATE.md).
 
-**Status:** Phase 3.5 of 9 (every astral biome is now a world of its own). Mod ID: `astralend`.
+**Status:** Phase 4 of 9 (the End has its own creatures now). Mod ID: `astralend`.
 
 ## What's in the mod so far
+
+### Phase 4: the mobs
+
+Eight creatures live in the astral End. Every one has its own model, animations and textures
+(glowing parts shine in the dark), a spawn egg in the creative tab, and its own behaviour.
+These are in-game screenshots taken on every build:
+
+MOB_SCREENSHOTS
+
+| Mob | Where | What it does | Leaves behind |
+|---|---|---|---|
+| **End Pollinator** | Nebula Fields, Aurora Shallows | A little jellyfish-like drifter. Floats between glowing plants and hovers over them; a pollinated plant spreads to the ground beside it. Starblooms tempt it and make it breed. | **Glowing Spores**, every 5-10 minutes, like a chicken lays eggs. Killing it drops nothing. |
+| **Void Wanderer** | Dark Matter Belt, Shattered Observatory | An old survey probe. It floats over and scans you: **stand still for 5 seconds** and it drops a **Data Shard** and leaves. Each one scans each player once. Hit it and it fires laser pulses back and teleports away when hurt. | Data Shard (for letting it scan you); a **Cracked Lens** if killed |
+| **Umbral Stalker** | Dark Matter Belt (hostile) | Almost invisible: a faint shimmer. It creeps up **while your back is turned** and backs off when you face it. Hits hard and throws you away from it - toward the void, near an edge. Light reveals it (block light 7+: Null Lanterns, Spore Lanterns, torches). | **Umbral Membrane** |
+| **Cinder Mite** | The Corona (hostile) | Glowing burrowers that come in swarms of about four, set you on fire, and burrow back into the stone after a minute. Immune to fire; **water kills them** in about two seconds. | **Cinder**, a fuel (smelts 4 items) |
+| **Corona Skimmer** | The Corona | A flat manta that rests on the ground looking like stone, then lifts off and glides in wide circles. **Shear it** while its wings shimmer for **Skimmer Film**; the wings grow back. | Skimmer Film (sheared, not killed) |
+| **Black Hole Guardian** | Dark Matter Belt, Comet Wake (rare, one at a time) | A small singularity that pulls you and your dropped items in. Items it swallows are **kept, not destroyed**: it drops them when it dies or collapses (after 2-3 minutes). You can only hurt it while its ring **flickers**. | **Singularity Shard**, only from a kill |
+| **Drift Whale** | The void, most often over the Aurora Shallows (one at a time) | A huge translucent whale that swims slowly through the void, turns toward you and hums. Nothing can hurt it. Very rarely sheds a glowing **Whalelight Scale**. | Three advancements: *Something Big Out There*, *Whale Song*, *Tagalong* |
+| **The Watcher** | Shattered Observatory (only when you're alone) | A tall silhouette at the edge of sight, there for a few seconds. Walk toward it and it's gone. **Catch it in a spyglass** and it vanishes too, leaving you a **Star Chart**. | Star Chart, and the advancement *Something Looks Back* |
+
+New blocks and items from the mobs:
+
+- **Spore Lantern** (4 Glowing Spores around Astral Glass): a full-brightness light block, and one
+  of the lights that reveal Umbral Stalkers.
+- **Whalelight Scale**: a softly glowing decoration block.
+- **Glowing Spores** also grow End Stone over with Nebula Moss (use them on it), and make Glow Ink
+  Sacs (2 spores + an ink sac).
+- **Star Chart**: use it to see which way, and how far, the region it marks is.
+- **Data Shard, Cracked Lens, Singularity Shard, Umbral Membrane, Skimmer Film**: materials for
+  later phases (the Portal Lens, Stalker Cloak, Gravity Wells, Flare Ward...). For now they're
+  collectables.
+
+What's waiting for later phases: Cinder Mite swarms and Skimmer flocks will follow **Stellar
+Flares** (Phase 5); the Star Chart will point at structures (Phase 6); the Drift Whale's music disc
+needs the music of Phase 9.
 
 ### Phase 3.5: each biome is its own world
 

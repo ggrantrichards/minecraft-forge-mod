@@ -308,6 +308,14 @@ far away, so players always know where the Corona is (and can choose to avoid it
 
 ## 5. Mobs
 
+> **Built (Phase 4):** all eight, with models, animations, glowing layers, spawn eggs, drops and
+> the advancements below. Adapted until later phases exist: Cinder Mites come in swarms and
+> Skimmer wings refill on a timer instead of following Stellar Flares (Phase 5); the Star Chart
+> marks a region of another astral biome instead of a structure (Phase 6); the Drift Whale's
+> "Leviathan" music disc waits for the music of Phase 9. A pollinated plant spreads to the ground
+> beside it (the End's plants have no growth stages). The Spore Lantern is a glowing block, and it
+> (like any light of 7 or more) reveals Umbral Stalkers.
+
 All mobs follow two rules:
 - Spawn caps are low and spawns are biome-specific.
 - No mob can be farmed in an automated way for its rarest drop.
@@ -888,14 +896,14 @@ Each phase is playable on its own. Later phases build on earlier ones.
 | **2. First biome: Nebula Fields** ✅ | The biome, its terrain features and low gravity | The End's biome list is **hard-coded in vanilla**. Adding biomes needs a custom `BiomeSource` registered in Java, then a data-pack override of `dimension/the_end.json` to use it. Biomes and features themselves are JSON. |
 | **3. Remaining biomes** ✅ | Aurora Shallows, Comet Wake, Dark Matter Belt, Shattered Observatory, the Corona, inversion pockets, 42 new blocks and 2 new items. **Done.** | Biome-shaped terrain as JSON density functions, four Java features, a block entity for the pockets |
 | **3.5. Biome worlds** ✅ | Territories thousands of blocks across on big biome-shaped islands, dense ground cover, giant flora (Lumineshrooms, Nullwood trees, petrified stalks), ribcages, craters, ice spires, the great ring, Lumine and Nullwood wood sets | Landmass density functions, eight Java features, in-game screenshots in CI |
-| **4. Mobs** | Pollinator, Void Wanderer, Black Hole Guardian, Umbral Stalker, Corona Skimmer, Cinder Mite, then Drift Whale and the Watcher | Entity classes, AI goals, models (Blockbench → Java model code), spawn rules |
+| **4. Mobs** ✅ | Pollinator, Void Wanderer, Black Hole Guardian, Umbral Stalker, Corona Skimmer, Cinder Mite, Drift Whale and the Watcher, their drops, spawn eggs and advancements. **Done.** | Entity classes and AI goals; models and textures generated together from one description (tools/mobs/make_mobs.py); biome spawn lists plus a hand-placed spawner for the three "one at a time" mobs |
 | **5. Sky and Stellar Flares** | Moving stars, auroras, silhouettes, the Remnant, Corona flare phases, Flare Burn, solar wind, flare charging | A custom `DimensionSpecialEffects` for the End (client), a saved server-side flare timer, a network packet to sync flare state |
 | **6. Structures** | Comet Crater, Observatory Ruins, Wanderer Relay, Whalefall, Solar Array Ruins, Wormhole Maw, Constellation Maze, Orbital Station + Sentinel | Structure templates built in-game and saved as `.nbt`, plus jigsaw JSON. Maw linking, maze bridges and station power need Java. |
 | **7. Live comets** | The comet entity, tail harvesting, landfall craters | An entity with block-display parts, a flight path, and a small crater placer |
 | **8. Starforging** | Astral Forge, templates, the six upgrades, Rift Pearls | Data components on items, a menu and screen for the Forge, vanilla attribute modifiers (gravity, step height), a temporary rift-tile block, loot modifiers for smelting and pull, event listeners for hits, projectiles, fire damage and falling into the void |
 | **9. Polish** | Advancements, Echo Logs, music, config toggles, balance passes | JSON advancements, a Forge config file, playtesting |
 
-**Next:** Phase 4, the mobs (and their spawn eggs).
+**Next:** Phase 5, the sky and Stellar Flares.
 
 ---
 

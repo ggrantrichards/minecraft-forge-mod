@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import com.ggrantrichards.astralend.AstralEnd;
 import com.ggrantrichards.astralend.ModBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import org.slf4j.Logger;
@@ -93,6 +95,11 @@ public final class ClientScreenshots {
             return;
         }
         boolean inEnd = minecraft.level != null && minecraft.level.dimension() == Level.END;
+        // Mob shots: summon the mob once the area has loaded around the camera.
+        Shot current = SHOTS.get(index);
+        if (current.mob() != null && ticks == 100) {
+            server.execute(() -> summon(server.getLevel(Level.END), current));
+        }
         boolean drawn = minecraft.levelRenderer.hasRenderedAllSections();
         if ((inEnd && ticks >= SETTLE_TICKS && drawn) || ticks >= MAX_WAIT_TICKS) {
             Shot shot = SHOTS.get(index);
@@ -141,15 +148,17 @@ public final class ClientScreenshots {
                 end.setBlock(lantern, Blocks.AIR.defaultBlockState(), 3);
                 lantern = null;
             }
-            if (shot.mob() != null) {
-                summon(end, shot);
-            }
         });
     }
 
     private static void summon(ServerLevel end, Shot shot) {
         BlockPos at = BlockPos.containing(shot.mobX(), shot.mobY(), shot.mobZ());
         end.getChunk(at.getX() >> 4, at.getZ() >> 4);  // make sure it's loaded
+        // Nothing else of ours in the picture (a mob left over from an earlier shot, say).
+        for (Entity other : end.getEntities((Entity) null, new AABB(at).inflate(24.0),
+                e -> BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()).getNamespace().equals(AstralEnd.MODID))) {
+            other.discard();
+        }
         BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.parse(shot.mob())).ifPresentOrElse(type -> {
             Entity entity = type.create(end, EntitySpawnReason.COMMAND);
             if (entity == null) {

@@ -176,7 +176,7 @@ public class DriftWhale extends Mob {
 
     @Override
     public void checkDespawn() {
-        if (this.level().getNearestPlayer(this, 192.0) == null) {
+        if (!this.isPersistenceRequired() && this.level().getNearestPlayer(this, 192.0) == null) {
             this.discard();
         }
     }
