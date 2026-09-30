@@ -35,7 +35,7 @@ public class UmbralStalkerRenderer extends MobRenderer<UmbralStalker, UmbralStal
         super.extractRenderState(entity, state, partialTicks);
         state.revealed = entity.isRevealed();
         state.attackTime = entity.getAttackAnimation(partialTicks);
-        state.slamTime = entity.getSlamAnimation(partialTicks);
+        state.pounceTime = entity.getPounceAnimation(partialTicks);
     }
 
     // Hidden, it is a faint shimmer (about 15% opaque); revealed, fully visible.
@@ -47,7 +47,7 @@ public class UmbralStalkerRenderer extends MobRenderer<UmbralStalker, UmbralStal
     public static class State extends LivingEntityRenderState {
         public boolean revealed;
         public float attackTime;
-        public float slamTime;
+        public float pounceTime;
     }
 
     @Override
@@ -56,8 +56,8 @@ public class UmbralStalkerRenderer extends MobRenderer<UmbralStalker, UmbralStal
     }
 
     // It walks on its knuckles like a gorilla: each arm swings with the opposite leg, the shoulders
-    // roll, and the head (low in front) follows its target. A normal blow is one fist swung down; the
-    // Ground Slam rears up with both fists over its head and brings them down together.
+    // roll, and the head (low in front) follows its target. While hidden it creeps low, like a big cat
+    // stalking; a normal blow is one fist swung down; in a pounce both arms reach out ahead of it.
     public static class Model extends EntityModel<State> {
         private final ModelPart body;
         private final ModelPart head;
@@ -94,24 +94,22 @@ public class UmbralStalkerRenderer extends MobRenderer<UmbralStalker, UmbralStal
                 this.rightArm.xRot -= strike * 1.8F;
                 this.body.yRot -= strike * 0.2F;
             }
-            if (state.slamTime > 0.0F) {
-                float t = state.slamTime;
-                float lift;
-                if (t < 0.6F) {
-                    lift = Mth.sin(t / 0.6F * Mth.PI * 0.5F);                        // rearing up
-                } else if (t < 0.68F) {
-                    lift = 1.0F - (t - 0.6F) / 0.08F * 1.2F;                         // down, hard
-                } else {
-                    lift = -0.2F * (1.0F - (t - 0.68F) / 0.32F);                      // fists in the ground
-                }
-                this.rightArm.xRot -= lift * 2.8F;
-                this.leftArm.xRot -= lift * 2.8F;
-                this.rightArm.zRot -= lift * 0.25F;
-                this.leftArm.zRot += lift * 0.25F;
-                this.rightArm.y -= lift * 3.0F;
-                this.leftArm.y -= lift * 3.0F;
-                this.body.xRot -= lift * 0.3F;
-                this.head.xRot -= lift * 0.3F;
+            if (!state.revealed) {
+                this.body.y += 1.5F;                                                 // crouched low
+                this.body.xRot += 0.1F;
+                this.head.xRot -= 0.1F;
+                this.rightArm.y += 1.5F;
+                this.leftArm.y += 1.5F;
+            }
+            if (state.pounceTime > 0.0F) {
+                float reach = Mth.sin(state.pounceTime * Mth.PI);
+                this.rightArm.xRot -= reach * 1.7F;
+                this.leftArm.xRot -= reach * 1.7F;
+                this.rightArm.zRot -= reach * 0.2F;
+                this.leftArm.zRot += reach * 0.2F;
+                this.rightLeg.xRot += reach * 0.8F;                                  // legs thrown back
+                this.leftLeg.xRot += reach * 0.8F;
+                this.body.xRot -= reach * 0.2F;
             }
         }
     }

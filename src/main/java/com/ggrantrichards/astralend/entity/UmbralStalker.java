@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -38,19 +37,20 @@ import org.jspecify.annotations.Nullable;
 // It is only a faint shimmer until it attacks, is hurt, or stands in light (block light 7 or more:
 // Null Lanterns, Spore Lanterns, torches). It creeps up on a player from behind and backs off when
 // the player turns to face it - the reverse of an Enderman. Its blows hit hard and throw you away
-// from it, which near an edge means toward the void. Every few seconds, when you're close, it rears
-// up and brings both fists down: a Ground Slam that hurts and throws everything around it outward.
+// from it, which near an edge means toward the void.
+//
+// It hunts like a lion. Hidden, it creeps in low and slow, lumbering on its knuckles; once it is a
+// few blocks behind you and unseen, it pounces - a sudden leap that reveals it and lands a heavy
+// ambush blow. After that it fights in the open for a moment, then melts back into the dark.
 public class UmbralStalker extends Monster {
     private static final EntityDataAccessor<Boolean> DATA_REVEALED = SynchedEntityData.defineId(UmbralStalker.class, EntityDataSerializers.BOOLEAN);
     public static final int REVEALING_LIGHT = 7;
-    public static final byte SLAM_EVENT = 70;
-    public static final int SLAM_TICKS = 20;      // the whole slam: rearing up, then the fists come down
-    private static final int SLAM_HIT_TICK = 12;
-    private static final double SLAM_RADIUS = 3.5;
+    public static final byte POUNCE_EVENT = 70;
+    public static final int POUNCE_TICKS = 14;    // the leap, arms reaching out
     private int revealTicks;
-    private int slamCooldown = 60;
+    private int pounceCooldown = 60;
     private int attackAnimationTicks;  // client side: counts down while the arms lash out
-    private int slamAnimationTicks;    // client side: counts down through a slam
+    private int pounceAnimationTicks;  // client side: counts down through a pounce
 
     public UmbralStalker(EntityType<? extends UmbralStalker> type, Level level) {
         super(type, level);
@@ -60,7 +60,7 @@ public class UmbralStalker extends Monster {
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
             .add(Attributes.MAX_HEALTH, 40.0)
-            .add(Attributes.MOVEMENT_SPEED, 0.28)
+            .add(Attributes.MOVEMENT_SPEED, 0.25)
             .add(Attributes.ATTACK_DAMAGE, 8.0)
             .add(Attributes.FOLLOW_RANGE, 32.0)
             .add(Attributes.KNOCKBACK_RESISTANCE, 0.8)
@@ -77,8 +77,8 @@ public class UmbralStalker extends Monster {
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new BackOffWhenWatchedGoal());
-        this.goalSelector.addGoal(2, new GroundSlamGoal());
-        this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2, true));
+        this.goalSelector.addGoal(2, new PounceGoal());
+        this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0, true));
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 0.8));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 12.0F));
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
@@ -94,8 +94,8 @@ public class UmbralStalker extends Monster {
     public void handleEntityEvent(byte id) {
         if (id == 4) {
             this.attackAnimationTicks = 10;
-        } else if (id == SLAM_EVENT) {
-            this.slamAnimationTicks = SLAM_TICKS;
+        } else if (id == POUNCE_EVENT) {
+            this.pounceAnimationTicks = POUNCE_TICKS;
         } else {
             super.handleEntityEvent(id);
         }
@@ -106,9 +106,9 @@ public class UmbralStalker extends Monster {
         return this.attackAnimationTicks > 0 ? 1.0F - (this.attackAnimationTicks - partialTicks) / 10.0F : 0.0F;
     }
 
-    // 0..1 through a Ground Slam, for the renderer (0 when not slamming).
-    public float getSlamAnimation(float partialTicks) {
-        return this.slamAnimationTicks > 0 ? 1.0F - (this.slamAnimationTicks - partialTicks) / SLAM_TICKS : 0.0F;
+    // 0..1 through a pounce, for the renderer (0 when not pouncing).
+    public float getPounceAnimation(float partialTicks) {
+        return this.pounceAnimationTicks > 0 ? 1.0F - (this.pounceAnimationTicks - partialTicks) / POUNCE_TICKS : 0.0F;
     }
 
     // True if the player is facing this stalker (within about 60 degrees) and can see it.
@@ -125,8 +125,8 @@ public class UmbralStalker extends Monster {
             if (this.attackAnimationTicks > 0) {
                 this.attackAnimationTicks--;
             }
-            if (this.slamAnimationTicks > 0) {
-                this.slamAnimationTicks--;
+            if (this.pounceAnimationTicks > 0) {
+                this.pounceAnimationTicks--;
             }
             // Distortion where it moves.
             if (!this.isRevealed() && this.walkAnimation.speed() > 0.1F && this.random.nextInt(3) == 0) {
@@ -137,8 +137,8 @@ public class UmbralStalker extends Monster {
         if (this.revealTicks > 0) {
             this.revealTicks--;
         }
-        if (this.slamCooldown > 0) {
-            this.slamCooldown--;
+        if (this.pounceCooldown > 0) {
+            this.pounceCooldown--;
         }
         boolean lit = this.level().getBrightness(LightLayer.BLOCK, this.blockPosition().above()) >= REVEALING_LIGHT;
         this.entityData.set(DATA_REVEALED, this.revealTicks > 0 || this.hurtTime > 0 || lit);
@@ -194,56 +194,30 @@ public class UmbralStalker extends Monster {
         return 0.6F;
     }
 
-    // Both fists into the ground: hurts everything close and throws it outward - off the edge, if
-    // there is one.
-    private void slam(ServerLevel level) {
-        double x = this.getX();
-        double y = this.getY();
-        double z = this.getZ();
-        for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(SLAM_RADIUS, 1.0, SLAM_RADIUS),
-            e -> e != this && e.isAlive() && !(e instanceof UmbralStalker))) {
-            double distance = Math.sqrt(victim.distanceToSqr(x, y, z));
-            if (distance > SLAM_RADIUS + 0.7) {
-                continue;
-            }
-            if (victim.hurtServer(level, this.damageSources().mobAttack(this), 6.0F)) {
-                Vec3 away = new Vec3(victim.getX() - x, 0.0, victim.getZ() - z);
-                away = away.lengthSqr() < 1.0E-4 ? new Vec3(0.0, 0.0, 1.0) : away.normalize();
-                double strength = 1.4 - distance * 0.2;
-                victim.push(away.x * strength, 0.55, away.z * strength);
-                if (victim instanceof ServerPlayer player) {
-                    player.connection.send(new ClientboundSetEntityMotionPacket(player));
-                }
-            }
-        }
-        level.sendParticles(ParticleTypes.EXPLOSION, x, y + 0.2, z, 2, 0.6, 0.0, 0.6, 0.0);
-        for (int i = 0; i < 32; i++) {
-            double angle = i * Math.PI * 2.0 / 32.0;
-            level.sendParticles(ParticleTypes.REVERSE_PORTAL, x + Math.cos(angle) * 2.5, y + 0.1, z + Math.sin(angle) * 2.5,
-                2, 0.1, 0.05, 0.1, 0.05);
-        }
-        level.playSound(null, x, y, z, SoundEvents.WARDEN_ATTACK_IMPACT, SoundSource.HOSTILE, 1.4F, 0.7F);
-    }
-
-    // When close to its target and rested, it rears up (and shows itself) and slams the ground.
-    private class GroundSlamGoal extends Goal {
+    // The ambush: from a few blocks behind an unsuspecting player, it leaps. If the leap carries it
+    // into reach, the blow lands hard (12) and throws the player. Then it fights in the open until
+    // it is watched again, and slinks off.
+    private class PounceGoal extends Goal {
         private int ticks;
+        private boolean struck;
 
-        GroundSlamGoal() {
-            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        PounceGoal() {
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK, Goal.Flag.JUMP));
         }
 
         @Override
         public boolean canUse() {
             UmbralStalker self = UmbralStalker.this;
-            LivingEntity target = self.getTarget();
-            return self.slamCooldown <= 0 && self.onGround() && target != null && target.isAlive()
-                && self.distanceToSqr(target) < SLAM_RADIUS * SLAM_RADIUS;
+            if (!(self.getTarget() instanceof Player player) || self.pounceCooldown > 0 || self.isRevealed() || !self.onGround()) {
+                return false;
+            }
+            double distance = self.distanceToSqr(player);
+            return distance > 3.0 * 3.0 && distance < 7.0 * 7.0 && !self.isWatchedBy(player) && self.hasLineOfSight(player);
         }
 
         @Override
         public boolean canContinueToUse() {
-            return this.ticks < SLAM_TICKS;
+            return this.ticks < POUNCE_TICKS && !this.struck;
         }
 
         @Override
@@ -254,28 +228,45 @@ public class UmbralStalker extends Monster {
         @Override
         public void start() {
             UmbralStalker self = UmbralStalker.this;
+            LivingEntity target = self.getTarget();
             this.ticks = 0;
+            this.struck = false;
             self.getNavigation().stop();
-            self.revealTicks = SLAM_TICKS + 40;
-            self.level().broadcastEntityEvent(self, SLAM_EVENT);
-            self.playSound(SoundEvents.RAVAGER_ROAR, 1.0F, 0.6F);
+            self.revealTicks = 60;
+            Vec3 leap = target.position().subtract(self.position()).multiply(1.0, 0.0, 1.0);
+            double distance = leap.length();
+            leap = leap.normalize().scale(Math.min(1.6, 0.25 + distance * 0.2));
+            self.setDeltaMovement(leap.x, 0.45, leap.z);
+            self.getLookControl().setLookAt(target, 60.0F, 30.0F);
+            self.level().broadcastEntityEvent(self, POUNCE_EVENT);
+            self.playSound(SoundEvents.RAVAGER_ROAR, 0.9F, 0.8F);
         }
 
         @Override
         public void tick() {
             UmbralStalker self = UmbralStalker.this;
+            LivingEntity target = self.getTarget();
             this.ticks++;
-            if (self.getTarget() != null) {
-                self.getLookControl().setLookAt(self.getTarget(), 30.0F, 30.0F);
+            if (target == null || !(self.level() instanceof ServerLevel level)) {
+                return;
             }
-            if (this.ticks == SLAM_HIT_TICK && self.level() instanceof ServerLevel level) {
-                self.slam(level);
+            self.getLookControl().setLookAt(target, 60.0F, 30.0F);
+            if (self.distanceToSqr(target) < 2.6 * 2.6) {
+                this.struck = true;
+                level.broadcastEntityEvent(self, (byte) 4);
+                if (target.hurtServer(level, self.damageSources().mobAttack(self), 12.0F)) {
+                    Vec3 away = target.position().subtract(self.position()).multiply(1.0, 0.0, 1.0).normalize();
+                    target.push(away.x * 1.3, 0.4, away.z * 1.3);
+                    if (target instanceof ServerPlayer player) {
+                        player.connection.send(new ClientboundSetEntityMotionPacket(player));
+                    }
+                }
             }
         }
 
         @Override
         public void stop() {
-            UmbralStalker.this.slamCooldown = 120;
+            UmbralStalker.this.pounceCooldown = 200;
         }
     }
 

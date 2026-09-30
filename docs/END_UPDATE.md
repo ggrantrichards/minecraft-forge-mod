@@ -409,8 +409,9 @@ growing from its back and a violet rift glowing in its chest.
   - It stalks the player from behind and retreats when the player turns to face it (the
     reverse of an Enderman).
   - When it reaches you, it hits hard and tries to knock you toward the void.
-  - Up close, every few seconds, it rears up and slams both fists into the ground: a
-    Ground Slam that hurts everything around it and throws it outward.
+  - It hunts like a lion: hidden, it creeps in low and slow, and from a few blocks behind
+    an unsuspecting player it pounces - a leap that reveals it and lands a heavy ambush blow.
+    Then it fights in the open briefly and melts back into the dark.
 - **Drops:** **Umbral Membrane**, used for the Stalker Cloak and the Voidwalker upgrade.
 - **Counterplay:** light (spores), a Portal Lens, or keeping your back to a wall.
 
