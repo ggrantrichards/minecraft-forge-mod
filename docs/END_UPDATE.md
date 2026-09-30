@@ -584,138 +584,91 @@ Starforging is the late-game upgrade system. **Every upgrade is strictly better 
 upgrade. The choice is which one.**
 
 ### 9.1 The rules
-- A piece of gear holds **one Starforge upgrade**.
-  - Armour, weapons, tools and elytra can take one.
-  - Diamond and netherite gear qualify.
-  - Upgrades stack with enchantments. They deliberately do things no enchantment does.
-- Each upgrade is named after the End material it's forged with, the same way netherite
-  gear is named after netherite.
-- **Not every upgrade suits every item,** as with enchantments. The table in §9.2 lists
-  what each one does on each kind of gear.
-- **More pieces means more effect.** Some armour effects need 2 or 3 pieces with the same
-  upgrade to switch on. So spreading upgrades across your armour versus doubling up is
-  the core judgement call.
-- **Swapping is allowed but costs materials,** so experimenting is possible, but
-  commitment still means something.
-- Upgrading is done at the **Astral Forge**, a new workstation (Meteoric Iron block +
-  Observatory Quartz + Void Crystal). Each upgrade needs:
-  - a **Starforge Template** (found in station vaults and maze rewards, duplicable like
-    smithing templates);
-  - **1 Starforge Alloy**;
-  - the upgrade's **material**.
-- Each upgrade has its own colour accent and a small particle effect, like a functional
-  armour trim, so you can read someone's build at a glance.
+- **Vanilla-style:** each upgrade does one clear thing that fits on one tooltip line, like
+  an enchantment. It works in every dimension, not just the End.
+- **Stacks per piece,** like Protection: more armour pieces with the same upgrade means a
+  stronger effect.
+- **No set bonuses.** Vanilla doesn't have them, so the choice is simply which upgrade
+  goes on which piece.
+- **What can be upgraded:**
+  - diamond or netherite armour, weapons (swords, axes, bows, crossbows, tridents) and
+    tools;
+  - **not elytra.**
+- **One upgrade per item.** Upgrades stack with enchantments, and each does something no
+  enchantment does.
+- **Not every upgrade fits every item,** as with enchantments. The table shows where each
+  one applies.
+- **How to apply one:** at the **Astral Forge** (Meteoric Iron block + Observatory Quartz
+  + Void Crystal), using a **Starforge Template** (from station vaults and maze rewards,
+  duplicable like smithing templates), **1 Starforge Alloy**, and the upgrade's material.
+  Applying a new upgrade replaces the old one.
+- **Looks:** each upgrade adds a colour accent to the item, like an armour trim, so you can
+  read someone's build at a glance.
 
 ### 9.2 The six upgrades
-Every effect below uses something Minecraft already has (fall damage, knockback,
-absorption hearts, step height, Endermen dodging arrows, the mace smash), pushed further
-in an End-flavoured way. Numbers are starting points for playtesting.
 
-#### Voidwalker (Void Crystal + Umbral Membrane): *the void can't have you*
-The End's biggest killer is falling off an island. Voidwalker is built around it.
-- **Armour, per piece:** 10% less fall damage, and you can fall 1 more block before taking
-  any damage.
-- **3+ pieces, Void Recall:** if you fall out of the world, you're pulled back to the last
-  solid block you stood on, with a burst of purple particles and the Enderman teleport
-  sound.
-  - It costs a quarter of each Voidwalker piece's durability.
-  - It works at most once every 5 minutes; the armour's glint fades while it recharges.
-- **Bows, crossbows and tridents:** your projectiles **hit Endermen**. In vanilla,
-  Endermen always teleport away from projectiles.
-- **Swords and axes:** an Enderman you hit can't teleport for 3 seconds.
+| Upgrade | Material | Armour | Weapons | Tools |
+|---|---|---|---|---|
+| **Voidwalker** | Void Crystal + Umbral Membrane | **Boots, Rift Walker:** step off an edge and a fading tile of rift appears under your feet, like Frost Walker's ice. **Chestplate, Void Recall:** holds one Rift Pearl; falling into the void uses it up and returns you to your last footing. | — | — |
+| **Meteoric** | Meteoric Iron | **Heat Shield:** fire and lava don't hurt you for the first 2 seconds per piece (8 seconds with 4 pieces) | — | **Smelting:** mined blocks drop already smelted (ores become ingots, sand becomes glass). Works with Fortune. |
+| **Stardust** | Stardust | **−5% gravity per piece:** higher jumps, softer landings. **Boots:** also step up full blocks. | **Bows, crossbows and tridents:** projectiles fly flatter and 25% further | — |
+| **Temporal** | Temporal Crystal | **Time Stretch:** good potion effects last 10% longer per piece, and bad ones wear off 10% faster | **Echo Strike:** 25% of every hit repeats 1 second later | — |
+| **Singularity** | Singularity Shard | **Lensing:** 10% chance per piece that an incoming projectile curves around you | **Swords:** sweeping attacks pull nearby mobs toward your target | **Pull:** drops and experience fly straight to you |
+| **Radiant** | Solarite + Charged Void Crystal | **Soak Light:** in bright light, slowly gain golden hearts, up to 1 per piece. **2+ pieces:** immune to Flare Burn. | **Glow:** targets you hit glow for 5 seconds, visible through walls | — |
 
-#### Meteoric (Meteoric Iron): *land like a comet*
-- **Armour, per piece:**
-  - +0.1 knockback resistance (a real armour stat, like netherite's);
-  - 25% less knockback from explosions (the vanilla explosion-knockback stat).
-- **2+ pieces, Impact Landing:** if you fall more than 6 blocks, you land with a
-  shockwave, like a mace smash.
-  - It deals 1 damage per block fallen beyond 6, up to 10, to mobs within 3 blocks, and
-    knocks them away.
-  - You still take your own fall damage, so it combines naturally with Feather Falling
-    or Voidwalker.
-- **Maces:** smash attacks reach 1 block wider and knock enemies further.
-- **Swords and axes:** critical hits knock the target back an extra block.
-- **Pickaxes:** break a 1×2 area (the block you hit and the one below) while sneaking.
+### 9.3 Details
 
-#### Stardust (Stardust): *moon-weight*
-- **Armour, per piece:** 6% less gravity (vanilla's gravity stat).
-  - With 4 pieces, you jump higher, fall slower and jump further: a moon-walk feel.
-  - This combines with the Nebula Fields' low gravity, up to a cap.
-- **Boots only:** you step up full blocks while walking, like a horse. No jumping needed
-  to climb stairs or single-block ledges. Uses vanilla's step-height stat.
-- **Elytra:** you glide 20% further before losing height, and flying through a comet's
-  tail gives double the boost.
-- **Swords, axes and tridents:** targets you hit float for 1 second, like a hit from a
-  Shulker bullet. Great for knocking mobs off edges or setting up critical hits.
+**Voidwalker**
+- **Rift Walker (boots):** tiles form only while you're walking or sprinting, one step
+  ahead of you, and crumble after 1 second, the same way Frost Walker's ice melts.
+  - Good for crossing short gaps between End islands, or a lava lake in the Nether.
+  - Stop moving and you fall.
+- **Void Recall (chestplate):** works like a Totem of Undying for the void.
+  - The chestplate holds **one Rift Pearl**. When you fall into the void in any
+    dimension, the pearl is used up and you're returned to your last footing.
+  - **Rift Pearls are rare:** every boss drops one (Ender Dragon, Wither, Warden, Elder
+    Guardian, Station Sentinel), and they're rare vault loot. That keeps Void Recall from
+    being a free safety net.
 
-#### Temporal (Temporal Crystal): *time bends around you*
-- **Armour, per piece:** 15% of every hit you take is **delayed**, and dealt to you
-  gradually over the next 4 seconds instead of all at once.
-  - A ticking-clock particle shows it happening.
-  - With 4 pieces, 60% of a creeper blast or critical hit arrives as a slow drain, giving
-    you time to eat, drink a potion or pearl away.
-  - You take the same total damage, so the upgrade buys time, not immunity.
-- **Swords and axes, Echo Strike:** 25% of each hit's damage repeats 1 second later
-  with a chime, even if the target has moved away.
-- **Bows and crossbows:** each arrow leaves an afterimage that repeats its hit 1 second
-  later at a quarter of the damage.
-- **Tools:** no Temporal effect. Not every upgrade suits every item.
+**Meteoric**
+- **Heat Shield:** named after the plating that lets meteors survive falling through the
+  sky.
+  - It's different from Fire Protection, which only reduces damage. Heat Shield gives a
+    few seconds of full immunity, then the normal burn takes over.
+  - The timer resets after 10 seconds out of fire.
+- **Smelting:** includes raw iron, gold and copper, ancient debris, sand, cobblestone and
+  logs (which become charcoal). Silk Touch overrides it.
 
-#### Singularity (Singularity Shard): *bend space*
-- **Armour, per piece, Gravitational Lensing:** a 10% chance (40% with 4 pieces) that an
-  incoming projectile **curves around you**.
-  - Works on arrows, tridents, Shulker bullets and fireballs.
-  - A faint warp effect shows it happening.
-- **Swords:** a sweeping attack pulls every mob within 3 blocks 1–2 blocks toward your
-  target, bunching them up for the next sweep.
-- **Maces:** a smash attack pulls surrounding mobs in before the blast.
-- **Pickaxes, shovels, axes and hoes:** block drops fly straight to you instead of
-  spilling on the ground.
-  - Out in the End, this means no more ore falling off the island's edge into the void.
-  - Experience orbs are pulled in the same way.
+**Stardust**
+- It uses vanilla's own gravity and step-height stats, so the tooltip reads like any
+  attribute:
+  - "−5% Gravity" per piece;
+  - "+0.5 Step Height" on boots.
+- The bow effect lowers the projectile's gravity, not its speed. So arrows arc less and
+  land further, but hit just as hard.
 
-#### Radiant (Solarite + Charged Void Crystal): *store starlight*
-Clarifying what "health" meant: Radiant gives **absorption hearts** (the golden hearts
-from a golden apple), which you have to recharge. It is not passive regeneration.
-- **Armour, per piece:** stores up to 1 golden heart of starlight.
-  - It charges while you stand under open sky in the End: 1 heart every 30 seconds per
-    piece, and 5× faster during a flare in the Corona.
-  - Fully charged armour glows softly.
-  - The stored hearts appear as golden hearts, which absorb damage before your red
-    hearts.
-- **2+ pieces:** immune to Flare Burn.
-- **Swords, axes and bows:** hits make the target glow (like a spectral arrow) for 5
-  seconds, revealing Umbral Stalkers and other hidden mobs through walls.
-- **Elytra:** you ride the Corona's solar wind twice as hard.
+**Temporal**
+- **Echo Strike:** the echoed hit happens even if the target has moved, with a chime and
+  a clock-hand particle.
+- **Time Stretch:** with 4 pieces, a Strength potion lasts 40% longer, and Poison or
+  Wither wears off 40% faster.
 
-### 9.3 What happened to the first draft's upgrades
+**Singularity**
+- **Lensing** works on arrows, tridents, Shulker bullets and fireballs. A curved
+  projectile flies past you with a warp effect.
+- **Sweep pull** moves mobs within 3 blocks 1–2 blocks toward your target, grouping them
+  for the next sweep.
+- **Pull** on tools matters most out in the End, where ore mined at an island's edge
+  would otherwise fall into the void.
 
-| First draft | Now |
-|---|---|
-| Nebular (mobility) | **Stardust**: specific effects instead of a speed boost (lower gravity, step-up boots, longer glides) |
-| Gravitic (stability) | **Meteoric**: knockback resistance plus a mace-like landing shockwave |
-| Temporal (cooldowns) | **Temporal**: delayed damage and echo hits. Nothing about cooldowns. |
-| Singular (item pickup) | **Singularity**: projectiles curve around you, sweeps pull mobs together. Tools keep the item pull. |
-| Umbral (stealth) | **Removed**, since Minecraft has no real stealth system. Replaced by **Voidwalker** (void and Endermen). |
-| Radiant (health) | **Radiant**: rechargeable golden hearts charged by starlight |
-
-### 9.4 Alignments: combo bonuses
-On top of each upgrade's own effect, wearing certain **combinations** across your four
-armour pieces unlocks an extra bonus and a matching particle trail.
-
-| Alignment | Pattern | Bonus |
-|---|---|---|
-| **Full Focus** | 4 of the same upgrade | That upgrade's armour effect gets +25% |
-| **Meteor Dive** | 2 Stardust + 2 Meteoric | While falling, sneak to drop like a stone, then land with a full-strength Impact Landing. Float up high, then slam down. |
-| **Event Horizon** | 2 Singularity + 2 Temporal | Projectiles that curve around you are flung back toward whoever shot them |
-| **Last Light** | 2 Radiant + 2 Voidwalker | Void Recall also refills all your golden starlight hearts |
-| **Pulsar** | 4 different upgrades | Every 30 seconds, your next hit releases a small shockwave |
-
-A specialist (Full Focus) and a mixer (Pulsar) are both valid, strong builds. That's the
-judgement call.
-
----
+**Radiant**
+- **Soak Light:** "bright" means light level 13 or more: daylight, glowstone, lava,
+  Solar Lanterns and Corona flares.
+  - You gain 1 golden heart every 20 seconds, up to 1 per Radiant piece.
+  - Corona flares charge it 5× faster.
+  - These are the same golden hearts a golden apple gives, and they absorb damage first.
+- **Flare Burn immunity** with 2+ pieces makes Radiant the long-term answer for regular
+  Corona miners.
 
 ## 10. Structures
 
@@ -797,7 +750,7 @@ What it would look like if ancient aliens built in Minecraft's style: a giant **
   - It uses a Wanderer's scanning beam as its attack wind-up, so reading the beam is the
     fight.
   - It drops a guaranteed Data Core, used to craft a **Wanderer Beacon** that calls a
-    friendly Wanderer.
+    friendly Wanderer, plus a **Rift Pearl** (§9.3).
 
 ---
 
@@ -819,7 +772,7 @@ What it would look like if ancient aliens built in Minecraft's style: a giant **
 9. **Orbital Stations:** bring charged Flare Cells, power one up, and fight the Sentinel
    for the vault.
 10. **Long tail:** link every Maw, complete the Drift Whale chain, collect every Echo Log
-    and constellation, and experiment with Starforge builds and Alignments.
+    and constellation, and experiment with Starforge builds.
 
 **Advancement tab: "The Astral End".** About 25 advancements, including:
 - *Falling Upward*: use a Stardust block.
@@ -890,7 +843,7 @@ Each phase is playable on its own. Later phases build on earlier ones.
 | **5. Sky and Stellar Flares** | Moving stars, auroras, silhouettes, the Remnant, Corona flare phases, Flare Burn, solar wind, flare charging | A custom `DimensionSpecialEffects` for the End (client), a saved server-side flare timer, a network packet to sync flare state |
 | **6. Structures** | Comet Crater, Observatory Ruins, Wanderer Relay, Whalefall, Solar Array Ruins, Wormhole Maw, Constellation Maze, Orbital Station + Sentinel | Structure templates built in-game and saved as `.nbt`, plus jigsaw JSON. Maw linking, maze bridges and station power need Java. |
 | **7. Live comets** | The comet entity, tail harvesting, landfall craters | An entity with block-display parts, a flight path, and a small crater placer |
-| **8. Starforging** | Astral Forge, templates, the six upgrades, Alignments | Data components on items, a menu and screen for the Forge, vanilla attribute modifiers (gravity, step height, knockback resistance, fall damage, absorption), event listeners for landing, hits and projectile impacts |
+| **8. Starforging** | Astral Forge, templates, the six upgrades, Rift Pearls | Data components on items, a menu and screen for the Forge, vanilla attribute modifiers (gravity, step height), a temporary rift-tile block, loot modifiers for smelting and pull, event listeners for hits, projectiles, fire damage and falling into the void |
 | **9. Polish** | Advancements, Echo Logs, music, config toggles, balance passes | JSON advancements, a Forge config file, playtesting |
 
 **Suggested first task:** Phase 1's **Stardust Block** and **Lumineshroom**. They use
