@@ -250,6 +250,7 @@ public final class WorldgenSurvey {
             area.print();
         }
 
+        diagnosePlants(end, generator, areas.get('N'), "nebula_lumineshrooms");
         diagnosePlants(end, generator, areas.get('A'), "aurora_shimmer_grass");
         diagnosePlants(end, generator, areas.get('C'), "corona_sunscale_lichen");
         diagnosePlants(end, generator, areas.get('C'), "corona_flareblooms");
@@ -284,6 +285,13 @@ public final class WorldgenSurvey {
             log("Plant check: placed feature " + placedFeature + " is NOT in the registry");
             return;
         }
+        log("Plant check: heightmaps at " + pos.getX() + ", " + pos.getZ() + ": MOTION_BLOCKING "
+            + end.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ()) + ", WORLD_SURFACE_WG "
+            + end.getHeight(Heightmap.Types.WORLD_SURFACE_WG, pos.getX(), pos.getZ()) + ", WORLD_SURFACE "
+            + end.getHeight(Heightmap.Types.WORLD_SURFACE, pos.getX(), pos.getZ()));
+        boolean direct = feature.get().value().feature().value().place(end, generator, end.getRandom(), pos);
+        log("Plant check: the bare feature of " + placedFeature + " placed at " + pos.toShortString() + ": " + direct
+            + ", block there now: " + end.getBlockState(pos).getBlock().getName().getString());
         int placed = 0;
         for (int i = 0; i < 20; i++) {
             if (feature.get().value().place(end, generator, end.getRandom(), pos.below(pos.getY()))) {
