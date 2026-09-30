@@ -189,7 +189,7 @@ public final class ModBlocks {
     // Sunscale Lichen: a scaly ground cover (a carpet) that holds a faint glow.
     public static final RegistryObject<Block> SUNSCALE_LICHEN = register("sunscale_lichen", CarpetBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(0.1F).sound(SoundType.MOSS_CARPET)
-            .lightLevel(state -> 5).pushReaction(PushReaction.DESTROY));
+            .lightLevel(state -> 5).pushReaction(PushReaction.POPPED));
     // Life that died out: grey husks of the Nebula Fields' mushrooms and vines, and Pollinator shells.
     public static final RegistryObject<Block> ASHEN_LUMINESHROOM = register("ashen_lumineshroom",
         p -> new EndPlantBlock(Block.column(6.0, 0.0, 10.0), ASTRAL_SOIL, p),
@@ -238,7 +238,7 @@ public final class ModBlocks {
 
     private static BlockBehaviour.Properties plant(MapColor color, SoundType sound) {
         return BlockBehaviour.Properties.of().mapColor(color).noCollision().instabreak().sound(sound)
-            .pushReaction(PushReaction.DESTROY);
+            .pushReaction(PushReaction.POPPED);
     }
 
     private static BlockBehaviour.Properties vine() {

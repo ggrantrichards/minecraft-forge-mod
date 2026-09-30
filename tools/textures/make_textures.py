@@ -912,12 +912,14 @@ def gravity_anomaly_frame(phase):
             dx, dy = x - 7.5, y - 7.5
             r = (dx * dx + dy * dy) ** 0.5
             a = math.atan2(dy, dx) / (2 * math.pi) + 0.5
-            spiral = (a * 2 + r / 6 - phase) % 1.0
-            if r < 2.2:
+            spiral = (a * 3 + r / 5 - phase) % 1.0
+            if r < 2.0:
                 px[x, y] = core
-            elif spiral < 0.12 and r < 8:
-                px[x, y] = glow if r < 5 else arm
-            elif spiral < 0.22 and r < 8:
+            elif r < 2.9:
+                px[x, y] = arm if spiral < 0.5 else UMBRAL[1]   # the bright ring of the event horizon
+            elif spiral < 0.2 and r < 8:
+                px[x, y] = glow if r < 5.5 else arm
+            elif spiral < 0.38 and r < 8:
                 px[x, y] = arm
             elif (x in (0, 15)) or (y in (0, 15)):
                 px[x, y] = UMBRAL[1]
