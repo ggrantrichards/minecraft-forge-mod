@@ -228,21 +228,25 @@ P_RIM = [hexc("5aa8c4", 230), hexc("6bb8d4", 230)]
 P_TENDRIL = [hexc("b48cf0", 230), hexc("9a72e0", 230)]
 
 
+BELL = [hexc("4fb3bd", 215), hexc("67c8cc", 215), hexc("84dbd8", 215), hexc("a8eee6", 215), hexc("d4fff7", 220)]
+
+
 def pollinator_bell(face, px, py, fw, fh, rnd):
-    c = rnd.choice(P_BELL)
-    if face in ("north", "south", "east", "west"):
-        c = mix(c, hexc("c9fff6", 215), max(0.0, 0.5 - py / max(1, fh)))
+    """A translucent jelly bell: brightest at the crown, softly mottled, darker toward the rim."""
+    t = n()
     if face == "up":
-        c = mix(c, hexc("d9fff8", 215), 0.4)
+        return BELL[3 + (1 if t > 0.6 else 0)]
     if face == "down":
-        c = hexc("3d7f8a", 200)
-    return c
+        return hexc("2f7f8c", 200)
+    v = py / max(1, fh - 1)                       # 0 at the crown, 1 at the rim
+    i = int((1 - v) * 3.2 + t * 1.2)
+    return BELL[max(0, min(4, i))]
 
 
 def pollinator_bell_glow(face, px, py, fw, fh, rnd):
-    if face in ("north", "south", "east", "west") and (px + py * 2) % 5 == 0 and py >= 1:
-        return hexc("e6fffa")
-    if face == "up" and (px * 3 + py) % 7 == 0:
+    if face in ("north", "south", "east", "west") and py == fh - 2 and px % 2 == 0:
+        return hexc("e6fffa")                      # a ring of glowing dots round the bell
+    if face == "up" and (px, py) in ((1, 1), (4, 2), (2, 4)):
         return hexc("c8fff5")
     return None
 
@@ -633,10 +637,8 @@ SKIMMER = Mob("corona_skimmer", (64, 32), [
 
 # ---- Black Hole Guardian: a small singularity with a spinning accretion ring
 def guardian_core(face, px, py, fw, fh, rnd):
-    c = hexc("050308")
-    if edge_dist(px, py, fw, fh) == 0 and rnd.random() < 0.4:
-        c = hexc("1e0f33")
-    return c
+    """Lightless black: nothing reflects from it. Only faint flecks of light caught falling in."""
+    return hexc("170b28") if n() > 0.86 else hexc("040306")
 
 
 def guardian_ring(face, px, py, fw, fh, rnd):
