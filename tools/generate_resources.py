@@ -876,18 +876,18 @@ def main():
     tag("block", "minecraft:replaceable_by_trees", rid("shimmer_grass"))
     tag("block", "minecraft:beacon_base_blocks", rid("solarite_block"))
     tag("block", "minecraft:beacon_base_blocks", rid("meteoric_iron_block"))
-    # Minecraft 26.3 decides which blocks "block motion" (for heightmaps, mob spawning, falling
-    # blocks, world generation...) with these block tags, not from the block's shape. Every solid
-    # block of the mod belongs in them, like vanilla's stone. (Plants, vines, carpets and crops don't.)
+    # Minecraft 26.3 decides which blocks "block motion" (heightmaps, so world generation and mob
+    # spawning; suffocation; fluid flow...) with the block tag #minecraft:blocks_motion_no_leaves,
+    # not from the block's shape. The other motion tags include it. Every solid block of the mod
+    # belongs in it, like vanilla's stone, glass, stairs, slabs and walls; plants, vines, carpets
+    # and crops don't (vanilla leaves out grass and moss carpet too).
     not_solid = {"lumineshroom", "starbloom", "astral_vine", "astral_vine_plant", "comet_cress", "shimmer_grass",
                  "flarebloom", "sunscale_lichen", "ashen_lumineshroom", "petrified_astral_vine"}
     solid = sorted(set(re.findall(r'\b(?:register|registerNoItem|stairs|slab|wall)\("([a-z0-9_]+)"',
                                   (ROOT / "src/main/java/com/ggrantrichards/astralend/ModBlocks.java").read_text()))
                    - not_solid - {"name"})
     for name in solid:
-        for motion_tag in ("blocks_motion", "blocks_motion_no_leaves", "blocks_motion_in_heightmap",
-                           "blocks_motion_in_heightmap_no_leaves"):
-            tag("block", f"minecraft:{motion_tag}", rid(name))
+        tag("block", "minecraft:blocks_motion_no_leaves", rid(name))
 
     # What the End's plants grow on.
     for name in ("minecraft:end_stone", rid("nebula_moss"), rid("umbral_stone"), rid("pale_end_stone"),

@@ -890,6 +890,8 @@ Each phase is playable on its own. Later phases build on earlier ones.
 | Flares | **Only in the Corona biome.** Unprotected players there get Flare Burn; cover, Sunshades, Flare Ward potions and the Radiant upgrade protect them. The vanilla End and all other biomes never burn. The Corona makes up for the risk with exclusive materials. |
 | Another hostile mob | **Yes: Cinder Mites**, Corona only. |
 | Where new biomes start | **Beyond 1,000 blocks**, the same distance where vanilla's outer islands begin. |
+| Turning features off | Low gravity and gravity inversion are each controlled by a biome tag (`#astralend:low_gravity`, `#astralend:gravity_inversion`); an empty tag in a datapack turns them off. A config file can come in Phase 9. |
+| Existing worlds | Nebula Fields kept exactly the same placement when Phase 3 added the other biomes, so End areas generated before Phase 3 still line up with new chunks. |
 
 ## 16. Open questions
 

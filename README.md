@@ -4,15 +4,80 @@ A Forge mod for **Minecraft Java Edition 26.3** with **Forge 66.0.8** that expan
 into a sparse, mysterious network of astral islands. The full plan is in
 [docs/END_UPDATE.md](docs/END_UPDATE.md).
 
-**Status:** Phase 2 of 9 (the first new biome, Nebula Fields). Mod ID: `astralend`.
+**Status:** Phase 3 of 9 (all six astral biomes). Mod ID: `astralend`.
 
 ## What's in the mod so far
 
+### Phase 3: the other five biomes
+
+Beyond about 1,000 blocks from the dragon's island, the outer End is now a patchwork of the
+vanilla biomes and **six astral biomes**, each in regions several hundred blocks across. Every
+biome has its own stone, and the terrain itself changes shape in three of them.
+
+![Biome map of the End](docs/images/end-biome-map.png)
+
+| Biome | Share of the outer End | What you find there |
+|---|---|---|
+| **Nebula Fields** (Phase 2) | ~23% | Nebula Moss, Lumineshrooms, Starblooms, Astral Vines, low gravity |
+| **Aurora Shallows** | ~6% | Wide, **flat-topped shelves** of **Pale End Stone** (all level at y=54, thinning to see-through edges), **Shimmer Grass**, standing stones, and ribs of **Leviathan Bone** sticking out of the ground |
+| **Comet Wake** | ~7% | **Charred End Stone** islands with small floating debris between them, **Stardust** veins, glassy **Comet Ice**, **Comet Cores** (boulders with a heart of **Meteoric Iron Ore**), and Stardust stuck under islands with **Comet Cress** hanging from it |
+| **Dark Matter Belt** | ~9% | Ragged, **ring-shaped** islands of **Umbral Stone** (big islands are hollow in the middle), **Void Crystal Ore**, near-black fog, and **Gravity Inversion Pockets** |
+| **The Corona** | ~11% | A crust of **Sunscorched Stone** over Charred End Stone, **Solarite Ore** (rich at the surface, sparse deeper in), **Flareblooms**, glowing **Sunscale Lichen**, and the dead: **Ashen Lumineshrooms**, **Petrified Astral Vines**, **Pollinator Husks** |
+| **Shattered Observatory** | ~2% (rare) | Ruins of **Observatory Quartz** set into the islands: round floors with a **Star Inlay** at the centre, broken and fallen pillars, overgrown with Starblooms, Astral Vines and chorus |
+
+What the survey found in each biome, seen from above (dimmed = just outside the biome):
+
+| Aurora Shallows | Comet Wake | Dark Matter Belt |
+|---|---|---|
+| ![Aurora Shallows from above](docs/images/biome-aurora-shallows.png) | ![Comet Wake from above](docs/images/biome-comet-wake.png) | ![Dark Matter Belt from above](docs/images/biome-dark-matter-belt.png) |
+| **The Corona** | **Shattered Observatory** | **Nebula Fields** |
+| ![The Corona from above](docs/images/biome-corona.png) | ![Shattered Observatory from above](docs/images/biome-shattered-observatory.png) | ![Nebula Fields from above](docs/images/biome-nebula-fields.png) |
+
+**Gravity Inversion Pockets** (Dark Matter Belt): a **Gravity Anomaly** (a swirling black
+block) is set into the underside of an island, with a sphere of flipped gravity about 11 blocks
+across hanging below it, marked by rising purple motes. Walk into one and you fall *upward* onto
+the island above; step out and normal gravity returns. It works on mobs too. The island is
+always above the pocket, so you never fall up into the void. To turn pockets off, add a datapack
+with an empty `data/astralend/tags/worldgen/biome/gravity_inversion.json`:
+`{"replace": true, "values": []}`.
+
+The Corona is safe for now: the Remnant and its Stellar Flares arrive in Phase 5. The mobs
+(and their spawn eggs) come in Phase 4.
+
+**New blocks and items** (all in the **The Astral End** creative tab):
+
+| Content | What it does |
+|---|---|
+| **Pale End Stone** (+ Bricks, Tiles, stairs, slabs, walls) | Bleached End Stone from the Aurora Shallows. Crafts and stonecuts like End Stone Bricks. |
+| **Shimmer Grass** | Short pale grass. Drops only with shears, like grass. |
+| **Charred End Stone** (+ stairs, slab, wall) | Comet-scorched End Stone. Also made by smelting End Stone. |
+| **Comet Ice** | Never melts; as slippery as blue ice. Needs Silk Touch. |
+| **Sunscorched Stone** (+ Polished, Bricks, stairs, slabs, walls) | The Corona's bleached, cracked stone. |
+| **Solarite Ore** → **Raw Solarite** → **Solarite Ingot** | Corona only. Needs a diamond pickaxe; Fortune works. Smelt or blast the raw metal. The ore glows faintly. Blocks of Solarite glow and work in beacon bases. |
+| **Flarebloom** | A two-block-tall flower, shut tight (it opens during flares, in Phase 5). Makes orange dye. |
+| **Sunscale Lichen** | A glowing (light level 5) scaly ground cover, placed like a carpet. |
+| **Ashen Lumineshroom**, **Petrified Astral Vine** | The grey, lifeless remains of Nebula Fields plants that tried to grow in the Corona. |
+| **Pollinator Husk** | A bleached, fossil-like shell. Decoration; rotates like a log. |
+| **Observatory Quartz** (+ Pillar, Star Inlay, stairs, slab, wall) | The ruins' cut stone. Stonecuts into the pillar and the inlay. |
+| **Gravity Anomaly** | The core of an inversion pocket. Very hard to break; needs Silk Touch and a diamond pickaxe. Placed anywhere in a Dark Matter Belt, it makes a new pocket below itself. |
+
+### Fixes in Phase 3
+
+- **Spectator mode** works like vanilla again: no block texture covering your screen when you fly
+  into a block. This was a bug in Forge 66.0.8 itself (its change to the renderer skipped
+  vanilla's "not for spectators" check), not something the mod did, but the mod now works around it.
+- **Getting to the End from a stronghold** works. The automatic survey steps through a real End
+  Portal on every build and checks you arrive on the obsidian platform at (100, 50, 0) with the
+  dragon fight set up. Note that in vanilla Minecraft **spectators can't use portals** (they
+  don't touch blocks, so a portal never triggers); switch to survival or creative first.
+- The mod's blocks now count as solid for Minecraft 26.3, which decides that with block tags
+  (`#minecraft:blocks_motion_no_leaves`). Before, Nebula Moss was treated like air by the game's
+  height maps, so fewer plants grew on it.
+
 ### Phase 2: the Nebula Fields biome
 
-The outer End (beyond about 1,000 blocks from the dragon's island) now has **Nebula Fields**
-mixed in with the vanilla biomes: regions several hundred blocks across, about a fifth of the
-outer End.
+The first astral biome: **Nebula Fields**, regions several hundred blocks across covering
+about a fifth of the outer End.
 
 - **Islands are topped with Nebula Moss** and scattered with glowing **Lumineshrooms**,
   **Starblooms** and upward-growing **Astral Vines**. No chorus grows there.
@@ -23,25 +88,22 @@ outer End.
 - Endermen spawn as usual, and return End Gateways can still appear.
 - Everything within 1,000 blocks of the centre, the dragon fight and End Cities are unchanged.
 
-| Where Nebula Fields generate (purple) | What a generated patch looks like from above |
-|---|---|
-| ![Biome map of the End](docs/images/end-biome-map.png) | ![Top-down view of generated Nebula Fields](docs/images/nebula-fields-topdown.png) |
+All the pictures come from a real world generated by the automatic survey (see section 6).
 
-Both images come from a real world generated by the automatic survey (see section 6).
-
-**To find it:** start a **new world** (End areas already explored in an older world stay as they
-were), go to the End, then use an End Gateway or fly outward. In creative, `/locate biome
-astralend:nebula_fields` gives the nearest one, and the F3 screen shows the biome you're in.
+**To find any astral biome:** start a **new world**, or explore parts of the End you haven't
+visited yet (areas already generated stay as they were). Go to the End, then use an End Gateway
+or fly outward. In creative, `/locate biome astralend:nebula_fields` (or `aurora_shallows`,
+`comet_wake`, `dark_matter_belt`, `shattered_observatory`, `corona`) gives the nearest one, and
+the F3 screen shows the biome you're in.
 
 **To turn low gravity off** (for a server, say), add a datapack with an empty
 `data/astralend/tags/worldgen/biome/low_gravity.json`: `{"replace": true, "values": []}`.
 
 ### Phase 1: blocks, materials and plants
 
-Everything is in the **The Astral End** tab of the creative inventory. Nebula Moss,
-Lumineshrooms, Starblooms and Astral Vines now generate in the Nebula Fields; the rest (the
-stones, ores, Stardust, Leviathan Bone) arrive with their biomes in Phase 3, so until then get
-them from the creative tab or with `/give @s astralend:<name>`.
+Everything is in the **The Astral End** tab of the creative inventory, and all of it now
+generates in the End: Umbral Stone and Void Crystal Ore in the Dark Matter Belt, Stardust,
+Meteoric Iron and Comet Cress in the Comet Wake, Leviathan Bone in the Aurora Shallows.
 
 ![Every Phase 1 texture](docs/images/textures.png)
 
@@ -256,11 +318,14 @@ name is missing. If **all** your textures, names and recipes are missing and the
 "failed to load a valid ResourcePackInfo", `src/main/resources/pack.mcmeta` is missing or broken.
 
 **Automatic checks:** every push to GitHub builds the mod, loads it in a server (checking
-recipes, loot tables and tags), **surveys a freshly generated End** (a biome map, block counts
-from 81 chunks inside Nebula Fields, and a low-gravity test) and boots the real game client
-(failing if any model or texture is missing). Results are on the repository's **Actions** tab.
-To run the survey yourself: `./gradlew runServer -PastralendSurvey` (it prints a report to the
-log and stops).
+recipes, loot tables and tags), **surveys a freshly generated End** and boots the real game
+client (failing if any model or texture is missing). The survey travels through a real End
+Portal and checks the arrival platform and dragon fight, maps the End's biomes and how much each
+covers, generates an area of every astral biome and checks it has its stone, ores, plants and
+features, and tests low gravity and gravity inversion. Results are on the repository's
+**Actions** tab. To run the survey yourself: `./gradlew runServer -PastralendSurvey` (it prints
+a report to the log and stops); `python3 tools/render_survey.py run/logs/latest.log` then turns
+its maps into the pictures above.
 
 ## 7. Build a jar and play it in real Minecraft
 
@@ -286,8 +351,8 @@ Rename the Java package `com.ggrantrichards.astralend` with IntelliJ's Refactor 
 - Official MDK examples (Mixins, Access Transformers, and more): <https://github.com/MinecraftForge/MDKExamples>
 - Forge source: <https://github.com/MinecraftForge/MinecraftForge> (the `26.3` branch)
 - Forge Discord and the forums at forums.minecraftforge.net
-- What's next for this mod: Phase 3, the other four biomes. See the roadmap in
-  [docs/END_UPDATE.md](docs/END_UPDATE.md).
+- What's next for this mod: Phase 4, the mobs (with spawn eggs in the creative tab). See the
+  roadmap in [docs/END_UPDATE.md](docs/END_UPDATE.md).
 
 ## Updating to a newer Minecraft version
 

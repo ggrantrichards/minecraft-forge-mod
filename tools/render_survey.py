@@ -33,16 +33,16 @@ BLOCK_COLOURS = {
     " ": (12, 10, 20), "E": (219, 222, 158), "Y": (140, 90, 140), "M": (98, 66, 160), "L": (80, 230, 215),
     "S": (246, 208, 106), "V": (150, 90, 210), "P": (208, 207, 216), "G": (160, 220, 222), "B": (175, 174, 188),
     "J": (230, 235, 238), "H": (60, 55, 45), "I": (160, 195, 235), "T": (215, 205, 234), "O": (140, 150, 170),
-    "U": (40, 33, 48), "X": (138, 102, 234), "Z": (255, 0, 200), "Q": (232, 236, 242), "K": (200, 208, 222),
+    "U": (92, 76, 118), "X": (138, 102, 234), "Z": (255, 0, 200), "Q": (232, 236, 242), "K": (200, 208, 222),
     "C": (220, 205, 175), "R": (255, 170, 40), "F": (220, 70, 40), "N": (240, 180, 70), "A": (120, 116, 110),
     "D": (138, 132, 123), "W": (205, 213, 216), "#": (255, 0, 255),
 }
 
 
 def survey_lines(path):
+    """Survey lines from either the server log (prefixed with TAG) or CI's printout (prefix removed)."""
     for line in Path(path).read_text(errors="replace").splitlines():
-        if TAG in line:
-            yield line.split(TAG, 1)[1]
+        yield line.split(TAG, 1)[1] if TAG in line else line
 
 
 def dim(colour, factor=0.45):
@@ -52,7 +52,7 @@ def dim(colour, factor=0.45):
 def render_biome_map(rows, path):
     scale = 6
     w, h = len(rows[0]), len(rows)
-    img = Image.new("RGB", (w * scale, h * scale * 2 + 120), (20, 18, 28))
+    img = Image.new("RGB", (w * scale, h * scale * 2 + 118), (20, 18, 28))
     draw = ImageDraw.Draw(img)
     for y, row in enumerate(rows):
         for x, c in enumerate(row):
@@ -61,8 +61,8 @@ def render_biome_map(rows, path):
                            fill=BIOME_COLOURS.get(c, (255, 0, 255)))
     ly = h * scale * 2 + 10
     for i, key in enumerate(BIOME_NAMES):
-        lx = 10 + (i % 4) * 150
-        yy = ly + (i // 4) * 30
+        lx = 10 + (i % 3) * 160
+        yy = ly + (i // 3) * 26
         draw.rectangle([lx, yy, lx + 14, yy + 14], fill=BIOME_COLOURS[key])
         draw.text((lx + 20, yy + 1), BIOME_NAMES[key], fill=(230, 230, 236))
     img.save(path)
