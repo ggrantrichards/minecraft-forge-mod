@@ -10,6 +10,8 @@ rm -f "$LOG" client-console.log
 # Software OpenGL (Mesa llvmpipe) on a virtual X screen with the GLX extension enabled.
 export LIBGL_ALWAYS_SOFTWARE=1
 export SDL_VIDEODRIVER=x11
+export SDL_VIDEO_FORCE_EGL=1        # EGL avoids GLX visual matching, which fails on Xvfb
+export VK_ICD_FILENAMES=$(ls /usr/share/vulkan/icd.d/lvp_icd*.json 2>/dev/null | head -1)   # software Vulkan fallback
 setsid xvfb-run -a -s "-screen 0 1280x720x24 +extension GLX +render -noreset" ./gradlew runClient > client-console.log 2>&1 &
 PGID=$!
 
