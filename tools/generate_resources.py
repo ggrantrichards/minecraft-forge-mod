@@ -326,8 +326,9 @@ def trapezoid(n):
     return {"type": "minecraft:trapezoid", "max": n, "min": -n, "plateau": 0}
 
 
-def plant_patch(name, block, rarity, count, spread, vertical=2):
-    """A patch of plants, placed exactly like vanilla's mushroom and flower patches."""
+def plant_patch(name, block, rarity, count, spread, vertical=2, on=None):
+    """A patch of plants, placed exactly like vanilla's mushroom and flower patches.
+    on: if given, a list of blocks it must sit on (for blocks that would "survive" in mid-air)."""
     feature(block, {"type": "minecraft:simple_block", "to_place": {"id": rid(block)}})
     placed(name, {"feature": rid(block), "placement": [
         {"type": "minecraft:rarity_filter", "chance": rarity},
@@ -339,7 +340,7 @@ def plant_patch(name, block, rarity, count, spread, vertical=2):
         {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
             {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
             {"type": "minecraft:would_survive", "state": rid(block)},
-        ]}},
+        ] + ([{"type": "minecraft:matching_blocks", "blocks": on, "offset": [0, -1, 0]}] if on else [])}},
     ]})
 
 
@@ -588,7 +589,8 @@ def surface_feature(name, feature_name, rarity=1, count=1, y_offset=0, extra=Non
     placement += [{"type": "minecraft:in_square"},
                   {"type": "minecraft:heightmap", "heightmap": "WORLD_SURFACE_WG"}]
     if y_offset:
-        placement.append({"type": "minecraft:random_offset", "xz_spread": 0, "y_spread": y_offset})
+        placement.append({"type": "minecraft:offset", "x": 0, "z": 0,
+                          "y": {"type": "minecraft:uniform", "min_inclusive": y_offset, "max_inclusive": 0}})
     placement += (extra or []) + [{"type": "minecraft:biome"}]
     placed(name, {"feature": rid(feature_name), "placement": placement})
 
@@ -626,12 +628,10 @@ def worldgen_phase3():
     # ---- Aurora Shallows: Pale End Stone shelves, Shimmer Grass, standing stones, bone ribs
     plant_patch("aurora_shimmer_grass", "shimmer_grass", rarity=1, count=40, spread=7)
     feature("standing_stone", {"type": "minecraft:block_column", "allowed_placement": air, "direction": "up",
-                               "layers": [{"height": {"type": "minecraft:uniform", "min_inclusive": 2, "max_inclusive": 4},
-                                           "provider": {"type": "minecraft:weighted_state_provider", "entries": [
-                                               {"data": {"Name": rid("pale_end_stone_bricks")}, "weight": 3},
-                                               {"data": {"Name": rid("pale_end_stone")}, "weight": 2},
-                                               {"data": {"Name": rid("pale_end_stone_tiles")}, "weight": 1}]}}],
-                               "prioritize_tip": False})
+                               "layers": [{"height": {"type": "minecraft:uniform", "min_inclusive": 1, "max_inclusive": 3},
+                                           "provider": {"id": rid("pale_end_stone_bricks")}},
+                                          {"height": 1, "provider": {"id": rid("pale_end_stone_tiles")}}],
+                               "prioritize_tip": True})
     surface_feature("aurora_standing_stones", "standing_stone", rarity=5,
                     extra=[{"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
                         air, {"type": "minecraft:matching_blocks", "blocks": [rid("pale_end_stone")], "offset": [0, -1, 0]}]}}])
@@ -708,7 +708,8 @@ def worldgen_phase3():
     plant_patch("corona_sunscale_lichen", "sunscale_lichen", rarity=1, count=36, spread=7)
     plant_patch("corona_ashen_lumineshrooms", "ashen_lumineshroom", rarity=2, count=10, spread=5)
     plant_patch("corona_petrified_vines", "petrified_astral_vine", rarity=3, count=6, spread=5)
-    plant_patch("corona_pollinator_husks", "pollinator_husk", rarity=12, count=2, spread=3, vertical=1)
+    plant_patch("corona_pollinator_husks", "pollinator_husk", rarity=12, count=2, spread=3, vertical=1,
+                on=[rid("sunscorched_stone"), rid("charred_end_stone")])
     end_biome("corona", "The Corona", fog="#4a2616", water="#d9823b",
               features_step7=[rid("corona_solarite_deep")],
               features_step4=[rid("corona_solarite_surface")],

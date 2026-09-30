@@ -193,9 +193,13 @@ src/main/java/com/ggrantrichards/astralend/
   AstralEnd.java              entry point (@Mod)
   ModBlocks.java              every block (and its block item)
   ModItems.java               items that aren't blocks
-  ModCreativeTabs.java        "The Astral End" creative tab
-  block/                      blocks with custom behaviour (Stardust, plants, crops)
-  world/                      the End biome source, biome keys, low gravity
+  ModCreativeTabs.java        "The Astral End" creative tab (lists everything automatically)
+  ModBlockEntities.java       blocks that run code every tick (the Gravity Anomaly)
+  block/                      blocks with custom behaviour (Stardust, plants, crops, Gravity Anomaly)
+  world/                      the End biome source and its regions, biome keys, low gravity,
+                              gravity inversion
+  world/feature/              world generation features written in Java (comet cores, ruins...)
+  client/                     client-only code (the spectator-mode fix)
   dev/WorldgenSurvey.java     test tool: maps and samples the generated End (CI only)
 src/main/resources/
   META-INF/mods.toml          mod ID, name, version, dependencies
@@ -212,13 +216,14 @@ src/main/resources/
     astralend/recipe/*.json       crafting recipes
     astralend/loot_table/blocks/  what a block drops
     minecraft/tags/block/...      "mineable with pickaxe", "needs iron tool"
-    astralend/worldgen/           the Nebula Fields biome, its plant features, the End's
-                                  noise settings and surface ("material") rule
+    astralend/worldgen/           the six astral biomes, their features, the End's terrain
+                                  (density functions), noise settings and surface ("material") rule
     minecraft/dimension/the_end.json  plugs our biome source into the End
 tools/
   textures/make_textures.py   draws every texture, plus docs/images/textures.png
   generate_resources.py       writes all the JSON above from one list
   check_resources.py          checks nothing is missing (run before launching)
+  render_survey.py            turns the survey's maps into the pictures in this README
 docs/END_UPDATE.md            the full plan for the mod
 ```
 
@@ -232,7 +237,8 @@ The JSON files are generated, so you rarely write them by hand:
 
 1. **Java:** register it in `ModBlocks.java` (a block, which also gets an item) or
    `ModItems.java` (an item only). Copy a similar line, like `NEBULA_MOSS` or `VOID_CRYSTAL`.
-   Add it to the list in `ModCreativeTabs.java`.
+   It appears in the **The Astral End** creative tab automatically (the tab lists every block
+   and item the mod registers, in the order they're declared).
 2. **Texture:** draw it in `tools/textures/make_textures.py` (or save a 16×16 PNG into
    `src/main/resources/assets/astralend/textures/block/` or `item/` using Aseprite, Piskel or
    LibreSprite), then run `python3 tools/textures/make_textures.py`.

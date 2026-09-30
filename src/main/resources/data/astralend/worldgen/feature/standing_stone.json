@@ -9,33 +9,19 @@
     {
       "height": {
         "type": "minecraft:uniform",
-        "min_inclusive": 2,
-        "max_inclusive": 4
+        "min_inclusive": 1,
+        "max_inclusive": 3
       },
       "provider": {
-        "type": "minecraft:weighted_state_provider",
-        "entries": [
-          {
-            "data": {
-              "Name": "astralend:pale_end_stone_bricks"
-            },
-            "weight": 3
-          },
-          {
-            "data": {
-              "Name": "astralend:pale_end_stone"
-            },
-            "weight": 2
-          },
-          {
-            "data": {
-              "Name": "astralend:pale_end_stone_tiles"
-            },
-            "weight": 1
-          }
-        ]
+        "id": "astralend:pale_end_stone_bricks"
+      }
+    },
+    {
+      "height": 1,
+      "provider": {
+        "id": "astralend:pale_end_stone_tiles"
       }
     }
   ],
-  "prioritize_tip": false
+  "prioritize_tip": true
 }

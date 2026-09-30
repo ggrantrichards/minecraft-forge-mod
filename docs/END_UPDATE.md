@@ -161,6 +161,11 @@ in the air.
 Huge, flat, thin "shelf" islands close to the void, under a sky full of slow aurora
 ribbons.
 
+- **Built (Phase 3):** islands reshaped into flat-topped shelves (level at y=54, thinning to a
+  see-through edge) of **Pale End Stone**, with **Shimmer Grass**, standing stones of Pale End
+  Stone Bricks and Tiles, and Leviathan Bone ribs. Aurora skies and Drift Whales come in
+  Phases 5 and 4; Whalefalls in Phase 6.
+
 - **Terrain:** wide plates of **Pale End Stone**, with thin edges you can see through
   from below. There are patches of **Shimmer Grass** (a short, swaying plant) and
   standing stones.
@@ -173,6 +178,11 @@ ribbons.
 ### 4.3 Comet Wake
 The trail a comet left when it broke apart: scorched islands, a glittering "debris river"
 of small floating chunks, and craters.
+
+- **Built (Phase 3):** **Charred End Stone** islands with a field of small floating debris
+  between them, **Stardust** veins, glassy **Comet Ice** shards, **Comet Cores** (boulders with a
+  heart of Meteoric Iron Ore), and Stardust gathered under island undersides with **Comet
+  Cress** hanging from it. Craters come with the other structures in Phase 6.
 
 - **Terrain:**
   - **Charred End Stone**.
@@ -189,6 +199,13 @@ of small floating chunks, and craters.
 ### 4.4 Dark Matter Belt
 Near-invisible islands. You can only really see them from their edges, where light
 bends.
+
+- **Built (Phase 3):** ragged ring-shaped islands (big islands are hollowed out) of **Umbral
+  Stone** with **Void Crystal Ore**, near-black fog, and **Gravity Inversion Pockets**: a
+  **Gravity Anomaly** set into an island's underside, with a sphere of flipped gravity (60%
+  strength, pointing up) below it, marked by rising motes. It uses vanilla's gravity attribute,
+  so players and mobs both fall upward to the island above. Turned off by emptying the
+  `#astralend:gravity_inversion` biome tag. Gravlilies arrive with the other plants' uses later.
 
 - **Terrain:**
   - **Umbral Stone**, a very dark, low-contrast block with a faint "lensing" edge
@@ -212,6 +229,11 @@ bends.
 ### 4.5 Shattered Observatory
 The rarest biome: a cluster of islands around a huge, broken ring of obsidian and quartz.
 
+- **Built (Phase 3):** small, rare regions of vanilla-shaped islands with **Observatory Quartz**
+  ruins set into them (round floors with a **Star Inlay** at the centre, broken and fallen
+  pillars), overgrown with Starblooms, Astral Vines and chorus. The great ring, Wormhole Maws
+  and Constellation Mazes are structures, in Phase 6.
+
 - **Terrain:** polished stonework ruins merged into the islands, fallen pillars, and star
   mosaics set into the floor.
 - **Structures:**
@@ -226,6 +248,12 @@ The rarest biome: a cluster of islands around a huge, broken ring of obsidian an
 The islands closest to **the Remnant**, the dying ember of the collapsed star. It hangs
 low in the sky over this region as a huge, dim, slowly pulsing disc. You can see it from
 far away, so players always know where the Corona is (and can choose to avoid it).
+
+- **Built (Phase 3):** smoother, low-relief islands (few overhangs) with a crust of
+  **Sunscorched Stone** over **Charred End Stone**; **Solarite Ore** in rich veins at the surface
+  and sparse ones deep inside; **Flareblooms** (shut tight), glowing **Sunscale Lichen**, and the
+  dead: **Ashen Lumineshrooms**, **Petrified Astral Vines** and **Pollinator Husks**. The Remnant
+  and Stellar Flares themselves come in Phase 5, so the Corona is safe until then.
 
 - **The only place with Stellar Flares** (§7.1). Everywhere else in the End stays calm:
   no burning, no storms. Even at the Corona's border, a flare is only a bright glow on the
@@ -841,7 +869,7 @@ Each phase is playable on its own. Later phases build on earlier ones.
 |---|---|---|
 | **1. Blocks and flora** ✅ | Umbral Stone set, Stardust (falls up), Astral Glass, Leviathan Bone, Nebula Moss, Lumineshroom, Astral Vine, Starbloom, Comet Cress, Void Crystal and Meteoric Iron. **Done.** Orrery Bronze (tarnishing) moves to Phase 6 with the Orbital Stations it comes from. | Block and item registration, a block that rises instead of falls, a hanging crop, and generated JSON with an automatic checker |
 | **2. First biome: Nebula Fields** ✅ | The biome, its terrain features and low gravity | The End's biome list is **hard-coded in vanilla**. Adding biomes needs a custom `BiomeSource` registered in Java, then a data-pack override of `dimension/the_end.json` to use it. Biomes and features themselves are JSON. |
-| **3. Remaining biomes** | Aurora Shallows, Comet Wake, Dark Matter Belt, Shattered Observatory, the Corona, inversion pockets | More JSON worldgen, plus Java for inversion pockets |
+| **3. Remaining biomes** ✅ | Aurora Shallows, Comet Wake, Dark Matter Belt, Shattered Observatory, the Corona, inversion pockets, 42 new blocks and 2 new items. **Done.** | Biome-shaped terrain as JSON density functions, four Java features, a block entity for the pockets |
 | **4. Mobs** | Pollinator, Void Wanderer, Black Hole Guardian, Umbral Stalker, Corona Skimmer, Cinder Mite, then Drift Whale and the Watcher | Entity classes, AI goals, models (Blockbench → Java model code), spawn rules |
 | **5. Sky and Stellar Flares** | Moving stars, auroras, silhouettes, the Remnant, Corona flare phases, Flare Burn, solar wind, flare charging | A custom `DimensionSpecialEffects` for the End (client), a saved server-side flare timer, a network packet to sync flare state |
 | **6. Structures** | Comet Crater, Observatory Ruins, Wanderer Relay, Whalefall, Solar Array Ruins, Wormhole Maw, Constellation Maze, Orbital Station + Sentinel | Structure templates built in-game and saved as `.nbt`, plus jigsaw JSON. Maw linking, maze bridges and station power need Java. |
@@ -849,7 +877,7 @@ Each phase is playable on its own. Later phases build on earlier ones.
 | **8. Starforging** | Astral Forge, templates, the six upgrades, Rift Pearls | Data components on items, a menu and screen for the Forge, vanilla attribute modifiers (gravity, step height), a temporary rift-tile block, loot modifiers for smelting and pull, event listeners for hits, projectiles, fire damage and falling into the void |
 | **9. Polish** | Advancements, Echo Logs, music, config toggles, balance passes | JSON advancements, a Forge config file, playtesting |
 
-**Next:** Phase 3, the other four biomes (Aurora Shallows, Comet Wake, Dark Matter Belt, Shattered Observatory) and the Corona, plus gravity inversion pockets.
+**Next:** Phase 4, the mobs (and their spawn eggs).
 
 ---
 

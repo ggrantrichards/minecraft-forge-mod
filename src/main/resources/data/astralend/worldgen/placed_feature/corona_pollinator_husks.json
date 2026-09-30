@@ -52,6 +52,18 @@
           {
             "type": "minecraft:would_survive",
             "state": "astralend:pollinator_husk"
+          },
+          {
+            "type": "minecraft:matching_blocks",
+            "blocks": [
+              "astralend:sunscorched_stone",
+              "astralend:charred_end_stone"
+            ],
+            "offset": [
+              0,
+              -1,
+              0
+            ]
           }
         ]
       }
