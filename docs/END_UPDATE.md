@@ -137,18 +137,21 @@ in four biomes: Highlands, Midlands, Barrens and Small Islands.
 Soft, low islands wrapped in coloured fog (violet into teal), with faint drifting motes
 in the air.
 
-- **Terrain:** rounded islands of End Stone topped with **Nebula Moss**. They have
-  shallow craters and gentle overhangs.
-- **Low gravity:** players and mobs get about **0.65× gravity**, jump about **1.5× higher**,
-  and take less fall damage. Ender pearls thrown here fly roughly 30% farther.
-  - Uses vanilla's `gravity`, `jump_strength` and `safe_fall_distance` attributes, applied
-    while the player stands in the biome and removed when they leave.
-  - This can be turned off in the config.
+- **Built (Phase 2):** regions several hundred blocks across covering about a fifth of the
+  outer End, placed by their own noise on top of vanilla's End biomes.
+- **Terrain:** vanilla End islands, with every island floor topped with **Nebula Moss** (a
+  material rule). No chorus grows here, since chorus needs bare End Stone.
+- **Low gravity:** players and mobs get **0.65× gravity**, which makes them jump about
+  **1.5× higher** and fall more slowly, plus 3 extra blocks of safe fall. Ender pearls thrown
+  here fly about 20% farther.
+  - Uses vanilla's `gravity` and `safe_fall_distance` attributes, checked once a second.
+  - Applies in biomes tagged `#astralend:low_gravity`; a datapack can empty the tag to turn it
+    off.
 - **Flora:**
   - **Lumineshrooms**: glowing mushrooms that "breathe", slowly pulsing brighter and
     dimmer.
-  - **Astral Vines**: vines that grow upward off island undersides, the reverse of weeping
-    vines. They're climbable.
+  - **Astral Vines**: vines that grow upward from the moss, like twisting vines. They're
+    climbable.
   - **Starblooms**: flowers that always face the central island.
 - **Mobs:** End Pollinators, rare Drift Whales passing through.
 - **Feel:** the place you'd build your End base. It should be safe and beautiful, but
@@ -837,7 +840,7 @@ Each phase is playable on its own. Later phases build on earlier ones.
 | Phase | Content | Main technical work |
 |---|---|---|
 | **1. Blocks and flora** ✅ | Umbral Stone set, Stardust (falls up), Astral Glass, Leviathan Bone, Nebula Moss, Lumineshroom, Astral Vine, Starbloom, Comet Cress, Void Crystal and Meteoric Iron. **Done.** Orrery Bronze (tarnishing) moves to Phase 6 with the Orbital Stations it comes from. | Block and item registration, a block that rises instead of falls, a hanging crop, and generated JSON with an automatic checker |
-| **2. First biome: Nebula Fields** | The biome, its terrain features and low gravity | The End's biome list is **hard-coded in vanilla**. Adding biomes needs a custom `BiomeSource` registered in Java, then a data-pack override of `dimension/the_end.json` to use it. Biomes and features themselves are JSON. |
+| **2. First biome: Nebula Fields** ✅ | The biome, its terrain features and low gravity | The End's biome list is **hard-coded in vanilla**. Adding biomes needs a custom `BiomeSource` registered in Java, then a data-pack override of `dimension/the_end.json` to use it. Biomes and features themselves are JSON. |
 | **3. Remaining biomes** | Aurora Shallows, Comet Wake, Dark Matter Belt, Shattered Observatory, the Corona, inversion pockets | More JSON worldgen, plus Java for inversion pockets |
 | **4. Mobs** | Pollinator, Void Wanderer, Black Hole Guardian, Umbral Stalker, Corona Skimmer, Cinder Mite, then Drift Whale and the Watcher | Entity classes, AI goals, models (Blockbench → Java model code), spawn rules |
 | **5. Sky and Stellar Flares** | Moving stars, auroras, silhouettes, the Remnant, Corona flare phases, Flare Burn, solar wind, flare charging | A custom `DimensionSpecialEffects` for the End (client), a saved server-side flare timer, a network packet to sync flare state |
@@ -846,7 +849,7 @@ Each phase is playable on its own. Later phases build on earlier ones.
 | **8. Starforging** | Astral Forge, templates, the six upgrades, Rift Pearls | Data components on items, a menu and screen for the Forge, vanilla attribute modifiers (gravity, step height), a temporary rift-tile block, loot modifiers for smelting and pull, event listeners for hits, projectiles, fire damage and falling into the void |
 | **9. Polish** | Advancements, Echo Logs, music, config toggles, balance passes | JSON advancements, a Forge config file, playtesting |
 
-**Next:** Phase 2, the Nebula Fields biome and the End biome source.
+**Next:** Phase 3, the other four biomes (Aurora Shallows, Comet Wake, Dark Matter Belt, Shattered Observatory) and the Corona, plus gravity inversion pockets.
 
 ---
 

@@ -4,13 +4,38 @@ A Forge mod for **Minecraft Java Edition 26.3** with **Forge 66.0.8** that expan
 into a sparse, mysterious network of astral islands. The full plan is in
 [docs/END_UPDATE.md](docs/END_UPDATE.md).
 
-**Status:** Phase 1 of 9 (blocks, materials and plants). Mod ID: `astralend`.
+**Status:** Phase 2 of 9 (the first new biome, Nebula Fields). Mod ID: `astralend`.
 
-## What's in the mod so far (Phase 1)
+## What's in the mod so far
 
-Everything is in the **The Astral End** tab of the creative inventory. Until the new End
-biomes arrive (Phase 2 and 3), the natural blocks don't generate in the world yet, so get them
-from the creative tab or with `/give @s astralend:<name>`.
+### Phase 2: the Nebula Fields biome
+
+The outer End (beyond about 1,000 blocks from the dragon's island) now has **Nebula Fields**
+mixed in with the vanilla biomes: regions several hundred blocks across, about a fifth of the
+outer End.
+
+- **Islands are topped with Nebula Moss** and scattered with glowing **Lumineshrooms**,
+  **Starblooms** and upward-growing **Astral Vines**. No chorus grows there.
+- **Violet fog** and slowly drifting purple motes.
+- **Low gravity:** you (and mobs) fall about a third slower and jump about 1.5x higher, and
+  can fall 3 more blocks before taking damage. Ender pearls thrown there fly about 20% further.
+  It switches on and off within a second of crossing the biome border.
+- Endermen spawn as usual, and return End Gateways can still appear.
+- Everything within 1,000 blocks of the centre, the dragon fight and End Cities are unchanged.
+
+**To find it:** start a **new world** (End areas already explored in an older world stay as they
+were), go to the End, then use an End Gateway or fly outward. In creative, `/locate biome
+astralend:nebula_fields` gives the nearest one, and the F3 screen shows the biome you're in.
+
+**To turn low gravity off** (for a server, say), add a datapack with an empty
+`data/astralend/tags/worldgen/biome/low_gravity.json`: `{"replace": true, "values": []}`.
+
+### Phase 1: blocks, materials and plants
+
+Everything is in the **The Astral End** tab of the creative inventory. Nebula Moss,
+Lumineshrooms, Starblooms and Astral Vines now generate in the Nebula Fields; the rest (the
+stones, ores, Stardust, Leviathan Bone) arrive with their biomes in Phase 3, so until then get
+them from the creative tab or with `/give @s astralend:<name>`.
 
 ![Every Phase 1 texture](docs/images/textures.png)
 
@@ -164,6 +189,8 @@ src/main/java/com/ggrantrichards/astralend/
   ModItems.java               items that aren't blocks
   ModCreativeTabs.java        "The Astral End" creative tab
   block/                      blocks with custom behaviour (Stardust, plants, crops)
+  world/                      the End biome source, biome keys, low gravity
+  dev/WorldgenSurvey.java     test tool: maps and samples the generated End (CI only)
 src/main/resources/
   META-INF/mods.toml          mod ID, name, version, dependencies
   pack.mcmeta                 required: makes Minecraft load assets/ and data/ below
@@ -179,6 +206,9 @@ src/main/resources/
     astralend/recipe/*.json       crafting recipes
     astralend/loot_table/blocks/  what a block drops
     minecraft/tags/block/...      "mineable with pickaxe", "needs iron tool"
+    astralend/worldgen/           the Nebula Fields biome, its plant features, the End's
+                                  noise settings and surface ("material") rule
+    minecraft/dimension/the_end.json  plugs our biome source into the End
 tools/
   textures/make_textures.py   draws every texture, plus docs/images/textures.png
   generate_resources.py       writes all the JSON above from one list
@@ -214,8 +244,11 @@ name is missing. If **all** your textures, names and recipes are missing and the
 "failed to load a valid ResourcePackInfo", `src/main/resources/pack.mcmeta` is missing or broken.
 
 **Automatic checks:** every push to GitHub builds the mod, loads it in a server (checking
-recipes, loot tables and tags) and boots the real game client (failing if any model or texture
-is missing). Results are on the repository's **Actions** tab.
+recipes, loot tables and tags), **surveys a freshly generated End** (a biome map, block counts
+from 81 chunks inside Nebula Fields, and a low-gravity test) and boots the real game client
+(failing if any model or texture is missing). Results are on the repository's **Actions** tab.
+To run the survey yourself: `./gradlew runServer -PastralendSurvey` (it prints a report to the
+log and stops).
 
 ## 7. Build a jar and play it in real Minecraft
 
@@ -241,7 +274,7 @@ Rename the Java package `com.ggrantrichards.astralend` with IntelliJ's Refactor 
 - Official MDK examples (Mixins, Access Transformers, and more): <https://github.com/MinecraftForge/MDKExamples>
 - Forge source: <https://github.com/MinecraftForge/MinecraftForge> (the `26.3` branch)
 - Forge Discord and the forums at forums.minecraftforge.net
-- What's next for this mod: Phase 2, the first new biome (Nebula Fields). See the roadmap in
+- What's next for this mod: Phase 3, the other four biomes. See the roadmap in
   [docs/END_UPDATE.md](docs/END_UPDATE.md).
 
 ## Updating to a newer Minecraft version
