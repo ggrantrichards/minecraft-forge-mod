@@ -1,7 +1,6 @@
 package com.ggrantrichards.astralend.dev;
 
 import com.ggrantrichards.astralend.ModBlocks;
-import com.ggrantrichards.astralend.world.AstralEndBiomeSource;
 import com.ggrantrichards.astralend.world.LowGravity;
 import com.ggrantrichards.astralend.world.ModBiomes;
 import com.mojang.logging.LogUtils;
@@ -20,11 +19,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeResolver;
 import net.minecraft.world.level.biome.Biomes;
-import net.minecraft.world.level.biome.Climate;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import org.slf4j.Logger;
 
@@ -67,8 +68,9 @@ public final class WorldgenSurvey {
 
     private static void survey(MinecraftServer server, List<String> failures) {
         ServerLevel end = server.getLevel(Level.END);
-        Climate.Sampler sampler = end.getChunkSource().randomState().sampler();
-        BiomeResolver biomes = end.getChunkSource().getGenerator().getBiomeSource().createResolver(sampler);
+        RandomState randomState = end.getChunkSource().randomState();
+        ChunkGenerator generator = end.getChunkSource().getGenerator();
+        BiomeResolver biomes = generator.getBiomeSource().createUncachedResolver(randomState);
 
         // ---- 1. Biome map ----
         log("Biome map of the End, " + (2 * MAP_RADIUS) + " x " + (2 * MAP_RADIUS) + " blocks, north up, one character = "
@@ -76,8 +78,7 @@ public final class WorldgenSurvey {
         log("  O = central island (vanilla)   N = Nebula Fields   H/M/B/s = vanilla Highlands/Midlands/Barrens/Small Islands");
         Map<String, Integer> outerCounts = new HashMap<>();
         int outerTotal = 0;
-        BlockPos bestNebula = null;
-        double bestErosion = Double.NEGATIVE_INFINITY;
+        List<BlockPos> nebulaSpots = new ArrayList<>();
         for (int z = -MAP_RADIUS; z <= MAP_RADIUS; z += MAP_STEP * 2) {
             StringBuilder row = new StringBuilder();
             for (int x = -MAP_RADIUS; x <= MAP_RADIUS; x += MAP_STEP) {
@@ -95,13 +96,8 @@ public final class WorldgenSurvey {
                 if (c != 'O' && distance < 1000) {
                     failures.add("non-central biome " + c + " found only " + (int) distance + " blocks from the centre");
                 }
-                // Remember the Nebula Fields spot with the most island mass (vanilla's island noise), within 4,000 blocks.
                 if (c == 'N' && distance < 4000) {
-                    double erosion = sampler.erosion().sampleValue(x, 64, z);
-                    if (erosion > bestErosion) {
-                        bestErosion = erosion;
-                        bestNebula = new BlockPos(x, 64, z);
-                    }
+                    nebulaSpots.add(new BlockPos(x, 64, z));
                 }
             }
             log("  " + row);
@@ -119,6 +115,29 @@ public final class WorldgenSurvey {
                 failures.add("vanilla biome " + vanilla + " no longer appears in the outer End");
             }
         }
+        // Pick the Nebula Fields spot nearest the centre that has plenty of islands, using the
+        // terrain generator's surface height (no chunks generated yet).
+        nebulaSpots.sort((a, b) -> Long.compare(distSqr(a), distSqr(b)));
+        BlockPos bestNebula = null;
+        int bestLand = -1;
+        for (BlockPos spot : nebulaSpots) {
+            int land = 0;
+            for (int ox = -64; ox <= 64; ox += 32) {
+                for (int oz = -64; oz <= 64; oz += 32) {
+                    int h = generator.getBaseHeight(spot.getX() + ox, spot.getZ() + oz, Heightmap.Types.WORLD_SURFACE_WG, end, randomState);
+                    if (h > end.getMinY() + 1) {
+                        land++;
+                    }
+                }
+            }
+            if (land > bestLand) {
+                bestLand = land;
+                bestNebula = spot;
+            }
+            if (land >= 15) {
+                break; // 15 of 25 sample points on land is plenty
+            }
+        }
         if (bestNebula == null) {
             failures.add("no Nebula Fields within 4,000 blocks of the centre");
             return;
@@ -128,7 +147,7 @@ public final class WorldgenSurvey {
         int cx = bestNebula.getX() >> 4;
         int cz = bestNebula.getZ() >> 4;
         log("Generating " + (2 * AREA_CHUNKS + 1) * (2 * AREA_CHUNKS + 1) + " chunks around " + bestNebula.getX() + ", "
-            + bestNebula.getZ() + " (Nebula Fields, most island-dense spot found)...");
+            + bestNebula.getZ() + " (the nearest Nebula Fields spot with plenty of islands)...");
         Map<Block, Integer> counts = new HashMap<>();
         int nebulaColumns = 0;
         int columnsWithLand = 0;
@@ -224,6 +243,10 @@ public final class WorldgenSurvey {
         } else {
             failures.add("found no Nebula Moss surface to test gravity on");
         }
+    }
+
+    private static long distSqr(BlockPos pos) {
+        return (long) pos.getX() * pos.getX() + (long) pos.getZ() * pos.getZ();
     }
 
     private static char symbol(Holder<Biome> biome) {
