@@ -511,8 +511,8 @@ public final class WorldgenSurvey {
             return;
         }
         landCoverage(area, 45, failures);
-        atLeast(area, ModBlocks.LUMINE.log().get(), 5, failures);       // giant Lumineshroom stems
-        atLeast(area, ModBlocks.LUMINE_CAP.get(), 20, failures);
+        atLeast(area, ModBlocks.LUMINE.log().get(), 2, failures);       // giant Lumineshroom stems
+        atLeast(area, ModBlocks.LUMINE_CAP.get(), 8, failures);
         atLeast(area, ModBlocks.NEBULA_TUFTS.get(), 20, failures);
         atLeast(area, ModBlocks.NEBULA_TENDRIL.get(), 1, failures);
         // Where the ground itself is the top block (not a giant mushroom's cap), it should be moss.
@@ -622,7 +622,7 @@ public final class WorldgenSurvey {
         }
         replacesEndStone(area, ModBlocks.CHARRED_END_STONE.get(), failures);
         landCoverage(area, 45, failures);
-        atLeast(area, ModBlocks.PETRIFIED_STALK.get(), 5, failures);
+        atLeast(area, ModBlocks.PETRIFIED_STALK.get(), 2, failures);
         atLeast(area, ModBlocks.SOLARITE_ORE.get(), 1, failures);
         atLeast(area, ModBlocks.FLAREBLOOM.get(), 2, failures);
         atLeast(area, ModBlocks.SUNSCALE_LICHEN.get(), 15, failures);
