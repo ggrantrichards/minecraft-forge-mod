@@ -33,13 +33,17 @@ Every idea in this document has to pass these five tests.
 ## 2. Lore: what the End actually is
 
 This lore is never stated outright. Players piece it together from ruins, Star Charts,
-Echo Logs and the behaviour of mobs.
+constellations and the behaviour of mobs.
+
+> **Phase 9:** *Echo Logs were cut.* Mojang never puts readable lore in the game - the Ancient
+> Cities and Trail Ruins say nothing in words - so neither does this. Where the rows below mention
+> Echo Logs, the hint now lives only in what the world shows.
 
 - **The Star Leviathans.** Long ago, colossal creatures swam between the stars, and they
   could swallow a traveller and carry them from one star to another.
   - **Drift Whales** are their last, much smaller descendants.
 - **The Cartographers.** A people who learned to ride the Leviathans. They mapped the
-  sky, built **Orbital Stations** as waystations, and made the End their crossroads: a
+  sky, built **Orreries** as waystations, and made the End their crossroads: a
   plaza of stone floating between the stars.
 - **The Maws.** When a Leviathan died, the Cartographers kept its skull open. Its mouth
   still led where the creature had last travelled. These fossil skulls are the
@@ -67,7 +71,6 @@ Echo Logs and the behaviour of mobs.
 **How lore is delivered:**
 - **Star Charts**: map-like items found in ruins. Each shows a fragment of the old star
   road and marks one real, nearby structure.
-- **Echo Logs**: short, vague text read by holding a Data Shard in a Portal Lens (§8.4).
 - **Constellations**: the star patterns in Constellation Mazes (§10) are the
   Cartographers' route markers. Solving one teaches a new Star Chart.
 - **Architecture**: ruins in a style unlike End Cities, with rounded arches, star inlays,
@@ -91,14 +94,13 @@ Vanilla facts it hooks into:
 | **Chorus plants** grow on End Stone, and **chorus fruit** teleports you | Chorus is the one plant that survived the collapse, and it still "remembers" short jumps along the star road. It stays the End's staple food and is an alternative fuel for Maw jumps. |
 | **Eyes of Ender** fly toward strongholds; **End Portal frames** sit in strongholds | The Overworld portals are the far end of the star road. Echo Logs suggest whoever built strongholds learned the trick from the Cartographers. |
 | The **Ancient City** in the Deep Dark has a huge portal-shaped frame of reinforced deepslate that never works | A failed attempt to build a Maw from below. One rare Echo Log mentions "the deep builders who reached for us and went quiet". It's a hint only, never confirmed. |
-| The End was first imagined as a floating **"Sky Dimension"** during early development | The Orbital Stations in the high sky are a quiet nod to it. |
+| The End was first imagined as a floating **"Sky Dimension"** during early development | The Orreries in the high sky are a quiet nod to it. |
 | The **End Poem** plays after the first dragon kill, with two unseen voices discussing the player | The Watcher can be read as one of those voices, or not. **The mod never quotes or explains the End Poem;** it only leaves room for that reading. |
 
 **Rules for new content:**
 - Vanilla mobs, blocks and the dragon fight behave exactly as before.
 - New lore may add meaning, but it never "solves" a vanilla mystery outright.
-- Echo Logs are short and fragmentary, and use the same distorted Enderman-style voice
-  sounds instead of voice acting.
+- No text tells the story: the world does (Phase 9).
 
 ---
 
@@ -117,7 +119,7 @@ in four biomes: Highlands, Midlands, Barrens and Small Islands.
 - **Void is still the dominant biome.** New biomes never raise island density above
   vanilla Highlands. Travel between them should still take elytra, pearls, bridges or a
   Wormhole Maw.
-- **The high sky (Y 180+) is new territory.** Orbital Stations hang up there, far above
+- **The high sky (Y 180+) is new territory.** Orreries hang up there, far above
   the islands, so players have a reason to look (and fly) up.
 
 | Biome | Rarity | Mood | Main purpose |
@@ -127,7 +129,7 @@ in four biomes: Highlands, Midlands, Barrens and Small Islands.
 | **Comet Wake** | Uncommon | Scarred, sparkling | Stardust, Meteoric Iron, craters, live comets |
 | **Dark Matter Belt** | Rare | Tense, dim, disorienting | Void Crystal, gravity inversion, danger |
 | **Shattered Observatory** | Very rare | Ancient, sacred | Lore, Wormhole Maws, Constellation Mazes, the Watcher |
-| **The Corona** | Rare | Scorched, blinding, rich | The only place with Stellar Flares. High-risk, high-value: Solarite, Charged Void Crystal, Flare Cells |
+| **The Corona** | Rare | Scorched, blinding, rich | The only place with Stellar Flares. High-risk, high-value: Solarite, Charged Void Crystal, Flare Bottles |
 
 ---
 
@@ -254,7 +256,7 @@ The rarest biome: a cluster of islands around a huge, broken ring of obsidian an
 - **Structures:**
   - always one **Wormhole Maw**;
   - usually one **Constellation Maze**;
-  - often an **Orbital Station** hanging in the sky above.
+  - often an **Orrery** hanging in the sky above.
 - **Flora:** overgrown with Astral Vines and Starblooms, as if someone once tended a
   garden here.
 - **The Watcher** can only be met here, sometimes.
@@ -298,7 +300,7 @@ far away, so players always know where the Corona is (and can choose to avoid it
     exposed to flares. **Deep veins are safe but much sparser.** Surface mining is fast
     and risky; deep mining is slow and safe.
   - **Charged Void Crystal:** Void Crystal only becomes charged here, during a flare.
-  - **Flare Cells:** the batteries that power Orbital Stations, charged only here.
+  - **Flare Bottles:** the batteries that power Orreries, charged only here.
   - **Solar Array Ruins** (§10): Cartographer mirror-farms that once harvested the
     flares, with some of the best loot in the End.
 - **Feel:** the End's Nether. It's beautiful from a distance and dangerous up close.
@@ -360,20 +362,24 @@ last small descendant of the Star Leviathans.
   softly) when they hum.
 
 ### 5.3 Void Wanderer (neutral)
-A floating crystalline probe: a small octahedron with a single lens. It's a Cartographer
-survey drone that is still running.
+> **Revamped in Phase 9.** It was a "survey drone" with a scanning beam and a laser - space-station
+> tech, which isn't Minecraft. Now it's a clockwork construct of the Cartographers, in the same family
+> as the copper golem and the breeze: magic and craft, not machinery.
+
+A floating clockwork construct: a rounded bronze body gone green with verdigris, void crystal set
+in its seams, one great glass lens, a crystal-tipped finial and a gimbal ring that spins round it.
+The Cartographers built them to chart the dark, and some still do.
 
 - **Behaviour:**
-  - It wanders the edges of Dark Matter Belts, Orbital Stations and Observatory ruins.
-  - When it notices a player, it approaches and shines a slow **scanning beam** over them.
-  - **If you stand still and let it finish (5 seconds), it drops a Data Shard and leaves.**
-    This rewards curiosity instead of violence.
-  - Each Wanderer only scans each player once.
-  - If you attack it, it becomes hostile, fires short laser pulses, and teleports away
-    when low. Killing it drops only a **Cracked Lens**, a crafting scrap.
-  - Wanderers avoid the Corona. The few that stray in during a flare malfunction,
-    drifting and sparking, unable to scan.
-- **Data Shards:** used in utility recipes (Portal Lens, powering stations, Echo Logs).
+  - It drifts the edges of Dark Matter Belts and Observatory ruins, and roosts in Abandoned Orreries.
+  - When it notices a player, it floats over and **studies** them: a ring of light sweeps up and down.
+  - **If you stand still and let it finish (5 seconds), it leaves you a Chart Fragment** - a shard of
+    the star map it carries - and drifts away. This rewards curiosity instead of violence.
+  - Each Wanderer studies each player once.
+  - If you attack it, it turns hostile and looses **starbolts** (homing shulker bullets: dodge them
+    or knock them away), and blinks away when low. Killing it drops its **Cracked Lens**.
+- **Chart Fragments** open Observatory vaults (like trial keys) and go into the Portal Lens, with the
+  Cracked Lens.
 
 ### 5.4 Black Hole Guardian (hazard mob)
 A small, unstable singularity: a black sphere with a rotating accretion ring.
@@ -487,9 +493,10 @@ renderer, not in the world.
   - Each biome has its own fog colour, particles, ambient sound loop and "mood" sounds,
     like cave sounds.
   - Nebula Fields hum softly. Dark Matter Belts are nearly silent.
-- **Music:** 3–4 new End tracks that play only in the new biomes, plus the "Leviathan"
-  disc.
-- **Config:** every visual effect has an on/off toggle for low-end machines.
+- **Music:** *cut in Phase 9.* New tracks and a "Leviathan" disc would need real composed music;
+  without it, a disc would be a placeholder, which is worse than none.
+- **Config:** *cut in Phase 9.* Every sky effect is drawn cheaply in the sky renderer (§13), so there's
+  nothing to switch off; the gameplay switches are data-pack tags (§15), the way vanilla does it.
 
 ---
 
@@ -499,7 +506,7 @@ renderer, not in the world.
 > **Built (Phase 5):** the whole cycle as described below, Flare Burn (armour doesn't help; cover,
 > Sunshades and Flare Ward do), Flareblooms opening (Flare Pollen), Sunscale Lichen charging, Skimmers
 > riding the flare and refilling in the afterglow, Cinder Mite swarms, the solar wind for elytra,
-> and Collector Pedestals charging Void Crystal and Flare Cells. Not yet: the Radiant upgrade (Phase 8)
+> and Collector Pedestals charging Void Crystal and Flare Bottles. Not yet: the Radiant upgrade (Phase 8)
 > and the config file (Phase 9); `/astralend flare` lets operators set the phase.
 
 The Remnant pulses about every **15–25 minutes**. **Flares happen only in the Corona
@@ -535,8 +542,8 @@ only as a brief glow on the horizon where the Remnant hangs.
   crystal in from the Dark Matter Belts, so you have to guard your pedestals while they
   charge.
   - Charged Void Crystal is needed for Maws and the Radiant upgrade.
-- **Flare Cells:** empty cells placed on a Collector Pedestal fill up. They power
-  Orbital Stations anywhere in the End (§10.3).
+- **Flare Bottles:** empty cells placed on a Collector Pedestal fill up. They power
+  Orreries anywhere in the End (§10.3).
 - **Flareblooms open**, giving Flare Pollen.
 - **Skimmers become shearable** in the afterglow.
 - **Solar wind:** inside the Corona, elytra flight gets a strong push in the flare's
@@ -587,71 +594,69 @@ something you can interact with, without the lag and bugs of moving islands.
 |---|---|---|---|
 | **Void Crystal** | Void Crystal Ore in Umbral Stone (Dark Matter Belts) | Mine with an iron pickaxe or better. Fortune works. | Starforge Alloy, Portal Lens, Starforge upgrades |
 | **Charged Void Crystal** | Void Crystal charged during a flare, only in the Corona | Flare Charging (§7.1) | Wormhole Maws, Radiant upgrade |
-| **Solarite** | Solarite Ore, only in the Corona. Rich exposed surface veins, sparse deep veins. | Mine with a diamond pickaxe. Smelt the raw chunks. | Radiant upgrade, Flare Cells, Solar Lanterns, Sunshade frames |
-| **Flare Cell** | Crafted from Solarite and Astral Glass, then charged during a Corona flare | Collector Pedestal in the Corona | Powers Orbital Stations |
+| **Solarite** | Solarite Ore, only in the Corona. Rich exposed surface veins, sparse deep veins. | Mine with a diamond pickaxe. Smelt the raw chunks. | Radiant upgrade, Flare Bottles, Solar Lanterns, Sunshade frames |
+| **Flare Bottle** | Crafted from Solarite and Astral Glass, then charged during a Corona flare | Collector Pedestal in the Corona | Powers Orreries |
 | **Meteoric Iron** | Meteoric Iron Ore in Comet Cores (Comet Wake), live comets | Mine with a diamond pickaxe. Smelt the raw chunks. | Starforge Alloy, Gravity Wells, the Astral Forge |
-| **Temporal Crystal** | Loot only: craters, station vaults, maze rewards | Can't be mined or farmed | Portal Lens, Temporal upgrade, Maw repair |
+| **Temporal Crystal** | Loot only: craters, Orrery vaults, maze rewards | Can't be mined or farmed | Portal Lens, Temporal upgrade, Maw repair |
 | **Stardust** | Stardust Blocks (Comet Wake), comet tails | Shovel, or fly through a comet tail | Building, Astral Glass, Comet Cress farms |
-| **Orrery Bronze** | Salvaged from Orbital Stations | Mine station hull blocks | Station-style building, lamps and grates |
+| **Orrery Bronze** | Salvaged from Orreries | Mine station hull blocks | Station-style building, lamps and grates |
 
 **Starforge Alloy** = 2 Void Crystal + 2 Meteoric Iron Ingot + 1 Glowing Spore, crafted
 on a crafting table like a Netherite Ingot (decided in Phase 8: the Forge's own slots are for
 upgrading).
 
 ### 8.2 Building blocks
-Every stone type gets the full vanilla set: slabs, stairs, walls, polished, bricks and
-chiseled.
+> **Phase 9:** this list now says what was built. Ideas that didn't make it are marked *cut*, with why.
 
-- **Umbral Stone** (+ Polished, Bricks, Chiseled "Eclipse" pattern)
-- **Pale End Stone** (+ Bricks, Tiles)
-- **Charred End Stone**
-- **Observatory Quartz** (+ Star Inlay variant)
-- **Leviathan Bone** (+ Carved, Fossil Plate). This is the building material of the Maws.
-- **Orrery Bronze** (+ Cut, Grate, Lamp).
-  - It **tarnishes from bronze to violet over time**, like copper oxidising.
-  - Waxing it with Glowing Spores stops the tarnishing.
-- **Stardust Block**: falls up, drifting one block at a time until it hits something.
-- **Astral Glass**: smelted from Stardust. A dark glass with a faint star speckle.
-  - A rare **Starfield Glass** variant shows the End-portal starfield effect.
-  - Starfield Glass is expensive and limited to a handful per build, for performance.
-- **Comet Ice**
-- **Nebula Moss** (a ground cover that spreads like moss) and **Moss Carpet**
-- **Spore Lantern** (light level 13) and **Whalelight Scale Block** (light level 10)
-- **Gravity Well**, **Void Trap** (Singularity Shard utility blocks)
-- **Collector Pedestal**: charges Void Crystal and Flare Cells during Corona flares.
-- **Sunshade**: a canopy block (Skimmer Film + Solarite frame) that blocks Flare Burn.
-  Quick to place and break, for shelter while mining.
-- **Solar Lantern** (light level 15): Solarite + Cinder.
-- **Sunscorched Stone** (+ Polished, Bricks), **Sunscale Lichen**, **Pollinator Husk**
-  (decoration).
+- **Umbral Stone** (+ Polished, Bricks, Chiseled, stairs, slabs, walls), like deepslate.
+- **Pale End Stone** (+ Bricks, Tiles, stairs, slabs, walls).
+- **Charred End Stone** (+ stairs, slab, wall), **Sunscorched Stone** (+ Polished, Bricks, stairs,
+  slabs, walls).
+- **Observatory Quartz** (+ Pillar, Star Inlay, stairs, slab, wall).
+- **Leviathan Bone Block** (rotates like a bone block). *Carved and Fossil Plate variants: cut* - the
+  bone block already does the job, as vanilla's does.
+- **Orrery Bronze**, with copper's whole family since Phase 9: **Cut Orrery Bronze**, its **stairs** and
+  **slabs**, and **Orrery Bronze Grates**, each in three stages (bright, tarnished, weathered violet). It
+  **tarnishes over time** like copper oxidising; an axe scrapes it back a stage; **honeycomb waxes it**
+  (like copper, rather than the Glowing Spores first planned), and an axe takes the wax off. Plus the
+  **Orrery Lamp**, **Bronze Shutters** and the **Orrery Heart** (Orrery-only).
+- **Stardust Block**: falls up, drifting until it hits something. **Astral Glass**: smelted from
+  Stardust. *Starfield Glass: cut* - an end-portal-effect glass needs its own renderer and only
+  duplicates the End Portal's look.
+- **Comet Ice**, **Nebula Moss** and (Phase 9) **Nebula Moss Carpet**.
+- **Spore Lantern** (light 15) and **Whalelight Scale** (light 10).
+- **Collector Pedestal**: fills a Flare Bottle or charges Void Crystal during Corona flares.
+- **Sunshade**: a canopy (Skimmer Film over Solarite) that blocks Flare Burn.
+- **Sunscale Lichen**, **Pollinator Husk**, **Ashen Lumineshroom**, **Petrified Astral Vine** (decoration).
+- *Gravity Well and Void Trap: cut* - Singularity Shards became a Starforge material instead, and
+  "utility" blocks that move mobs about were the least Minecraft-like part of the plan.
+- *Solar Lantern: cut* - a third full-brightness light would add nothing to the Spore Lantern; Cinder
+  got a second use instead (it makes fire charges, like blaze powder).
 
 ### 8.3 Cosmic plants
 
 | Plant | Behaviour | Uses |
 |---|---|---|
-| **Lumineshroom** | Grows on Nebula Moss, End Stone or Umbral Stone. Its cap pulses in a slow "breath" cycle (an animated texture). Its light level stays at 10, so it costs nothing. | Spore Lanterns, glowing stew, dye |
-| **Astral Vine** | Grows **upward** from the undersides of blocks. Climbable. Shears stop growth. | Decoration, climbing up island edges |
-| **Starbloom** | A flower that rotates to face the End's centre. Vanilla compasses and clocks spin uselessly in the End, so this is the End's only natural way to find your bearings. | Pollinator breeding, dye, **Star Compass** (points to the central island, works in the End) |
-| **Shimmer Grass** | A short, swaying grass in the Aurora Shallows | Decoration, Pollinator food |
-| **Comet Cress** | Hangs from the underside of Stardust and grows downward, in any light. (Stardust rises until it hits a ceiling, so its underside is the only free face.) | Food (2 hunger), farming |
-| **Gravlily** | A rare flower from Dark Matter Belt inversion pockets. It grows upside down. | Brewing: **Potion of Buoyancy** (slow fall + a small jump boost) |
+| **Lumineshroom** | Grows on Nebula Moss, End Stone or Umbral Stone. Its cap "breathes" (an animated texture); its light stays at 10. | Spore Lanterns, Glowing Stew |
+| **Astral Vine** | Grows **upward**. Climbable. Bone meal grows it. | Decoration, climbing up island edges |
+| **Starbloom** | A star-shaped flower that turns toward the End's centre. | Yellow dye, Night Vision suspicious stew, Pollinator breeding, the **Star Compass** |
+| **Shimmer Grass**, **Shimmer Reeds**, **Nebula Tufts**, **Nebula Tendrils**, **Flarebloom** | Ground cover and flowers of their biomes (§4). | Decoration; Flarebloom gives orange dye and Flare Pollen |
+| **Comet Cress** | Hangs from the underside of Stardust and grows downward, in any light. | Food, Glowing Stew |
+| *Gravlily* | *Cut* - a flower that only grows inside inversion pockets is too rare to find and too fiddly to farm, and the potion it made duplicated Slow Falling. | - |
 
 ### 8.4 Tools and utility items
-- **Portal Lens** (Data Shard ×3 + Void Crystal + Temporal Crystal + Spyglass). A
-  spyglass upgrade that:
-  - shows distortion outlines (Umbral Stalkers, hidden ore glints);
-  - points toward the nearest known Wormhole Maw;
-  - reads Echo Logs from Data Shards;
-  - is also the key used to wake and link Maws.
-- **Telescope use:**
-  - Constellation Mazes are built around **vanilla 26.3's telescope**: star-bridges
-    appear only while you look through it (§10).
-  - The Portal Lens also works, at shorter range.
-- **Star Chart**: a lore map found in ruins or given by the Watcher.
-- **Stalker Cloak**: a cape worn in the chest slot, like an elytra. Mobs lose track of
-  you faster, but you give up both your chestplate and your elytra to wear it.
-- **Glowing Stew**: Lumineshroom + Comet Cress + bowl. Gives a short Glowing and Night
-  Vision effect.
+- **Portal Lens** (a spyglass, a Void Wanderer's Cracked Lens, Void Crystal, a Temporal Crystal and two
+  Chart Fragments): the key that wakes Wormhole Maws and attunes you to them (§10.1). *Its other planned
+  powers (outlines, a Maw finder, reading Echo Logs) were cut* - one clear job per item.
+- **Maze Telescope**: the Constellation Mazes' own fixed telescopes (§10.2, §15).
+- **Star Chart**: found in ruins or left by the Watcher; points toward a biome or structure.
+- **Star Compass** (Phase 9: a compass with four Starblooms round it): points to the End's central
+  island, like a lodestone compass with no lodestone. Vanilla compasses spin in the End, so this is
+  the way home.
+- **Glowing Stew** (Phase 9: Lumineshroom, Comet Cress and a bowl): food, and 30 seconds of Night
+  Vision. (Not Glowing as first planned: making yourself glow for others to see is a curse, not a meal.)
+- *Stalker Cloak: cut* - a cape in the chest slot needs its own wearable renderer and competed with
+  the elytra and with Starforging; the Umbral Membrane went to the Voidwalker upgrade instead.
 
 ---
 
@@ -684,7 +689,7 @@ upgrade. The choice is which one.**
 - **Not every upgrade fits every item,** as with enchantments. The table shows where each
   one applies.
 - **How to apply one:** at the **Astral Forge** (Meteoric Iron block + Observatory Quartz
-  + Void Crystal), using a **Starforge Template** (from station vaults and maze rewards,
+  + Void Crystal), using a **Starforge Template** (from Orrery vaults and maze rewards,
   duplicable like smithing templates), **1 Starforge Alloy**, and the upgrade's material.
   Applying a new upgrade replaces the old one.
 - **Looks:** each upgrade adds a colour accent to the item, like an armour trim, so you can
@@ -712,7 +717,7 @@ upgrade. The choice is which one.**
   - The chestplate holds **one Rift Pearl**. When you fall into the void in any
     dimension, the pearl is used up and you're returned to your last footing.
   - **Rift Pearls are rare:** every boss drops one (Ender Dragon, Wither, Warden, Elder
-    Guardian, Station Sentinel), and they're rare vault loot. That keeps Void Recall from
+    Guardian, Orrery Sentinel), and they're rare vault loot. That keeps Void Recall from
     being a free safety net.
 
 **Meteoric**
@@ -762,10 +767,10 @@ upgrade. The choice is which one.**
 | **Comet Crater** | Comet Wake, sometimes other outer islands | A bowl of Stardust and Charred Stone around a Comet Core. There's a loot cache at the centre with a chance of **Temporal Crystals**, Meteoric Iron and Star Charts. Some craters are still "hot", with ember particles and fire around the rim. |
 | **Wormhole Maw** | Always in the Shattered Observatory, rarely elsewhere | See §10.1 |
 | **Constellation Maze** | Shattered Observatory, rarely Nebula Fields | See §10.2 |
-| **Abandoned Orbital Station** | High sky (Y 180+), mostly above Observatories | See §10.3 |
-| **Observatory Ruins** | Shattered Observatory, rare in Nebula Fields | A domed ruin with star mosaics and a telescope made of blocks. Vaults (opened with Data Shards, like trial keys) hold Starforge Templates, Temporal Crystals and Echo Logs. It has the only guaranteed Astral Forge recipe book. |
-| **Solar Array Ruins** | The Corona | Fields of broken Cartographer mirrors that once gathered flare light, around a sunken control room. The best loot in the End: Starforge Templates, Solarite blocks, Temporal Crystals, a guaranteed charged Flare Cell. The mirrors focus flares, so Flare Burn is doubled on the open field. |
-| **Wanderer Relay** | Dark Matter Belt edges | A thin floating spire where Void Wanderers dock. It has no loot, but Wanderers spawn here, and its top holds an Echo Log. |
+| **Abandoned Orrery** | High sky (Y 180+), mostly above Observatories | See §10.3 |
+| **Observatory Ruins** | Shattered Observatory, rare in Nebula Fields | A domed ruin with star mosaics and a telescope made of blocks. Vaults (opened with Chart Fragments, like trial keys) hold Starforge Templates, Temporal Crystals and Charged Void Crystal. |
+| **Solar Array Ruins** | The Corona | Fields of broken Cartographer mirrors that once gathered flare light, around a sunken chamber. The best loot in the End: Starforge Templates, Solarite blocks, Temporal Crystals, a guaranteed Bottled Flare. The mirrors focus flares, so Flare Burn is doubled on the open field. |
+| **Wanderer Relay** | Dark Matter Belt edges | A thin floating spire with mooring rings where Void Wanderers rest. A landmark with no loot, like a fossil. |
 | **Whalefall** | Aurora Shallows, very rare | The fossilised ribs of a Leviathan, arched over an island. Whalelight Scales grow on the bones, and it has one lore chest. |
 
 ### 10.1 Wormhole Maws
@@ -806,38 +811,35 @@ between them is **invisible**.
   Chart revealing a Maw. Each maze also unlocks a constellation you can then see in the
   sky everywhere, like a collection.
 
-### 10.3 Abandoned Orbital Stations
-What it would look like if ancient aliens built in Minecraft's style: a giant **ring** or
-**spoked wheel** hanging high in the sky.
+### 10.3 Abandoned Orreries
+> **Revamped in Phase 9** from the "Abandoned Orbital Station": a space station with crew quarters,
+> hydroponics, a docking bay and a power core isn't something Mojang would build. An orrery - a
+> clockwork model of the heavens - is: the Cartographers charted the stars, so their greatest work is
+> a model of them, hung in the sky.
 
-- **Materials:** Orrery Bronze, Astral Glass and Leviathan Bone. It's tarnished violet
-  with age, overgrown with Astral Vines, and very quiet.
+The Cartographers' great **orrery**: a giant spoked wheel of **Orrery Bronze** hanging high in the
+sky, its axle crowned with a gilded sun.
+
+- **Materials:** Orrery Bronze (tarnished violet with age), Astral Glass and Leviathan Bone,
+  overgrown with Astral Vines, and very quiet.
 - **Getting there:** there's no stair or ladder. You need an elytra, pearls or a Gravity
   Inversion "lift" from the island below.
-- **Artificial gravity:** the ring's floor is on the *inside* of the wheel.
-  - Gravity-plating blocks point "down" toward the outer rim, so as you walk around the
-    ring, the whole world rotates relative to you.
-  - This is the gravity-inversion system reused, so it isn't a new engine feature.
-- **Rooms:**
-  - **Docking bay:** where Void Wanderers park and charge. Many Wanderers live here, and
-    they're the easiest place to be scanned for Data Shards.
-  - **Hydroponics:** overgrown Lumineshroom and Comet Cress beds; seeds and spores.
-  - **Crew quarters:** Echo Logs describing the Cartographers' last days.
-  - **Solar core:** sealed and dead. **Insert 3 charged Flare Cells** (from the Corona)
-    to power it. Lights come on, doors unlock, and the central **vault** opens for 5
-    minutes.
-    - Stations aren't in the Corona, so the Corona's risk pays off elsewhere: you
-      charge the cells there, then carry them to a station.
-- **Vault loot:** Starforge Templates, Temporal Crystals, Charged Void Crystal and the
-  Starfield Glass recipe.
-- **Station Sentinel (mini-boss):** it guards the vault and wakes with the power. It's a
-  large, slow Wanderer-style automaton.
-  - It uses a Wanderer's scanning beam as its attack wind-up, so reading the beam is the
-    fight.
-  - It drops a guaranteed Data Core, used to craft a **Wanderer Beacon** that calls a
-    friendly Wanderer, plus a **Rift Pearl** (§9.3).
-
----
+- **Rooms**, round a ring gallery:
+  - **The roost:** where dormant Void Wanderers rest; the easiest place to be charted for Chart
+    Fragments.
+  - **The garden:** overgrown Lumineshroom and Comet Cress beds.
+  - **The keepers' quarters:** bunks and a chest.
+  - **The Orrery Heart**, at the hub: cold and still. **Pour in 3 Bottled Flares** (from the Corona)
+    and it blazes: the rings shudder, the lamps kindle, and the **Bronze Shutters** of the vault slide
+    open for 5 minutes. Orreries aren't in the Corona, so the Corona's risk pays off elsewhere: you
+    fill the bottles there, then carry them to an Orrery.
+- **Vault loot:** Starforge Templates, Temporal Crystals, Charged Void Crystal and, rarely, a Rift Pearl.
+- **Orrery Sentinel (mini-boss):** it guards the vault and wakes with the Heart. It's a large, slow
+  clockwork construct built like a Wanderer.
+  - Its attack is a beam of focused starlight with a long wind-up, so reading the beam is the fight.
+  - It always drops a **Starforge Template** and a **Rift Pearl** (§9.3).
+- *Not built:* the rotating "artificial gravity" floor (it fought the camera, and it was the
+  station idea, not the orrery's).
 
 ## 11. Progression
 
@@ -848,28 +850,34 @@ What it would look like if ancient aliens built in Minecraft's style: a giant **
 4. **Comet Wake:** mine Meteoric Iron, chase live comets, and raid craters for Temporal
    Crystals.
 5. **Dark Matter Belt:** collect Void Crystal, meet the Umbral Stalker, fight Black Hole
-   Guardians, and let Void Wanderers scan you for Data Shards.
+   Guardians, and let Void Wanderers chart you for Chart Fragments.
 6. **Craft a Portal Lens and build the Astral Forge.**
 7. **Shattered Observatory:** solve Constellation Mazes for Starforge Templates, and wake
    your first Wormhole Maw.
 8. **The Corona:** once you have Flare Ward potions or Sunshades, raid the Corona for
-   Solarite, Charged Void Crystal and Flare Cells, and loot Solar Array Ruins.
-9. **Orbital Stations:** bring charged Flare Cells, power one up, and fight the Sentinel
+   Solarite, Charged Void Crystal and Flare Bottles, and loot Solar Array Ruins.
+9. **Orreries:** bring Bottled Flares, rekindle an Orrery Heart, and fight the Sentinel
    for the vault.
-10. **Long tail:** link every Maw, complete the Drift Whale chain, collect every Echo Log
-    and constellation, and experiment with Starforge builds.
+10. **Long tail:** link every Maw, complete the Drift Whale chain, visit every astral biome,
+    and experiment with Starforge builds.
 
-**Advancement tab: "The Astral End".** About 25 advancements, including:
-- *Falling Upward*: use a Stardust block.
-- *Hold Still*: get scanned by a Void Wanderer.
-- *Weather the Storm*: survive a Stellar Flare in the Corona without cover.
-- *Harvest Moon*: shear a Corona Skimmer.
-- *Tail Chaser*: collect Stardust from a comet's tail.
-- *Connect the Dots*: finish a Constellation Maze.
-- *Say Ahh*: wake a Wormhole Maw.
-- *Houston?*: power an Orbital Station.
-- *Something Looks Back*
-- *Leviathan*
+**Advancements** (built in Phase 9). Not a tab of their own: like every Mojang update, they join the
+existing tab, as a branch of the **End** tab growing from *Remote Getaway*. Most use vanilla triggers.
+
+- *Astral Horizons*: set foot in an astral biome. *Chart the Stars* (challenge): visit all six.
+- *Falling Upward*: pick up Stardust. *Catch a Falling Star*: catch a Stardust Mote from a comet.
+- *Iron From the Sky*: smelt Meteoric Iron. *Forged in Starlight*: forge a Starforge upgrade.
+  *Starforged From Head to Toe* (goal): wear four Starforged pieces. *Not Today, Void* (hidden
+  challenge): be saved by Void Recall.
+- *Hold Still*: be charted by a Void Wanderer. *Connect the Dots*: open a Constellation Maze's dais
+  chest. *Say Ahh* (goal): wake a Wormhole Maw. *Something Looks Back* (hidden): spot the Watcher.
+- *Weather the Storm*: be in the Corona when a flare dies down. *Harvest Moon*: shear a Skimmer.
+  *Bottled Sunlight*: fill a Flare Bottle. *Wind It Up* (goal): rekindle an Orrery Heart.
+  *Clockwork Undone* (challenge): defeat an Orrery Sentinel.
+- *Event Horizon* (goal): defeat a Black Hole Guardian.
+- *Something Big Out There*, *Whale Song*, *Tagalong* (challenge): the Drift Whale.
+
+Every recipe also unlocks in the recipe book when you pick up one of its ingredients, as vanilla's do.
 
 ---
 
@@ -878,20 +886,21 @@ What it would look like if ancient aliens built in Minecraft's style: a giant **
 - **Starforging is an upgrade, but one per piece.** Its power is capped by slot count,
   and every upgrade targets a different stat, so no single "correct" build exists.
 - **The rarest rewards are one-time or limited:**
-  - the Leviathan disc comes from an advancement;
   - Temporal Crystals are loot only;
   - Singularity Shards need a manual timing kill;
   - comets have limited hits.
-- **Data Shards** come from a non-violent interaction that's limited to once per
+- **Chart Fragments** come from a non-violent interaction that's limited to once per
   Wanderer per player.
 - **Risk is opt-in.** Flares and Flare Burn exist only in the Corona. The rest of the End,
   vanilla or new, never burns you.
-- **The Corona pays for its risk.** Solarite, Charged Void Crystal and Flare Cells come
+- **The Corona pays for its risk.** Solarite, Charged Void Crystal and Flare Bottles come
   only from there. Surface veins are richer than deep veins, so taking the risk is
   rewarded.
 - **Flares can't be triggered on demand.** Charging takes planning, not a farm.
-- **Low gravity, gravity inversion, flare damage and live comet landfall** can each be
-  turned off in the config.
+- **Low gravity, gravity inversion, Stellar Flares and live comets** can each be turned off with a
+  data pack, by emptying a biome tag (`#astralend:low_gravity`, `#astralend:gravity_inversion`,
+  `#astralend:stellar_flares`, `#astralend:live_comets`), the way vanilla switches things by tag.
+  Comet landfall respects `mobGriefing`.
 - **Black Hole Guardians never delete items** and never break blocks.
 - **Maws cost ender pearls per jump,** so they don't replace elytra travel entirely.
 
@@ -903,15 +912,14 @@ What it would look like if ancient aliens built in Minecraft's style: a giant **
 |---|---|
 | Sky (stars, auroras, background comets, silhouettes, flare light) | Drawn in the End sky renderer; no entities, no world data |
 | Stellar Flare | One server-wide timer. The burn check runs once per second, only for players inside the Corona: "is there sky above?" |
-| Live comet | One entity per player area, with a few block-display parts and particles. Block changes happen only on landfall (<40 blocks). |
+| Live comet | One entity per player area, with a small model and particles. Block changes happen only on landfall (<40 blocks). |
 | Lumineshroom "breathing" | The pulse is an animated texture only; the light level never changes. |
 | Biome gravity | A player-only check about once per second that adds or removes an attribute modifier |
-| Gravity inversion and station gravity plating | Small zones generated with the world; entities check only when inside a chunk that has one |
+| Gravity inversion | Small zones generated with the world; entities check only when inside a chunk that has one |
 | Constellation star-bridges | Temporary blocks placed and cleared by the maze, only while a player is looking through the telescope |
 | Drift Whale | One per player area. It doesn't collide with blocks, uses a simple model, and despawns aggressively. |
 | Black Hole Guardian pull | Checks nearby entities every 5 ticks, within a radius of 6 blocks |
 | Singularity upgrade | Tool drops are moved when the block breaks (no scanning). Projectile lensing is checked only when a projectile is about to hit you. |
-| Starfield Glass | Uses the end-portal effect; limited by its crafting cost |
 
 ---
 
@@ -921,18 +929,18 @@ Each phase is playable on its own. Later phases build on earlier ones.
 
 | Phase | Content | Main technical work |
 |---|---|---|
-| **1. Blocks and flora** ✅ | Umbral Stone set, Stardust (falls up), Astral Glass, Leviathan Bone, Nebula Moss, Lumineshroom, Astral Vine, Starbloom, Comet Cress, Void Crystal and Meteoric Iron. **Done.** Orrery Bronze (tarnishing) moves to Phase 6 with the Orbital Stations it comes from. | Block and item registration, a block that rises instead of falls, a hanging crop, and generated JSON with an automatic checker |
+| **1. Blocks and flora** ✅ | Umbral Stone set, Stardust (falls up), Astral Glass, Leviathan Bone, Nebula Moss, Lumineshroom, Astral Vine, Starbloom, Comet Cress, Void Crystal and Meteoric Iron. **Done.** Orrery Bronze (tarnishing) moves to Phase 6 with the Orreries it comes from. | Block and item registration, a block that rises instead of falls, a hanging crop, and generated JSON with an automatic checker |
 | **2. First biome: Nebula Fields** ✅ | The biome, its terrain features and low gravity | The End's biome list is **hard-coded in vanilla**. Adding biomes needs a custom `BiomeSource` registered in Java, then a data-pack override of `dimension/the_end.json` to use it. Biomes and features themselves are JSON. |
 | **3. Remaining biomes** ✅ | Aurora Shallows, Comet Wake, Dark Matter Belt, Shattered Observatory, the Corona, inversion pockets, 42 new blocks and 2 new items. **Done.** | Biome-shaped terrain as JSON density functions, four Java features, a block entity for the pockets |
 | **3.5. Biome worlds** ✅ | Territories thousands of blocks across on big biome-shaped islands, dense ground cover, giant flora (Lumineshrooms, Nullwood trees, petrified stalks), ribcages, craters, ice spires, the great ring, Lumine and Nullwood wood sets | Landmass density functions, eight Java features, in-game screenshots in CI |
 | **4. Mobs** ✅ | Pollinator, Void Wanderer, Black Hole Guardian, Umbral Stalker, Corona Skimmer, Cinder Mite, Drift Whale and the Watcher, their drops, spawn eggs and advancements. **Done.** | Entity classes and AI goals; models and textures generated together from one description (tools/mobs/make_mobs.py); biome spawn lists plus a hand-placed spawner for the three "one at a time" mobs |
-| **5. Sky and Stellar Flares** ✅ | Moving stars, auroras, silhouettes, comets, the Remnant, Corona flare phases, Flare Burn, solar wind, flare charging, Sunshade, Flare Ward, Collector Pedestal, Flare Cells. **Done.** | 26.3 has no `DimensionSpecialEffects` hook any more: the End's `SkyRenderer` is swapped for a subclass that draws the vanilla sky, then the mod's. A saved server-side flare timer (`SavedData`), synced to clients with one small packet. Brewing is data (26.3 brewing recipes). |
-| **6. Structures** ✅ | Comet Crater, Observatory Ruins, Wanderer Relay, Whalefall, Solar Array Ruins, Wormhole Maw, Constellation Maze, Orbital Station + Sentinel, Orrery Bronze, Portal Lens, Temporal Crystal, Data Core. **Done.** Simplified for now: stations have normal gravity (no rotating floor), and Starforge Templates and Echo Logs (vault loot in the plan) wait for Phases 8 and 9. | Structures are built block by block in Python (`tools/structures/`) and written as structure templates (26.3 format: palette entries are `{id, properties}`), each placed by a jigsaw wrapped in a small `astralend:island` structure type that checks the ground first, so nothing generates over empty void. Maw travel, maze bridges, station power and the Sentinel are Java. The survey finds, generates and tests every structure. |
+| **5. Sky and Stellar Flares** ✅ | Moving stars, auroras, silhouettes, comets, the Remnant, Corona flare phases, Flare Burn, solar wind, flare charging, Sunshade, Flare Ward, Collector Pedestal, Flare Bottles. **Done.** | 26.3 has no `DimensionSpecialEffects` hook any more: the End's `SkyRenderer` is swapped for a subclass that draws the vanilla sky, then the mod's. A saved server-side flare timer (`SavedData`), synced to clients with one small packet. Brewing is data (26.3 brewing recipes). |
+| **6. Structures** ✅ | Comet Crater, Observatory Ruins, Wanderer Relay, Whalefall, Solar Array Ruins, Wormhole Maw, Constellation Maze, Orrery + Sentinel, Orrery Bronze, Portal Lens, Temporal Crystal, Data Core. **Done.** Simplified for now: stations have normal gravity (no rotating floor), and Starforge Templates and Echo Logs (vault loot in the plan) wait for Phases 8 and 9. | Structures are built block by block in Python (`tools/structures/`) and written as structure templates (26.3 format: palette entries are `{id, properties}`), each placed by a jigsaw wrapped in a small `astralend:island` structure type that checks the ground first, so nothing generates over empty void. Maw travel, maze bridges, station power and the Sentinel are Java. The survey finds, generates and tests every structure. |
 | **7. Live comets** ✅ | The comet entity, tail riding and Stardust Motes, chunks knocked off the head, landfall craters, `/astralend comet`. **Done.** | One server-driven entity with a mob-style model (not block displays: one entity, one model, cheap to sync) flying a quadratic arc; it isn't saved. A level-tick listener sends comets past players. The crater placer changes at most 40 blocks and checks `mobGriefing` and nearby built blocks. The survey sends one, hits it and lands one. |
 | **8. Starforging** ✅ | Astral Forge, Starforge Templates and Alloy, the six upgrades, Rift Pearls, upgrade accents. **Done.** | An `ItemCombinerMenu` and screen (like the smithing table's, with five inputs); a data component for the upgrade; vanilla attribute modifiers for gravity, step height and max absorption; a temporary rift-tile block; one global loot modifier for Smelting and Pull; Forge events for hits, projectiles, fire, effects and the void. Accents are drawn over the vanilla item models (`assets/minecraft/items`) and, on worn armour, by a player render layer. |
-| **9. Polish** | Advancements, Echo Logs, music, config toggles, balance passes | JSON advancements, a Forge config file, playtesting |
+| **9. Polish** ✅ | The audit (below), the Orrery revamp, the full Orrery Bronze family, Nebula Moss Carpet, Glowing Stew, Star Compass, the advancement tree, recipe unlocks, data-pack switches. **Done.** | Renames across code, data, structures and textures; a copper-style aging/waxing system shared by four block classes; vanilla advancement triggers; generated recipe-unlock advancements; biome-tag switches |
 
-**Next:** Phase 9, polish.
+**All nine phases are done.**
 
 ---
 

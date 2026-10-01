@@ -24,7 +24,8 @@ import net.minecraft.world.level.block.state.BlockState;
 // the End's centre, Glowing Stew is food that gives Night Vision, and the advancement tree and recipe
 // unlocks loaded.
 final class PolishSurvey {
-    static void check(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
+    // Returns the screenshot line for a showcase of the bronze family.
+    static String check(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
         ServerPlayer player = new ServerPlayer(end.getServer(), end,
             new com.mojang.authlib.GameProfile(java.util.UUID.nameUUIDFromBytes("astralend-survey-9".getBytes()), "AstralSurvey9"),
             net.minecraft.server.level.ClientInformation.createDefault());
@@ -75,6 +76,30 @@ final class PolishSurvey {
         if (found < 7) {
             failures.add("polish: some of the new advancements didn't load");
         }
+
+        // ---- for the screenshots: the Orrery Bronze family laid out on a little floor of Nebula Moss
+        // Carpet - each row a stage of tarnish: block, cut, stairs, slab, grate
+        int bx = standOn.getX() - 10, bz = standOn.getZ() - 10;
+        int by = end.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, bx, bz) + 3;
+        String[] stages = {"", "tarnished_", "weathered_"};
+        String[] shapes = {"orrery_bronze", "cut_orrery_bronze", "cut_orrery_bronze_stairs", "cut_orrery_bronze_slab", "orrery_bronze_grate"};
+        for (int dx = -1; dx <= 9; dx++) {
+            for (int dz = -1; dz <= 5; dz++) {
+                end.setBlock(new BlockPos(bx + dx, by - 1, bz + dz), ModBlocks.NEBULA_MOSS.get().defaultBlockState(), 3);
+                end.setBlock(new BlockPos(bx + dx, by, bz + dz), ModBlocks.NEBULA_MOSS_CARPET.get().defaultBlockState(), 3);
+            }
+        }
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 5; col++) {
+                BlockPos p = new BlockPos(bx + col * 2, by, bz + row * 2);
+                BlockState state = ModBlocks.BRONZE.get(stages[row] + shapes[col]).get().defaultBlockState();
+                if (state.hasProperty(net.minecraft.world.level.block.StairBlock.FACING)) {
+                    state = state.setValue(net.minecraft.world.level.block.StairBlock.FACING, net.minecraft.core.Direction.NORTH);
+                }
+                end.setBlock(p, state, 3);
+            }
+        }
+        return String.format(java.util.Locale.ROOT, "polish_orrery_bronze %.1f %d %.1f 0 38.0", bx + 4.5, by + 5, bz - 4.5);
     }
 
     private static String use(ServerLevel end, ServerPlayer player, BlockPos at, ItemStack tool) {

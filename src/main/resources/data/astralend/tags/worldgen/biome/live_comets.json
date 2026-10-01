@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "astralend:aurora_shallows",
+    "astralend:comet_wake",
+    "astralend:corona",
+    "astralend:dark_matter_belt",
+    "astralend:nebula_fields",
+    "astralend:shattered_observatory",
+    "minecraft:end_barrens",
+    "minecraft:end_highlands",
+    "minecraft:end_midlands",
+    "minecraft:small_end_islands"
+  ]
+}

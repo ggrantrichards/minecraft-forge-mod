@@ -832,6 +832,11 @@ def worldgen():
     # Biomes in this tag get the End's low gravity. To turn it off, override this tag with an
     # empty list in a datapack.
     tag("worldgen/biome", f"{NS}:low_gravity", rid("nebula_fields"))
+    # Phase 9: data-pack switches for the two events (empty a tag to turn its event off).
+    tag("worldgen/biome", f"{NS}:stellar_flares", rid("corona"))
+    for comet_biome in ("nebula_fields", "aurora_shallows", "comet_wake", "dark_matter_belt", "shattered_observatory", "corona",
+                        "minecraft:end_highlands", "minecraft:end_midlands", "minecraft:end_barrens", "minecraft:small_end_islands"):
+        tag("worldgen/biome", f"{NS}:live_comets", comet_biome if ":" in comet_biome else rid(comet_biome))
     # Biomes where Gravity Anomalies flip gravity. Empty this tag in a datapack to turn it off.
     tag("worldgen/biome", f"{NS}:gravity_inversion", rid("dark_matter_belt"))
     lang[f"biome.{NS}.nebula_fields"] = "Nebula Fields"

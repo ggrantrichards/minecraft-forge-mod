@@ -120,7 +120,7 @@ def comet_crater(seed, hot):
 def wanderer_relay(seed):
     """A thin spire floating over the edge of the Dark Matter Belt, where Void Wanderers dock: a
     lump of Umbral Stone hanging in the air, a tapering tower of Umbral bricks banded with chiseled
-    stone, two docking rings hung with Null Lanterns, and a Void Crystal light at the top. It holds
+    stone, two mooring rings hung with Null Lanterns, and a Void Crystal light at the top. It holds
     no loot, but Void Wanderers dock at it."""
     t = Template(17, 44, 17, seed)
     rnd = t.rnd
@@ -147,7 +147,7 @@ def wanderer_relay(seed):
         for x in range(c - half, c + half + 1):
             for z in range(c - half, c + half + 1):
                 t.set(x, y, z, a("chiseled_umbral_stone") if band else a("umbral_stone_bricks"))
-    # Docking rings with spokes; lanterns hang under the ring at the four corners.
+    # Mooring rings with spokes; lanterns hang under the ring at the four corners.
     for ring_y, radius in ((17, 5), (27, 4)):
         for i in range(64):
             ang = i / 64 * math.tau
@@ -386,7 +386,7 @@ def mirror(t, x, ground, z, facing_angle, state, rnd):
 
 def solar_array(seed):
     """The Solar Array: a field of Cartographer mirrors that once gathered flare light, most of them
-    cracked or fallen, around a sunken control room where a Bottled Flare still sits in its
+    cracked or fallen, around a sunken chamber where a Bottled Flare still sits in its
     pedestal. The mirrors still focus the flares: Flare Burn is doubled on the open field."""
     S = 49
     t = Template(S, 18, S, seed)
@@ -412,7 +412,7 @@ def solar_array(seed):
                 for dz in (-1, 0, 1):
                     t.set(x + dx, ground, z + dz, a("sunscorched_stone_bricks"))
             mirror(t, x, ground, z, ang + math.pi, state, rnd)
-    # The sunken control room, 11 x 11, its roof level with the plaza and a glass skylight in it.
+    # The sunken chamber, 11 x 11, its roof level with the plaza and a glass skylight in it.
     lo, hi = c - 5, c + 5
     t.fill(lo, 0, lo, hi, ground, hi, a("sunscorched_stone_bricks"))
     t.fill(lo + 1, 1, lo + 1, hi - 1, 1, hi - 1, a("polished_sunscorched_stone"))

@@ -111,8 +111,13 @@ public class StellarFlares extends SavedData {
         return ClientFlares.phase();
     }
 
+    // Where Stellar Flares are felt: biomes tagged #astralend:stellar_flares (the Corona). An empty tag
+    // in a data pack turns flares off.
+    public static final net.minecraft.tags.TagKey<net.minecraft.world.level.biome.Biome> FLARE_BIOMES = net.minecraft.tags.TagKey.create(
+        Registries.BIOME, net.minecraft.resources.Identifier.fromNamespaceAndPath(AstralEnd.MODID, "stellar_flares"));
+
     public static boolean isCorona(Level level, BlockPos pos) {
-        return level.dimension() == Level.END && level.getBiome(pos).is(ModBiomes.CORONA);
+        return level.dimension() == Level.END && level.getBiome(pos).is(FLARE_BIOMES);
     }
 
     // Is nothing solid between this spot and the sky? Glass and Sunshades count as cover; plants don't.

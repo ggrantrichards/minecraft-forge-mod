@@ -23,7 +23,7 @@ a new one replaces the old. Upgrades stack with enchantments.
 
 **How:** build an **Astral Forge** (a Meteoric Iron block, five Observatory Quartz and a Void
 Crystal) and put in a **Starforge Template**, the item, **Starforge Alloy** and the upgrade's
-material. Templates come from station vaults, maze rewards, Observatory vaults and Solar Arrays,
+material. Templates come from Orrery vaults, maze rewards, Observatory vaults and Solar Arrays,
 and copy like smithing templates (7 diamonds and Observatory Quartz make two). Alloy is crafted:
 2 Void Crystal, 2 Meteoric Iron Ingots and Glowing Spores.
 
@@ -46,7 +46,7 @@ grip. You can see it in the inventory and on armour someone is wearing (violet V
 Meteoric, sky-blue Stardust, amber Temporal, magenta Singularity, sun-yellow Radiant).
 
 **Rift Pearls** drop from every boss: the Ender Dragon (on its exit portal), the Wither, the Warden,
-Elder Guardians and the Station Sentinel. They're rare in station and Observatory vaults.
+Elder Guardians and the Orrery Sentinel. They're rare in Orrery and Observatory vaults.
 
 ### Phase 7: live comets
 
@@ -84,29 +84,29 @@ structure templates. These are in-game screenshots taken on every build:
 |---|---|
 | ![A crater blasted into a charred island, Comet Ice shards round a Comet Core](docs/images/structures/game_comet_crater.png) | ![The fossil ribs of a Leviathan arched over an island](docs/images/structures/game_whalefall.png) |
 | **Observatory Ruins (Shattered Observatory)** | **Solar Array Ruins (the Corona)** |
-| ![A domed hall broken open, a block-built telescope aimed through the gap](docs/images/structures/game_observatory_ruins.png) | ![A field of tilted Solarite mirrors around a sunken control room](docs/images/structures/game_solar_array.png) |
+| ![A domed hall broken open, a block-built telescope aimed through the gap](docs/images/structures/game_observatory_ruins.png) | ![A field of tilted Solarite mirrors around a sunken chamber](docs/images/structures/game_solar_array.png) |
 | **Wormhole Maw** | **Constellation Maze, its bridges lit** |
 | ![The fossil skull of a Star Leviathan on its own island, its throat a wormhole](docs/images/structures/game_wormhole_maw.png) | ![Floating platforms joined by star-bridges around a central dais](docs/images/structures/game_constellation_maze.png) |
-| **Abandoned Orbital Station** | **The Station Sentinel in its vault** |
-| ![A wheel of tarnished bronze hanging high over the End](docs/images/structures/game_orbital_station.png) | ![A bronze automaton with a Wanderer's lens, between two vault chests](docs/images/structures/game_station_vault.png) |
+| **Abandoned Orrery** | **The Orrery Sentinel in its vault** |
+| ![A wheel of tarnished bronze hanging high over the End](docs/images/structures/game_abandoned_orrery.png) | ![A bronze clockwork construct with a Wanderer's lens, between two vault chests](docs/images/structures/game_orrery_vault.png) |
 
 | Structure | Where | What's there |
 |---|---|---|
 | **Comet Crater** | Comet Wake, common | A bowl blasted into an island, ringed with thrown-up Charred End Stone, with Comet Ice shards and a Comet Core (Meteoric Iron) at the bottom and a cache buried under it. Some are still hot: magma in the floor and fires round the rim. |
-| **Wanderer Relay** | Dark Matter Belt | A thin spire floating in the void with two docking rings and Null Lanterns; Void Wanderers are docked at it. No loot. |
+| **Wanderer Relay** | Dark Matter Belt | A thin spire floating in the void with two mooring rings hung with Null Lanterns, where Void Wanderers rest. A landmark: no loot. |
 | **Whalefall** | Aurora Shallows, rare | A Leviathan's fossil ribs and skull, Whalelight Scales still on the bones, and one lore chest with a Star Chart. |
-| **Observatory Ruins** | Shattered Observatory, Nebula Fields | A domed hall broken open, a star map in the floor, a telescope of Meteoric Iron aimed through the gap, and two **vaults** that open for a **Data Shard** (like trial keys). |
-| **Solar Array Ruins** | The Corona | Fields of cracked and fallen Solarite mirrors round a sunken control room: two chests of the best loot in the End and a pedestal still holding a **Charged Flare Cell**. The mirrors still focus the flares: **Flare Burn is doubled on the field**. |
+| **Observatory Ruins** | Shattered Observatory, Nebula Fields | A domed hall broken open, a star map in the floor, a telescope of Meteoric Iron aimed through the gap, and two **vaults** that open for a **Chart Fragment** (like trial keys). |
+| **Solar Array Ruins** | The Corona | Fields of cracked and fallen Solarite mirrors round a sunken chamber: two chests of the best loot in the End and a pedestal still holding a **Bottled Flare**. The mirrors still focus the flares: **Flare Burn is doubled on the field**. |
 | **Wormhole Maw** | Shattered Observatory, Nebula Fields, Dark Matter Belt | See below. |
 | **Constellation Maze** | Shattered Observatory, Nebula Fields | See below. |
-| **Abandoned Orbital Station** | High in the sky (Y 176-200), anywhere but the Corona | See below. |
+| **Abandoned Orrery** | High in the sky (Y 176-200), anywhere but the Corona | See below. |
 
 **Wormhole Maws.** The fossil skull of a Star Leviathan, jaws half open, on its own floating island.
 Set a **Charged Void Crystal** in each of its four eye sockets, then use a **Portal Lens** on the dark
 stone at the back of its throat: the Maw groans awake and its throat becomes a churning wormhole.
 Walk in and you're sent to the next Maw you've woken, and spat out of its mouth. Each trip costs
 an **ender pearl** or **four chorus fruit**. Someone who didn't wake a Maw can use a Portal Lens on its
-wormhole to add it to their own road. *Portal Lens: 3 Data Shards, a Void Crystal, a Temporal
+wormhole to add it to their own road. *Portal Lens: 3 Chart Fragments, a Void Crystal, a Temporal
 Crystal and a spyglass.*
 
 **Constellation Mazes.** Platforms floating in the void round a central dais, joined by
@@ -117,21 +117,23 @@ up, solid, for 20 seconds. The last bridge leads to the dais and its chest: a Te
 Star Chart that marks a Wormhole Maw. Fall, and the maze catches you and sets you back at the
 start.
 
-**Abandoned Orbital Stations.** A wheel of tarnished **Orrery Bronze** hanging high in the sky: a ring
-corridor with a docking bay (Void Wanderers parked in it), overgrown hydroponics and crew
-quarters, joined by spokes to a hub where a dead **Solar Core** waits. Bring **three Charged Flare
-Cells** from the Corona: the lamps come on, the vault's bulkheads open for five minutes, and the
-**Station Sentinel** wakes. It's a big bronze automaton with a Wanderer's lens. Up close it swings its
-fists. At range its scanning beam winds up for a second and a half (you see the sparks trace toward
-you) and then fires: break its line of sight before it does and it misses. It always drops a **Data
-Core**.
+**Abandoned Orreries.** The Cartographers' great clockwork model of the heavens, a wheel of tarnished
+**Orrery Bronze** hanging high in the sky: a ring gallery with a roost of dormant Void Wanderers, a garden
+gone wild with Lumineshrooms and the keepers' quarters, joined by spokes to a hub where the cold **Orrery
+Heart** sits under the orrery's axle and its gilded sun. Pour **three Bottled Flares** from the Corona
+into the Heart: the lamps kindle, the vault's **Bronze Shutters** slide open for five minutes, and the
+**Orrery Sentinel** wakes - a big clockwork construct with a Wanderer's lens. Up close it swings its
+fists. At range a beam of focused starlight winds up for a second and a half (you see it trace toward
+you) and then fires: break its line of sight before it does and it misses. It always drops a
+**Starforge Template** and a **Rift Pearl**.
 
 New blocks and items:
 
-- **Orrery Bronze** (2 Meteoric Iron and 2 Solarite ingots make 4): the stations' metal, engraved with
-  orbits. It tarnishes violet over time in three stages, like copper; an axe scrapes it back.
-- **Station Lamp** (Orrery Bronze round glowstone).
-- **Temporal Crystal**: loot only (craters, vaults, the maze, the station).
+- **Orrery Bronze** (2 Meteoric Iron and 2 Solarite ingots make 4): the Orreries' metal, engraved with
+  orbits. It tarnishes violet over time in three stages, like copper; an axe scrapes it back. (Phase 9
+  gives it copper's whole family and waxing.)
+- **Orrery Lamp** (Orrery Bronze round glowstone).
+- **Temporal Crystal**: loot only (craters, vaults, the maze, the Orrery).
 - **Star Charts** now mark structures, not just biomes. Charts found in chests are unread until you
   first use one in the End.
 
@@ -175,10 +177,10 @@ New blocks and items:
   top of its block space with nothing holding it up. Put one over your head and keep mining
   through a flare.
 - **Collector Pedestal** (Solarite, Astral Glass, Polished Sunscorched Stone): set a **Void
-  Crystal** or a **Flare Cell** on it. Under open sky in the Corona, 30 seconds of flare charges it:
-  **Charged Void Crystal** (for the Wormhole Maws of Phase 6) or a **Charged Flare Cell** (to power
-  the Orbital Stations). Guard it while it charges.
-- **Flare Cell** (Solarite Ingot, Astral Glass, Solarite Ingot).
+  Crystal** or a **Flare Bottle** on it. Under open sky in the Corona, 30 seconds of flare charges it:
+  **Charged Void Crystal** (for the Wormhole Maws of Phase 6) or a **Bottled Flare** (to power
+  the Orreries). Guard it while it charges.
+- **Flare Bottle** (Solarite Ingot, Astral Glass, Solarite Ingot).
 - **Flare Pollen**: pick it from an open Flarebloom (use it, or break it).
 - **Potion of Flare Ward**: brew an Awkward Potion with **Skimmer Film** (3:00). Brew Flare Pollen
   into it for 8:00. Splash and lingering versions brew the usual way.
@@ -201,7 +203,7 @@ These are in-game screenshots taken on every build:
 | Mob | Where | What it does | Leaves behind |
 |---|---|---|---|
 | **End Pollinator** | Nebula Fields, Aurora Shallows | A little jellyfish-like drifter. Floats between glowing plants and hovers over them; a pollinated plant spreads to the ground beside it. Starblooms tempt it and make it breed. | **Glowing Spores**, every 5-10 minutes, like a chicken lays eggs. Killing it drops nothing. |
-| **Void Wanderer** | Dark Matter Belt, Shattered Observatory | An old bronze survey drone with a glass lens and a spinning gimbal ring. It floats over and scans you: **stand still for 5 seconds** and it drops a **Data Shard** and leaves. Each one scans each player once. Hit it and it fires laser pulses back and teleports away when hurt. | Data Shard (for letting it scan you); a **Cracked Lens** if killed |
+| **Void Wanderer** | Dark Matter Belt, Shattered Observatory | A clockwork construct of the Cartographers: a verdigris bronze body with void crystal set in its seams, one great glass lens and a spinning gimbal ring. It floats over and studies you, a ring of light sweeping over you: **stand still for 5 seconds** and it leaves you a **Chart Fragment** (a shard of its star map) and drifts away. Each one studies each player once. Hit it and it looses homing starbolts back (shulker bullets) and blinks away when hurt. | Chart Fragment (for letting it chart you); its **Cracked Lens** if killed |
 | **Umbral Stalker** | Dark Matter Belt (hostile) | A hunched shadow brute that walks on its knuckles, with bone tusks, dark-matter crystals growing from its back and a violet rift glowing in its chest - but in the dark you can't see it at all until it picks you as prey; then a faint shimmer shows where it moves. It creeps up **while your back is turned** and backs off when you face it. It hunts like a lion: hidden, it creeps in low and slow, then **pounces** from a few blocks behind you - a heavy ambush blow that throws you away from it, toward the void near an edge. Light reveals it (block light 7+: Null Lanterns, Spore Lanterns, torches). | **Umbral Membrane** |
 | **Cinder Mite** | The Corona (hostile) | Glowing burrowers that come in swarms of about four, set you on fire, and burrow back into the stone after a minute. Immune to fire; **water kills them** in about two seconds. | **Cinder**, a fuel (smelts 4 items) |
 | **Corona Skimmer** | The Corona | A flat manta that rests on the ground looking like stone, then lifts off and glides in wide circles; whole flocks ride the Stellar Flares. **Shear it** while its wings shimmer for **Skimmer Film**; the wings fill again in the next flare's afterglow. | Skimmer Film (sheared, not killed) |
@@ -217,13 +219,11 @@ New blocks and items from the mobs:
 - **Glowing Spores** also grow End Stone over with Nebula Moss (use them on it), and make Glow Ink
   Sacs (2 spores + an ink sac).
 - **Star Chart**: use it to see which way, and how far, the region it marks is.
-- **Data Shard, Cracked Lens, Singularity Shard, Umbral Membrane, Skimmer Film**: materials for
-  later phases (the Portal Lens, Stalker Cloak, Gravity Wells, Flare Ward...). For now they're
-  collectables.
+- **Chart Fragment, Cracked Lens, Singularity Shard, Umbral Membrane, Skimmer Film**: materials. Chart
+  Fragments open Observatory vaults and, with a Cracked Lens, make the Portal Lens; Skimmer Film makes
+  Sunshades and Flare Ward; Singularity Shards and Umbral Membranes are Starforge materials.
 
-What's waiting for later phases: the Star Chart will point at structures (Phase 6); the Drift
-Whale's music disc needs the music of Phase 9. (Cinder Mite swarms and Skimmer flocks follow the
-Stellar Flares since Phase 5.)
+(Since Phase 5, Cinder Mite swarms and Skimmer flocks follow the Stellar Flares.)
 
 ### Phase 3.5: each biome is its own world
 

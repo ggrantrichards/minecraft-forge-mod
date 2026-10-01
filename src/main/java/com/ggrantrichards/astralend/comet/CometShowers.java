@@ -27,6 +27,11 @@ import org.jspecify.annotations.Nullable;
 public final class CometShowers {
     private static final int CHECK = 200;
     private static final double REACH = 110.0;
+    // Where comets come: biomes tagged #astralend:live_comets (the outer End). An empty tag in a data
+    // pack turns them off.
+    public static final net.minecraft.tags.TagKey<Biome> COMET_BIOMES = net.minecraft.tags.TagKey.create(
+        net.minecraft.core.registries.Registries.BIOME, net.minecraft.resources.Identifier.fromNamespaceAndPath(
+            com.ggrantrichards.astralend.AstralEnd.MODID, "live_comets"));
 
     public static void register() {
         TickEvent.LevelTickEvent.Post.BUS.addListener(CometShowers::onLevelTick);
@@ -46,6 +51,9 @@ public final class CometShowers {
                 continue;
             }
             Holder<Biome> biome = level.getBiome(player.blockPosition());
+            if (!biome.is(COMET_BIOMES)) {
+                continue;
+            }
             int odds = biome.is(ModBiomes.COMET_WAKE) ? 72 : biome.is(ModBiomes.CORONA) ? 900 : 360;
             if (random.nextInt(odds) == 0) {
                 send(level, player.position(), random, random.nextInt(3) == 0);
