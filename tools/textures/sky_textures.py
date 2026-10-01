@@ -64,18 +64,20 @@ def remnant():
 
 
 def remnant_flare():
-    """32x32: the swollen glow of a flare round the Remnant, in rings of gold."""
-    size = 32
+    """64x64: the swollen glow round the Remnant during a flare - a soft radial glow with faint rays.
+    Glows are smooth (like vanilla's sunrise colours), not stepped: drawn huge, steps would show."""
+    size = 64
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     for y in range(size):
         for x in range(size):
-            d = math.hypot(x + 0.5 - size / 2, y + 0.5 - size / 2) / (size / 2)
-            a = max(0.0, 1.0 - d)
-            ray = 0.5 + 0.5 * math.cos(math.atan2(y - size / 2, x - size / 2) * 8)
-            a = a ** 1.4 * (0.75 + 0.25 * ray)
-            a = int(a * 255) // 32 * 32
-            if a > 0:
-                img.putpixel((x, y), lerp(hexc("ff8a2a", 0), hexc("fff0b0", 255), a / 255)[:3] + (a,))
+            dx, dy = x + 0.5 - size / 2, y + 0.5 - size / 2
+            d = math.hypot(dx, dy) / (size / 2)
+            if d >= 1.0:
+                continue
+            ray = 0.5 + 0.5 * math.cos(math.atan2(dy, dx) * 6)
+            a = (1.0 - d) ** 2.2 * (0.8 + 0.2 * ray)
+            colour = lerp(hexc("ff7a24"), hexc("fff2c4"), max(0.0, 1.0 - d * 1.6))
+            img.putpixel((x, y), colour[:3] + (int(a * 255),))
     return img
 
 
@@ -101,39 +103,37 @@ def star():
 
 
 def aurora():
-    """16x64, white (tinted in the sky): a bright hem at the bottom and vertical streaks fading upward."""
-    w, h = 16, 64
+    """32x128, white (tinted in the sky): a bright hem at the bottom and soft vertical streaks of
+    different heights fading upward, like a curtain of light."""
+    w, h = 32, 128
     img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     rnd = random.Random(3)
-    heights = [rnd.uniform(0.45, 1.0) for _ in range(w)]
+    heights = [rnd.uniform(0.4, 1.0) for _ in range(w)]
+    # neighbouring columns blend, so streaks have soft edges
+    heights = [(heights[i - 1] + 2 * heights[i] + heights[(i + 1) % w]) / 4 for i in range(w)]
     for x in range(w):
         for y in range(h):
             t = 1.0 - y / (h - 1)                                 # 0 at the bottom, 1 at the top
             if t > heights[x]:
                 continue
-            a = (1.0 - t / heights[x]) ** 1.3
-            if y >= h - 3:
-                a = 1.0                                           # the hem
-            a *= 0.85 if x % 3 else 1.0
-            a = int(a * 230) // 24 * 24
-            if a > 0:
-                img.putpixel((x, y), (255, 255, 255, a))
+            a = (1.0 - t / heights[x]) ** 1.6
+            hem = max(0.0, 1.0 - t / 0.06)                        # the bright lower hem
+            a = min(1.0, a * (0.75 + 0.25 * math.sin(x * 0.9)) + hem * 0.6)
+            img.putpixel((x, y), (255, 255, 255, int(a * 220)))
     return img
 
 
 def flare_sheet():
-    """16x64: a broad, soft band of light with a bright leading edge (tinted gold in the sky)."""
-    w, h = 16, 64
+    """32x64: a broad, soft band of light with a brighter leading edge (tinted gold in the sky)."""
+    w, h = 32, 64
     img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     for y in range(h):
         t = y / (h - 1)
-        a = math.sin(t * math.pi) ** 0.8
-        if 0.62 < t < 0.7:
-            a = 1.0
+        a = math.sin(t * math.pi) ** 1.2
+        a = min(1.0, a + 0.35 * math.exp(-((t - 0.66) / 0.04) ** 2))
         for x in range(w):
-            aa = int(a * (200 if x % 4 else 230)) // 25 * 25
-            if aa > 0:
-                img.putpixel((x, y), (255, 255, 255, aa))
+            aa = a * (0.85 + 0.15 * math.sin(x * 0.6 + y * 0.05))
+            img.putpixel((x, y), (255, 255, 255, int(aa * 220)))
     return img
 
 

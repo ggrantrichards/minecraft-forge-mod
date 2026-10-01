@@ -328,16 +328,18 @@ public final class WorldgenSurvey {
     // A sky view from just above an area's centre, looking the given way - or, with `toward`, looking
     // at that area (yaw from the direction to its centre). Written as "name x y z yaw pitch style".
     private static void skyShot(List<String> lines, Area area, String name, float yaw, float pitch, Area toward, String style) {
-        if (area == null || area.standOn == null) {
+        if (area == null) {
             return;
         }
-        BlockPos at = area.standOn;
+        // From above the area's highest ground, so no cliff can be in the way.
+        int top = area.surfaceHeightsIn.keySet().stream().max(Integer::compare).orElse(60);
+        BlockPos at = new BlockPos(area.centre.getX(), top + 12, area.centre.getZ());
         if (toward != null) {
             double dx = toward.centre.getX() - at.getX();
             double dz = toward.centre.getZ() - at.getZ();
             yaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
         }
-        lines.add(String.format(java.util.Locale.ROOT, "%s %d %d %d %.1f %.1f %s", name, at.getX(), at.getY() + 4, at.getZ(), yaw, pitch, style));
+        lines.add(String.format(java.util.Locale.ROOT, "%s %d %d %d %.1f %.1f %s", name, at.getX(), at.getY(), at.getZ(), yaw, pitch, style));
     }
 
     // Two camera positions per biome for dev/ClientScreenshots: one looking across the land from

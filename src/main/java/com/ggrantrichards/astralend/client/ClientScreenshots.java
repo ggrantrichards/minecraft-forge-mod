@@ -171,7 +171,7 @@ public final class ClientScreenshots {
     private static void summon(ServerLevel end, Shot shot) {
         BlockPos at = BlockPos.containing(shot.mobX(), shot.mobY(), shot.mobZ());
         end.getChunk(at.getX() >> 4, at.getZ() >> 4);  // make sure it's loaded
-        if (shot.mob().equals("display")) {
+        if (shot.mob().endsWith("display")) {
             FlareDisplay.build(end, at);
             return;
         }

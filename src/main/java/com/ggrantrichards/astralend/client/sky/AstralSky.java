@@ -59,13 +59,14 @@ public final class AstralSky {
             player.addDeltaMovement(wind.scale(0.03));
         }
         RandomSource random = level.getRandom();
-        for (int i = 0; i < 6; i++) {
-            // Upwind of the player, drifting past downwind.
-            double side = (random.nextDouble() - 0.5) * 24.0;
-            Vec3 start = player.position().add(wind.scale(-12.0)).add(-wind.z * side, random.nextDouble() * 10.0 - 2.0, wind.x * side);
-            Vec3 velocity = wind.scale(0.9 + random.nextDouble() * 0.5);
-            level.addParticle(random.nextInt(3) == 0 ? ParticleTypes.SMALL_FLAME : ParticleTypes.END_ROD,
-                start.x, start.y, start.z, velocity.x, 0.02, velocity.z);
+        for (int i = 0; i < 3; i++) {
+            // Small sparks streaming past downwind, never right in front of the camera: they start
+            // upwind and off to the side, 6-18 blocks away.
+            double side = (random.nextBoolean() ? 1 : -1) * (6.0 + random.nextDouble() * 12.0);
+            Vec3 start = player.position().add(wind.scale(-14.0)).add(-wind.z * side, random.nextDouble() * 8.0 - 1.0, wind.x * side);
+            Vec3 velocity = wind.scale(0.7 + random.nextDouble() * 0.4);
+            level.addParticle(random.nextInt(3) == 0 ? ParticleTypes.SMALL_FLAME : ParticleTypes.ELECTRIC_SPARK,
+                start.x, start.y, start.z, velocity.x, 0.01, velocity.z);
         }
     }
 

@@ -184,7 +184,7 @@ public class AstralSkyRenderer extends SkyRenderer {
                 this.draw(pass, quads.groups.get(i), view, white);
             }
             // The stars fade while the Corona's sky burns.
-            float starAlpha = 1.0F - 0.8F * coronaFlare;
+            float starAlpha = Mth.clamp(1.0F - 1.4F * coronaFlare, 0.0F, 1.0F);
             this.drawStars(pass, view, 0, this.fixedStarQuads, new Vector4f(1.0F, 1.0F, 1.0F, 0.75F * starAlpha));
             Matrix4f turning = new Matrix4f(view)
                 .rotate((float) Math.toRadians(23.0), 1.0F, 0.0F, 0.0F)
@@ -247,7 +247,7 @@ public class AstralSkyRenderer extends SkyRenderer {
                         continue;
                     }
                     dir.normalize();
-                    float size = 0.35F + random.nextFloat() * 0.4F;
+                    float size = 0.22F + random.nextFloat() * random.nextFloat() * 0.45F;   // mostly small, a few bright
                     int alpha = (int) ((0.45F + random.nextFloat() * 0.55F) * 255);
                     int colour = (tints[random.nextInt(tints.length)] & 0x00FFFFFF) | (alpha << 24);
                     made[layer] += sprite(builder, dir, size, size, random.nextFloat() * Mth.TWO_PI, 0, 0, 1, 1, colour);
@@ -279,7 +279,7 @@ public class AstralSkyRenderer extends SkyRenderer {
 
     // Three slow curtains of aurora around the sky, rippling.
     private void auroras(Quads quads) {
-        int segments = 24;
+        int segments = 40;
         for (int k = 0; k < 3; k++) {
             float base = (float) Math.toRadians(k * 120.0 + this.time * 0.0008);
             float r = k == 1 ? this.aurora[4] : this.aurora[1];
@@ -299,8 +299,8 @@ public class AstralSkyRenderer extends SkyRenderer {
                 colours[j] = argb(Math.min(1.0F, this.auroraStrength * fade * shimmer), r, g, b);
             }
             for (int j = 0; j < segments; j++) {
-                float u0 = j / 6.0F;
-                float u1 = (j + 1) / 6.0F;
+                float u0 = j / 10.0F;
+                float u1 = (j + 1) / 10.0F;
                 quads.quad(top[j], bottom[j], bottom[j + 1], top[j + 1], u0, 0.0F, u1, 1.0F,
                     colours[j], colours[j], colours[j + 1], colours[j + 1]);
             }
@@ -320,7 +320,8 @@ public class AstralSkyRenderer extends SkyRenderer {
         float size = (7.0F + 9.0F * closeness + (this.inCorona ? 6.0F : 0.0F)) * pulse * (1.0F + 0.25F * intensity);
         float glow = 0.3F + 0.7F * intensity;
         quads.group(REMNANT_FLARE);
-        quads.sprite(dir, size * (1.8F + 2.2F * intensity), size * (1.8F + 2.2F * intensity), 0.0F, 0, 0, 1, 1,
+        float haloSize = size * (1.7F + 1.1F * intensity);
+        quads.sprite(dir, haloSize, haloSize, 0.0F, 0, 0, 1, 1,
             argb(Math.min(1.0F, glow), 1.0F, 0.75F, 0.45F));
         float bright = 0.75F + 0.25F * intensity;
         quads.group(REMNANT);
