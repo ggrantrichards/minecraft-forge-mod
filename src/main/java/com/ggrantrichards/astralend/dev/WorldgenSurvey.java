@@ -423,9 +423,9 @@ public final class WorldgenSurvey {
         if (itemsAfter <= itemsBefore || changed > com.ggrantrichards.astralend.comet.CometImpact.MAX_BLOCKS) {
             failures.add("live comet: a hit should knock off a chunk, and a landfall change at most 40 blocks");
         }
-        double d = 9.0 / Math.sqrt(2.0);
+        double d = 7.0 / Math.sqrt(2.0);
         // (The client opens this same world, so the shot shows the crater just made, loot and all.)
-        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_comet_landfall %.1f %d %.1f -45 36.0",
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_comet_landfall %.1f %d %.1f -45 46.0",
             target.getX() + 0.5 - d, target.getY() + 6, target.getZ() + 0.5 - d));
     }
 

@@ -147,16 +147,19 @@ public class LiveComet extends Mob {
         }
     }
 
-    // The long tail: sparks and motes shed behind the head, drifting back along its path.
+    // The long tail: sparks and motes shed behind the head, drifting back along its path. Thick and
+    // bright at the head, thinning out behind it; in flight the comet leaves them hanging in its wake.
     private void tailParticles() {
         Vec3 back = this.heading().scale(-1.0);
         Vec3 head = this.position().add(0, this.getBbHeight() * 0.5, 0);
         RandomSource r = this.random;
-        for (int i = 0; i < 6; i++) {
-            Vec3 p = head.add(back.scale(r.nextDouble() * 2.5)).add((r.nextDouble() - 0.5) * 1.2, (r.nextDouble() - 0.5) * 1.2,
-                (r.nextDouble() - 0.5) * 1.2);
-            Vec3 v = back.scale(0.04 + r.nextDouble() * 0.08);
-            this.level().addParticle(i % 3 == 0 ? ParticleTypes.SNOWFLAKE : ParticleTypes.END_ROD, p.x, p.y, p.z, v.x, v.y, v.z);
+        for (int i = 0; i < 10; i++) {
+            double along = r.nextDouble() * r.nextDouble() * 9.0;          // most near the head
+            double spread = 0.5 + along * 0.18;                             // the tail widens behind
+            Vec3 p = head.add(back.scale(1.2 + along)).add((r.nextDouble() - 0.5) * spread, (r.nextDouble() - 0.5) * spread,
+                (r.nextDouble() - 0.5) * spread);
+            Vec3 v = back.scale(0.03 + r.nextDouble() * 0.07);
+            this.level().addParticle(i % 4 == 0 ? ParticleTypes.SNOWFLAKE : ParticleTypes.END_ROD, p.x, p.y, p.z, v.x, v.y, v.z);
         }
         if (r.nextInt(3) == 0) {
             this.level().addParticle(ParticleTypes.ELECTRIC_SPARK, head.x, head.y, head.z, (r.nextDouble() - 0.5) * 0.2,

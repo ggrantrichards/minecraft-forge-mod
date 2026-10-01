@@ -1053,19 +1053,6 @@ def comet_crack_glow(face, px, py, fw, fh, rnd):
     return None
 
 
-def streamer(alpha):
-    def f(face, px, py, fw, fh, rnd):
-        a = int(alpha * (0.7 + 0.3 * rnd.random()))
-        return hexc("d8f2ff", a) if rnd.random() < 0.8 else hexc("9fdcff", a)
-    return f
-
-
-def streamer_glow(alpha):
-    def f(face, px, py, fw, fh, rnd):
-        return hexc("e8f8ff", int(alpha * 0.8 * (0.55 + 0.45 * rnd.random())))
-    return f
-
-
 def coma(edge, fill):
     """The comet's coma: a shell of frozen light around the head, like an End Crystal's glass. A
     bright frame, a faint body and a few sparks in it."""
@@ -1078,7 +1065,8 @@ def coma(edge, fill):
     return f
 
 
-COMET = Mob("live_comet", (128, 64), [
+COMET = Mob("live_comet", (64, 64), [
+    # The tail is particles (see LiveComet), like every trail in vanilla.
     Part("comet", (0, 18, 0), [
         B(-4, -4, -4, 8, 8, 8, comet_rock, comet_crack_glow),
         B(-5, -3, -2, 1, 5, 4, comet_rock),
@@ -1089,14 +1077,6 @@ COMET = Mob("live_comet", (128, 64), [
     ], [
         Part("coma", (0, 0, 0), [B(-4, -4, -4, 8, 8, 8, coma(150, 26), coma(170, 30), key="coma", inflate=2.0)]),
         Part("coma_outer", (0, 0, 0), [B(-4, -4, -4, 8, 8, 8, coma(150, 26), coma(170, 30), key="coma", inflate=4.5)]),
-        # The tail starts narrow at the head and widens and fades behind it.
-        Part("tail", (0, 0, 4), [
-            B(-3, -3, 0, 6, 6, 12, streamer(140), streamer_glow(140)),
-        ], [
-            Part("tail_mid", (0, 0, 12), [B(-4.5, -4.5, 0, 9, 9, 14, streamer(85), streamer_glow(85))], [
-                Part("tail_end", (0, 0, 14), [B(-6, -6, 0, 12, 12, 16, streamer(40), streamer_glow(45))]),
-            ]),
-        ]),
     ]),
 ], egg=(hexc("c3dcec"), hexc("3a3f52")))
 

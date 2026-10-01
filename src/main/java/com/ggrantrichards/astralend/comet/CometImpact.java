@@ -92,8 +92,9 @@ public final class CometImpact {
     }
 
     // A small copy of the Comet Craters the world generates with: a bowl five blocks across, a rim of the
-    // ground it threw up around it (some of it charred), the floor glazed with Comet Ice, and the Comet
-    // Core (Meteoric Iron, with Stardust packed under it where it can't fall up) sitting in the middle.
+    // ground it threw up around it (some of it charred, with lumps of the comet's ice), the floor glazed
+    // with Comet Ice, and the Comet Core (Meteoric Iron, with Stardust packed under it where it can't fall
+    // up) sitting in the middle.
     // The bowl and the Core come first; the rim and the glaze only use what's left of MAX_BLOCKS.
     private static int carve(ServerLevel level, BlockPos top, RandomSource random) {
         int[] changed = {0};
@@ -116,17 +117,19 @@ public final class CometImpact {
         }
         set(level, top, ModBlocks.METEORIC_IRON_ORE.get().defaultBlockState(), changed);
         set(level, top.below(), ModBlocks.STARDUST_BLOCK.get().defaultBlockState(), changed);
-        // The rim: what the impact threw out, piled around the edge.
+        // The rim: what the impact threw out, piled around the edge, with lumps of the comet's ice in it.
         BlockState charred = ModBlocks.CHARRED_END_STONE.get().defaultBlockState();
+        BlockState ice = ModBlocks.COMET_ICE.get().defaultBlockState();
         for (int dx = -4; dx <= 4; dx++) {
             for (int dz = -4; dz <= 4; dz++) {
                 double d = Math.sqrt(dx * dx + dz * dz) + (random.nextDouble() - 0.5) * 0.6;
-                if (d < 2.6 || d > 3.7 || random.nextInt(5) < 2 || changed[0] >= MAX_BLOCKS - 4) {
+                if (d < 2.6 || d > 3.7 || random.nextInt(5) < 2 || changed[0] >= MAX_BLOCKS - 7) {
                     continue;
                 }
                 BlockPos p = top.offset(dx, 1, dz);
                 if (level.getBlockState(p).canBeReplaced() && level.getBlockState(p.below()).isSolid()) {
-                    set(level, p, random.nextInt(3) == 0 ? charred : ground, changed);
+                    int roll = random.nextInt(3);
+                    set(level, p, roll == 0 ? ice : roll == 1 ? charred : ground, changed);
                 }
             }
         }
@@ -141,8 +144,8 @@ public final class CometImpact {
                 continue;
             }
             int roll = random.nextInt(8);
-            if (roll < 3) {
-                set(level, p, ModBlocks.COMET_ICE.get().defaultBlockState(), changed);
+            if (roll < 4) {
+                set(level, p, ice, changed);
             } else if (roll < 6 && !s.is(ModBlocks.CHARRED_END_STONE.get())) {
                 set(level, p, charred, changed);
             }
