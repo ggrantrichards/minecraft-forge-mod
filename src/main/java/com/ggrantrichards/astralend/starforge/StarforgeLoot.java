@@ -42,8 +42,8 @@ public class StarforgeLoot extends LootModifier {
 
     @Override
     protected ObjectArrayList<ItemStack> doApply(LootTable table, ObjectArrayList<ItemStack> loot, LootContext context) {
-        if (!context.hasParameter(LootContextParams.BLOCK_STATE) || !context.hasParameter(LootContextParams.THIS_ENTITY)
-            || !(context.getParameter(LootContextParams.THIS_ENTITY) instanceof Player player)) {
+        if (!context.hasParameter(LootContextParams.BLOCK_STATE)
+            || !(context.getOptional(LootContextParams.THIS_ENTITY) instanceof Player player)) {
             return loot;
         }
         ItemStack tool = player.getMainHandItem();

@@ -140,11 +140,10 @@ public final class ClientScreenshots {
 
     private static void teleport(IntegratedServer server, Shot shot) {
         // Phase 8: "armor" photographs the player (in third person, wearing upgraded gear); "forge" opens
-        // the Astral Forge's screen. Neither wants the HUD.
+        // the Astral Forge's screen.
         Minecraft minecraft = Minecraft.getInstance();
         boolean showPlayer = shot.style().contains("armor");
         minecraft.options.setCameraType(showPlayer ? net.minecraft.client.CameraType.THIRD_PERSON_FRONT : net.minecraft.client.CameraType.FIRST_PERSON);
-        minecraft.options.hideGui = showPlayer || shot.style().contains("forge");
         server.execute(() -> {
             ServerPlayer player = server.getPlayerList().getPlayers().get(0);
             ServerLevel end = server.getLevel(Level.END);
