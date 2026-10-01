@@ -35,7 +35,7 @@ VANILLA_PARENTS = {
     "minecraft:block/template_orientable_trapdoor_bottom", "minecraft:block/template_orientable_trapdoor_top",
     "minecraft:block/template_orientable_trapdoor_open", "minecraft:block/button", "minecraft:block/button_pressed",
     "minecraft:block/button_inventory", "minecraft:block/pressure_plate_up", "minecraft:block/pressure_plate_down",
-    "minecraft:block/orientable",
+    "minecraft:block/orientable", "minecraft:block/cube_bottom_top",
 } | {f"minecraft:block/door_{part}_{hinge}{op}" for part in ("bottom", "top") for hinge in ("left", "right") for op in ("", "_open")}
 
 errors = []
@@ -311,7 +311,7 @@ for extra in sorted(set(lang) - {f"block.{NS}.{n}" for n in blocks} - {f"item.{N
                     - {f"item.minecraft.{k}.effect.{p}" for p in potion_names
                        for k in ("potion", "splash_potion", "lingering_potion", "tipped_arrow")}
                     - {f"death.attack.{NS}.{d}{suffix}" for d in damage_types for suffix in ("", ".player")}
-                    - {k for k in lang if k.startswith(("flare.astralend.", "maw.astralend.", "maze.astralend."))}
+                    - {k for k in lang if k.startswith(("flare.astralend.", "maw.astralend.", "maze.astralend.", "station.astralend."))}
                     - {f"structure.{NS}.{st.split(':')[1]}" for st in worldgen_ids.get("structure", set())}):
     err(f"lang/en_us.json: {extra} doesn't match anything registered")
 

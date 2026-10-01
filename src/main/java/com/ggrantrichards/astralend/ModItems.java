@@ -51,6 +51,9 @@ public final class ModItems {
     // The key to the Wormhole Maws: wakes a Maw (with its eyes lit), or attunes you to a woken one.
     public static final RegistryObject<Item> PORTAL_LENS = register("portal_lens", Item::new,
         new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON));
+    // What the Station Sentinel leaves behind: the core of its mind.
+    public static final RegistryObject<Item> DATA_CORE = register("data_core", Item::new,
+        new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.EPIC));
     public static final RegistryObject<Item> TEMPORAL_CRYSTAL = register("temporal_crystal", Item::new,
         new Item.Properties().rarity(net.minecraft.world.item.Rarity.RARE));
 
@@ -63,6 +66,7 @@ public final class ModItems {
     public static final RegistryObject<Item> BLACK_HOLE_GUARDIAN_SPAWN_EGG = spawnEgg("black_hole_guardian", ModEntities.BLACK_HOLE_GUARDIAN);
     public static final RegistryObject<Item> DRIFT_WHALE_SPAWN_EGG = spawnEgg("drift_whale", ModEntities.DRIFT_WHALE);
     public static final RegistryObject<Item> WATCHER_SPAWN_EGG = spawnEgg("watcher", ModEntities.WATCHER);
+    public static final RegistryObject<Item> STATION_SENTINEL_SPAWN_EGG = spawnEgg("station_sentinel", ModEntities.STATION_SENTINEL);
 
     private static RegistryObject<Item> register(String name, Function<Item.Properties, Item> factory, Item.Properties properties) {
         return ITEMS.register(name, () -> factory.apply(properties.setId(ITEMS.key(name))));

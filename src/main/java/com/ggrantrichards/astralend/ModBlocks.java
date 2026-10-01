@@ -237,6 +237,28 @@ public final class ModBlocks {
     public static final RegistryObject<Block> MAZE_TELESCOPE = register("maze_telescope", com.ggrantrichards.astralend.maze.MazeTelescopeBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(-1.0F, 3600000.0F).sound(SoundType.COPPER)
             .noOcclusion().noLootTable());
+    // Phase 6: the Orbital Station. Orrery Bronze ages through three stages (an axe scrapes it back);
+    // the Solar Core, bulkheads and lamps make the station's power puzzle.
+    public static final RegistryObject<Block> ORRERY_BRONZE = register("orrery_bronze",
+        p -> new com.ggrantrichards.astralend.station.OrreryBronzeBlock(() -> ModBlocks.TARNISHED_ORRERY_BRONZE.get(), null, p),
+        () -> bronze(MapColor.COLOR_ORANGE));
+    public static final RegistryObject<Block> TARNISHED_ORRERY_BRONZE = register("tarnished_orrery_bronze",
+        p -> new com.ggrantrichards.astralend.station.OrreryBronzeBlock(() -> ModBlocks.WEATHERED_ORRERY_BRONZE.get(),
+            () -> ModBlocks.ORRERY_BRONZE.get(), p),
+        () -> bronze(MapColor.TERRACOTTA_PURPLE));
+    public static final RegistryObject<Block> WEATHERED_ORRERY_BRONZE = register("weathered_orrery_bronze",
+        p -> new com.ggrantrichards.astralend.station.OrreryBronzeBlock(null, () -> ModBlocks.TARNISHED_ORRERY_BRONZE.get(), p),
+        () -> bronze(MapColor.COLOR_PURPLE));
+    public static final RegistryObject<Block> SOLAR_CORE = register("solar_core", com.ggrantrichards.astralend.station.SolarCoreBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(-1.0F, 3600000.0F).sound(SoundType.COPPER).noLootTable()
+            .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.station.SolarCoreBlock.POWERED) ? 15
+                : 2 + state.getValue(com.ggrantrichards.astralend.station.SolarCoreBlock.CELLS) * 2));
+    public static final RegistryObject<Block> BULKHEAD = register("bulkhead", com.ggrantrichards.astralend.station.BulkheadBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(-1.0F, 3600000.0F).sound(SoundType.COPPER)
+            .noOcclusion().noLootTable());
+    public static final RegistryObject<Block> STATION_LAMP = register("station_lamp", com.ggrantrichards.astralend.station.StationLampBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(0.8F).sound(SoundType.GLASS)
+            .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.station.StationLampBlock.LIT) ? 15 : 0));
     // Life that died out: grey husks of the Nebula Fields' mushrooms and vines, and Pollinator shells.
     public static final RegistryObject<Block> ASHEN_LUMINESHROOM = register("ashen_lumineshroom",
         p -> new EndPlantBlock(Block.column(6.0, 0.0, 10.0), ASTRAL_SOIL, p),
@@ -366,6 +388,10 @@ public final class ModBlocks {
     private static BlockBehaviour.Properties endStone(MapColor color) {
         return BlockBehaviour.Properties.of().mapColor(color).instrument(NoteBlockInstrument.BASEDRUM)
             .requiresCorrectToolForDrops().strength(3.0F, 9.0F);
+    }
+
+    private static BlockBehaviour.Properties bronze(MapColor color) {
+        return BlockBehaviour.Properties.of().mapColor(color).requiresCorrectToolForDrops().strength(3.0F, 6.0F).sound(SoundType.COPPER);
     }
 
     private static BlockBehaviour.Properties quartz() {

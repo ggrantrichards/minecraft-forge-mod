@@ -48,6 +48,11 @@ public final class ModEntities {
         () -> EntityType.Builder.of(Watcher::new, MobCategory.MISC).sized(1.0F, 2.9F).eyeHeight(2.4F).fireImmune()
             .clientTrackingRange(16).build(ENTITY_TYPES.key("watcher")));
 
+    // Phase 6: the Orbital Station's guardian.
+    public static final RegistryObject<EntityType<StationSentinel>> STATION_SENTINEL = ENTITY_TYPES.register("station_sentinel",
+        () -> EntityType.Builder.of(StationSentinel::new, MobCategory.MONSTER).sized(1.6F, 3.2F).eyeHeight(2.7F).fireImmune()
+            .clientTrackingRange(16).build(ENTITY_TYPES.key("station_sentinel")));
+
     public static void register() {
         EntityAttributeCreationEvent.BUS.addListener(event -> {
             event.put(POLLINATOR.get(), EndPollinator.createAttributes().build());
@@ -58,6 +63,7 @@ public final class ModEntities {
             event.put(BLACK_HOLE_GUARDIAN.get(), BlackHoleGuardian.createAttributes().build());
             event.put(DRIFT_WHALE.get(), DriftWhale.createAttributes().build());
             event.put(WATCHER.get(), Watcher.createAttributes().build());
+            event.put(STATION_SENTINEL.get(), StationSentinel.createAttributes().build());
         });
         SpawnPlacementRegisterEvent.BUS.addListener(event -> {
             var replace = SpawnPlacementRegisterEvent.Operation.REPLACE;

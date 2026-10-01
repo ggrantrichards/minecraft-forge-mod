@@ -279,3 +279,127 @@ TEXTURES += [
     ("block/tarnished_orrery_bronze.png", tarnished_orrery_bronze),
     ("block/weathered_orrery_bronze.png", weathered_orrery_bronze),
 ]
+
+
+def _core_side(cells, powered):
+    """The Solar Core's side: a heavy bronze casing with three upright slots for Flare Cells; each
+    slot glows gold once a charged cell is in it, and the whole casing's seams glow when powered."""
+    img = _orrery(1).copy()
+    for y in range(SIZE):
+        for x in range(SIZE):
+            if x in (0, 15) or y in (0, 15):
+                put(img, x, y, OB_BRONZE[0])
+            elif x in (1, 14) or y in (1, 14):
+                put(img, x, y, OB_BRONZE[3])
+    for k, x0 in enumerate((3, 7, 11)):
+        filled = k < cells
+        for y in range(4, 13):
+            for x in range(x0, x0 + 2):
+                if filled:
+                    c = hexc("fff0b0") if y in (5, 6) else hexc("ffcf52") if x == x0 else hexc("e0952c")
+                else:
+                    c = hexc("1a120c") if x == x0 else hexc("2a1e14")
+                put(img, x, y, c)
+        put(img, x0, 3, OB_BRONZE[4])
+        put(img, x0 + 1, 3, OB_BRONZE[4])
+        put(img, x0, 13, OB_BRONZE[1])
+        put(img, x0 + 1, 13, OB_BRONZE[1])
+    if powered:
+        for x in range(2, 14):
+            put(img, x, 2, hexc("ffe49a"))
+            put(img, x, 13, hexc("ffe49a"))
+    return img
+
+
+def _core_top(powered):
+    """The top: a round port over the reactor, dark when dead, a sun of light when powered."""
+    img = _orrery(1).copy()
+    glow = ramp("7a3a0c", "fff6d0", 5)
+    for y in range(SIZE):
+        for x in range(SIZE):
+            r = math.hypot(x - 7.5, y - 7.5)
+            if r < 5.2:
+                if powered:
+                    c = glow[min(4, int((5.2 - r) / 1.1))]
+                else:
+                    c = hexc("120c08") if r < 4.2 else hexc("2a1e14")
+                put(img, x, y, c)
+            elif r < 6.3:
+                put(img, x, y, OB_BRONZE[4] if (x + y) % 3 else OB_BRONZE[2])
+    return img
+
+
+def bulkhead():
+    """A sealed bulkhead: a slab of armoured, tarnished bronze with a heavy diagonal brace and a band
+    of warning chevrons, violet and gold."""
+    img = _orrery(2).copy()
+    for y in range(SIZE):
+        for x in range(SIZE):
+            edge = x in (0, 15) or y in (0, 15)
+            if edge:
+                put(img, x, y, OB_TARNISH[0])
+            elif y in (6, 7, 8, 9):
+                put(img, x, y, hexc("e3b062") if ((x + y) // 2) % 2 == 0 else hexc("3a2a52"))   # chevrons
+            elif abs(x - y) <= 0 and not 5 <= y <= 10:
+                put(img, x, y, OB_BRONZE[2])
+            elif abs(x - y) == 1 and not 5 <= y <= 10:
+                put(img, x, y, OB_BRONZE[1])
+    for x, y in ((2, 2), (13, 2), (2, 13), (13, 13)):
+        put(img, x, y, OB_BRONZE[5])                                  # bolts
+    return img
+
+
+def _lamp(lit):
+    """A station lamp: a frosted pane in a bronze frame - grey-violet and dead, or warm and bright."""
+    img = new()
+    pane = ramp("fff2c8", "ffd27a", 4) if lit else ramp("3a3448", "5a5270", 4)
+    for y in range(SIZE):
+        for x in range(SIZE):
+            if x in (0, 15) or y in (0, 15):
+                c = OB_BRONZE[1]
+            elif x in (1, 14) or y in (1, 14):
+                c = OB_BRONZE[3]
+            elif x in (7, 8) or y in (7, 8):
+                c = OB_BRONZE[2]                                       # the cross of the frame
+            else:
+                d = max(abs(x - 3.5 if x < 8 else x - 11.5), abs(y - 3.5 if y < 8 else y - 11.5))
+                c = pane[min(3, int(d))]
+            put(img, x, y, c)
+    return img
+
+
+DATA_CORE = [
+    "................",
+    "......oooo......",
+    "....oobbbboo....",
+    "...obbBBBBbbo...",
+    "..obBccccccBbo..",
+    "..obcCwwCCccbo..",
+    ".obBcwCCCCcccBo.",
+    ".obBcCCCCCcccBo.",
+    ".obBcCCCCccccBo.",
+    ".obBccCCccccdBo.",
+    "..obccccccccdbo.",
+    "..obBcccccddBbo.",
+    "...obbBBBBbbo...",
+    "....oobbbboo....",
+    "......oooo......",
+    "................",
+]
+
+
+def data_core():
+    """The Data Core: the Sentinel's mind, a glowing cyan sphere in a bronze cage."""
+    return from_map(DATA_CORE, {"o": hexc("2a1a0c"), "b": hexc("8c5e2a"), "B": hexc("c48a45"),
+                                "c": hexc("2f9fb8"), "C": hexc("7fe9f5"), "w": hexc("ffffff"), "d": hexc("1d5e72")})
+
+
+TEXTURES += [("block/solar_core_side_%d.png" % n, (lambda n=n: _core_side(n, False))) for n in range(4)] + [
+    ("block/solar_core_side_on.png", lambda: _core_side(3, True)),
+    ("block/solar_core_top.png", lambda: _core_top(False)),
+    ("block/solar_core_top_on.png", lambda: _core_top(True)),
+    ("block/bulkhead.png", bulkhead),
+    ("block/station_lamp.png", lambda: _lamp(False)),
+    ("block/station_lamp_on.png", lambda: _lamp(True)),
+    ("item/data_core.png", data_core),
+]

@@ -639,6 +639,146 @@ def constellation_maze(seed):
     return t
 
 
+# ------------------------------------------------------------------ Orbital Station
+
+def orbital_station(seed):
+    """An abandoned Cartographer station hanging high over the End: a wheel of tarnished Orrery Bronze.
+    A ring corridor (docking bay with Void Wanderers parked in it to the north, hydroponics overgrown
+    with Lumineshrooms to the east, crew quarters to the west) joined by spokes to a hub, where the
+    dead Solar Core waits for three charged Flare Cells. The south spoke is the vault, sealed at both
+    ends by bulkheads, with the Station Sentinel asleep inside."""
+    S = 47
+    t = Template(S, 18, S, seed)
+    rnd = t.rnd
+    c = S // 2
+    floor, roof = 4, 9
+
+    # Tarnish spreads in broad patches, not block by block: a smooth noise over the station.
+    cell = 7
+    lattice = [[rnd.random() for _ in range(S // cell + 3)] for _ in range(S // cell + 3)]
+
+    def tarnish(x, z):
+        gx, gz = x / cell, z / cell
+        x0, z0 = int(gx), int(gz)
+        tx, tz = gx - x0, gz - z0
+        tx, tz = tx * tx * (3 - 2 * tx), tz * tz * (3 - 2 * tz)
+        a0 = lattice[z0][x0] + (lattice[z0][x0 + 1] - lattice[z0][x0]) * tx
+        a1 = lattice[z0 + 1][x0] + (lattice[z0 + 1][x0 + 1] - lattice[z0 + 1][x0]) * tx
+        return a0 + (a1 - a0) * tz
+
+    def bronze_tone(x=None, y=None, z=None):
+        v = tarnish(x, z) + (rnd.random() - 0.5) * 0.12 if x is not None else rnd.random()
+        return a("weathered_orrery_bronze") if v < 0.5 else a("tarnished_orrery_bronze") if v < 0.82 else a("orrery_bronze")
+
+    def polar(x, z):
+        return math.hypot(x - c, z - c), math.atan2(z - c, x - c)
+
+    def ang_gap(ang, target):
+        return abs((ang - target + math.pi) % math.tau - math.pi)
+
+    # ---- the ring
+    R_IN, R_OUT = 16.5, 22.4
+    for x in range(S):
+        for z in range(S):
+            r, ang = polar(x, z)
+            if not R_IN - 0.6 <= r <= R_OUT + 0.6:
+                continue
+            wall = r > R_OUT - 0.7 or r < R_IN + 0.3
+            t.set(x, floor, z, bronze_tone(x, floor, z))
+            t.set(x, roof, z, bronze_tone(x, roof, z))
+            docking = ang_gap(ang, -math.pi / 2) < 0.42            # north: the docking bay, open to the sky
+            for y in range(floor + 1, roof):
+                if wall:
+                    outer = r > R_OUT - 0.7
+                    if outer and docking:
+                        state = "minecraft:air"
+                    elif outer and y in (floor + 2, floor + 3) and int(math.degrees(ang) + 360) % 12 < 7:
+                        state = a("astral_glass")
+                    else:
+                        state = bronze_tone(x, y, z)
+                    if rnd.random() < 0.04 and not docking:
+                        state = "minecraft:air"                     # holes torn in the hull
+                    t.set(x, y, z, state)
+                else:
+                    t.set(x, y, z, "minecraft:air")
+            if not wall and abs(r - 19.5) < 0.5 and int(math.degrees(ang) + 360) % 30 < 4:
+                t.set(x, roof, z, a("station_lamp") + "[lit=false]")
+            # hydroponics (east): beds of moss with Lumineshrooms and Starblooms
+            if not wall and ang_gap(ang, 0.0) < 0.6 and 17.8 < r < 21.2 and abs(r - 19.5) > 0.6:
+                t.set(x, floor, z, a("nebula_moss"))
+                if rnd.random() < 0.45:
+                    t.set(x, floor + 1, z, a("lumineshroom") if rnd.random() < 0.6 else a("starbloom"))
+            # Astral Vines have grown in through the hull here and there
+            if not wall and rnd.random() < 0.015:
+                t.set(x, roof - 1, z, a("astral_vine"))
+    # ---- the hub
+    HUB = 7.4
+    for x in range(S):
+        for z in range(S):
+            r, ang = polar(x, z)
+            if r > HUB + 0.5:
+                continue
+            t.set(x, floor, z, bronze_tone(x, floor, z) if r > 2.5 else a("polished_umbral_stone"))
+            t.set(x, roof + 2, z, bronze_tone(x, roof, z) if r > 2.2 else a("astral_glass"))
+            for y in range(floor + 1, roof + 2):
+                t.set(x, y, z, bronze_tone(x, y, z) if r > HUB - 0.6 else "minecraft:air")
+            if abs(r - 5) < 0.5 and int(math.degrees(ang) + 360) % 90 < 10:
+                t.set(x, roof + 2, z, a("station_lamp") + "[lit=false]")
+    for ox, oz in ((-4, -4), (4, -4), (-4, 4), (4, 4)):          # bone pillars round the core
+        for y in range(floor + 1, roof + 2):
+            t.set(c + ox, y, c + oz, a("leviathan_bone_block") + "[axis=y]")
+    t.set(c, floor + 1, c, a("polished_umbral_stone"))
+    t.set(c, floor + 2, c, a("solar_core") + "[cells=0,powered=false]")
+    for y in range(roof + 3, roof + 8):                          # the antenna mast
+        t.set(c, y, c, a("leviathan_bone_block") + "[axis=y]")
+    t.set(c, roof + 8, c, a("null_lantern"))
+    # ---- the spokes: north, east and west are open corridors; south is the vault
+    for dx, dz in ((0, -1), (1, 0), (-1, 0), (0, 1)):
+        vault = dz == 1
+        half = 3 if vault else 1
+        top = roof + 1 if vault else roof - 1
+        px, pz = -dz, dx
+        for k in range(int(HUB) - 1, int(R_IN) + 1):
+            for w in range(-half - 1, half + 2):
+                x, z = c + dx * k + px * w, c + dz * k + pz * w
+                t.set(x, floor, z, bronze_tone(x, floor, z))
+                t.set(x, top + 1, z, bronze_tone(x, top, z))
+                for y in range(floor + 1, top + 1):
+                    t.set(x, y, z, bronze_tone(x, y, z) if abs(w) == half + 1 else "minecraft:air")
+                if not vault and w == 0 and k % 4 == 0:
+                    t.set(x, top + 1, z, a("station_lamp") + "[lit=false]")
+        if vault:
+            # bulkheads at both ends
+            for k in (int(HUB) - 1, int(R_IN)):
+                for w in range(-half, half + 1):
+                    for y in range(floor + 1, top + 1):
+                        t.set(c + dx * k + px * w, y, c + dz * k + pz * w, a("bulkhead") + "[open=false]")
+            mid = (int(HUB) + int(R_IN)) // 2
+            chest(t, c + dx * mid + px * (half - 0), floor + 1, c + dz * mid + pz * (half - 0), "station_vault", facing="west")
+            chest(t, c + dx * mid - px * half, floor + 1, c + dz * mid - pz * half, "station_vault", facing="east")
+            t.set(c, top + 1, c + dz * mid, a("station_lamp") + "[lit=false]")
+            t.entity(c + 0.5, floor + 1.0, c + dz * mid + 0.5 - 2, {"id": a("station_sentinel"), "PersistenceRequired": Byte(1),
+                                                                    "Rotation": nbt_list_float(180.0, 0.0)})
+    # ---- crew quarters (west): bunks and a locker
+    for k in range(6):
+        ang = math.pi + (k - 2.5) * 0.12
+        x, z = round(c + math.cos(ang) * 21.2), round(c + math.sin(ang) * 21.2)
+        t.set(x, floor + 1, z, a("lumine_slab") + "[type=bottom]")
+        t.set(x, floor + 3, z, a("lumine_slab") + "[type=bottom]")
+    chest(t, c - 18, floor + 1, c + 4, "station_quarters", facing="east")
+    # ---- the docking bay (north): Void Wanderers parked along it
+    for k in (-1, 0, 1):
+        ang = -math.pi / 2 + k * 0.22
+        t.entity(c + math.cos(ang) * 19.5 + 0.5, floor + 1.5, c + math.sin(ang) * 19.5 + 0.5,
+                 {"id": a("void_wanderer"), "PersistenceRequired": Byte(1)})
+    return t
+
+
+def nbt_list_float(*values):
+    import nbt as _nbt
+    return _nbt.List([_nbt.Float(v) for v in values], _nbt.FLOAT)
+
+
 # ------------------------------------------------------------------ worldgen data
 
 def structure_json(name, height, heightmap, spawn_overrides, adaptation, ground):
@@ -704,6 +844,12 @@ STRUCTURES = [
          biomes=[a("shattered_observatory"), a("nebula_fields")], spread=(24, 8, 77162391),
          height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 56}, "max_inclusive": {"absolute": 76}},
          heightmap=None, spawns=None, adaptation=None, ground=(-4096, 40, 22)),
+    # Orbital Stations hang high in the sky, anywhere but the Corona.
+    dict(name="orbital_station", variants=[lambda: orbital_station(81)],
+         biomes=[a("nebula_fields"), a("aurora_shallows"), a("comet_wake"), a("dark_matter_belt"), a("shattered_observatory")],
+         spread=(38, 14, 20934117),
+         height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 176}, "max_inclusive": {"absolute": 200}},
+         heightmap=None, spawns=None, adaptation=None, ground=(-4096, 4096, 0)),
 ]
 
 

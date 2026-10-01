@@ -17,6 +17,7 @@ public final class ModModelLayers {
     public static final ModelLayerLocation BLACK_HOLE_GUARDIAN = layer("black_hole_guardian");
     public static final ModelLayerLocation DRIFT_WHALE = layer("drift_whale");
     public static final ModelLayerLocation WATCHER = layer("watcher");
+    public static final ModelLayerLocation STATION_SENTINEL = layer("station_sentinel");
 
     public static void register() {
         EntityRenderersEvent.RegisterLayerDefinitions.BUS.addListener(event -> {
@@ -28,6 +29,7 @@ public final class ModModelLayers {
             event.registerLayerDefinition(BLACK_HOLE_GUARDIAN, MobMeshes::blackHoleGuardian);
             event.registerLayerDefinition(DRIFT_WHALE, MobMeshes::driftWhale);
             event.registerLayerDefinition(WATCHER, MobMeshes::watcher);
+            event.registerLayerDefinition(STATION_SENTINEL, MobMeshes::stationSentinel);
         });
         EntityRenderersEvent.RegisterRenderers.BUS.addListener(event -> {
             event.registerEntityRenderer(ModEntities.POLLINATOR.get(), PollinatorRenderer::new);
@@ -38,6 +40,7 @@ public final class ModModelLayers {
             event.registerEntityRenderer(ModEntities.BLACK_HOLE_GUARDIAN.get(), BlackHoleGuardianRenderer::new);
             event.registerEntityRenderer(ModEntities.DRIFT_WHALE.get(), DriftWhaleRenderer::new);
             event.registerEntityRenderer(ModEntities.WATCHER.get(), WatcherRenderer::new);
+            event.registerEntityRenderer(ModEntities.STATION_SENTINEL.get(), StationSentinelRenderer::new);
         });
     }
 

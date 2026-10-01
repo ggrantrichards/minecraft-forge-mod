@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "side": "astralend:block/solar_core_side_on",
+    "top": "astralend:block/solar_core_top_on",
+    "bottom": "astralend:block/weathered_orrery_bronze"
+  }
+}

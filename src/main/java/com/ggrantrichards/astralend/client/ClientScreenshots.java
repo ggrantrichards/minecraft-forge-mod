@@ -168,6 +168,19 @@ public final class ClientScreenshots {
                         com.ggrantrichards.astralend.maze.MazeScoping.lightBridges(end, here.offset(24, -18, 24), id);
                     }
                 }
+                if (style.equals("power")) {
+                    // An Orbital Station, powered: its vault open and its Sentinel awake (but holding still).
+                    for (BlockPos p : BlockPos.betweenClosed(here.offset(-24, -10, -24), here.offset(24, 10, 24))) {
+                        if (end.getBlockState(p).is(ModBlocks.SOLAR_CORE.get())) {
+                            com.ggrantrichards.astralend.station.SolarCoreBlock.power(end, p.immutable(), end.getBlockState(p));
+                            break;
+                        }
+                    }
+                    for (var s : end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.StationSentinel.class,
+                            new net.minecraft.world.phys.AABB(here).inflate(24))) {
+                        s.setNoAi(true);
+                    }
+                }
                 if (style.equals("wake")) {
                     // A Wormhole Maw, woken: light its eyes and open its throat.
                     BlockPos throat = null;
@@ -227,6 +240,9 @@ public final class ClientScreenshots {
             }
             if (!end.noCollision(entity)) {
                 entity.snapTo(shot.mobX(), shot.mobY(), shot.mobZ(), yaw, 0.0F);
+            }
+            if (entity instanceof com.ggrantrichards.astralend.entity.StationSentinel sentinel && shot.style().contains("awake")) {
+                sentinel.wake();
             }
             if (entity instanceof UmbralStalker stalker) {
                 stalker.showAsHunting();   // otherwise, with no prey, there'd be nothing to see

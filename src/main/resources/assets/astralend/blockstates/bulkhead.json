@@ -1,0 +1,20 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "open": "false"
+      },
+      "apply": {
+        "model": "astralend:block/bulkhead"
+      }
+    },
+    {
+      "when": {
+        "open": "true"
+      },
+      "apply": {
+        "model": "astralend:block/bulkhead_open"
+      }
+    }
+  ]
+}

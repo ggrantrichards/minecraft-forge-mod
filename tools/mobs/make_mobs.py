@@ -944,7 +944,90 @@ WATCHER = Mob("watcher", (64, 64), [
 ], egg=(STONE[3], RUNE))
 
 
-MOBS = [POLLINATOR, WANDERER, STALKER, CINDER_MITE, SKIMMER, GUARDIAN, WHALE, WATCHER]
+# ---- Station Sentinel: the Orbital Station's guardian, a big, slow automaton built like a Void
+# Wanderer: a Wanderer's drone head with its great lens, on a riveted bronze body with heavy fists,
+# and a gimbal ring on its back. It's tarnished violet with age, like the station's bronze.
+TARNISH = [hexc("5e4a86"), hexc("75609e"), hexc("9a86c6")]
+
+
+def station_bronze(face, px, py, fw, fh, rnd, panels=True):
+    c = bronze(face, px, py, fw, fh, rnd, panels)
+    if c in PATINA:
+        c = TARNISH[PATINA.index(c)]                     # violet tarnish instead of verdigris
+    return c
+
+
+def station_bronze_plain(face, px, py, fw, fh, rnd):
+    return station_bronze(face, px, py, fw, fh, rnd, panels=False)
+
+
+def big_lens_glass(face, px, py, fw, fh, rnd):
+    if face != "north":
+        return hexc("1d4e62")
+    d = math.hypot(px - (fw - 1) / 2, py - (fh - 1) / 2)
+    if d < 1.0:
+        return hexc("0a1a24")                             # the pupil
+    return hexc("7fe9f5") if (px + py) % 3 else hexc("3fb8d0")
+
+
+def big_lens_glow(face, px, py, fw, fh, rnd):
+    if face == "north":
+        d = math.hypot(px - (fw - 1) / 2, py - (fh - 1) / 2)
+        if d >= 1.0:
+            return hexc("ffffff") if (px, py) == (1, 1) else hexc("aef8ff")
+    return None
+
+
+def chest_lights(face, px, py, fw, fh, rnd):
+    if face == "north" and py == 3 and px % 3 == 2 and 2 <= px <= fw - 3:
+        return hexc("7ff3ff")                             # a row of status lights across the chest
+    if face in ("east", "west") and py == fh // 2 and px % 3 == 1:
+        return hexc("7ff3ff")
+    return None
+
+
+def fist(face, px, py, fw, fh, rnd):
+    c = station_bronze_plain(face, px, py, fw, fh, rnd)
+    if face == "down" or (face == "north" and py >= fh - 2):
+        c = BRONZE[1]                                     # the knuckles, worn dark
+    if face == "north" and py == 1 and px % 2 == 1:
+        c = BRONZE[5]
+    return c
+
+
+SENTINEL = Mob("station_sentinel", (128, 64), [
+    Part("right_leg", (-4, 6, 0), [B(-2.5, 0, -2.5, 5, 18, 5, station_bronze, key="leg")]),
+    Part("left_leg", (4, 6, 0), [B(-2.5, 0, -2.5, 5, 18, 5, station_bronze, key="leg", mirror=True)]),
+    Part("body", (0, 6, 0), [
+        B(-8, -16, -5, 16, 14, 10, station_bronze, chest_lights),
+        B(-6, -2, -4, 12, 3, 8, station_bronze_plain),                  # the waist
+    ], [
+        Part("head", (0, -16, 0), [
+            B(-5, -10, -5, 10, 10, 10, station_bronze, drone_glow),
+            B(-3.5, -8.5, -6, 7, 7, 1, lens_housing),
+            B(-2.5, -7.5, -6.6, 5, 5, 1, big_lens_glass, big_lens_glow),
+            B(-0.5, -14, -0.5, 1, 4, 1, station_bronze_plain),           # antenna
+            B(-1, -15, -1, 2, 1, 2, antenna_tip, antenna_tip),
+        ]),
+        Part("right_arm", (-10, -13, 0), [
+            B(-3, -2, -3, 5, 13, 6, station_bronze, key="arm"),
+            B(-3.5, 11, -3.5, 6, 6, 7, fist, key="fist"),
+        ]),
+        Part("left_arm", (10, -13, 0), [
+            B(-2, -2, -3, 5, 13, 6, station_bronze, key="arm", mirror=True),
+            B(-2.5, 11, -3.5, 6, 6, 7, fist, key="fist", mirror=True),
+        ]),
+        Part("ring", (0, -10, 7), [
+            B(-9, -9, 0, 18, 1, 1, ring_bar, key="ring_h"),
+            B(-9, 8, 0, 18, 1, 1, ring_bar, key="ring_h"),
+            B(-9, -8, 0, 1, 16, 1, ring_bar, key="ring_v"),
+            B(8, -8, 0, 1, 16, 1, ring_bar, key="ring_v"),
+        ]),
+    ]),
+], egg=(hexc("6e4526"), hexc("8f7bbd")))
+
+
+MOBS = [POLLINATOR, WANDERER, STALKER, CINDER_MITE, SKIMMER, GUARDIAN, WHALE, WATCHER, SENTINEL]
 for _mob in MOBS:
     auto_uv(_mob)          # boxes drawn without a texture position get one
 

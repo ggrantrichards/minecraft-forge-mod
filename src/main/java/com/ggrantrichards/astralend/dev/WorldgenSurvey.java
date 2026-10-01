@@ -368,6 +368,7 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('W'), end, "black_hole_guardian", 3.0, 1.6, 2.0);
         mobShot(lines, areas.get('A'), end, "drift_whale side", 11.0, 7.0, 7.5);
         mobShot(lines, areas.get('R'), end, "watcher", 6.5, 0.5, 2.6);
+        mobShot(lines, areas.get('N'), end, "station_sentinel awake", 7.5, 0.0, 2.6);
         // Phase 5: the sky and Stellar Flares.
         skyShot(lines, areas.get('A'), "sky_aurora_shallows", -45.0F, -32.0F, null, "flare=calm");
         skyShot(lines, areas.get('N'), "sky_nebula_fields", -45.0F, -32.0F, null, "flare=calm");
@@ -421,6 +422,34 @@ public final class WorldgenSurvey {
         BlockPos cam = maw.throat().relative(out, 34).above(6);
         EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_wormhole_maw %d.5 %d %d.5 %.1f 8.0 wake",
             cam.getX(), cam.getY(), cam.getZ(), out.getOpposite().toYRot()));
+    }
+
+    // An Orbital Station: its Sentinel sleeps (and can't be hurt) until the Solar Core is powered; then
+    // the vault's bulkheads open and the Sentinel wakes. Then a view of the station from outside, and one
+    // of the Sentinel in its open vault.
+    private static void testStation(ServerLevel end, BlockPos core, List<String> failures) {
+        var sentinels = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.StationSentinel.class,
+            new net.minecraft.world.phys.AABB(core).inflate(32, 16, 32));
+        boolean hurtAsleep = !sentinels.isEmpty() && sentinels.get(0).hurtServer(end, end.damageSources().generic(), 5.0F);
+        int opened = com.ggrantrichards.astralend.station.SolarCoreBlock.power(end, core, end.getBlockState(core));
+        boolean awake = !sentinels.isEmpty() && sentinels.get(0).isAwake();
+        log(String.format("orbital_station: %d sentinel(s), hurt while asleep: %s; powering the core opened %d bulkhead blocks; sentinel awake: %s",
+            sentinels.size(), hurtAsleep, opened, awake));
+        if (sentinels.isEmpty() || hurtAsleep || opened == 0 || !awake) {
+            failures.add("orbital_station: expected a sleeping, unhurt Sentinel that wakes and bulkheads that open when the core is powered");
+        }
+        double d = 44.0 / Math.sqrt(2.0);
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_orbital_station %.1f %d %.1f -45 %.1f", core.getX() + 0.5 - d,
+            core.getY() + 16, core.getZ() + 0.5 - d, Math.toDegrees(Math.atan2(16.0, 44.0))));
+        if (!sentinels.isEmpty()) {
+            var s = sentinels.get(0);
+            // From the hub end of the vault, looking down it at the Sentinel.
+            double dx = s.getX() - core.getX();
+            double dz = s.getZ() - core.getZ();
+            float yaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
+            EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_station_vault %.1f %.1f %.1f %.1f 8.0 power", core.getX() + 0.5 + dx * 0.35,
+                s.getY() + 0.6, core.getZ() + 0.5 + dz * 0.35, yaw));
+        }
     }
 
     // A Constellation Maze: its four telescopes are there and each lights some bridges. Then a view of
@@ -482,7 +511,8 @@ public final class WorldgenSurvey {
                                 new Wanted("whalefall", 'A', Blocks.CHEST), new Wanted("observatory_ruins", 'R', Blocks.VAULT),
                                 new Wanted("solar_array", 'C', ModBlocks.COLLECTOR_PEDESTAL.get()),
                                 new Wanted("wormhole_maw", 'R', ModBlocks.MAW_THROAT.get()),
-                                new Wanted("constellation_maze", 'R', ModBlocks.MAZE_TELESCOPE.get()))) {
+                                new Wanted("constellation_maze", 'R', ModBlocks.MAZE_TELESCOPE.get()),
+                                new Wanted("orbital_station", 'N', ModBlocks.SOLAR_CORE.get()))) {
             Area area = areas.get(w.biome());
             BlockPos from = area != null ? area.centre : BlockPos.ZERO;
             net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tag = net.minecraft.tags.TagKey.create(
@@ -556,6 +586,10 @@ public final class WorldgenSurvey {
                 if (w.name().equals("constellation_maze") && !found.containsKey("maze_tested")) {
                     found.put("maze_tested", marker);
                     testMaze(end, marker, failures);
+                }
+                if (w.name().equals("orbital_station") && !found.containsKey("station_tested")) {
+                    found.put("station_tested", marker);
+                    testStation(end, marker, failures);
                 }
                 if (w.name().equals("solar_array")) {
                     // Inside the control room too: the console, seen from a corner of the room.

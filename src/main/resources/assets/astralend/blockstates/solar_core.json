@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "cells=0,powered=false": {
+      "model": "astralend:block/solar_core_0"
+    },
+    "cells=0,powered=true": {
+      "model": "astralend:block/solar_core_on"
+    },
+    "cells=1,powered=false": {
+      "model": "astralend:block/solar_core_1"
+    },
+    "cells=1,powered=true": {
+      "model": "astralend:block/solar_core_on"
+    },
+    "cells=2,powered=false": {
+      "model": "astralend:block/solar_core_2"
+    },
+    "cells=2,powered=true": {
+      "model": "astralend:block/solar_core_on"
+    },
+    "cells=3,powered=false": {
+      "model": "astralend:block/solar_core_3"
+    },
+    "cells=3,powered=true": {
+      "model": "astralend:block/solar_core_on"
+    }
+  }
+}

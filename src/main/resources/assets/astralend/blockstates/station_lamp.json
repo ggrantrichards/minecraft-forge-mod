@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "astralend:block/station_lamp"
+    },
+    "lit=true": {
+      "model": "astralend:block/station_lamp_on"
+    }
+  }
+}

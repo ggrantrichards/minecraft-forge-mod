@@ -34,7 +34,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 public class StarChartItem extends Item {
     // Each destination is a structure tag holding just that structure (data/astralend/tags/worldgen/structure).
     private static final List<String> STRUCTURES = List.of("comet_crater", "wanderer_relay", "whalefall",
-        "observatory_ruins", "solar_array", "wormhole_maw", "constellation_maze");
+        "observatory_ruins", "solar_array", "wormhole_maw", "constellation_maze", "orbital_station");
     private static final List<ResourceKey<Biome>> DESTINATIONS = List.of(ModBiomes.NEBULA_FIELDS, ModBiomes.AURORA_SHALLOWS,
         ModBiomes.COMET_WAKE, ModBiomes.DARK_MATTER_BELT, ModBiomes.CORONA);
 

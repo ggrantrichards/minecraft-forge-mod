@@ -17,6 +17,10 @@ class Double(float):
     pass
 
 
+class Float(float):
+    pass
+
+
 class List(list):
     """A list of one tag type (given, or guessed from the first element)."""
     def __init__(self, items=(), kind=None):
@@ -29,6 +33,8 @@ def _kind(v):
         return BYTE
     if isinstance(v, (Int, int)):
         return INT
+    if isinstance(v, Float):
+        return FLOAT
     if isinstance(v, (Double, float)):
         return DOUBLE
     if isinstance(v, str):
@@ -47,6 +53,8 @@ def _payload(out, kind, v):
         out += struct.pack(">i", v)
     elif kind == DOUBLE:
         out += struct.pack(">d", v)
+    elif kind == FLOAT:
+        out += struct.pack(">f", v)
     elif kind == STRING:
         b = v.encode("utf-8")
         out += struct.pack(">H", len(b)) + b
