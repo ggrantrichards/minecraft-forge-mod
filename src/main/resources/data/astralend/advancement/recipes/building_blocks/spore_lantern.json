@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:spore_lantern"
+      }
+    },
+    "has_glowing_spores": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:glowing_spores"
+          }
+        ]
+      }
+    },
+    "has_astral_glass": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:astral_glass"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_glowing_spores",
+      "has_astral_glass"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:spore_lantern"
+    ]
+  }
+}

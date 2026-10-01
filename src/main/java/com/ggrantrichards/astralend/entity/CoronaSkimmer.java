@@ -180,6 +180,9 @@ public class CoronaSkimmer extends Animal implements Shearable {
         if (stack.is(Items.SHEARS)) {
             if (this.level() instanceof ServerLevel level && this.readyForShearing()) {
                 this.shear(level, SoundSource.PLAYERS, stack);
+                if (player instanceof net.minecraft.server.level.ServerPlayer shearer) {
+                    com.ggrantrichards.astralend.world.ModAdvancements.award(shearer, "harvest_moon");
+                }
                 this.gameEvent(GameEvent.SHEAR, player);
                 stack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
                 return InteractionResult.SUCCESS;

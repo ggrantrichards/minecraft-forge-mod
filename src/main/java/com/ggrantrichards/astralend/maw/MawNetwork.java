@@ -157,6 +157,7 @@ public class MawNetwork extends SavedData {
         if (player != null) {
             network.learn(player, maw);
             player.sendSystemMessage(Component.translatable("maw.astralend.woken"));
+            com.ggrantrichards.astralend.world.ModAdvancements.award(player, "say_ahh");
         }
         network.setDirty();
         level.playSound(null, centre, SoundEvents.RAVAGER_ROAR, SoundSource.BLOCKS, 4.0F, 0.4F);

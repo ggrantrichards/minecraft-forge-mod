@@ -1,0 +1,35 @@
+{
+  "parent": "astralend:end/weather_the_storm",
+  "display": {
+    "icon": {
+      "id": "astralend:bottled_flare"
+    },
+    "title": {
+      "translate": "advancements.astralend.bottled_sunlight.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.bottled_sunlight.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "bottle": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:bottled_flare"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "bottle"
+    ]
+  ]
+}

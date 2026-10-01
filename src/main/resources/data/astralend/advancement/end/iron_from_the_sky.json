@@ -1,0 +1,35 @@
+{
+  "parent": "astralend:end/astral_horizons",
+  "display": {
+    "icon": {
+      "id": "astralend:meteoric_iron_ingot"
+    },
+    "title": {
+      "translate": "advancements.astralend.iron_from_the_sky.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.iron_from_the_sky.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "ingot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:meteoric_iron_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "ingot"
+    ]
+  ]
+}

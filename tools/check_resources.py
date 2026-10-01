@@ -253,6 +253,8 @@ potion_names = set(re.findall(r'new Potion\("([a-z0-9_]+)"', effects_src))
 damage_types = {f.stem for f in (RES / "data" / NS / "damage_type").glob("*.json")}
 potions = set(re.findall(r'POTIONS\.register\("([a-z0-9_]+)"', effects_src))
 known |= {f"{NS}:{n}" for n in effects | damage_types | potions}
+# Recipes are registered by their files (the recipe-book unlock advancements name them).
+known |= {f"{NS}:{f.stem}" for f in (RES / "data" / NS / "recipe").glob("*.json")}
 # Phase 8: global loot modifiers (their codecs are registered in Java, each instance is a data file).
 known |= {f"{NS}:{n}" for n in re.findall(r'SERIALIZERS\.register\("([a-z0-9_]+)"', (JAVA / "starforge/StarforgeLoot.java").read_text())}
 known |= {f"{NS}:{f.stem}" for f in (RES / "data" / NS / "loot_modifiers").glob("*.json")}

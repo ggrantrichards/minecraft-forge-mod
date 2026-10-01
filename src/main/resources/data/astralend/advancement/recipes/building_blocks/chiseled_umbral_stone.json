@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:chiseled_umbral_stone"
+      }
+    },
+    "has_umbral_stone_slab": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:umbral_stone_slab"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_umbral_stone_slab"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:chiseled_umbral_stone"
+    ]
+  }
+}

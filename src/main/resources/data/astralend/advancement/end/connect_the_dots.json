@@ -1,0 +1,31 @@
+{
+  "parent": "astralend:end/hold_still",
+  "display": {
+    "icon": {
+      "id": "astralend:star_inlay_observatory_quartz"
+    },
+    "title": {
+      "translate": "advancements.astralend.connect_the_dots.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.connect_the_dots.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "maze": {
+      "trigger": "minecraft:player_generates_container_loot",
+      "conditions": {
+        "loot_table": "astralend:chests/constellation_maze"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "maze"
+    ]
+  ]
+}

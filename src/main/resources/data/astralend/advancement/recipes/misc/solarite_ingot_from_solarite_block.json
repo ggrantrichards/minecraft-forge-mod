@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:solarite_ingot_from_solarite_block"
+      }
+    },
+    "has_solarite_block": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:solarite_block"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_solarite_block"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:solarite_ingot_from_solarite_block"
+    ]
+  }
+}

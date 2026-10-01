@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:yellow_dye_from_starbloom"
+      }
+    },
+    "has_starbloom": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:starbloom"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_starbloom"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:yellow_dye_from_starbloom"
+    ]
+  }
+}

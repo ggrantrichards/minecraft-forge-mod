@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:orange_dye_from_flarebloom"
+      }
+    },
+    "has_flarebloom": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:flarebloom"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_flarebloom"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:orange_dye_from_flarebloom"
+    ]
+  }
+}

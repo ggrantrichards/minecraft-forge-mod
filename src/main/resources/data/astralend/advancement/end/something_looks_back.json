@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:end/root",
+  "parent": "astralend:end/hold_still",
   "display": {
     "icon": {
       "id": "astralend:star_chart"
@@ -10,14 +10,19 @@
     "description": {
       "translate": "advancements.astralend.something_looks_back.description"
     },
-    "frame": "goal",
+    "frame": "task",
     "hidden": true,
     "show_toast": true,
-    "announce_to_chat": true
+    "announce_to_chat": false
   },
   "criteria": {
     "done": {
       "trigger": "minecraft:impossible"
     }
-  }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
 }

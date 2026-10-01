@@ -274,6 +274,9 @@ public class VoidWanderer extends PathfinderMob {
             }
             if (progress >= SCAN_TICKS) {
                 self.scanned.add(target.getUUID());
+                if (target instanceof net.minecraft.server.level.ServerPlayer studied) {
+                    com.ggrantrichards.astralend.world.ModAdvancements.award(studied, "hold_still");
+                }
                 self.playSound(SoundEvents.AMETHYST_BLOCK_CHIME, 1.0F, 1.2F);
                 var shard = self.spawnAtLocation(level, new ItemStack(ModItems.CHART_FRAGMENT.get()));
                 if (shard != null) {

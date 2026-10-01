@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:stardust_block_from_motes"
+      }
+    },
+    "has_stardust_mote": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:stardust_mote"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_stardust_mote"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:stardust_block_from_motes"
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:observatory_quartz_slab"
+      }
+    },
+    "has_observatory_quartz": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:observatory_quartz"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_observatory_quartz"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:observatory_quartz_slab"
+    ]
+  }
+}

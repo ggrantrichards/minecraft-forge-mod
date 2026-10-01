@@ -1,0 +1,54 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:starforge_alloy"
+      }
+    },
+    "has_void_crystal": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:void_crystal"
+          }
+        ]
+      }
+    },
+    "has_meteoric_iron_ingot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:meteoric_iron_ingot"
+          }
+        ]
+      }
+    },
+    "has_glowing_spores": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:glowing_spores"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_void_crystal",
+      "has_meteoric_iron_ingot",
+      "has_glowing_spores"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:starforge_alloy"
+    ]
+  }
+}

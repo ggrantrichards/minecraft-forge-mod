@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:glowing_stew"
+      }
+    },
+    "has_lumineshroom": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:lumineshroom"
+          }
+        ]
+      }
+    },
+    "has_comet_cress": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:comet_cress"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_lumineshroom",
+      "has_comet_cress"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:glowing_stew"
+    ]
+  }
+}

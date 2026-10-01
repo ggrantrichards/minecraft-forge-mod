@@ -122,6 +122,15 @@ public final class StarforgeEffects {
         }
         if (player.tickCount % 20 == 0) {
             soakLight(level, player, s);
+            int forged = 0;
+            for (EquipmentSlot slot : new EquipmentSlot[] {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+                if (Starforge.get(player.getItemBySlot(slot)) != null) {
+                    forged++;
+                }
+            }
+            if (forged == 4) {
+                com.ggrantrichards.astralend.world.ModAdvancements.award(player, "head_to_toe");
+            }
         }
     }
 

@@ -1,0 +1,124 @@
+{
+  "parent": "astralend:end/astral_horizons",
+  "display": {
+    "icon": {
+      "id": "astralend:star_chart"
+    },
+    "title": {
+      "translate": "advancements.astralend.chart_the_stars.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.chart_the_stars.description"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "nebula_fields": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "biomes": "astralend:nebula_fields"
+            }
+          }
+        }
+      }
+    },
+    "aurora_shallows": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "biomes": "astralend:aurora_shallows"
+            }
+          }
+        }
+      }
+    },
+    "comet_wake": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "biomes": "astralend:comet_wake"
+            }
+          }
+        }
+      }
+    },
+    "dark_matter_belt": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "biomes": "astralend:dark_matter_belt"
+            }
+          }
+        }
+      }
+    },
+    "shattered_observatory": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "biomes": "astralend:shattered_observatory"
+            }
+          }
+        }
+      }
+    },
+    "corona": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "biomes": "astralend:corona"
+            }
+          }
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "nebula_fields"
+    ],
+    [
+      "aurora_shallows"
+    ],
+    [
+      "comet_wake"
+    ],
+    [
+      "dark_matter_belt"
+    ],
+    [
+      "shattered_observatory"
+    ],
+    [
+      "corona"
+    ]
+  ]
+}

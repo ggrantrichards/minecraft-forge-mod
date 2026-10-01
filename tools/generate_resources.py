@@ -1058,13 +1058,19 @@ def player_kill_drop(item, count_max=1, looting=True):
             "entries": [{"type": "minecraft:item", "name": rid(item), "modifier": modifiers}]}
 
 
-def advancement(name, icon, title, description, parent="minecraft:end/root", frame="task", hidden=False):
+def advancement(name, icon, title, description, parent="minecraft:end/root", frame="task", hidden=False, criteria=None,
+                requirements=None):
+    """An advancement in the End tab. With no criteria it's granted from code (ModAdvancements.award);
+    otherwise it uses vanilla triggers. requirements: "any" (one of the criteria) or None (all of them)."""
+    criteria = criteria or {"done": {"trigger": "minecraft:impossible"}}
+    reqs = [list(criteria)] if requirements == "any" else [[k] for k in criteria]
     write(DATA / "advancement" / "end" / f"{name}.json", {
         "parent": parent,
         "display": {"icon": {"id": icon}, "title": {"translate": f"advancements.{NS}.{name}.title"},
                     "description": {"translate": f"advancements.{NS}.{name}.description"},
-                    "frame": frame, "hidden": hidden, "show_toast": True, "announce_to_chat": True},
-        "criteria": {"done": {"trigger": "minecraft:impossible"}},
+                    "frame": frame, "hidden": hidden, "show_toast": True, "announce_to_chat": frame != "task" or not hidden},
+        "criteria": criteria,
+        "requirements": reqs,
     })
     lang[f"advancements.{NS}.{name}.title"] = title
     lang[f"advancements.{NS}.{name}.description"] = description
@@ -1772,6 +1778,108 @@ def round_out_phase9():
         "ingredients": [rid("cinder"), "minecraft:gunpowder"], "result": {"count": 2, "id": "minecraft:fire_charge"}})
 
 
+ASTRAL_BIOMES = ("nebula_fields", "aurora_shallows", "comet_wake", "dark_matter_belt", "shattered_observatory", "corona")
+
+
+def has_item(item):
+    return {"trigger": "minecraft:inventory_changed", "conditions": {"items": [{"items": item}]}}
+
+
+def killed(entity):
+    return {"trigger": "minecraft:player_killed_entity", "conditions": {"entity": {
+        "type": "minecraft:entity_properties", "entity": "this", "predicate": {"minecraft:entity_type": entity}}}}
+
+
+def in_biome(biome):
+    return {"trigger": "minecraft:location", "conditions": {"player": {
+        "type": "minecraft:entity_properties", "entity": "this", "predicate": {"minecraft:location": {"biomes": biome}}}}}
+
+
+def advancements_phase9():
+    """Phase 9: the astral End's advancements, as one tree in the End tab, growing from "Remote
+    Getaway" (going through an End Gateway). Most use vanilla triggers; the rest are granted by the
+    thing they're for (ModAdvancements.award)."""
+    biomes = {b: in_biome(rid(b)) for b in ASTRAL_BIOMES}
+    root = rid("end/astral_horizons")
+    advancement("astral_horizons", rid("starbloom"), "Astral Horizons", "Set foot in one of the astral biomes of the outer End",
+                parent="minecraft:end/enter_end_gateway", criteria=biomes, requirements="any")
+    advancement("chart_the_stars", rid("star_chart"), "Chart the Stars", "Visit every astral biome of the outer End",
+                parent=root, frame="challenge", criteria=biomes)
+    # Materials
+    advancement("falling_upward", rid("stardust_block"), "Falling Upward", "Pick up Stardust, the sand that falls up",
+                parent=root, criteria={"stardust": has_item(rid("stardust_block"))})
+    advancement("catch_a_falling_star", rid("stardust_mote"), "Catch a Falling Star",
+                "Glide through a live comet's tail with an elytra and catch a Stardust Mote", parent=rid("end/falling_upward"))
+    advancement("iron_from_the_sky", rid("meteoric_iron_ingot"), "Iron From the Sky", "Smelt a Meteoric Iron Ingot",
+                parent=root, criteria={"ingot": has_item(rid("meteoric_iron_ingot"))})
+    advancement("starforged", rid("starforge_template"), "Forged in Starlight", "Forge a Starforge upgrade onto a piece of gear",
+                parent=rid("end/iron_from_the_sky"))
+    advancement("head_to_toe", rid("starforge_alloy"), "Starforged From Head to Toe", "Wear four pieces of Starforged armor at once",
+                parent=rid("end/starforged"), frame="goal")
+    advancement("void_recall", rid("rift_pearl"), "Not Today, Void", "Fall into the void and be pulled back by a Rift Pearl",
+                parent=rid("end/starforged"), frame="challenge", hidden=True)
+    # The Cartographers
+    advancement("hold_still", rid("chart_fragment"), "Hold Still", "Stand still while a Void Wanderer charts you",
+                parent=root)
+    advancement("connect_the_dots", rid("star_inlay_observatory_quartz"), "Connect the Dots",
+                "Cross a Constellation Maze and open the chest on its dais", parent=rid("end/hold_still"),
+                criteria={"maze": {"trigger": "minecraft:player_generates_container_loot",
+                                   "conditions": {"loot_table": rid("chests/constellation_maze")}}})
+    advancement("say_ahh", rid("portal_lens"), "Say Ahh", "Wake a Wormhole Maw", parent=rid("end/hold_still"), frame="goal")
+    advancement("something_looks_back", rid("star_chart"), "Something Looks Back",
+                "Catch a glimpse of the Watcher through a spyglass", parent=rid("end/hold_still"), hidden=True)
+    # The Corona
+    advancement("weather_the_storm", rid("sunshade"), "Weather the Storm", "Be in the Corona when a Stellar Flare dies down",
+                parent=root)
+    advancement("harvest_moon", "minecraft:shears", "Harvest Moon", "Shear the film from a Corona Skimmer's wings",
+                parent=rid("end/weather_the_storm"))
+    advancement("bottled_sunlight", rid("bottled_flare"), "Bottled Sunlight", "Fill a Flare Bottle with a Stellar Flare",
+                parent=rid("end/weather_the_storm"), criteria={"bottle": has_item(rid("bottled_flare"))})
+    advancement("wind_it_up", rid("orrery_heart"), "Wind It Up", "Rekindle the heart of an Abandoned Orrery",
+                parent=rid("end/bottled_sunlight"), frame="goal")
+    advancement("clockwork_undone", rid("orrery_lamp"), "Clockwork Undone", "Defeat an Orrery Sentinel",
+                parent=rid("end/wind_it_up"), frame="challenge", criteria={"sentinel": killed(rid("orrery_sentinel"))})
+    # The Dark Matter Belt
+    advancement("event_horizon", rid("singularity_shard"), "Event Horizon", "Defeat a Black Hole Guardian",
+                parent=root, frame="goal", criteria={"guardian": killed(rid("black_hole_guardian"))})
+    # The Drift Whales
+    advancement("something_big_out_there", rid("whalelight_scale"), "Something Big Out There", "See a Drift Whale", parent=root)
+    advancement("whale_song", rid("whalelight_scale"), "Whale Song", "Be close to a Drift Whale while it hums",
+                parent=rid("end/something_big_out_there"))
+    advancement("tagalong", "minecraft:elytra", "Tagalong", "Fly alongside a Drift Whale for a whole minute",
+                parent=rid("end/whale_song"), frame="challenge")
+
+
+def recipe_unlocks():
+    """Every recipe unlocks in the recipe book once you hold one of its ingredients, the way vanilla's
+    do (data/astralend/advancement/recipes/...)."""
+    folders = {"building": "building_blocks", "misc": "misc", "equipment": "tools", "redstone": "redstone", "food": "food",
+               "blocks": "building_blocks"}
+    for file in sorted((DATA / "recipe").glob("*.json")):
+        obj = json.loads(file.read_text())
+        name = file.stem
+        ingredients = []
+        if "key" in obj:
+            ingredients = list(obj["key"].values())
+        elif "ingredients" in obj:
+            ingredients = obj["ingredients"]
+        elif "ingredient" in obj:
+            ingredients = [obj["ingredient"]]
+        elif "base" in obj:
+            ingredients = [obj["base"]]
+        items = []
+        for ing in ingredients:
+            if isinstance(ing, str) and not ing.startswith("#") and ing not in items and ing != "minecraft:bowl":
+                items.append(ing)
+        criteria = {"has_the_recipe": {"trigger": "minecraft:recipe_unlocked", "conditions": {"recipes": rid(name)}}}
+        for item in items[:3]:
+            criteria[f"has_{item.split(':')[1]}"] = has_item(item)
+        folder = folders.get(obj.get("category", "misc"), "misc")
+        write(DATA / "advancement" / "recipes" / folder / f"{name}.json", {
+            "parent": "minecraft:recipes/root", "criteria": criteria, "requirements": [list(criteria)],
+            "rewards": {"recipes": [rid(name)]}})
+
+
 def main():
     # Clear previously generated folders so renamed/removed content doesn't linger.
     for folder in (ASSETS / "blockstates", ASSETS / "models", ASSETS / "items", DATA / "loot_table",
@@ -2108,6 +2216,8 @@ def main():
     structures_phase6()
     starforging_phase8()
     round_out_phase9()
+    advancements_phase9()
+    recipe_unlocks()      # last: it reads every recipe written above
 
     # ---------------------------------------------------------------- write tags + lang
     for (registry, name), values in tags.items():

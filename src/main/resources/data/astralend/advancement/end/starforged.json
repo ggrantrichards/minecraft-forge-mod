@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:end/root",
+  "parent": "astralend:end/iron_from_the_sky",
   "display": {
     "icon": {
       "id": "astralend:starforge_template"
@@ -19,5 +19,10 @@
     "done": {
       "trigger": "minecraft:impossible"
     }
-  }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
 }

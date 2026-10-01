@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:waxed_tarnished_orrery_bronze_grate_from_honeycomb"
+      }
+    },
+    "has_tarnished_orrery_bronze_grate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:tarnished_orrery_bronze_grate"
+          }
+        ]
+      }
+    },
+    "has_honeycomb": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:honeycomb"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_tarnished_orrery_bronze_grate",
+      "has_honeycomb"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:waxed_tarnished_orrery_bronze_grate_from_honeycomb"
+    ]
+  }
+}

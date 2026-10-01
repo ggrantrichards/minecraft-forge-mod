@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:tarnished_cut_orrery_bronze_from_tarnished_orrery_bronze_stonecutting"
+      }
+    },
+    "has_tarnished_orrery_bronze": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:tarnished_orrery_bronze"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_tarnished_orrery_bronze"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:tarnished_cut_orrery_bronze_from_tarnished_orrery_bronze_stonecutting"
+    ]
+  }
+}

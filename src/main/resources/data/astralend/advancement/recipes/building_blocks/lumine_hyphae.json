@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:lumine_hyphae"
+      }
+    },
+    "has_lumine_stem": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:lumine_stem"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_lumine_stem"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:lumine_hyphae"
+    ]
+  }
+}

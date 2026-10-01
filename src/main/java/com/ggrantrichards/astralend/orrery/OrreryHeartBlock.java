@@ -59,6 +59,9 @@ public class OrreryHeartBlock extends Block {
                 player.sendSystemMessage(Component.translatable("orrery.astralend.flare", flares));
             } else {
                 power(server, pos, state.setValue(FLARES, 3));
+                if (player instanceof net.minecraft.server.level.ServerPlayer rekindler) {
+                    com.ggrantrichards.astralend.world.ModAdvancements.award(rekindler, "wind_it_up");
+                }
                 player.sendSystemMessage(Component.translatable("orrery.astralend.powered"));
             }
         }

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:void_crystal_from_blasting_void_crystal_ore"
+      }
+    },
+    "has_void_crystal_ore": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:void_crystal_ore"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_void_crystal_ore"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:void_crystal_from_blasting_void_crystal_ore"
+    ]
+  }
+}

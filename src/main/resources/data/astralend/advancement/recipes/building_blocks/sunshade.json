@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:sunshade"
+      }
+    },
+    "has_skimmer_film": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:skimmer_film"
+          }
+        ]
+      }
+    },
+    "has_solarite_ingot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:solarite_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_skimmer_film",
+      "has_solarite_ingot"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:sunshade"
+    ]
+  }
+}

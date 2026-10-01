@@ -37,13 +37,18 @@ public final class Bronze {
         }
     }
 
+    // Every piece of bronze knows what it turns into.
+    public interface Ages {
+        Aging aging();
+    }
+
     static void randomTick(Aging aging, BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (aging.ages() && random.nextInt(160) == 0) {
             level.setBlockAndUpdate(pos, aging.next().get().withPropertiesOf(state));
         }
     }
 
-    static InteractionResult use(Aging aging, ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+    public static InteractionResult use(Aging aging, ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                  InteractionHand hand) {
         if (stack.is(Items.HONEYCOMB) && aging.waxed() != null) {
             level.playSound(player, pos, SoundEvents.HONEYCOMB_WAX_ON, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -59,7 +64,7 @@ public final class Bronze {
             if (to == null) {
                 return InteractionResult.TRY_WITH_EMPTY_HAND;
             }
-            level.playSound(player, pos, aging.unwaxed() != null ? SoundEvents.AXE_WAX_OFF : SoundEvents.AXE_SCRAPE.value(),
+            level.playSound(player, pos, aging.unwaxed() != null ? SoundEvents.AXE_WAX_OFF.value() : SoundEvents.AXE_SCRAPE.value(),
                 SoundSource.BLOCKS, 1.0F, 1.0F);
             level.levelEvent(player, aging.unwaxed() != null ? 3004 : 3005, pos, 0);
             if (!level.isClientSide()) {
@@ -71,8 +76,14 @@ public final class Bronze {
         return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
-    public static class Full extends Block {
+    public static class Full extends Block implements Ages {
         private final Aging aging;
+
+        @Override
+        public Aging aging() {
+            return this.aging;
+        }
+
 
         public Full(Aging aging, BlockBehaviour.Properties properties) {
             super(properties);
@@ -96,8 +107,13 @@ public final class Bronze {
         }
     }
 
-    public static class Stairs extends StairBlock {
+    public static class Stairs extends StairBlock implements Ages {
         private final Aging aging;
+
+        @Override
+        public Aging aging() {
+            return this.aging;
+        }
 
         public Stairs(Aging aging, BlockState base, BlockBehaviour.Properties properties) {
             super(base, properties);
@@ -121,8 +137,13 @@ public final class Bronze {
         }
     }
 
-    public static class Slab extends SlabBlock {
+    public static class Slab extends SlabBlock implements Ages {
         private final Aging aging;
+
+        @Override
+        public Aging aging() {
+            return this.aging;
+        }
 
         public Slab(Aging aging, BlockBehaviour.Properties properties) {
             super(properties);
@@ -146,8 +167,13 @@ public final class Bronze {
         }
     }
 
-    public static class Grate extends WaterloggedTransparentBlock {
+    public static class Grate extends WaterloggedTransparentBlock implements Ages {
         private final Aging aging;
+
+        @Override
+        public Aging aging() {
+            return this.aging;
+        }
 
         public Grate(Aging aging, BlockBehaviour.Properties properties) {
             super(properties);

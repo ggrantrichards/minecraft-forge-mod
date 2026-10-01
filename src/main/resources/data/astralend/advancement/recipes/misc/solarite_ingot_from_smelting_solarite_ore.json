@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:solarite_ingot_from_smelting_solarite_ore"
+      }
+    },
+    "has_solarite_ore": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:solarite_ore"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_solarite_ore"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:solarite_ingot_from_smelting_solarite_ore"
+    ]
+  }
+}

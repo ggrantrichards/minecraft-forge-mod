@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:end/root",
+  "parent": "astralend:end/falling_upward",
   "display": {
     "icon": {
       "id": "astralend:stardust_mote"
@@ -19,5 +19,10 @@
     "done": {
       "trigger": "minecraft:impossible"
     }
-  }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
 }

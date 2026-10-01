@@ -1,8 +1,8 @@
 {
-  "parent": "minecraft:end/root",
+  "parent": "astralend:end/astral_horizons",
   "display": {
     "icon": {
-      "id": "astralend:drift_whale_spawn_egg"
+      "id": "astralend:whalelight_scale"
     },
     "title": {
       "translate": "advancements.astralend.something_big_out_there.title"
@@ -19,5 +19,10 @@
     "done": {
       "trigger": "minecraft:impossible"
     }
-  }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
 }

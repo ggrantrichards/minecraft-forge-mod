@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:meteoric_iron_ingot_from_blasting_meteoric_iron_ore"
+      }
+    },
+    "has_meteoric_iron_ore": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:meteoric_iron_ore"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_meteoric_iron_ore"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:meteoric_iron_ingot_from_blasting_meteoric_iron_ore"
+    ]
+  }
+}

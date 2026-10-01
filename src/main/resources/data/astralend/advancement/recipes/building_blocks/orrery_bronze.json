@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:orrery_bronze"
+      }
+    },
+    "has_meteoric_iron_ingot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:meteoric_iron_ingot"
+          }
+        ]
+      }
+    },
+    "has_solarite_ingot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:solarite_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_meteoric_iron_ingot",
+      "has_solarite_ingot"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:orrery_bronze"
+    ]
+  }
+}

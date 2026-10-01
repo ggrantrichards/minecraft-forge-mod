@@ -1,0 +1,28 @@
+{
+  "parent": "astralend:end/weather_the_storm",
+  "display": {
+    "icon": {
+      "id": "minecraft:shears"
+    },
+    "title": {
+      "translate": "advancements.astralend.harvest_moon.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.harvest_moon.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

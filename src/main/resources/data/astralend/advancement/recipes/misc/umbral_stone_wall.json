@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:umbral_stone_wall"
+      }
+    },
+    "has_umbral_stone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:umbral_stone"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_umbral_stone"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:umbral_stone_wall"
+    ]
+  }
+}

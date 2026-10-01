@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:pale_end_stone_brick_slab_from_pale_end_stone_bricks_stonecutting"
+      }
+    },
+    "has_pale_end_stone_bricks": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:pale_end_stone_bricks"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_pale_end_stone_bricks"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:pale_end_stone_brick_slab_from_pale_end_stone_bricks_stonecutting"
+    ]
+  }
+}

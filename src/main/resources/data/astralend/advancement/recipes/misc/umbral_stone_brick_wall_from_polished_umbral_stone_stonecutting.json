@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:umbral_stone_brick_wall_from_polished_umbral_stone_stonecutting"
+      }
+    },
+    "has_polished_umbral_stone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:polished_umbral_stone"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_polished_umbral_stone"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:umbral_stone_brick_wall_from_polished_umbral_stone_stonecutting"
+    ]
+  }
+}

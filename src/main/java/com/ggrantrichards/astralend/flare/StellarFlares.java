@@ -215,6 +215,7 @@ public class StellarFlares extends SavedData {
                 }
                 case AFTERGLOW -> {
                     actionBar(player, Component.translatable("flare.astralend.afterglow").withStyle(ChatFormatting.YELLOW));
+                    com.ggrantrichards.astralend.world.ModAdvancements.award(player, "weather_the_storm");
                     level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_DEACTIVATE, SoundSource.AMBIENT, 1.0F, 0.6F);
                 }
                 default -> {

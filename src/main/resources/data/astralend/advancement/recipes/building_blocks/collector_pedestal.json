@@ -1,0 +1,54 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:collector_pedestal"
+      }
+    },
+    "has_solarite_ingot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:solarite_ingot"
+          }
+        ]
+      }
+    },
+    "has_astral_glass": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:astral_glass"
+          }
+        ]
+      }
+    },
+    "has_polished_sunscorched_stone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:polished_sunscorched_stone"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_solarite_ingot",
+      "has_astral_glass",
+      "has_polished_sunscorched_stone"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:collector_pedestal"
+    ]
+  }
+}
