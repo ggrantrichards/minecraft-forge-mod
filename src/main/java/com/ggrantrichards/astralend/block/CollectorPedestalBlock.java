@@ -111,7 +111,7 @@ public class CollectorPedestalBlock extends Block implements EntityBlock {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof CollectorPedestalBlockEntity pedestal) {
             ItemStack taken = pedestal.takeHeld();
             if (!player.getInventory().add(taken)) {
-                player.drop(taken, false);
+                Block.popResource(level, pos.above(), taken);
             }
             level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 1.0F, 1.2F);
         }

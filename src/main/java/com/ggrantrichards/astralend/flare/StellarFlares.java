@@ -18,6 +18,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.QuartPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -32,7 +33,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Climate;
+import net.minecraft.world.level.biome.BiomeResolver;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -205,21 +206,25 @@ public class StellarFlares extends SavedData {
             }
             switch (next) {
                 case WARNING -> {
-                    player.displayClientMessage(Component.translatable("flare.astralend.warning").withStyle(ChatFormatting.GOLD), true);
+                    actionBar(player, Component.translatable("flare.astralend.warning").withStyle(ChatFormatting.GOLD));
                     level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_ACTIVATE, SoundSource.AMBIENT, 1.0F, 0.5F);
                 }
                 case FLARE -> {
-                    player.displayClientMessage(Component.translatable("flare.astralend.flare").withStyle(ChatFormatting.RED), true);
+                    actionBar(player, Component.translatable("flare.astralend.flare").withStyle(ChatFormatting.RED));
                     level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.AMBIENT, 0.8F, 0.5F);
                 }
                 case AFTERGLOW -> {
-                    player.displayClientMessage(Component.translatable("flare.astralend.afterglow").withStyle(ChatFormatting.YELLOW), true);
+                    actionBar(player, Component.translatable("flare.astralend.afterglow").withStyle(ChatFormatting.YELLOW));
                     level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_DEACTIVATE, SoundSource.AMBIENT, 1.0F, 0.6F);
                 }
                 default -> {
                 }
             }
         }
+    }
+
+    private static void actionBar(ServerPlayer player, Component message) {
+        player.connection.send(new ClientboundSetActionBarTextPacket(message));
     }
 
     private void syncAll(ServerLevel level, boolean force) {
@@ -337,8 +342,8 @@ public class StellarFlares extends SavedData {
     }
 
     private static BlockPos nearestCorona(ServerLevel level, BlockPos from) {
-        var generator = level.getChunkSource().getGenerator();
-        Climate.Sampler sampler = level.getChunkSource().randomState().sampler();
+        BiomeResolver biomes = level.getChunkSource().getGenerator().getBiomeSource()
+            .createUncachedResolver(level.getChunkSource().randomState());
         int step = 128;
         int qy = QuartPos.fromBlock(64);
         for (int ring = 0; ring <= 40; ring++) {
@@ -351,7 +356,7 @@ public class StellarFlares extends SavedData {
                     }
                     int x = from.getX() + dx * step;
                     int z = from.getZ() + dz * step;
-                    if (generator.getBiomeSource().getNoiseBiome(QuartPos.fromBlock(x), qy, QuartPos.fromBlock(z), sampler).is(ModBiomes.CORONA)) {
+                    if (biomes.getNoiseBiome(QuartPos.fromBlock(x), qy, QuartPos.fromBlock(z)).is(ModBiomes.CORONA)) {
                         double d = (double) dx * dx + (double) dz * dz;
                         if (d < bestDistance) {
                             bestDistance = d;

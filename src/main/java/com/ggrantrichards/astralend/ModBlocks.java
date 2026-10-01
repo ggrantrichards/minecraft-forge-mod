@@ -211,8 +211,7 @@ public final class ModBlocks {
             .lightLevel(state -> state.getValue(SunscaleLichenBlock.CHARGED) ? 12 : 5).noOcclusion().pushReaction(PushReaction.POPPED));
     // Phase 5 (Stellar Flares): cover you can hang anywhere, and the pedestal that charges crystals and cells.
     public static final RegistryObject<Block> SUNSHADE = register("sunshade", SunshadeBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(0.3F).sound(SoundType.WOOL).noOcclusion()
-            .isViewBlocking((state, level, pos) -> false));
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(0.3F).sound(SoundType.WOOL).noOcclusion());
     public static final RegistryObject<Block> COLLECTOR_PEDESTAL = register("collector_pedestal", CollectorPedestalBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.SAND).requiresCorrectToolForDrops().strength(2.0F, 6.0F)
             .sound(SoundType.STONE).noOcclusion()
