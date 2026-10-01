@@ -547,6 +547,12 @@ only as a brief glow on the horizon where the Remnant hangs.
 adjusted.
 
 ### 7.2 Live comets and meteors
+> **Built (Phase 7):** as described below. The comet is one entity with its own model (a rock in a
+> coma of two turning shells of light, with a widening tail) and a particle tail, rather than block
+> displays. A landfall crater is a bowl with a thrown-up rim, an ice-glazed floor and the Comet Core in
+> the middle; "built area" means any block entity, planks, glass, wool, doors, beds, rails or torches
+> within 6 blocks. Comets aren't saved with the world.
+
 **Honest limitation:** Minecraft can't move real block structures smoothly, and moving
 islands would lag and break. So:
 
@@ -913,11 +919,11 @@ Each phase is playable on its own. Later phases build on earlier ones.
 | **4. Mobs** ✅ | Pollinator, Void Wanderer, Black Hole Guardian, Umbral Stalker, Corona Skimmer, Cinder Mite, Drift Whale and the Watcher, their drops, spawn eggs and advancements. **Done.** | Entity classes and AI goals; models and textures generated together from one description (tools/mobs/make_mobs.py); biome spawn lists plus a hand-placed spawner for the three "one at a time" mobs |
 | **5. Sky and Stellar Flares** ✅ | Moving stars, auroras, silhouettes, comets, the Remnant, Corona flare phases, Flare Burn, solar wind, flare charging, Sunshade, Flare Ward, Collector Pedestal, Flare Cells. **Done.** | 26.3 has no `DimensionSpecialEffects` hook any more: the End's `SkyRenderer` is swapped for a subclass that draws the vanilla sky, then the mod's. A saved server-side flare timer (`SavedData`), synced to clients with one small packet. Brewing is data (26.3 brewing recipes). |
 | **6. Structures** ✅ | Comet Crater, Observatory Ruins, Wanderer Relay, Whalefall, Solar Array Ruins, Wormhole Maw, Constellation Maze, Orbital Station + Sentinel, Orrery Bronze, Portal Lens, Temporal Crystal, Data Core. **Done.** Simplified for now: stations have normal gravity (no rotating floor), and Starforge Templates and Echo Logs (vault loot in the plan) wait for Phases 8 and 9. | Structures are built block by block in Python (`tools/structures/`) and written as structure templates (26.3 format: palette entries are `{id, properties}`), each placed by a jigsaw wrapped in a small `astralend:island` structure type that checks the ground first, so nothing generates over empty void. Maw travel, maze bridges, station power and the Sentinel are Java. The survey finds, generates and tests every structure. |
-| **7. Live comets** | The comet entity, tail harvesting, landfall craters | An entity with block-display parts, a flight path, and a small crater placer |
+| **7. Live comets** ✅ | The comet entity, tail riding and Stardust Motes, chunks knocked off the head, landfall craters, `/astralend comet`. **Done.** | One server-driven entity with a mob-style model (not block displays: one entity, one model, cheap to sync) flying a quadratic arc; it isn't saved. A level-tick listener sends comets past players. The crater placer changes at most 40 blocks and checks `mobGriefing` and nearby built blocks. The survey sends one, hits it and lands one. |
 | **8. Starforging** | Astral Forge, templates, the six upgrades, Rift Pearls | Data components on items, a menu and screen for the Forge, vanilla attribute modifiers (gravity, step height), a temporary rift-tile block, loot modifiers for smelting and pull, event listeners for hits, projectiles, fire damage and falling into the void |
 | **9. Polish** | Advancements, Echo Logs, music, config toggles, balance passes | JSON advancements, a Forge config file, playtesting |
 
-**Next:** Phase 7, live comets.
+**Next:** Phase 8, Starforging.
 
 ---
 

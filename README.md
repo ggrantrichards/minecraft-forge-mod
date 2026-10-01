@@ -4,9 +4,36 @@ A Forge mod for **Minecraft Java Edition 26.3** with **Forge 66.0.8** that expan
 into a sparse, mysterious network of astral islands. The full plan is in
 [docs/END_UPDATE.md](docs/END_UPDATE.md).
 
-**Status:** Phase 6 of 9 (the End has structures: ruins, fossils, gates, puzzles and a station in the sky). Mod ID: `astralend`.
+**Status:** Phase 7 of 9 (live comets cross the outer End: ride their tails, knock chunks off them, find where they land). Mod ID: `astralend`.
 
 ## What's in the mod so far
+
+### Phase 7: live comets
+
+| A live comet | Where one came down |
+|---|---|
+| ![A rock of ice and meteoric stone inside two turning shells of light, its tail streaming behind it](docs/images/comets/game_live_comet.png) | ![A small fresh crater: a thrown-up rim, an ice-glazed floor and the Comet Core in the middle](docs/images/comets/game_comet_landfall.png) |
+
+Now and then a **live comet** crosses the sky past you: a tumbling rock of Comet Ice and meteoric
+stone inside a coma of light, shedding a long tail of sparks. It takes a minute or two to cross,
+on a slow curving arc.
+
+- **Ride the tail.** Glide through it with an elytra and it sweeps you along (a speed boost in the
+  comet's direction) and you catch **Stardust Motes**, up to 16 per comet. Four motes make a
+  Stardust block. Your first one earns *Catch a Falling Star*.
+- **Hit the head** (like hitting a boat) to knock a chunk off: Stardust, Comet Ice, or now and
+  then raw Meteoric Iron. Each comet only has six chunks to give.
+- **Watch it land.** About a third of comets end their arc on an island near you: a flash, a boom
+  and a **small crater**. It's a bowl ringed by a thrown-up rim, its floor glazed with Comet Ice and
+  the **Comet Core** (Meteoric Iron on packed Stardust) in the middle. Stardust, Comet Ice and raw
+  Meteoric Iron are scattered round it, and sometimes a **Temporal Crystal**. A landfall changes at
+  most 40 blocks. It changes none if `mobGriefing` is off, or if anything nearby looks built
+  (chests and other block entities, planks, glass, wool, doors, beds, rails, torches): the loot
+  still drops.
+- **How often:** at most one comet near a player at a time, and only beyond 1,000 blocks. About one
+  every 12 minutes in the **Comet Wake**, about one an hour elsewhere in the outer End, and almost
+  never in the Corona. Comets aren't saved: if you leave, the one you were chasing is gone.
+- Operators can send one with `/astralend comet` (or `/astralend comet landfall`).
 
 ### Phase 6: structures
 
