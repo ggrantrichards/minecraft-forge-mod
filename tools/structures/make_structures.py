@@ -496,7 +496,7 @@ def wormhole_maw(seed):
             surface = round(top - dz * dz * 2.5)
             bottom = round(top - 2) if abs(dz) < 0.8 else round(top - 4)
             for y in range(bottom, surface + 1):
-                t.set(x, y, z, bone(0.3, 1, dz))
+                t.set(x, y, z, a("leviathan_bone_block") + "[axis=z]")   # grain across: long faces front and top
     # The lower jaw, fallen half open: a U of bone resting on the island, running out over the void.
     for x in range(19, 43):
         f = (x - 19) / 23
@@ -506,10 +506,10 @@ def wormhole_maw(seed):
             dz = (z - cz) / w
             if abs(dz) > 1:
                 continue
-            t.set(x, floor, z, bone(1, 0.2, 0))
+            t.set(x, floor, z, a("leviathan_bone_block") + "[axis=z]")
             if abs(dz) > 0.72:
                 for y in range(floor + 1, floor + 4):
-                    t.set(x, y, z, bone(0, 1, 0))
+                    t.set(x, y, z, a("leviathan_bone_block") + "[axis=z]")
     # The mouth: open space between the jaws.
     for x in range(22, 47):
         f = min(1.0, (x - 20) / 24)
