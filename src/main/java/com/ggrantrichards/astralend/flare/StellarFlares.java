@@ -250,6 +250,7 @@ public class StellarFlares extends SavedData {
             UUID id = player.getUUID();
             if (player.isSpectator() || player.isCreative() || !isCorona(level, player.blockPosition())
                 || player.hasEffect(ModEffects.FLARE_WARD.getHolder().orElseThrow())
+                || com.ggrantrichards.astralend.starforge.StarforgeEffects.flareProof(player)
                 || !underOpenSky(level, BlockPos.containing(player.getEyePosition()))) {
                 this.exposure.remove(id);
                 continue;

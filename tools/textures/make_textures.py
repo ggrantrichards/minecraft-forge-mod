@@ -1458,7 +1458,8 @@ def main():
     for rel, make, frametime in hq.ANIMATED:
         save(make(), rel)
         (TEX / (rel + ".mcmeta")).write_text(json.dumps({"animation": {"frametime": frametime}}, indent=2) + "\n")
-    write_preview(out)
+    # (Upgrade accents, worn-armour overlays and GUI sheets aren't 16x16 tiles: they stay out of the sheets.)
+    write_preview([(rel, img) for rel, img in out if not rel.startswith(("item/starforge/", "entity/", "gui/"))])
     write_tiled_preview(hq.TEXTURES)
     print(f"Wrote {len(out)} textures to {TEX.relative_to(ROOT)} and a preview to {PREVIEW.relative_to(ROOT)}")
 

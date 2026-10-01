@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "V": "astralend:void_crystal",
+    "M": "astralend:meteoric_iron_block",
+    "Q": "astralend:observatory_quartz"
+  },
+  "pattern": [
+    " V ",
+    "QMQ",
+    "QQQ"
+  ],
+  "result": {
+    "id": "astralend:astral_forge"
+  }
+}

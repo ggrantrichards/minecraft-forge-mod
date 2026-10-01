@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "astralend:astral_forge",
     "astralend:astral_glass",
     "astralend:bulkhead",
     "astralend:charred_end_stone",
@@ -64,6 +65,7 @@
     "astralend:pollinator_husk",
     "astralend:raw_meteoric_iron_block",
     "astralend:raw_solarite_block",
+    "astralend:rift_tile",
     "astralend:solar_core",
     "astralend:solarite_block",
     "astralend:solarite_ore",

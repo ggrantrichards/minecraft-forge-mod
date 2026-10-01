@@ -1087,6 +1087,7 @@ def mobs_phase4():
     # The Station Sentinel always drops its Data Core.
     entity_loot("station_sentinel", [
         {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("data_core")}]},
+        {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("rift_pearl")}]},   # Phase 8: every boss drops one
         {"rolls": 1, "conditions": [{"condition": "minecraft:random_chance", "chance": 0.5}],
          "entries": [{"type": "minecraft:item", "name": rid("temporal_crystal")}]},
         {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("orrery_bronze"), "functions": [
@@ -1446,6 +1447,7 @@ def structures_phase6():
     # The Constellation Maze's reward: a Temporal Crystal, and a Star Chart that marks a Wormhole Maw.
     chest_loot("constellation_maze", [
         {"rolls": 1, "entries": [entry("temporal_crystal")]},
+        {"rolls": 1, "entries": [entry("starforge_template")]},
         {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("star_chart"), "functions": [
             {"function": "minecraft:set_components", "components": {"minecraft:custom_data": {"Structure": "wormhole_maw"}}}]}]},
         {"rolls": {"type": "minecraft:uniform", "min": 2, "max": 4}, "entries": [
@@ -1456,6 +1458,8 @@ def structures_phase6():
     # The Orbital Station: the vault (behind the bulkheads) and the crew's lockers.
     chest_loot("station_vault", [
         {"rolls": 1, "entries": [entry("temporal_crystal")]},
+        {"rolls": 1, "entries": [entry("starforge_template")]},
+        chance("rift_pearl", 0.15),
         {"rolls": 1, "entries": [entry("charged_void_crystal", 1, (1, 2))]},
         {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 5}, "entries": [
             entry("orrery_bronze", 4, (4, 12)), entry("solarite_ingot", 3, (2, 5)), entry("meteoric_iron_ingot", 3, (2, 5)),
@@ -1474,6 +1478,8 @@ def structures_phase6():
     chest_loot("observatory_vault", [
         {"rolls": 1, "entries": [entry("temporal_crystal", 3), entry("charged_void_crystal", 2, (1, 2)),
                                  entry("star_chart", 2), entry("void_crystal_block", 1)]},
+        chance("starforge_template", 0.5),
+        chance("rift_pearl", 0.05),
         {"rolls": {"type": "minecraft:uniform", "min": 1, "max": 3}, "entries": [
             entry("void_crystal", 4, (2, 5)), entry("meteoric_iron_ingot", 3, (1, 3)), entry("data_shard", 2, (1, 2)),
             entry("minecraft:spyglass", 2), entry("minecraft:ender_pearl", 3, (1, 3)), entry("star_inlay_observatory_quartz", 2, (2, 6))]},
@@ -1494,12 +1500,180 @@ def structures_phase6():
             entry("minecraft:golden_apple", 2), entry("sunshade", 3, (2, 4))]},
         chance("temporal_crystal", 0.4),
         chance("charged_flare_cell", 0.25),
+        chance("starforge_template", 0.35),
     ])
+
+
+# ------------------------------------------------------------------ Phase 8: Starforging
+
+UPGRADES = ("voidwalker", "meteoric", "stardust", "temporal", "singularity", "radiant")
+
+# The vanilla items an upgrade can go on, with the kind of accent they get (tools/textures/
+# starforge_textures.py draws one accent per kind) and the model whose display transforms it shares.
+STARFORGE_ITEMS = {}
+for _mat in ("diamond", "netherite"):
+    for _piece in ("helmet", "chestplate", "leggings", "boots"):
+        STARFORGE_ITEMS[f"{_mat}_{_piece}"] = (_piece, "minecraft:item/generated")
+    for _tool in ("sword", "pickaxe", "axe", "shovel", "hoe"):
+        STARFORGE_ITEMS[f"{_mat}_{_tool}"] = (_tool, "minecraft:item/handheld")
+STARFORGE_ITEMS.update({"bow": ("bow", "minecraft:item/bow"), "crossbow": ("crossbow", "minecraft:item/crossbow"),
+                        "trident": ("trident", "minecraft:item/trident"), "mace": ("mace", "minecraft:item/mace")})
+TRIM_MATERIALS = ("quartz", "iron", "netherite", "redstone", "copper", "gold", "emerald", "diamond", "lapis", "amethyst", "resin")
+
+
+def vanilla_item_definition(name):
+    """The item's own vanilla item model (26.3), which an upgrade's accent is layered over."""
+    model = lambda m: {"type": "minecraft:model", "model": m}  # noqa: E731
+    kind = STARFORGE_ITEMS[name][0]
+    if kind in ("helmet", "chestplate", "leggings", "boots"):
+        return {"type": "minecraft:select", "property": "minecraft:trim_material",
+                "cases": [{"model": model(f"minecraft:item/{name}_{m}_trim"), "when": f"minecraft:{m}"} for m in TRIM_MATERIALS],
+                "fallback": model(f"minecraft:item/{name}")}
+    if name == "bow":
+        return {"type": "minecraft:condition", "property": "minecraft:using_item",
+                "on_false": model("minecraft:item/bow"),
+                "on_true": {"type": "minecraft:range_dispatch", "property": "minecraft:use_duration", "scale": 0.05,
+                            "entries": [{"model": model("minecraft:item/bow_pulling_1"), "threshold": 0.65},
+                                        {"model": model("minecraft:item/bow_pulling_2"), "threshold": 0.9}],
+                            "fallback": model("minecraft:item/bow_pulling_0")}}
+    if name == "crossbow":
+        return {"type": "minecraft:select", "property": "minecraft:charge_type",
+                "cases": [{"model": model("minecraft:item/crossbow_arrow"), "when": "arrow"},
+                          {"model": model("minecraft:item/crossbow_firework"), "when": "rocket"}],
+                "fallback": {"type": "minecraft:condition", "property": "minecraft:using_item",
+                             "on_false": model("minecraft:item/crossbow"),
+                             "on_true": {"type": "minecraft:range_dispatch", "property": "minecraft:crossbow/pull",
+                                         "entries": [{"model": model("minecraft:item/crossbow_pulling_1"), "threshold": 0.58},
+                                                     {"model": model("minecraft:item/crossbow_pulling_2"), "threshold": 1.0}],
+                                         "fallback": model("minecraft:item/crossbow_pulling_0")}}}
+    if name == "trident":
+        flip = {"left_rotation": [0.0, 0.0, 0.0, 1.0], "right_rotation": [0.0, 0.0, 0.0, 1.0],
+                "scale": [1.0, -1.0, -1.0], "translation": [0.0, 0.0, 0.0]}
+        return {"type": "minecraft:select", "property": "minecraft:display_context",
+                "cases": [{"model": model("minecraft:item/trident"), "when": ["gui", "ground", "fixed", "on_shelf"]}],
+                "fallback": {"type": "minecraft:condition", "property": "minecraft:using_item",
+                             "on_false": {"type": "minecraft:special", "base": "minecraft:item/trident_in_hand",
+                                          "model": {"type": "minecraft:trident"}},
+                             "on_true": {"type": "minecraft:special", "base": "minecraft:item/trident_throwing",
+                                         "model": {"type": "minecraft:trident"}},
+                             "transformation": flip}}
+    return model(f"minecraft:item/{name}")
+
+
+def starforging_phase8():
+    """Phase 8: the Astral Forge, Starforge Templates and Alloy, Rift Pearls and Rift Tiles, which items
+    take upgrades, the accent each upgrade leaves on an item, and the Smelting/Pull loot modifier."""
+    # ---- the Astral Forge: like a smithing table, its forge mouth on two faces
+    block_model("astral_forge", {"parent": "minecraft:block/cube", "textures": {
+        "particle": rid("block/astral_forge_side"), "north": rid("block/astral_forge_front"),
+        "south": rid("block/astral_forge_front"), "east": rid("block/astral_forge_side"), "west": rid("block/astral_forge_side"),
+        "up": rid("block/astral_forge_top"), "down": rid("block/observatory_quartz")}})
+    blockstate("astral_forge", {"variants": {"": {"model": rid("block/astral_forge")}}})
+    item_def("astral_forge", rid("block/astral_forge"))
+    drop_self("astral_forge")
+    tag("block", "minecraft:mineable/pickaxe", rid("astral_forge"))
+    tag("block", "minecraft:needs_iron_tool", rid("astral_forge"))
+    lang[f"block.{NS}.astral_forge"] = "Astral Forge"
+    shaped("astral_forge", "astral_forge", [" V ", "QMQ", "QQQ"],
+           {"V": rid("void_crystal"), "M": rid("meteoric_iron_block"), "Q": rid("observatory_quartz")}, category="misc")
+
+    # ---- Rift Tiles: no item, no drops; translucent, cracking with age
+    variants = {}
+    for age in range(4):
+        block_model(f"rift_tile_{age}", {"parent": "minecraft:block/cube_all", "render_type": "minecraft:translucent",
+                                          "textures": {"all": rid(f"block/rift_tile_{age}")}})
+        for lava in ("false", "true"):
+            variants[f"age={age},over_lava={lava}"] = {"model": rid(f"block/rift_tile_{age}")}
+    blockstate("rift_tile", {"variants": variants})
+    lang[f"block.{NS}.rift_tile"] = "Rift Tile"
+
+    # ---- the items
+    for name, english in (("starforge_template", "Starforge Template"), ("starforge_alloy", "Starforge Alloy"),
+                          ("rift_pearl", "Rift Pearl")):
+        item_model(name, {"parent": "minecraft:item/generated", "textures": {"layer0": rid(f"item/{name}")}})
+        item_def(name, rid(f"item/{name}"))
+        lang[f"item.{NS}.{name}"] = english
+    lang.update({
+        f"item.{NS}.starforge_template.kind": "Astral Forge Template",
+        f"item.{NS}.starforge_template.applies_to": "Diamond and Netherite Gear, Bows, Crossbows, Tridents, Maces",
+        f"item.{NS}.starforge_template.ingredients": "Starforge Alloy and an Upgrade Material",
+    })
+    # Alloy like a Netherite Ingot: crafted, not forged.
+    shapeless("starforge_alloy", "starforge_alloy", [rid("void_crystal"), rid("void_crystal"), rid("meteoric_iron_ingot"),
+                                                     rid("meteoric_iron_ingot"), rid("glowing_spores")])
+    # Templates copy like smithing templates.
+    shaped("starforge_template", "starforge_template", ["DTD", "DQD", "DDD"],
+           {"D": "minecraft:diamond", "T": rid("starforge_template"), "Q": rid("observatory_quartz")}, count=2, category="misc")
+
+    # ---- what can be upgraded (a data pack can add to these)
+    for mat in ("diamond", "netherite"):
+        for piece in ("helmet", "chestplate", "leggings", "boots"):
+            tag("item", rid("starforgeable/armor"), f"minecraft:{mat}_{piece}")
+        for weapon in ("sword", "axe"):
+            tag("item", rid("starforgeable/melee"), f"minecraft:{mat}_{weapon}")
+        for tool in ("pickaxe", "shovel", "axe", "hoe"):
+            tag("item", rid("starforgeable/tools"), f"minecraft:{mat}_{tool}")
+    for weapon in ("mace", "trident"):
+        tag("item", rid("starforgeable/melee"), f"minecraft:{weapon}")
+    for weapon in ("bow", "crossbow", "trident"):
+        tag("item", rid("starforgeable/ranged"), f"minecraft:{weapon}")
+
+    # ---- each upgrade's accent on each item: the vanilla item model, with the accent layered on top
+    for kind, parent in {v for v in STARFORGE_ITEMS.values()}:
+        for up in UPGRADES:
+            item_model(f"starforge/{kind}_{up}", {"parent": parent, "textures": {"layer0": rid(f"item/starforge/{kind}_{up}")}})
+    for name, (kind, _parent) in STARFORGE_ITEMS.items():
+        base = vanilla_item_definition(name)
+        cases = []
+        for up in UPGRADES:
+            accent = {"type": "minecraft:model", "model": rid(f"item/starforge/{kind}_{up}")}
+            if kind == "trident":   # in the hand it's the 3D trident: the flat accent only goes on the icon
+                accent = {"type": "minecraft:select", "property": "minecraft:display_context",
+                          "cases": [{"model": accent, "when": ["gui", "ground", "fixed", "on_shelf"]}],
+                          "fallback": {"type": "minecraft:empty"}}
+            cases.append({"when": up, "model": {"type": "minecraft:composite", "models": [base, accent]}})
+        write(RES / "assets" / "minecraft" / "items" / f"{name}.json", {"model": {
+            "type": "minecraft:select", "property": "minecraft:component", "component": rid("starforge_upgrade"),
+            "cases": cases, "fallback": base}})
+
+    # ---- Smelting and Pull: one global loot modifier
+    write(DATA / "loot_modifiers" / "starforge_tools.json", {"type": rid("starforge_tools"), "conditions": []})
+    write(RES / "data" / "forge" / "loot_modifiers" / "global_loot_modifiers.json",
+          {"replace": False, "entries": [rid("starforge_tools")]})
+
+    # ---- words
+    lang.update({
+        f"container.{NS}.astral_forge": "Astral Forge",
+        f"container.{NS}.astral_forge.error": "This upgrade can't go on that item (or it already has it)",
+        f"container.{NS}.astral_forge.slot.0": "Add a Starforge Template",
+        f"container.{NS}.astral_forge.slot.1": "Add diamond or netherite armor, weapon or tool, or a bow, crossbow, trident or mace",
+        f"container.{NS}.astral_forge.slot.2": "Add Starforge Alloy",
+        f"container.{NS}.astral_forge.slot.3": "Add the upgrade's material: Void Crystal and Umbral Membrane, Meteoric Iron, "
+                                                 "Stardust, a Temporal Crystal, a Singularity Shard, or Solarite and a Charged Void Crystal",
+        f"container.{NS}.astral_forge.slot.4": "Voidwalker and Radiant take a second material here",
+        f"upgrade.{NS}.header": "Starforged:",
+        f"upgrade.{NS}.line": "%s: %s",
+        f"upgrade.{NS}.pearl_loaded": "Holds a Rift Pearl",
+        f"upgrade.{NS}.pearl_empty": "No Rift Pearl (right-click one onto it)",
+        f"upgrade.{NS}.voidwalker": "Voidwalker", f"upgrade.{NS}.meteoric": "Meteoric", f"upgrade.{NS}.stardust": "Stardust",
+        f"upgrade.{NS}.temporal": "Temporal", f"upgrade.{NS}.singularity": "Singularity", f"upgrade.{NS}.radiant": "Radiant",
+        f"upgrade.{NS}.effect.rift_walker": "Rift Walker", f"upgrade.{NS}.effect.void_recall": "Void Recall",
+        f"upgrade.{NS}.effect.heat_shield": "Heat Shield", f"upgrade.{NS}.effect.smelting": "Smelting",
+        f"upgrade.{NS}.effect.light_step": "Lighter Gravity", f"upgrade.{NS}.effect.light_step_boots": "Lighter Gravity, Step Up",
+        f"upgrade.{NS}.effect.flatter_shots": "Flatter Shots",
+        f"upgrade.{NS}.effect.time_stretch": "Time Stretch", f"upgrade.{NS}.effect.echo_strike": "Echo Strike",
+        f"upgrade.{NS}.effect.lensing": "Lensing", f"upgrade.{NS}.effect.sweep_pull": "Sweep Pull", f"upgrade.{NS}.effect.pull": "Pull",
+        f"upgrade.{NS}.effect.soak_light": "Soak Light", f"upgrade.{NS}.effect.glow": "Glow",
+    })
+    advancement("starforged", rid("starforge_template"), "Forged in Starlight", "Forge a Starforge upgrade onto a piece of gear")
+    advancement("void_recall", rid("rift_pearl"), "Not Today, Void",
+                "Fall into the void and be pulled back by a Rift Pearl", parent=f"{NS}:end/starforged", frame="challenge", hidden=True)
 
 
 def main():
     # Clear previously generated folders so renamed/removed content doesn't linger.
     for folder in (ASSETS / "blockstates", ASSETS / "models", ASSETS / "items", DATA / "loot_table",
+                   RES / "assets" / "minecraft" / "items", DATA / "loot_modifiers", RES / "data" / "forge",
                    DATA / "recipe", RES / "data" / NS / "tags", MC_DATA / "tags", DATA / "worldgen",
                    MC_DATA / "dimension", DATA / "advancement"):
         shutil.rmtree(folder, ignore_errors=True)
@@ -1830,6 +2004,7 @@ def main():
     mobs_phase4()
     flares_phase5()
     structures_phase6()
+    starforging_phase8()
 
     # ---------------------------------------------------------------- write tags + lang
     for (registry, name), values in tags.items():

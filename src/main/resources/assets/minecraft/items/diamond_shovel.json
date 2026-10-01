@@ -1,0 +1,109 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:component",
+    "component": "astralend:starforge_upgrade",
+    "cases": [
+      {
+        "when": "voidwalker",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:model",
+              "model": "minecraft:item/diamond_shovel"
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/shovel_voidwalker"
+            }
+          ]
+        }
+      },
+      {
+        "when": "meteoric",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:model",
+              "model": "minecraft:item/diamond_shovel"
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/shovel_meteoric"
+            }
+          ]
+        }
+      },
+      {
+        "when": "stardust",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:model",
+              "model": "minecraft:item/diamond_shovel"
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/shovel_stardust"
+            }
+          ]
+        }
+      },
+      {
+        "when": "temporal",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:model",
+              "model": "minecraft:item/diamond_shovel"
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/shovel_temporal"
+            }
+          ]
+        }
+      },
+      {
+        "when": "singularity",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:model",
+              "model": "minecraft:item/diamond_shovel"
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/shovel_singularity"
+            }
+          ]
+        }
+      },
+      {
+        "when": "radiant",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:model",
+              "model": "minecraft:item/diamond_shovel"
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/shovel_radiant"
+            }
+          ]
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/diamond_shovel"
+    }
+  }
+}

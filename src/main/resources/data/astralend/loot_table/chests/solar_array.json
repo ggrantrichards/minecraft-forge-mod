@@ -158,6 +158,22 @@
           "weight": 1
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.35
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "astralend:starforge_template",
+          "weight": 1
+        }
+      ]
     }
   ],
   "random_sequence": "astralend:chests/solar_array"

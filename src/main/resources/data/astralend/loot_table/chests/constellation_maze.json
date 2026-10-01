@@ -16,6 +16,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "astralend:starforge_template",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
           "name": "astralend:star_chart",
           "functions": [
             {

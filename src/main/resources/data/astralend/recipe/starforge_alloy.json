@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "astralend:void_crystal",
+    "astralend:void_crystal",
+    "astralend:meteoric_iron_ingot",
+    "astralend:meteoric_iron_ingot",
+    "astralend:glowing_spores"
+  ],
+  "result": {
+    "id": "astralend:starforge_alloy"
+  }
+}

@@ -36,6 +36,8 @@ VANILLA_PARENTS = {
     "minecraft:block/template_orientable_trapdoor_open", "minecraft:block/button", "minecraft:block/button_pressed",
     "minecraft:block/button_inventory", "minecraft:block/pressure_plate_up", "minecraft:block/pressure_plate_down",
     "minecraft:block/orientable", "minecraft:block/cube_bottom_top",
+    # Phase 8: the Astral Forge (like the smithing table), and upgrade accents drawn over vanilla items.
+    "minecraft:block/cube", "minecraft:item/bow", "minecraft:item/crossbow", "minecraft:item/trident", "minecraft:item/mace",
 } | {f"minecraft:block/door_{part}_{hinge}{op}" for part in ("bottom", "top") for hinge in ("left", "right") for op in ("", "_open")}
 
 errors = []
@@ -243,6 +245,9 @@ potion_names = set(re.findall(r'new Potion\("([a-z0-9_]+)"', effects_src))
 damage_types = {f.stem for f in (RES / "data" / NS / "damage_type").glob("*.json")}
 potions = set(re.findall(r'POTIONS\.register\("([a-z0-9_]+)"', effects_src))
 known |= {f"{NS}:{n}" for n in effects | damage_types | potions}
+# Phase 8: global loot modifiers (their codecs are registered in Java, each instance is a data file).
+known |= {f"{NS}:{n}" for n in re.findall(r'SERIALIZERS\.register\("([a-z0-9_]+)"', (JAVA / "starforge/StarforgeLoot.java").read_text())}
+known |= {f"{NS}:{f.stem}" for f in (RES / "data" / NS / "loot_modifiers").glob("*.json")}
 # Phase 6: structure templates (data/astralend/structure/*.nbt) and chest loot tables are registered by
 # their files. Every id written inside a template (block names, chest loot tables) must be real too.
 STRUCTURE_DIR = RES / "data" / NS / "structure"
@@ -311,7 +316,8 @@ for extra in sorted(set(lang) - {f"block.{NS}.{n}" for n in blocks} - {f"item.{N
                     - {f"item.minecraft.{k}.effect.{p}" for p in potion_names
                        for k in ("potion", "splash_potion", "lingering_potion", "tipped_arrow")}
                     - {f"death.attack.{NS}.{d}{suffix}" for d in damage_types for suffix in ("", ".player")}
-                    - {k for k in lang if k.startswith(("flare.astralend.", "maw.astralend.", "maze.astralend.", "station.astralend."))}
+                    - {k for k in lang if k.startswith(("flare.astralend.", "maw.astralend.", "maze.astralend.", "station.astralend.",
+                                                        "upgrade.astralend.", "container.astralend."))}
                     - {f"structure.{NS}.{st.split(':')[1]}" for st in worldgen_ids.get("structure", set())}):
     err(f"lang/en_us.json: {extra} doesn't match anything registered")
 

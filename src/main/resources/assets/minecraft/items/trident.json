@@ -1,0 +1,603 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:component",
+    "component": "astralend:starforge_upgrade",
+    "cases": [
+      {
+        "when": "voidwalker",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:display_context",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/trident"
+                  },
+                  "when": [
+                    "gui",
+                    "ground",
+                    "fixed",
+                    "on_shelf"
+                  ]
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:condition",
+                "property": "minecraft:using_item",
+                "on_false": {
+                  "type": "minecraft:special",
+                  "base": "minecraft:item/trident_in_hand",
+                  "model": {
+                    "type": "minecraft:trident"
+                  }
+                },
+                "on_true": {
+                  "type": "minecraft:special",
+                  "base": "minecraft:item/trident_throwing",
+                  "model": {
+                    "type": "minecraft:trident"
+                  }
+                },
+                "transformation": {
+                  "left_rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "right_rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "scale": [
+                    1.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "translation": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              }
+            },
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:display_context",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "astralend:item/starforge/trident_voidwalker"
+                  },
+                  "when": [
+                    "gui",
+                    "ground",
+                    "fixed",
+                    "on_shelf"
+                  ]
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:empty"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "when": "meteoric",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:display_context",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/trident"
+                  },
+                  "when": [
+                    "gui",
+                    "ground",
+                    "fixed",
+                    "on_shelf"
+                  ]
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:condition",
+                "property": "minecraft:using_item",
+                "on_false": {
+                  "type": "minecraft:special",
+                  "base": "minecraft:item/trident_in_hand",
+                  "model": {
+                    "type": "minecraft:trident"
+                  }
+                },
+                "on_true": {
+                  "type": "minecraft:special",
+                  "base": "minecraft:item/trident_throwing",
+                  "model": {
+                    "type": "minecraft:trident"
+                  }
+                },
+                "transformation": {
+                  "left_rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "right_rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "scale": [
+                    1.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "translation": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              }
+            },
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:display_context",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "astralend:item/starforge/trident_meteoric"
+                  },
+                  "when": [
+                    "gui",
+                    "ground",
+                    "fixed",
+                    "on_shelf"
+                  ]
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:empty"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "when": "stardust",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:display_context",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/trident"
+                  },
+                  "when": [
+                    "gui",
+                    "ground",
+                    "fixed",
+                    "on_shelf"
+                  ]
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:condition",
+                "property": "minecraft:using_item",
+                "on_false": {
+                  "type": "minecraft:special",
+                  "base": "minecraft:item/trident_in_hand",
+                  "model": {
+                    "type": "minecraft:trident"
+                  }
+                },
+                "on_true": {
+                  "type": "minecraft:special",
+                  "base": "minecraft:item/trident_throwing",
+                  "model": {
+                    "type": "minecraft:trident"
+                  }
+                },
+                "transformation": {
+                  "left_rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "right_rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "scale": [
+                    1.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "translation": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              }
+            },
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:display_context",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "astralend:item/starforge/trident_stardust"
+                  },
+                  "when": [
+                    "gui",
+                    "ground",
+                    "fixed",
+                    "on_shelf"
+                  ]
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:empty"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "when": "temporal",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:display_context",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/trident"
+                  },
+                  "when": [
+                    "gui",
+                    "ground",
+                    "fixed",
+                    "on_shelf"
+                  ]
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:condition",
+                "property": "minecraft:using_item",
+                "on_false": {
+                  "type": "minecraft:special",
+                  "base": "minecraft:item/trident_in_hand",
+                  "model": {
+                    "type": "minecraft:trident"
+                  }
+                },
+                "on_true": {
+                  "type": "minecraft:special",
+                  "base": "minecraft:item/trident_throwing",
+                  "model": {
+                    "type": "minecraft:trident"
+                  }
+                },
+                "transformation": {
+                  "left_rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "right_rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "scale": [
+                    1.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "translation": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              }
+            },
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:display_context",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "astralend:item/starforge/trident_temporal"
+                  },
+                  "when": [
+                    "gui",
+                    "ground",
+                    "fixed",
+                    "on_shelf"
+                  ]
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:empty"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "when": "singularity",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:display_context",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/trident"
+                  },
+                  "when": [
+                    "gui",
+                    "ground",
+                    "fixed",
+                    "on_shelf"
+                  ]
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:condition",
+                "property": "minecraft:using_item",
+                "on_false": {
+                  "type": "minecraft:special",
+                  "base": "minecraft:item/trident_in_hand",
+                  "model": {
+                    "type": "minecraft:trident"
+                  }
+                },
+                "on_true": {
+                  "type": "minecraft:special",
+                  "base": "minecraft:item/trident_throwing",
+                  "model": {
+                    "type": "minecraft:trident"
+                  }
+                },
+                "transformation": {
+                  "left_rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "right_rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "scale": [
+                    1.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "translation": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              }
+            },
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:display_context",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "astralend:item/starforge/trident_singularity"
+                  },
+                  "when": [
+                    "gui",
+                    "ground",
+                    "fixed",
+                    "on_shelf"
+                  ]
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:empty"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "when": "radiant",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:display_context",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/trident"
+                  },
+                  "when": [
+                    "gui",
+                    "ground",
+                    "fixed",
+                    "on_shelf"
+                  ]
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:condition",
+                "property": "minecraft:using_item",
+                "on_false": {
+                  "type": "minecraft:special",
+                  "base": "minecraft:item/trident_in_hand",
+                  "model": {
+                    "type": "minecraft:trident"
+                  }
+                },
+                "on_true": {
+                  "type": "minecraft:special",
+                  "base": "minecraft:item/trident_throwing",
+                  "model": {
+                    "type": "minecraft:trident"
+                  }
+                },
+                "transformation": {
+                  "left_rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "right_rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "scale": [
+                    1.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "translation": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              }
+            },
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:display_context",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "astralend:item/starforge/trident_radiant"
+                  },
+                  "when": [
+                    "gui",
+                    "ground",
+                    "fixed",
+                    "on_shelf"
+                  ]
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:empty"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:select",
+      "property": "minecraft:display_context",
+      "cases": [
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "minecraft:item/trident"
+          },
+          "when": [
+            "gui",
+            "ground",
+            "fixed",
+            "on_shelf"
+          ]
+        }
+      ],
+      "fallback": {
+        "type": "minecraft:condition",
+        "property": "minecraft:using_item",
+        "on_false": {
+          "type": "minecraft:special",
+          "base": "minecraft:item/trident_in_hand",
+          "model": {
+            "type": "minecraft:trident"
+          }
+        },
+        "on_true": {
+          "type": "minecraft:special",
+          "base": "minecraft:item/trident_throwing",
+          "model": {
+            "type": "minecraft:trident"
+          }
+        },
+        "transformation": {
+          "left_rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "right_rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            -1.0,
+            -1.0
+          ],
+          "translation": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    }
+  }
+}

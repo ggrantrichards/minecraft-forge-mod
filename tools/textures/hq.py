@@ -703,3 +703,7 @@ TEXTURES += _FLARE
 # Phase 6: structures
 from structure_textures import ANIMATED, TEXTURES as _STRUCTURES  # noqa: E402,F401
 TEXTURES += _STRUCTURES
+
+# Phase 8: Starforging
+from starforge_textures import TEXTURES as _STARFORGE  # noqa: E402
+TEXTURES += _STARFORGE

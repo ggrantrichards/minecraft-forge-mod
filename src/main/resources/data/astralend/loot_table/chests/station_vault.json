@@ -16,6 +16,32 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "astralend:starforge_template",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.15
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "astralend:rift_pearl",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
           "name": "astralend:charged_void_crystal",
           "weight": 1,
           "functions": [

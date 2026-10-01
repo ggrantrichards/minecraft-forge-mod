@@ -1,0 +1,109 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:component",
+    "component": "astralend:starforge_upgrade",
+    "cases": [
+      {
+        "when": "voidwalker",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:model",
+              "model": "minecraft:item/netherite_pickaxe"
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/pickaxe_voidwalker"
+            }
+          ]
+        }
+      },
+      {
+        "when": "meteoric",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:model",
+              "model": "minecraft:item/netherite_pickaxe"
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/pickaxe_meteoric"
+            }
+          ]
+        }
+      },
+      {
+        "when": "stardust",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:model",
+              "model": "minecraft:item/netherite_pickaxe"
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/pickaxe_stardust"
+            }
+          ]
+        }
+      },
+      {
+        "when": "temporal",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:model",
+              "model": "minecraft:item/netherite_pickaxe"
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/pickaxe_temporal"
+            }
+          ]
+        }
+      },
+      {
+        "when": "singularity",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:model",
+              "model": "minecraft:item/netherite_pickaxe"
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/pickaxe_singularity"
+            }
+          ]
+        }
+      },
+      {
+        "when": "radiant",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:model",
+              "model": "minecraft:item/netherite_pickaxe"
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/pickaxe_radiant"
+            }
+          ]
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/netherite_pickaxe"
+    }
+  }
+}

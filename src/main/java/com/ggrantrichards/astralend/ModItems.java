@@ -59,6 +59,14 @@ public final class ModItems {
     public static final RegistryObject<Item> TEMPORAL_CRYSTAL = register("temporal_crystal", Item::new,
         new Item.Properties().rarity(net.minecraft.world.item.Rarity.RARE));
 
+    // Phase 8: Starforging.
+    public static final RegistryObject<Item> STARFORGE_TEMPLATE = register("starforge_template",
+        com.ggrantrichards.astralend.starforge.StarforgeTemplateItem::new, new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON));
+    public static final RegistryObject<Item> STARFORGE_ALLOY = register("starforge_alloy", Item::new,
+        new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON));
+    public static final RegistryObject<Item> RIFT_PEARL = register("rift_pearl", com.ggrantrichards.astralend.starforge.RiftPearlItem::new,
+        new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.EPIC));
+
     // ---- spawn eggs
     public static final RegistryObject<Item> POLLINATOR_SPAWN_EGG = spawnEgg("pollinator", ModEntities.POLLINATOR);
     public static final RegistryObject<Item> VOID_WANDERER_SPAWN_EGG = spawnEgg("void_wanderer", ModEntities.VOID_WANDERER);

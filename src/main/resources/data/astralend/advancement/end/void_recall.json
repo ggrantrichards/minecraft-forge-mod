@@ -1,0 +1,23 @@
+{
+  "parent": "astralend:end/starforged",
+  "display": {
+    "icon": {
+      "id": "astralend:rift_pearl"
+    },
+    "title": {
+      "translate": "advancements.astralend.void_recall.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.void_recall.description"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

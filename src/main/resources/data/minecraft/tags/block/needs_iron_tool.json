@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "astralend:astral_forge",
     "astralend:meteoric_iron_block",
     "astralend:raw_meteoric_iron_block",
     "astralend:raw_solarite_block",

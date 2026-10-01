@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "astralend:block/astral_forge_side",
+    "north": "astralend:block/astral_forge_front",
+    "south": "astralend:block/astral_forge_front",
+    "east": "astralend:block/astral_forge_side",
+    "west": "astralend:block/astral_forge_side",
+    "up": "astralend:block/astral_forge_top",
+    "down": "astralend:block/observatory_quartz"
+  }
+}

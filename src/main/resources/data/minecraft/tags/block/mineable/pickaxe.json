@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "astralend:astral_forge",
     "astralend:charred_end_stone",
     "astralend:charred_end_stone_slab",
     "astralend:charred_end_stone_stairs",

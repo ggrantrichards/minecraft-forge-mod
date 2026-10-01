@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:end/root",
+  "display": {
+    "icon": {
+      "id": "astralend:starforge_template"
+    },
+    "title": {
+      "translate": "advancements.astralend.starforged.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.starforged.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

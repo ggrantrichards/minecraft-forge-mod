@@ -44,6 +44,9 @@ public final class AstralEnd {
         ModWorldgen.BIOME_SOURCES.register(modBusGroup);
         ModWorldgen.FEATURE_TYPES.register(modBusGroup);
         ModWorldgen.STRUCTURE_TYPES.register(modBusGroup);
+        com.ggrantrichards.astralend.starforge.Starforge.COMPONENTS.register(modBusGroup);   // Phase 8: Starforging
+        com.ggrantrichards.astralend.starforge.ModMenus.MENUS.register(modBusGroup);
+        com.ggrantrichards.astralend.starforge.StarforgeLoot.SERIALIZERS.register(modBusGroup);
 
         LowGravity.register();
         GravityInversion.register();
@@ -55,12 +58,15 @@ public final class AstralEnd {
         com.ggrantrichards.astralend.maw.MawNetwork.register();
         com.ggrantrichards.astralend.maze.MazeScoping.register();
         com.ggrantrichards.astralend.comet.CometShowers.register();
+        com.ggrantrichards.astralend.starforge.Starforge.register();          // upgrade tooltips
+        com.ggrantrichards.astralend.starforge.StarforgeEffects.register();   // what the upgrades do
         FlareCommand.register();
         if (FMLEnvironment.dist == Dist.CLIENT) {
             ModModelLayers.register();       // mob models and renderers
             SpectatorOverlayFix.register();  // client-only code; the server never loads it
             ClientScreenshots.register();    // does nothing unless started with -Dastralend.screenshots=true
             AstralSky.register();            // the End's sky: stars, auroras, the Remnant, flares
+            com.ggrantrichards.astralend.client.starforge.StarforgeClient.register(modBusGroup);  // the Forge's screen, armour accents
         }
         WorldgenSurvey.register(); // does nothing unless started with -Dastralend.survey=true
 

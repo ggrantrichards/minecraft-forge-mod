@@ -1,0 +1,445 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:component",
+    "component": "astralend:starforge_upgrade",
+    "cases": [
+      {
+        "when": "voidwalker",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:charge_type",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_arrow"
+                  },
+                  "when": "arrow"
+                },
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_firework"
+                  },
+                  "when": "rocket"
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:condition",
+                "property": "minecraft:using_item",
+                "on_false": {
+                  "type": "minecraft:model",
+                  "model": "minecraft:item/crossbow"
+                },
+                "on_true": {
+                  "type": "minecraft:range_dispatch",
+                  "property": "minecraft:crossbow/pull",
+                  "entries": [
+                    {
+                      "model": {
+                        "type": "minecraft:model",
+                        "model": "minecraft:item/crossbow_pulling_1"
+                      },
+                      "threshold": 0.58
+                    },
+                    {
+                      "model": {
+                        "type": "minecraft:model",
+                        "model": "minecraft:item/crossbow_pulling_2"
+                      },
+                      "threshold": 1.0
+                    }
+                  ],
+                  "fallback": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_pulling_0"
+                  }
+                }
+              }
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/crossbow_voidwalker"
+            }
+          ]
+        }
+      },
+      {
+        "when": "meteoric",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:charge_type",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_arrow"
+                  },
+                  "when": "arrow"
+                },
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_firework"
+                  },
+                  "when": "rocket"
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:condition",
+                "property": "minecraft:using_item",
+                "on_false": {
+                  "type": "minecraft:model",
+                  "model": "minecraft:item/crossbow"
+                },
+                "on_true": {
+                  "type": "minecraft:range_dispatch",
+                  "property": "minecraft:crossbow/pull",
+                  "entries": [
+                    {
+                      "model": {
+                        "type": "minecraft:model",
+                        "model": "minecraft:item/crossbow_pulling_1"
+                      },
+                      "threshold": 0.58
+                    },
+                    {
+                      "model": {
+                        "type": "minecraft:model",
+                        "model": "minecraft:item/crossbow_pulling_2"
+                      },
+                      "threshold": 1.0
+                    }
+                  ],
+                  "fallback": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_pulling_0"
+                  }
+                }
+              }
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/crossbow_meteoric"
+            }
+          ]
+        }
+      },
+      {
+        "when": "stardust",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:charge_type",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_arrow"
+                  },
+                  "when": "arrow"
+                },
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_firework"
+                  },
+                  "when": "rocket"
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:condition",
+                "property": "minecraft:using_item",
+                "on_false": {
+                  "type": "minecraft:model",
+                  "model": "minecraft:item/crossbow"
+                },
+                "on_true": {
+                  "type": "minecraft:range_dispatch",
+                  "property": "minecraft:crossbow/pull",
+                  "entries": [
+                    {
+                      "model": {
+                        "type": "minecraft:model",
+                        "model": "minecraft:item/crossbow_pulling_1"
+                      },
+                      "threshold": 0.58
+                    },
+                    {
+                      "model": {
+                        "type": "minecraft:model",
+                        "model": "minecraft:item/crossbow_pulling_2"
+                      },
+                      "threshold": 1.0
+                    }
+                  ],
+                  "fallback": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_pulling_0"
+                  }
+                }
+              }
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/crossbow_stardust"
+            }
+          ]
+        }
+      },
+      {
+        "when": "temporal",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:charge_type",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_arrow"
+                  },
+                  "when": "arrow"
+                },
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_firework"
+                  },
+                  "when": "rocket"
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:condition",
+                "property": "minecraft:using_item",
+                "on_false": {
+                  "type": "minecraft:model",
+                  "model": "minecraft:item/crossbow"
+                },
+                "on_true": {
+                  "type": "minecraft:range_dispatch",
+                  "property": "minecraft:crossbow/pull",
+                  "entries": [
+                    {
+                      "model": {
+                        "type": "minecraft:model",
+                        "model": "minecraft:item/crossbow_pulling_1"
+                      },
+                      "threshold": 0.58
+                    },
+                    {
+                      "model": {
+                        "type": "minecraft:model",
+                        "model": "minecraft:item/crossbow_pulling_2"
+                      },
+                      "threshold": 1.0
+                    }
+                  ],
+                  "fallback": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_pulling_0"
+                  }
+                }
+              }
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/crossbow_temporal"
+            }
+          ]
+        }
+      },
+      {
+        "when": "singularity",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:charge_type",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_arrow"
+                  },
+                  "when": "arrow"
+                },
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_firework"
+                  },
+                  "when": "rocket"
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:condition",
+                "property": "minecraft:using_item",
+                "on_false": {
+                  "type": "minecraft:model",
+                  "model": "minecraft:item/crossbow"
+                },
+                "on_true": {
+                  "type": "minecraft:range_dispatch",
+                  "property": "minecraft:crossbow/pull",
+                  "entries": [
+                    {
+                      "model": {
+                        "type": "minecraft:model",
+                        "model": "minecraft:item/crossbow_pulling_1"
+                      },
+                      "threshold": 0.58
+                    },
+                    {
+                      "model": {
+                        "type": "minecraft:model",
+                        "model": "minecraft:item/crossbow_pulling_2"
+                      },
+                      "threshold": 1.0
+                    }
+                  ],
+                  "fallback": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_pulling_0"
+                  }
+                }
+              }
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/crossbow_singularity"
+            }
+          ]
+        }
+      },
+      {
+        "when": "radiant",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:select",
+              "property": "minecraft:charge_type",
+              "cases": [
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_arrow"
+                  },
+                  "when": "arrow"
+                },
+                {
+                  "model": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_firework"
+                  },
+                  "when": "rocket"
+                }
+              ],
+              "fallback": {
+                "type": "minecraft:condition",
+                "property": "minecraft:using_item",
+                "on_false": {
+                  "type": "minecraft:model",
+                  "model": "minecraft:item/crossbow"
+                },
+                "on_true": {
+                  "type": "minecraft:range_dispatch",
+                  "property": "minecraft:crossbow/pull",
+                  "entries": [
+                    {
+                      "model": {
+                        "type": "minecraft:model",
+                        "model": "minecraft:item/crossbow_pulling_1"
+                      },
+                      "threshold": 0.58
+                    },
+                    {
+                      "model": {
+                        "type": "minecraft:model",
+                        "model": "minecraft:item/crossbow_pulling_2"
+                      },
+                      "threshold": 1.0
+                    }
+                  ],
+                  "fallback": {
+                    "type": "minecraft:model",
+                    "model": "minecraft:item/crossbow_pulling_0"
+                  }
+                }
+              }
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/crossbow_radiant"
+            }
+          ]
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:select",
+      "property": "minecraft:charge_type",
+      "cases": [
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "minecraft:item/crossbow_arrow"
+          },
+          "when": "arrow"
+        },
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "minecraft:item/crossbow_firework"
+          },
+          "when": "rocket"
+        }
+      ],
+      "fallback": {
+        "type": "minecraft:condition",
+        "property": "minecraft:using_item",
+        "on_false": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/crossbow"
+        },
+        "on_true": {
+          "type": "minecraft:range_dispatch",
+          "property": "minecraft:crossbow/pull",
+          "entries": [
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "minecraft:item/crossbow_pulling_1"
+              },
+              "threshold": 0.58
+            },
+            {
+              "model": {
+                "type": "minecraft:model",
+                "model": "minecraft:item/crossbow_pulling_2"
+              },
+              "threshold": 1.0
+            }
+          ],
+          "fallback": {
+            "type": "minecraft:model",
+            "model": "minecraft:item/crossbow_pulling_0"
+          }
+        }
+      }
+    }
+  }
+}

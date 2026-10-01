@@ -259,6 +259,13 @@ public final class ModBlocks {
     public static final RegistryObject<Block> STATION_LAMP = register("station_lamp", com.ggrantrichards.astralend.station.StationLampBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(0.8F).sound(SoundType.GLASS)
             .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.station.StationLampBlock.LIT) ? 15 : 0));
+    // Phase 8 (Starforging): the Astral Forge, and the tiles Rift Walker boots lay over a drop.
+    public static final RegistryObject<Block> ASTRAL_FORGE = register("astral_forge", com.ggrantrichards.astralend.starforge.AstralForgeBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).requiresCorrectToolForDrops().strength(5.0F, 1200.0F)
+            .sound(SoundType.METAL).lightLevel(state -> 7));
+    public static final RegistryObject<Block> RIFT_TILE = registerNoItem("rift_tile", com.ggrantrichards.astralend.starforge.RiftTileBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.0F).sound(SoundType.AMETHYST)
+            .noOcclusion().noLootTable().lightLevel(state -> 5).pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
     // Life that died out: grey husks of the Nebula Fields' mushrooms and vines, and Pollinator shells.
     public static final RegistryObject<Block> ASHEN_LUMINESHROOM = register("ashen_lumineshroom",
         p -> new EndPlantBlock(Block.column(6.0, 0.0, 10.0), ASTRAL_SOIL, p),

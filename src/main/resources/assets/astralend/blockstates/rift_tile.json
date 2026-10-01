@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "age=0,over_lava=false": {
+      "model": "astralend:block/rift_tile_0"
+    },
+    "age=0,over_lava=true": {
+      "model": "astralend:block/rift_tile_0"
+    },
+    "age=1,over_lava=false": {
+      "model": "astralend:block/rift_tile_1"
+    },
+    "age=1,over_lava=true": {
+      "model": "astralend:block/rift_tile_1"
+    },
+    "age=2,over_lava=false": {
+      "model": "astralend:block/rift_tile_2"
+    },
+    "age=2,over_lava=true": {
+      "model": "astralend:block/rift_tile_2"
+    },
+    "age=3,over_lava=false": {
+      "model": "astralend:block/rift_tile_3"
+    },
+    "age=3,over_lava=true": {
+      "model": "astralend:block/rift_tile_3"
+    }
+  }
+}
