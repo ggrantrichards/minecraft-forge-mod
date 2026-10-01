@@ -61,6 +61,7 @@ jobs:
           cp run/logs/latest.log survey.log
           echo "--- server warnings and errors during the survey:"
           grep -nE "/(WARN|ERROR)\]|Exception|Caused by" survey.log | grep -v "Cache miss" | head -60 || true
+          grep -n -A30 "Exception stopping the server" survey.log | head -40 || true
           echo "---"
           grep "AstralEnd survey" survey.log | sed 's/.*\[AstralEnd survey\] //' || { tail -60 survey-console.log; exit 1; }
           if grep -E "(WARN|ERROR).*astralend" survey.log; then echo "::error::the survey server logged problems with astralend"; exit 1; fi
@@ -89,8 +90,10 @@ jobs:
           mkdir -p /tmp/shots && cp run/screenshots/astralend-*.png /tmp/shots/
           # The survey's findings and any problems, so they can be read without the job log.
           { grep -nE "/(WARN|ERROR)\]|Exception|Caused by" survey.log | grep -v "Cache miss" | head -80; echo "---"; \
-            grep "AstralEnd survey" survey.log | sed 's/.*\[AstralEnd survey\] //'; } > /tmp/shots/survey.txt 2>/dev/null || true
+            grep "AstralEnd survey" survey.log | sed 's/.*\[AstralEnd survey\] //'; echo "---"; \
+            grep -A30 "Exception stopping the server" survey.log | head -40; } > /tmp/shots/survey.txt 2>/dev/null || true
           grep -E "AstralEnd screenshots|/ERROR\]" screenshots.log 2>/dev/null | tail -80 > /tmp/shots/screenshots.txt || true
+          grep -iE -A8 "experimental|lifecycle|level\.dat|Exception" screenshots.log 2>/dev/null | head -60 >> /tmp/shots/screenshots.txt || true
           cd /tmp/shots
           printf "# In-game screenshots\n\nFrom commit ${GITHUB_SHA::7} on ${GITHUB_REF_NAME}.\n\n" > README.md
           for f in astralend-*.png; do printf "### ${f}\n\n![](${f})\n\n" >> README.md; done

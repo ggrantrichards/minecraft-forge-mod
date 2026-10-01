@@ -4,9 +4,60 @@ A Forge mod for **Minecraft Java Edition 26.3** with **Forge 66.0.8** that expan
 into a sparse, mysterious network of astral islands. The full plan is in
 [docs/END_UPDATE.md](docs/END_UPDATE.md).
 
-**Status:** Phase 8 of 9 (Starforging: six late-game upgrades for your gear, forged at the Astral Forge). Mod ID: `astralend`.
+**Status:** all 9 phases done: biomes, mobs, the sky and Stellar Flares, structures, live comets, Starforging, and a final polish pass. Mod ID: `astralend`.
 
 ## What's in the mod so far
+
+### Phase 9: polish
+
+| The Orrery Bronze family | The Orrery's vault, its Sentinel awake |
+|---|---|
+| ![Orrery Bronze in three stages of tarnish: block, cut, stairs, slab and grate, on Nebula Moss Carpet](docs/images/polish/game_orrery_bronze.png) | ![A bronze clockwork construct with a Wanderer's lens between two vault chests](docs/images/structures/game_orrery_vault.png) |
+
+Phase 9 went over every feature with one question: *would Mojang ship this, in this form, in a
+real End update?* Anything that wasn't up to that was revamped or cut.
+
+**Revamped:**
+- **The Abandoned Orrery** (was the "Abandoned Orbital Station"). A space station with crew quarters,
+  hydroponics, a docking bay and a power core is science fiction; Minecraft's ancients build with
+  craft and magic. It's now the Cartographers' great clockwork **orrery**: a ring gallery with a roost
+  of dormant Void Wanderers, a wild garden and the keepers' quarters, round a hub where the **Orrery
+  Heart** sits under the orrery's axle and gilded sun. You rekindle the Heart with **Bottled Flares**
+  (was "Flare Cells", drawn as batteries; now glass flasks you fill on a Collector Pedestal); its vault
+  is sealed by **Bronze Shutters** (was "Bulkheads"), lit by **Orrery Lamps**, and guarded by the
+  **Orrery Sentinel**, a clockwork construct whose beam is focused starlight.
+- **The Void Wanderer** is a clockwork construct, not a "survey drone": it **studies** you instead of
+  scanning, leaves you a **Chart Fragment** (was "Data Shard") - a shard of its star map - and fights
+  with homing **starbolts** (shulker bullets you can dodge or knock away) instead of an instant-hit laser.
+  Void crystal glints in its seams where "status lights" were.
+- **Nothing is left without a use.** The Sentinel's trophy-only "Data Core" is gone (it drops a
+  Starforge Template and a Rift Pearl); the Wanderer's **Cracked Lens** now goes into the Portal Lens;
+  **Cinder** also makes fire charges.
+
+**Rounded out**, the way Mojang finishes a block or material:
+- **Orrery Bronze** gets copper's whole family: **Cut Orrery Bronze**, its **stairs** and **slabs**, and
+  **Orrery Bronze Grates**, in all three stages of tarnish. **Honeycomb waxes** any of it so it stops
+  aging; an axe scrapes the wax off, or a stage of tarnish. Crafted and stonecut like copper.
+- **Nebula Moss Carpet** (two Nebula Moss make three).
+- **Glowing Stew** (Lumineshroom, Comet Cress and a bowl): food, and 30 seconds of Night Vision.
+- **Star Compass** (a compass with four Starblooms round it): points to the End's central island, the
+  way a lodestone compass points to its lodestone. (Ordinary compasses spin in the End.)
+
+**Fitted into vanilla's systems:**
+- **Advancements** join the **End** tab as a branch from *Remote Getaway*, as Mojang adds them:
+  *Astral Horizons*, *Chart the Stars* (visit all six astral biomes), *Falling Upward*, *Catch a Falling
+  Star*, *Iron From the Sky*, *Forged in Starlight*, *Starforged From Head to Toe*, *Not Today, Void*,
+  *Hold Still*, *Connect the Dots*, *Say Ahh*, *Something Looks Back*, *Weather the Storm*, *Harvest Moon*,
+  *Bottled Sunlight*, *Wind It Up*, *Clockwork Undone*, *Event Horizon*, and the Drift Whale's three.
+- **Every recipe unlocks in the recipe book** when you pick up one of its ingredients.
+- **Switches are data-pack tags**, like vanilla's: empty `#astralend:stellar_flares` to turn flares
+  off, `#astralend:live_comets` for comets (and `low_gravity`, `gravity_inversion` as before).
+
+**Cut**, because they couldn't be done to that standard (the plan, `docs/END_UPDATE.md`, says why for
+each): Echo Logs (Mojang never puts readable lore in the game), new music and the "Leviathan" disc
+(they'd need real composed music), a config file (tags do the job), Starfield Glass, Gravity Wells and
+Void Traps, the Solar Lantern, the Gravlily and its potion, the Stalker Cloak, carved bone variants,
+and the Portal Lens's extra powers.
 
 ### Phase 8: Starforging
 
