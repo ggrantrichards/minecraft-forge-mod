@@ -54,6 +54,7 @@ public final class AstralEnd {
         StellarFlares.register();
         com.ggrantrichards.astralend.maw.MawNetwork.register();
         com.ggrantrichards.astralend.maze.MazeScoping.register();
+        com.ggrantrichards.astralend.comet.CometShowers.register();
         FlareCommand.register();
         if (FMLEnvironment.dist == Dist.CLIENT) {
             ModModelLayers.register();       // mob models and renderers

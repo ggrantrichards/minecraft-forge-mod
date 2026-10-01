@@ -271,6 +271,7 @@ public final class WorldgenSurvey {
             }
         }
         Map<String, BlockPos> structures = checkStructures(areas, end, failures);
+        checkComets(areas.get('W'), end, failures);
         writeViewpoints(areas, end, structures);
         checkNebula(areas.get('N'), failures);
         checkAurora(areas.get('A'), failures);
@@ -369,6 +370,7 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('A'), end, "drift_whale side", 11.0, 7.0, 7.5);
         mobShot(lines, areas.get('R'), end, "watcher", 6.5, 0.5, 2.6);
         mobShot(lines, areas.get('N'), end, "station_sentinel awake", 7.5, 0.0, 2.6);
+        mobShot(lines, areas.get('W'), end, "live_comet side", 13.0, 6.0, 7.0);
         // Phase 5: the sky and Stellar Flares.
         skyShot(lines, areas.get('A'), "sky_aurora_shallows", -45.0F, -32.0F, null, "flare=calm");
         skyShot(lines, areas.get('N'), "sky_nebula_fields", -45.0F, -32.0F, null, "flare=calm");
@@ -390,6 +392,37 @@ public final class WorldgenSurvey {
         } catch (java.io.IOException e) {
             LOGGER.error(TAG + "couldn't write viewpoints", e);
         }
+    }
+
+    // Phase 7: a live comet can be sent (and set on its arc), loses chunks when hit, and its landfall
+    // crater stays small. Then a view of a comet in profile, and of a fresh landfall crater.
+    private static void checkComets(Area area, ServerLevel end, List<String> failures) {
+        if (area == null || area.standOn == null) {
+            return;
+        }
+        var near = net.minecraft.world.phys.Vec3.atBottomCenterOf(area.standOn);
+        var comet = com.ggrantrichards.astralend.comet.CometShowers.send(end, near, end.getRandom(), true);
+        if (comet == null) {
+            failures.add("live comet: couldn't be sent");
+            return;
+        }
+        int itemsBefore = end.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, comet.getBoundingBox().inflate(4)).size();
+        comet.knockChunk(end);
+        int itemsAfter = end.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, comet.getBoundingBox().inflate(4)).size();
+        log(String.format("live comet: sent from %s, landfall %s; a hit knocked off %d chunk(s)", comet.blockPosition().toShortString(),
+            comet.isLandfall(), itemsAfter - itemsBefore));
+        comet.discard();
+        BlockPos target = area.standOn.offset(9, 0, 9);
+        target = new BlockPos(target.getX(), end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, target.getX(), target.getZ()) - 1, target.getZ());
+        int changed = com.ggrantrichards.astralend.comet.CometImpact.strike(end, target, end.getRandom(), null);
+        log(String.format("live comet: landfall at %s changed %d blocks (at most %d)", target.toShortString(), changed,
+            com.ggrantrichards.astralend.comet.CometImpact.MAX_BLOCKS));
+        if (itemsAfter <= itemsBefore || changed > com.ggrantrichards.astralend.comet.CometImpact.MAX_BLOCKS) {
+            failures.add("live comet: a hit should knock off a chunk, and a landfall change at most 40 blocks");
+        }
+        double d = 9.0 / Math.sqrt(2.0);
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_comet_landfall %.1f %d %.1f -45 40.0 impact=%d:%d:%d",
+            target.getX() + 0.5 - d, target.getY() + 7, target.getZ() + 0.5 - d, target.getX(), target.getY(), target.getZ()));
     }
 
     // Extra screenshot lines worked out by the structure tests (they need the structure's layout).

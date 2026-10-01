@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "astralend:stardust_mote",
+    "astralend:stardust_mote",
+    "astralend:stardust_mote",
+    "astralend:stardust_mote"
+  ],
+  "result": {
+    "id": "astralend:stardust_block"
+  }
+}

@@ -403,3 +403,33 @@ TEXTURES += [("block/solar_core_side_%d.png" % n, (lambda n=n: _core_side(n, Fal
     ("block/station_lamp_on.png", lambda: _lamp(True)),
     ("item/data_core.png", data_core),
 ]
+
+
+# ------------------------------------------------------------------ Phase 7: live comets
+MOTE = [
+    "................",
+    "................",
+    "...........w....",
+    "..........wyw...",
+    "...........w....",
+    ".......h........",
+    "......hlh.......",
+    "....hhlWlhh.....",
+    "......hlh.......",
+    ".......h........",
+    "...w............",
+    "..wyw.....h.....",
+    "...w.....hWh....",
+    "..........h.....",
+    "................",
+    "................",
+]
+
+
+def stardust_mote():
+    """A Stardust Mote: a speck of comet-light, a bright four-pointed star with two smaller glints."""
+    return from_map(MOTE, {"h": hexc("7fb8e8"), "l": hexc("c8e8ff"), "W": hexc("ffffff"),
+                           "w": hexc("dcd4ff"), "y": hexc("fff4c8")})
+
+
+TEXTURES += [("item/stardust_mote.png", stardust_mote)]

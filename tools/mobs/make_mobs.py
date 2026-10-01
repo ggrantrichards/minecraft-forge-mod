@@ -1027,7 +1027,66 @@ SENTINEL = Mob("station_sentinel", (128, 64), [
 ], egg=(hexc("6e4526"), hexc("8f7bbd")))
 
 
-MOBS = [POLLINATOR, WANDERER, STALKER, CINDER_MITE, SKIMMER, GUARDIAN, WHALE, WATCHER, SENTINEL]
+# ---- Live Comet (Phase 7): a tumbling rock of comet ice with dark lumps of meteoric iron and
+# glowing cracks, trailing three translucent streamers of light behind it (the particle tail goes on
+# much further).
+COMET_ICE = [hexc("6f93b0"), hexc("9fc4dc"), hexc("c3dcec"), hexc("e6f2fa")]
+COMET_ROCK = [hexc("2c2f3d"), hexc("3a3f52"), hexc("505872")]
+
+
+def comet_rock(face, px, py, fw, fh, rnd):
+    t = n()
+    if t > 0.64:
+        c = COMET_ROCK[min(2, int((t - 0.64) * 9))]                 # lumps of dark meteoric rock
+    else:
+        i = 1 + int(t * 3.4) + {"up": 1, "down": -1}.get(face, 0)
+        c = COMET_ICE[max(0, min(3, i))]
+    return c
+
+
+def comet_crack_glow(face, px, py, fw, fh, rnd):
+    t = n()
+    if 0.56 < t < 0.6:
+        return hexc("bff4ff")                                       # light glowing through the cracks
+    if 0.6 <= t < 0.62:
+        return hexc("7fe0ff")
+    return None
+
+
+def streamer(alpha):
+    def f(face, px, py, fw, fh, rnd):
+        a = int(alpha * (0.75 + 0.25 * rnd.random()))
+        return hexc("d8f2ff", a) if rnd.random() < 0.8 else hexc("9fdcff", a)
+    return f
+
+
+def streamer_glow(alpha):
+    def f(face, px, py, fw, fh, rnd):
+        return hexc("e8f8ff", int(alpha * 0.55 * (0.5 + 0.5 * rnd.random())))
+    return f
+
+
+COMET = Mob("live_comet", (64, 64), [
+    Part("comet", (0, 18, 0), [
+        B(-4, -4, -4, 8, 8, 8, comet_rock, comet_crack_glow),
+        B(-5, -3, -2, 1, 5, 4, comet_rock),
+        B(4, -2, -3, 1, 4, 5, comet_rock),
+        B(-2, -5, -3, 5, 1, 5, comet_rock),
+        B(-3, 4, -2, 6, 1, 4, comet_rock),
+        B(-2, -2, -5, 4, 4, 1, comet_rock, comet_crack_glow),
+    ], [
+        Part("tail", (0, 0, 4), [
+            B(-3, -3, 0, 6, 6, 10, streamer(150), streamer_glow(150)),
+        ], [
+            Part("tail_mid", (0, 0, 10), [B(-2, -2, 0, 4, 4, 12, streamer(110), streamer_glow(110))], [
+                Part("tail_end", (0, 0, 12), [B(-1, -1, 0, 2, 2, 14, streamer(70), streamer_glow(70))]),
+            ]),
+        ]),
+    ]),
+], egg=(hexc("c3dcec"), hexc("3a3f52")))
+
+
+MOBS = [POLLINATOR, WANDERER, STALKER, CINDER_MITE, SKIMMER, GUARDIAN, WHALE, WATCHER, SENTINEL, COMET]
 for _mob in MOBS:
     auto_uv(_mob)          # boxes drawn without a texture position get one
 

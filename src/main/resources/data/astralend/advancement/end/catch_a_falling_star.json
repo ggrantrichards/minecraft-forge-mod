@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:end/root",
+  "display": {
+    "icon": {
+      "id": "astralend:stardust_mote"
+    },
+    "title": {
+      "translate": "advancements.astralend.catch_a_falling_star.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.catch_a_falling_star.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

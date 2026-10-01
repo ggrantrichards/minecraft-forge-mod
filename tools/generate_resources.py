@@ -1040,6 +1040,7 @@ MOBS = [
     ("drift_whale", "Drift Whale"),
     ("watcher", "The Watcher"),
     ("station_sentinel", "Station Sentinel"),
+    ("live_comet", "Live Comet"),
 ]
 
 
@@ -1082,6 +1083,7 @@ def mobs_phase4():
     entity_loot("corona_skimmer", [])
     entity_loot("drift_whale", [])
     entity_loot("watcher", [])
+    entity_loot("live_comet", [])   # what it gives, it gives while it flies (see LiveComet)
     # The Station Sentinel always drops its Data Core.
     entity_loot("station_sentinel", [
         {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("data_core")}]},
@@ -1100,7 +1102,7 @@ def mobs_phase4():
          "enchantment": "minecraft:looting"}]}]}])
 
     # Flying and floating mobs don't take fall damage.
-    for mob in ("pollinator", "void_wanderer", "corona_skimmer", "black_hole_guardian", "drift_whale", "watcher"):
+    for mob in ("pollinator", "void_wanderer", "corona_skimmer", "black_hole_guardian", "drift_whale", "watcher", "live_comet"):
         tag("entity_type", "minecraft:fall_damage_immune", rid(mob))
 
     # What End Pollinators visit (and spread when they pollinate it).
@@ -1414,6 +1416,14 @@ def structures_phase6():
         "station.astralend.running": "The Solar Core is running.",
         "station.astralend.dead": "The Solar Core is cold and dead (%s of 3 cells). It wants charged Flare Cells.",
     })
+
+    # ---- Phase 7: live comets
+    item_model("stardust_mote", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("item/stardust_mote")}})
+    item_def("stardust_mote", rid("item/stardust_mote"))
+    lang[f"item.{NS}.stardust_mote"] = "Stardust Mote"
+    shapeless("stardust_block_from_motes", "stardust_block", [rid("stardust_mote")] * 4, category="building")
+    advancement("catch_a_falling_star", rid("stardust_mote"), "Catch a Falling Star",
+                "Glide through a live comet's tail with an elytra and catch a Stardust Mote")
 
     # A crater's cache: what the comet brought, sometimes a Temporal Crystal, sometimes a chart.
     chest_loot("comet_crater", [

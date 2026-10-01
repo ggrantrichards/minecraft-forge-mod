@@ -53,6 +53,11 @@ public final class ModEntities {
         () -> EntityType.Builder.of(StationSentinel::new, MobCategory.MONSTER).sized(1.6F, 3.2F).eyeHeight(2.7F).fireImmune()
             .clientTrackingRange(16).build(ENTITY_TYPES.key("station_sentinel")));
 
+    // Phase 7: live comets. Seen from far off and moved every tick, so they're tracked far and often.
+    public static final RegistryObject<EntityType<com.ggrantrichards.astralend.comet.LiveComet>> LIVE_COMET = ENTITY_TYPES.register("live_comet",
+        () -> EntityType.Builder.of(com.ggrantrichards.astralend.comet.LiveComet::new, MobCategory.MISC).sized(2.2F, 2.2F).eyeHeight(1.1F)
+            .fireImmune().clientTrackingRange(16).updateInterval(1).build(ENTITY_TYPES.key("live_comet")));
+
     public static void register() {
         EntityAttributeCreationEvent.BUS.addListener(event -> {
             event.put(POLLINATOR.get(), EndPollinator.createAttributes().build());
@@ -64,6 +69,7 @@ public final class ModEntities {
             event.put(DRIFT_WHALE.get(), DriftWhale.createAttributes().build());
             event.put(WATCHER.get(), Watcher.createAttributes().build());
             event.put(STATION_SENTINEL.get(), StationSentinel.createAttributes().build());
+            event.put(LIVE_COMET.get(), com.ggrantrichards.astralend.comet.LiveComet.createAttributes().build());
         });
         SpawnPlacementRegisterEvent.BUS.addListener(event -> {
             var replace = SpawnPlacementRegisterEvent.Operation.REPLACE;

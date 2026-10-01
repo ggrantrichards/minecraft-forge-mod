@@ -18,6 +18,7 @@ public final class ModModelLayers {
     public static final ModelLayerLocation DRIFT_WHALE = layer("drift_whale");
     public static final ModelLayerLocation WATCHER = layer("watcher");
     public static final ModelLayerLocation STATION_SENTINEL = layer("station_sentinel");
+    public static final ModelLayerLocation LIVE_COMET = layer("live_comet");
 
     public static void register() {
         EntityRenderersEvent.RegisterLayerDefinitions.BUS.addListener(event -> {
@@ -30,6 +31,7 @@ public final class ModModelLayers {
             event.registerLayerDefinition(DRIFT_WHALE, MobMeshes::driftWhale);
             event.registerLayerDefinition(WATCHER, MobMeshes::watcher);
             event.registerLayerDefinition(STATION_SENTINEL, MobMeshes::stationSentinel);
+            event.registerLayerDefinition(LIVE_COMET, MobMeshes::liveComet);
         });
         EntityRenderersEvent.RegisterRenderers.BUS.addListener(event -> {
             event.registerEntityRenderer(ModEntities.POLLINATOR.get(), PollinatorRenderer::new);
@@ -41,6 +43,7 @@ public final class ModModelLayers {
             event.registerEntityRenderer(ModEntities.DRIFT_WHALE.get(), DriftWhaleRenderer::new);
             event.registerEntityRenderer(ModEntities.WATCHER.get(), WatcherRenderer::new);
             event.registerEntityRenderer(ModEntities.STATION_SENTINEL.get(), StationSentinelRenderer::new);
+            event.registerEntityRenderer(ModEntities.LIVE_COMET.get(), LiveCometRenderer::new);
         });
     }
 
