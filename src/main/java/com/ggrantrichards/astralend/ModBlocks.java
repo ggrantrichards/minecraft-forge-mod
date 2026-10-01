@@ -2,9 +2,11 @@ package com.ggrantrichards.astralend;
 
 import com.ggrantrichards.astralend.block.AstralVineBlock;
 import com.ggrantrichards.astralend.block.AstralVinePlantBlock;
+import com.ggrantrichards.astralend.block.CollectorPedestalBlock;
 import com.ggrantrichards.astralend.block.CometCressBlock;
 import com.ggrantrichards.astralend.block.EndPlantBlock;
 import com.ggrantrichards.astralend.block.EndTallPlantBlock;
+import com.ggrantrichards.astralend.block.FlarebloomBlock;
 import com.ggrantrichards.astralend.block.GravityAnomalyBlock;
 import com.ggrantrichards.astralend.block.LumineshroomBlock;
 import com.ggrantrichards.astralend.block.NebulaTendrilBlock;
@@ -13,6 +15,8 @@ import com.ggrantrichards.astralend.block.NullLanternBlock;
 import com.ggrantrichards.astralend.block.NullwoodSaplingBlock;
 import com.ggrantrichards.astralend.block.StarbloomBlock;
 import com.ggrantrichards.astralend.block.StardustBlock;
+import com.ggrantrichards.astralend.block.SunscaleLichenBlock;
+import com.ggrantrichards.astralend.block.SunshadeBlock;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.core.registries.Registries;
@@ -24,24 +28,23 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ButtonBlock;
-import net.minecraft.world.level.block.CarpetBlock;
 import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.PressurePlateBlock;
-import net.minecraft.world.level.block.TintedParticleLeavesBlock;
-import net.minecraft.world.level.block.TrapDoorBlock;
-import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.TintedParticleLeavesBlock;
 import net.minecraft.world.level.block.TransparentBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.WallBlock;
-import net.minecraft.world.level.block.state.properties.BlockSetType;
-import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.registries.DeferredRegister;
@@ -197,14 +200,23 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).instrument(NoteBlockInstrument.BELL)
             .requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.METAL).lightLevel(state -> 7));
     // Flarebloom: a two-block-tall flower, shut tight.
-    public static final RegistryObject<Block> FLAREBLOOM = register("flarebloom", EndTallPlantBlock::new,
-        () -> plant(MapColor.COLOR_ORANGE, SoundType.GRASS).offsetType(BlockBehaviour.OffsetType.XZ));
+    public static final RegistryObject<Block> FLAREBLOOM = register("flarebloom", FlarebloomBlock::new,
+        () -> plant(MapColor.COLOR_ORANGE, SoundType.GRASS).offsetType(BlockBehaviour.OffsetType.XZ)
+            .lightLevel(state -> state.getValue(FlarebloomBlock.OPEN) ? 9 : 0));
     // Sunscale Lichen: a scaly ground cover (a carpet) that holds a faint glow.
     // It's see-through between its patches, so it mustn't hide the top of the block it lies on
     // (noOcclusion), or the gaps would show the void.
-    public static final RegistryObject<Block> SUNSCALE_LICHEN = register("sunscale_lichen", CarpetBlock::new,
+    public static final RegistryObject<Block> SUNSCALE_LICHEN = register("sunscale_lichen", SunscaleLichenBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(0.1F).sound(SoundType.MOSS_CARPET)
-            .lightLevel(state -> 5).noOcclusion().pushReaction(PushReaction.POPPED));
+            .lightLevel(state -> state.getValue(SunscaleLichenBlock.CHARGED) ? 12 : 5).noOcclusion().pushReaction(PushReaction.POPPED));
+    // Phase 5 (Stellar Flares): cover you can hang anywhere, and the pedestal that charges crystals and cells.
+    public static final RegistryObject<Block> SUNSHADE = register("sunshade", SunshadeBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(0.3F).sound(SoundType.WOOL).noOcclusion()
+            .isViewBlocking((state, level, pos) -> false));
+    public static final RegistryObject<Block> COLLECTOR_PEDESTAL = register("collector_pedestal", CollectorPedestalBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.SAND).requiresCorrectToolForDrops().strength(2.0F, 6.0F)
+            .sound(SoundType.STONE).noOcclusion()
+            .lightLevel(state -> state.getValue(CollectorPedestalBlock.HOLDING).charged() ? 10 : 0));
     // Life that died out: grey husks of the Nebula Fields' mushrooms and vines, and Pollinator shells.
     public static final RegistryObject<Block> ASHEN_LUMINESHROOM = register("ashen_lumineshroom",
         p -> new EndPlantBlock(Block.column(6.0, 0.0, 10.0), ASTRAL_SOIL, p),

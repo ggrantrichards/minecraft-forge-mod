@@ -4,7 +4,12 @@ import com.ggrantrichards.astralend.client.ClientScreenshots;
 import com.ggrantrichards.astralend.client.SpectatorOverlayFix;
 import com.ggrantrichards.astralend.client.entity.ModModelLayers;
 import com.ggrantrichards.astralend.entity.ModEntities;
+import com.ggrantrichards.astralend.client.sky.AstralSky;
 import com.ggrantrichards.astralend.dev.WorldgenSurvey;
+import com.ggrantrichards.astralend.flare.FlareBrewing;
+import com.ggrantrichards.astralend.flare.FlareCommand;
+import com.ggrantrichards.astralend.flare.FlareNetwork;
+import com.ggrantrichards.astralend.flare.StellarFlares;
 import com.ggrantrichards.astralend.world.GravityInversion;
 import com.ggrantrichards.astralend.world.LowGravity;
 import com.ggrantrichards.astralend.world.MobSpawning;
@@ -35,6 +40,8 @@ public final class AstralEnd {
         ModCreativeTabs.TABS.register(modBusGroup);
         ModBlockEntities.BLOCK_ENTITIES.register(modBusGroup);
         ModEntities.ENTITY_TYPES.register(modBusGroup);
+        ModEffects.EFFECTS.register(modBusGroup);
+        ModEffects.POTIONS.register(modBusGroup);
         ModWorldgen.BIOME_SOURCES.register(modBusGroup);
         ModWorldgen.FEATURE_TYPES.register(modBusGroup);
 
@@ -43,10 +50,14 @@ public final class AstralEnd {
         WoodStripping.register();
         ModEntities.register();   // mob attributes and where they may spawn
         MobSpawning.register();   // Drift Whales, the Watcher and Black Hole Guardians
+        FlareNetwork.register();  // Phase 5: Stellar Flares - the timer, its effects, and syncing it to clients
+        StellarFlares.register();
+        FlareCommand.register();
         if (FMLEnvironment.dist == Dist.CLIENT) {
             ModModelLayers.register();       // mob models and renderers
             SpectatorOverlayFix.register();  // client-only code; the server never loads it
             ClientScreenshots.register();    // does nothing unless started with -Dastralend.screenshots=true
+            AstralSky.register();            // the End's sky: stars, auroras, the Remnant, flares
         }
         WorldgenSurvey.register(); // does nothing unless started with -Dastralend.survey=true
 
@@ -54,6 +65,7 @@ public final class AstralEnd {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(FlareBrewing::register);
         // Look for this line in the console/log to confirm the mod loaded.
         LOGGER.info("The Astral End loaded.");
     }

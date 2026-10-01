@@ -2,6 +2,8 @@ package com.ggrantrichards.astralend.entity;
 
 import com.ggrantrichards.astralend.ModBlocks;
 import com.ggrantrichards.astralend.ModItems;
+import com.ggrantrichards.astralend.flare.FlarePhase;
+import com.ggrantrichards.astralend.flare.StellarFlares;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -40,13 +42,13 @@ import org.jspecify.annotations.Nullable;
 //
 // Most of the time it rests flat on the ground and looks almost like stone. Now and then - or
 // when a player walks right up to it - it lifts off and glides in wide circles over its island,
-// then lands again. When its wings are "full" they shimmer, and shearing them then gives Skimmer
-// Film, a heat-proof membrane; they grow back. (In Phase 5 they'll fill up in each Stellar
-// Flare's afterglow instead, and whole flocks will ride the flares.)
+// then lands again. Whole flocks take off when a Stellar Flare comes and ride it. Shearing full,
+// shimmering wings gives Skimmer Film, a heat-proof membrane; sheared wings fill up again in the
+// next flare's afterglow.
 public class CoronaSkimmer extends Animal implements Shearable {
     private static final EntityDataAccessor<Boolean> DATA_FULL = SynchedEntityData.defineId(CoronaSkimmer.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_FLYING = SynchedEntityData.defineId(CoronaSkimmer.class, EntityDataSerializers.BOOLEAN);
-    private static final int REGROW_TICKS = 6000;
+    private static final int REGROW_TICKS = 200;   // into the afterglow, the wings fill again
 
     private int restTicks;
     private int flightTicks;
@@ -103,8 +105,15 @@ public class CoronaSkimmer extends Animal implements Shearable {
     @Override
     protected void customServerAiStep(ServerLevel level) {
         super.customServerAiStep(level);
-        if (!this.isFull() && --this.regrowTicks <= 0) {
+        FlarePhase flare = StellarFlares.phaseIn(level);
+        if (!this.isFull() && flare == FlarePhase.AFTERGLOW && --this.regrowTicks <= 0) {
             this.entityData.set(DATA_FULL, true);
+        }
+        if (flare == FlarePhase.FLARE && !this.isFlying() && this.random.nextInt(40) == 0) {
+            this.takeOff();   // riding the flare
+        }
+        if (this.isFlying() && flare == FlarePhase.FLARE && this.flightTicks < 40) {
+            this.flightTicks = 40;   // stays up until the flare is over
         }
         if (this.isFlying()) {
             this.fly(level);

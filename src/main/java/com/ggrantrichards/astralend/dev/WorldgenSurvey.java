@@ -325,6 +325,21 @@ public final class WorldgenSurvey {
         }
     }
 
+    // A sky view from just above an area's centre, looking the given way - or, with `toward`, looking
+    // at that area (yaw from the direction to its centre). Written as "name x y z yaw pitch style".
+    private static void skyShot(List<String> lines, Area area, String name, float yaw, float pitch, Area toward, String style) {
+        if (area == null || area.standOn == null) {
+            return;
+        }
+        BlockPos at = area.standOn;
+        if (toward != null) {
+            double dx = toward.centre.getX() - at.getX();
+            double dz = toward.centre.getZ() - at.getZ();
+            yaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
+        }
+        lines.add(String.format(java.util.Locale.ROOT, "%s %d %d %d %.1f %.1f %s", name, at.getX(), at.getY() + 4, at.getZ(), yaw, pitch, style));
+    }
+
     // Two camera positions per biome for dev/ClientScreenshots: one looking across the land from
     // just above it, and one high aerial view. Written to astralend-shots.txt as "name x y z yaw pitch".
     private static void writeViewpoints(Map<Character, Area> areas, ServerLevel end) {
@@ -346,6 +361,12 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('W'), end, "black_hole_guardian", 3.0, 1.6, 2.0);
         mobShot(lines, areas.get('A'), end, "drift_whale side", 11.0, 7.0, 7.5);
         mobShot(lines, areas.get('R'), end, "watcher", 6.5, 0.5, 2.6);
+        // Phase 5: the sky and Stellar Flares.
+        skyShot(lines, areas.get('A'), "sky_aurora_shallows", -45.0F, -32.0F, null, "flare=calm");
+        skyShot(lines, areas.get('N'), "sky_nebula_fields", -45.0F, -32.0F, null, "flare=calm");
+        skyShot(lines, areas.get('W'), "sky_remnant_far", 0.0F, -6.0F, areas.get('C'), "flare=warning");
+        skyShot(lines, areas.get('C'), "sky_corona_flare", -45.0F, -18.0F, null, "flare=flare");
+        mobShot(lines, areas.get('C'), end, "display flare=flare", 7.0, 0.0, 3.2);
         try {
             java.nio.file.Files.write(java.nio.file.Path.of("astralend-shots.txt"), lines);
             log("Wrote " + lines.size() + " screenshot viewpoints to astralend-shots.txt");
@@ -373,7 +394,7 @@ public final class WorldgenSurvey {
         double eyeY = ground + eye;
         double camY = eyeY - 1.62;  // a teleport places the feet; the eyes are 1.62 higher
         double pitch = Math.toDegrees(Math.atan2(eyeY - (mobY + 0.5), distance));
-        String name = "mob_" + parts[0] + (parts.length > 1 ? "_" + parts[1].split(",")[0] : "");
+        String name = "mob_" + parts[0] + (parts.length > 1 ? "_" + parts[1].split(",")[0].replace("flare=", "") : "");
         lines.add(String.format(java.util.Locale.ROOT, "%s %.1f %.1f %.1f -45 %.1f astralend:%s %.1f %.1f %.1f%s", name,
             x + 0.5 - d, camY, z + 0.5 - d, pitch, parts[0], x + 0.5, mobY, z + 0.5, parts.length > 1 ? " " + parts[1] : ""));
     }

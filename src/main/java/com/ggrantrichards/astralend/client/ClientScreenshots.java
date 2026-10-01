@@ -9,6 +9,8 @@ import java.util.List;
 import com.ggrantrichards.astralend.AstralEnd;
 import com.ggrantrichards.astralend.ModBlocks;
 import com.ggrantrichards.astralend.entity.UmbralStalker;
+import com.ggrantrichards.astralend.flare.FlarePhase;
+import com.ggrantrichards.astralend.flare.StellarFlares;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -40,8 +42,10 @@ public final class ClientScreenshots {
     private static final int MAX_WAIT_TICKS = 900;
 
     // A viewpoint; mob shots also name a mob to summon (with its AI off) at mobX/Y/Z, facing the
-    // camera. The optional last word lists styles, comma-separated: "lit" puts a Spore Lantern beside
-    // it, "side" turns it side-on, "angled" three-quarters on.
+    // camera ("display" instead of a mob builds a small display of the Phase 5 flare blocks there).
+    // The optional last word lists styles, comma-separated: "lit" puts a Spore Lantern beside it,
+    // "side" turns it side-on, "angled" three-quarters on, "flare=<phase>" sets the Stellar Flare
+    // phase for the shot (calm, warning, flare, afterglow).
     private record Shot(String name, double x, double y, double z, float yaw, float pitch,
                         String mob, double mobX, double mobY, double mobZ, String style) {}
 
@@ -120,9 +124,9 @@ public final class ClientScreenshots {
         try {
             for (String line : Files.readAllLines(file.toPath())) {
                 String[] p = line.trim().split("\\s+");
-                if (p.length == 6) {
+                if (p.length == 6 || p.length == 7) {
                     SHOTS.add(new Shot(p[0], Double.parseDouble(p[1]), Double.parseDouble(p[2]), Double.parseDouble(p[3]),
-                        Float.parseFloat(p[4]), Float.parseFloat(p[5]), null, 0, 0, 0, ""));
+                        Float.parseFloat(p[4]), Float.parseFloat(p[5]), null, 0, 0, 0, p.length == 7 ? p[6] : ""));
                 } else if (p.length >= 10) {
                     SHOTS.add(new Shot(p[0], Double.parseDouble(p[1]), Double.parseDouble(p[2]), Double.parseDouble(p[3]),
                         Float.parseFloat(p[4]), Float.parseFloat(p[5]), p[6], Double.parseDouble(p[7]), Double.parseDouble(p[8]),
@@ -150,12 +154,27 @@ public final class ClientScreenshots {
                 end.setBlock(lantern, Blocks.AIR.defaultBlockState(), 3);
                 lantern = null;
             }
+            // A fixed flare phase for the shot: the first shot settles it to calm (so a flare can't start
+            // in the middle of the biome shots), and the Phase 5 shots ask for the phase they show.
+            StellarFlares flares = StellarFlares.get(end);
+            for (String style : shot.style().split(",")) {
+                if (style.startsWith("flare=")) {
+                    flares.setPhase(end, FlarePhase.valueOf(style.substring(6).toUpperCase(java.util.Locale.ROOT)), end.getRandom());
+                }
+            }
+            if (index == 0) {
+                flares.setPhase(end, FlarePhase.CALM, end.getRandom());
+            }
         });
     }
 
     private static void summon(ServerLevel end, Shot shot) {
         BlockPos at = BlockPos.containing(shot.mobX(), shot.mobY(), shot.mobZ());
         end.getChunk(at.getX() >> 4, at.getZ() >> 4);  // make sure it's loaded
+        if (shot.mob().equals("display")) {
+            FlareDisplay.build(end, at);
+            return;
+        }
         // Nothing else of ours in the picture (a mob left over from an earlier shot, say).
         for (Entity other : end.getEntities((Entity) null, new AABB(at).inflate(24.0),
                 e -> BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()).getNamespace().equals(AstralEnd.MODID))) {

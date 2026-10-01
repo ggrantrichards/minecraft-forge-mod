@@ -229,6 +229,12 @@ for file in sorted(WORLDGEN.rglob("*.json")) if WORLDGEN.exists() else []:
     known.add(ident)
 known |= {f"{NS}:{n}" for n in re.findall(r'(?:BIOME_SOURCES|FEATURE_TYPES)\.register\("([a-z0-9_]+)"',
                                            (JAVA / "world/ModWorldgen.java").read_text())}
+# Phase 5: mob effects and potions (ModEffects.java), and data-driven damage types.
+effects_src = (JAVA / "ModEffects.java").read_text()
+effects = set(re.findall(r'EFFECTS\.register\("([a-z0-9_]+)"', effects_src))
+potion_names = set(re.findall(r'new Potion\("([a-z0-9_]+)"', effects_src))
+damage_types = {f.stem for f in (RES / "data" / NS / "damage_type").glob("*.json")}
+known |= {f"{NS}:{n}" for n in effects | damage_types}
 
 
 def need(kind, ref, where):
@@ -269,7 +275,12 @@ advancement_text = {f"advancements.{NS}.{a.split('/')[-1]}.{part}" for a in adva
 for extra in sorted(set(lang) - {f"block.{NS}.{n}" for n in blocks} - {f"item.{NS}.{n}" for n in items}
                     - {f"biome.{NS}.{b.split(':')[1]}" for b in worldgen_ids.get("biome", set())}
                     - {f"entity.{NS}.{n}" for n in entities} - item_messages - advancement_text
-                    - {"itemGroup.astralend"}):
+                    - {"itemGroup.astralend"}
+                    - {f"effect.{NS}.{e}" for e in effects}
+                    - {f"item.minecraft.{k}.effect.{p}" for p in potion_names
+                       for k in ("potion", "splash_potion", "lingering_potion", "tipped_arrow")}
+                    - {f"death.attack.{NS}.{d}{suffix}" for d in damage_types for suffix in ("", ".player")}
+                    - {k for k in lang if k.startswith("flare.astralend.")}):
     err(f"lang/en_us.json: {extra} doesn't match anything registered")
 
 if errors:

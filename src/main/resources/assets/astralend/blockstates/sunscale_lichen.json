@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
+    "charged=false": {
       "model": "astralend:block/sunscale_lichen"
+    },
+    "charged=true": {
+      "model": "astralend:block/sunscale_lichen_charged"
     }
   }
 }

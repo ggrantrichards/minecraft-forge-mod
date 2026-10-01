@@ -1,0 +1,41 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "astralend:block/collector_pedestal"
+      }
+    },
+    {
+      "when": {
+        "holding": "void_crystal"
+      },
+      "apply": {
+        "model": "astralend:block/collector_pedestal_void_crystal"
+      }
+    },
+    {
+      "when": {
+        "holding": "charged_void_crystal"
+      },
+      "apply": {
+        "model": "astralend:block/collector_pedestal_charged_void_crystal"
+      }
+    },
+    {
+      "when": {
+        "holding": "flare_cell"
+      },
+      "apply": {
+        "model": "astralend:block/collector_pedestal_flare_cell"
+      }
+    },
+    {
+      "when": {
+        "holding": "charged_flare_cell"
+      },
+      "apply": {
+        "model": "astralend:block/collector_pedestal_charged_flare_cell"
+      }
+    }
+  ]
+}

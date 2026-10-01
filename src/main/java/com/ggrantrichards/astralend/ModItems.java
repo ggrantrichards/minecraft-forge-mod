@@ -39,6 +39,13 @@ public final class ModItems {
     public static final RegistryObject<Item> UMBRAL_MEMBRANE = simple("umbral_membrane");
     public static final RegistryObject<Item> SKIMMER_FILM = simple("skimmer_film");
     public static final RegistryObject<Item> CINDER = simple("cinder");
+    // Phase 5: Stellar Flares
+    public static final RegistryObject<Item> FLARE_POLLEN = simple("flare_pollen");
+    public static final RegistryObject<Item> CHARGED_VOID_CRYSTAL = register("charged_void_crystal", Item::new,
+        new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON));
+    public static final RegistryObject<Item> FLARE_CELL = register("flare_cell", Item::new, new Item.Properties().stacksTo(16));
+    public static final RegistryObject<Item> CHARGED_FLARE_CELL = register("charged_flare_cell", Item::new,
+        new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.UNCOMMON));
     public static final RegistryObject<Item> STAR_CHART = register("star_chart", StarChartItem::new, new Item.Properties().stacksTo(1));
 
     // ---- spawn eggs

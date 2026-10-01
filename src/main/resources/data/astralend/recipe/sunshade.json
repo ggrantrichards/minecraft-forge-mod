@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "F": "astralend:skimmer_film",
+    "S": "astralend:solarite_ingot"
+  },
+  "pattern": [
+    "FFF",
+    "S S"
+  ],
+  "result": {
+    "count": 4,
+    "id": "astralend:sunshade"
+  }
+}

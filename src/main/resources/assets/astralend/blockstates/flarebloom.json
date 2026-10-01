@@ -1,10 +1,16 @@
 {
   "variants": {
-    "half=lower": {
+    "half=lower,open=false": {
       "model": "astralend:block/flarebloom_bottom"
     },
-    "half=upper": {
+    "half=lower,open=true": {
+      "model": "astralend:block/flarebloom_bottom"
+    },
+    "half=upper,open=false": {
       "model": "astralend:block/flarebloom_top"
+    },
+    "half=upper,open=true": {
+      "model": "astralend:block/flarebloom_top_open"
     }
   }
 }

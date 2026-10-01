@@ -685,7 +685,7 @@ TEXTURES = [
                                                                            NULL_PLANK[1]], NULL_PLANK[4])),
     ("block/shimmer_grass.png", shimmer_grass),
     ("block/nebula_tufts.png", nebula_tufts),
-    ("block/flarebloom_top.png", flarebloom_top),
+    ("block/flarebloom_top_open.png", flarebloom_top),
     ("block/flarebloom_bottom.png", flarebloom_bottom),
     ("block/meteoric_iron_block.png", lambda: metal_block(ramp("3a3d4a", "eef0f6", 6, hue_shift=0.02), 7)),
     ("block/solarite_block.png", lambda: metal_block(ramp("8a3e06", "fff4b0", 6, hue_shift=0.07), 127)),
@@ -695,3 +695,7 @@ TEXTURES = [
     ("block/ashen_lumineshroom.png", ashen_lumineshroom),
     ("block/whalelight_scale.png", whalelight_scale),
 ]
+
+# Phase 5: Stellar Flares
+from flare_textures import TEXTURES as _FLARE  # noqa: E402
+TEXTURES += _FLARE

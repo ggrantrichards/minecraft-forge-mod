@@ -1124,6 +1124,109 @@ def mobs_phase4():
                 "Catch the Watcher in a spyglass", frame="goal", hidden=True)
 
 
+def flares_phase5():
+    """Phase 5: Stellar Flares - the Flarebloom's and lichen's flare states, the Sunshade, the Collector
+    Pedestal, the flare items, Flare Ward, and the Flare Burn damage type."""
+    # Flarebloom: shut between flares (a bud), open and glowing during one; an open one gives pollen.
+    blockstate("flarebloom", {"variants": {
+        "half=lower,open=false": {"model": rid("block/flarebloom_bottom")},
+        "half=lower,open=true": {"model": rid("block/flarebloom_bottom")},
+        "half=upper,open=false": {"model": rid("block/flarebloom_top")},
+        "half=upper,open=true": {"model": rid("block/flarebloom_top_open")},
+    }})
+    block_model("flarebloom_top_open", {"parent": "minecraft:block/cross", "textures": {"cross": rid("block/flarebloom_top_open")}})
+    item_model("flarebloom", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("block/flarebloom_top_open")}})
+    loot("flarebloom", [
+        {"condition": {"type": "minecraft:survives_explosion"}, "rolls": 1,
+         "entries": [{"type": "minecraft:item", "name": rid("flarebloom"), "condition": {
+             "type": "minecraft:match_block", "blocks": rid("flarebloom"), "state": {"half": "lower"}}}]},
+        {"rolls": 1, "conditions": [{"condition": "minecraft:block_state_property", "block": rid("flarebloom"),
+                                     "properties": {"half": "lower", "open": "true"}}],
+         "entries": [{"type": "minecraft:item", "name": rid("flare_pollen"), "functions": [
+             {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 1, "max": 2}}]}]},
+    ])
+
+    # Sunscale Lichen: brighter once a flare has charged it.
+    blockstate("sunscale_lichen", {"variants": {
+        "charged=false": {"model": rid("block/sunscale_lichen")},
+        "charged=true": {"model": rid("block/sunscale_lichen_charged")},
+    }})
+    block_model("sunscale_lichen_charged", {"parent": "minecraft:block/carpet", "textures": {"wool": rid("block/sunscale_lichen_charged")}})
+
+    # Sunshade: a thin canopy at the top of its block space.
+    blockstate("sunshade", {"variants": {"": {"model": rid("block/sunshade")}}})
+    tex = rid("block/sunshade")
+    block_model("sunshade", {"textures": {"shade": tex, "particle": tex}, "elements": [{
+        "from": [0, 14, 0], "to": [16, 16, 16],
+        "faces": {"up": {"uv": [0, 0, 16, 16], "texture": "#shade"}, "down": {"uv": [0, 0, 16, 16], "texture": "#shade"},
+                  **{side: {"uv": [0, 0, 16, 2], "texture": "#shade"} for side in ("north", "south", "east", "west")}}}]})
+    item_def("sunshade", rid("block/sunshade"))
+    lang[f"block.{NS}.sunshade"] = "Sunshade"
+    drop_self("sunshade")
+    shaped("sunshade", "sunshade", ["FFF", "S S"], {"F": rid("skimmer_film"), "S": rid("solarite_ingot")}, count=4)
+
+    # Collector Pedestal: a stone base, a column with a sun emblem, a solarite-banded top; what it holds
+    # sits on top (a cross of two planes, like a plant).
+    side, top = rid("block/collector_pedestal_side"), rid("block/collector_pedestal_top")
+
+    def box(frm, to, side_uv, top_uv=None):
+        faces = {d: {"uv": side_uv, "texture": "#side"} for d in ("north", "south", "east", "west")}
+        faces["up"] = {"uv": top_uv or [frm[0], frm[2], to[0], to[2]], "texture": "#top"}
+        faces["down"] = {"uv": [frm[0], frm[2], to[0], to[2]], "texture": "#top"}
+        return {"from": frm, "to": to, "faces": faces}
+
+    block_model("collector_pedestal", {"textures": {"side": side, "top": top, "particle": side}, "elements": [
+        box([1, 0, 1], [15, 2, 15], [1, 14, 15, 16]),
+        box([3, 2, 3], [13, 10, 13], [3, 4, 13, 12]),
+        box([1, 10, 1], [15, 13, 15], [1, 0, 15, 3], [0, 0, 16, 16]),
+    ]})
+    parts = [{"apply": {"model": rid("block/collector_pedestal")}}]
+    for holding in ("void_crystal", "charged_void_crystal", "flare_cell", "charged_flare_cell"):
+        t = rid(f"block/pedestal_{holding}")
+        planes = []
+        for angle in (45, -45):
+            planes.append({"from": [2, 13, 8], "to": [14, 25, 8], "shade": False,
+                           "rotation": {"origin": [8, 13, 8], "axis": "y", "angle": angle, "rescale": True},
+                           "faces": {"north": {"uv": [0, 0, 16, 16], "texture": "#item"},
+                                     "south": {"uv": [0, 0, 16, 16], "texture": "#item"}}})
+        block_model(f"collector_pedestal_{holding}", {"textures": {"item": t, "particle": t}, "elements": planes})
+        parts.append({"when": {"holding": holding}, "apply": {"model": rid(f"block/collector_pedestal_{holding}")}})
+    blockstate("collector_pedestal", {"multipart": parts})
+    item_def("collector_pedestal", rid("block/collector_pedestal"))
+    lang[f"block.{NS}.collector_pedestal"] = "Collector Pedestal"
+    drop_self("collector_pedestal")
+    tag("block", "minecraft:mineable/pickaxe", rid("collector_pedestal"))
+    shaped("collector_pedestal", "collector_pedestal", ["SGS", " P ", "PPP"],
+           {"S": rid("solarite_ingot"), "G": rid("astral_glass"), "P": rid("polished_sunscorched_stone")})
+
+    # Items
+    for name, english in (("flare_pollen", "Flare Pollen"), ("charged_void_crystal", "Charged Void Crystal"),
+                          ("flare_cell", "Flare Cell"), ("charged_flare_cell", "Charged Flare Cell")):
+        item_model(name, {"parent": "minecraft:item/generated", "textures": {"layer0": rid(f"item/{name}")}})
+        item_def(name, rid(f"item/{name}"))
+        lang[f"item.{NS}.{name}"] = english
+    shaped("flare_cell", "flare_cell", ["S", "G", "S"], {"S": rid("solarite_ingot"), "G": rid("astral_glass")})
+
+    # Flare Ward, the potion and its effect
+    lang[f"effect.{NS}.flare_ward"] = "Flare Ward"
+    for kind, english in (("potion", "Potion of Flare Ward"), ("splash_potion", "Splash Potion of Flare Ward"),
+                          ("lingering_potion", "Lingering Potion of Flare Ward"), ("tipped_arrow", "Arrow of Flare Ward")):
+        lang[f"item.minecraft.{kind}.effect.flare_ward"] = english
+
+    # Flare Burn: armour doesn't help (only cover, a Sunshade, Flare Ward)
+    write(DATA / "damage_type" / "flare_burn.json",
+          {"message_id": f"{NS}.flare_burn", "exhaustion": 0.0, "scaling": "never", "effects": "burning"})
+    tag("damage_type", "minecraft:bypasses_armor", rid("flare_burn"))
+    tag("damage_type", "minecraft:no_knockback", rid("flare_burn"))
+    lang[f"death.attack.{NS}.flare_burn"] = "%1$s was burned by a Stellar Flare"
+    lang[f"death.attack.{NS}.flare_burn.player"] = "%1$s was burned by a Stellar Flare while fighting %2$s"
+
+    # What the Corona's players are told
+    lang["flare.astralend.warning"] = "The Remnant is brightening - get under cover!"
+    lang["flare.astralend.flare"] = "Stellar Flare! Open sky burns."
+    lang["flare.astralend.afterglow"] = "The flare is passing. The Corona glows."
+
+
 def main():
     # Clear previously generated folders so renamed/removed content doesn't linger.
     for folder in (ASSETS / "blockstates", ASSETS / "models", ASSETS / "items", DATA / "loot_table",
@@ -1455,6 +1558,7 @@ def main():
     worldgen()
     worldgen_phase3()
     mobs_phase4()
+    flares_phase5()
 
     # ---------------------------------------------------------------- write tags + lang
     for (registry, name), values in tags.items():
