@@ -86,6 +86,11 @@ WOOD_PARTS = ["{n}_{log}", "{n}_{wood}", "stripped_{n}_{log}", "stripped_{n}_{wo
 wood_sets = re.findall(r'woodSet\("([a-z0-9_]+)", "([a-z]+)", "([a-z]+)"', blocks_src)
 for n, log, wood in wood_sets:
     blocks_with_item |= {part.format(n=n, log=log, wood=wood) for part in WOOD_PARTS}
+# Phase 9: the Orrery Bronze family is registered by a loop (ModBlocks.BRONZE).
+if "BRONZE.put(" in blocks_src:
+    blocks_with_item |= {f"{w}{st}{sh}" for w in ("", "waxed_") for st in ("", "tarnished_", "weathered_")
+                         for sh in ("orrery_bronze", "cut_orrery_bronze", "cut_orrery_bronze_stairs", "cut_orrery_bronze_slab",
+                                    "orrery_bronze_grate")}
 blocks = blocks_with_item | blocks_no_item
 plain_items = set(re.findall(r'\b(?:simple|register|ITEMS\.register)\("([a-z0-9_]+)"', items_src))
 plain_items |= {f"{mob}_spawn_egg" for mob in re.findall(r'\bspawnEgg\("([a-z0-9_]+)"', items_src)}
@@ -200,7 +205,10 @@ for name in sorted(items):
     else:
         data = load(idef) or {}
         model = data.get("model", {})
-        if model.get("type") != "minecraft:model" or "model" not in model:
+        if model.get("type") == "minecraft:range_dispatch":       # a compass-like item: check every frame
+            for e in model.get("entries", []):
+                check_model(e["model"]["model"], str(idef.relative_to(ROOT)))
+        elif model.get("type") != "minecraft:model" or "model" not in model:
             err(f"{idef.relative_to(ROOT)}: expected {{\"model\": {{\"type\": \"minecraft:model\", \"model\": ...}}}}")
         else:
             check_model(model["model"], str(idef.relative_to(ROOT)))

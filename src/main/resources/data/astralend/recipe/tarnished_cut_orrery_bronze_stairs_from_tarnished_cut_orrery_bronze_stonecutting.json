@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "astralend:tarnished_cut_orrery_bronze",
+  "result": {
+    "id": "astralend:tarnished_cut_orrery_bronze_stairs"
+  }
+}

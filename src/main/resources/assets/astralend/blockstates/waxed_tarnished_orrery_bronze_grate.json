@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "waterlogged=false": {
+      "model": "astralend:block/tarnished_orrery_bronze_grate"
+    },
+    "waterlogged=true": {
+      "model": "astralend:block/tarnished_orrery_bronze_grate"
+    }
+  }
+}

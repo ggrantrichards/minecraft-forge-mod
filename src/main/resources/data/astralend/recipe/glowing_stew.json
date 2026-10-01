@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "astralend:lumineshroom",
+    "astralend:comet_cress",
+    "minecraft:bowl"
+  ],
+  "result": {
+    "id": "astralend:glowing_stew"
+  }
+}

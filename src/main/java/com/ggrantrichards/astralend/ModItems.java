@@ -64,6 +64,19 @@ public final class ModItems {
     public static final RegistryObject<Item> RIFT_PEARL = register("rift_pearl", com.ggrantrichards.astralend.starforge.RiftPearlItem::new,
         new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.EPIC));
 
+    // Phase 9: a stew of Lumineshroom and Comet Cress that lets you see in the dark for a while, and a
+    // compass that points the way home to the End's central island (like a lodestone compass).
+    public static final RegistryObject<Item> GLOWING_STEW = register("glowing_stew", Item::new, new Item.Properties().stacksTo(1)
+        .food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(6).saturationModifier(0.6F).build(),
+            net.minecraft.world.item.component.Consumables.defaultFood().onConsume(
+                new net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect(
+                    new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.NIGHT_VISION, 600))).build())
+        .usingConvertsTo(net.minecraft.world.item.Items.BOWL));
+    public static final RegistryObject<Item> STAR_COMPASS = register("star_compass", com.ggrantrichards.astralend.item.StarCompassItem::new,
+        new Item.Properties().stacksTo(1).component(net.minecraft.core.component.DataComponents.LODESTONE_TRACKER,
+            new net.minecraft.world.item.component.LodestoneTracker(java.util.Optional.of(net.minecraft.core.GlobalPos.of(
+                net.minecraft.world.level.Level.END, net.minecraft.core.BlockPos.ZERO)), false)));
+
     // ---- spawn eggs
     public static final RegistryObject<Item> POLLINATOR_SPAWN_EGG = spawnEgg("pollinator", ModEntities.POLLINATOR);
     public static final RegistryObject<Item> VOID_WANDERER_SPAWN_EGG = spawnEgg("void_wanderer", ModEntities.VOID_WANDERER);

@@ -1,8 +1,35 @@
 {
   "replace": false,
   "values": [
+    "astralend:cut_orrery_bronze",
+    "astralend:cut_orrery_bronze_slab",
+    "astralend:cut_orrery_bronze_stairs",
     "astralend:orrery_bronze",
+    "astralend:orrery_bronze_grate",
+    "astralend:tarnished_cut_orrery_bronze",
+    "astralend:tarnished_cut_orrery_bronze_slab",
+    "astralend:tarnished_cut_orrery_bronze_stairs",
     "astralend:tarnished_orrery_bronze",
-    "astralend:weathered_orrery_bronze"
+    "astralend:tarnished_orrery_bronze_grate",
+    "astralend:waxed_cut_orrery_bronze",
+    "astralend:waxed_cut_orrery_bronze_slab",
+    "astralend:waxed_cut_orrery_bronze_stairs",
+    "astralend:waxed_orrery_bronze",
+    "astralend:waxed_orrery_bronze_grate",
+    "astralend:waxed_tarnished_cut_orrery_bronze",
+    "astralend:waxed_tarnished_cut_orrery_bronze_slab",
+    "astralend:waxed_tarnished_cut_orrery_bronze_stairs",
+    "astralend:waxed_tarnished_orrery_bronze",
+    "astralend:waxed_tarnished_orrery_bronze_grate",
+    "astralend:waxed_weathered_cut_orrery_bronze",
+    "astralend:waxed_weathered_cut_orrery_bronze_slab",
+    "astralend:waxed_weathered_cut_orrery_bronze_stairs",
+    "astralend:waxed_weathered_orrery_bronze",
+    "astralend:waxed_weathered_orrery_bronze_grate",
+    "astralend:weathered_cut_orrery_bronze",
+    "astralend:weathered_cut_orrery_bronze_slab",
+    "astralend:weathered_cut_orrery_bronze_stairs",
+    "astralend:weathered_orrery_bronze",
+    "astralend:weathered_orrery_bronze_grate"
   ]
 }

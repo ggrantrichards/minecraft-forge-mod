@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "astralend:cut_orrery_bronze",
+  "result": {
+    "count": 2,
+    "id": "astralend:cut_orrery_bronze_slab"
+  }
+}

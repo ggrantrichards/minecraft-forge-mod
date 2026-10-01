@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": "astralend:waxed_weathered_cut_orrery_bronze"
+  },
+  "pattern": [
+    "###"
+  ],
+  "result": {
+    "count": 6,
+    "id": "astralend:waxed_weathered_cut_orrery_bronze_slab"
+  }
+}

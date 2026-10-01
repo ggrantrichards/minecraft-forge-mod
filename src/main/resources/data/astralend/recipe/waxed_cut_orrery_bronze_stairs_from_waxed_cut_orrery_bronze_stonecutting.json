@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "astralend:waxed_cut_orrery_bronze",
+  "result": {
+    "id": "astralend:waxed_cut_orrery_bronze_stairs"
+  }
+}

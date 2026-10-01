@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "astralend:cut_orrery_bronze_stairs",
+    "minecraft:honeycomb"
+  ],
+  "result": {
+    "id": "astralend:waxed_cut_orrery_bronze_stairs"
+  }
+}

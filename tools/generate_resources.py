@@ -1277,6 +1277,76 @@ def chance(item, p, count=None):
             "entries": [entry(item, 1, count)]}
 
 
+# The Orrery Bronze family (Phase 9), like copper's. Must match the BRONZE loop in ModBlocks.java.
+BRONZE_STAGES = (("", ""), ("tarnished_", "Tarnished "), ("weathered_", "Weathered "))
+BRONZE_SHAPES = (("orrery_bronze", "Orrery Bronze"), ("cut_orrery_bronze", "Cut Orrery Bronze"),
+                 ("cut_orrery_bronze_stairs", "Cut Orrery Bronze Stairs"), ("cut_orrery_bronze_slab", "Cut Orrery Bronze Slab"),
+                 ("orrery_bronze_grate", "Orrery Bronze Grate"))
+
+
+def bronze_family():
+    for stage, stage_en in BRONZE_STAGES:
+        full, cut, grate = f"{stage}orrery_bronze", f"{stage}cut_orrery_bronze", f"{stage}orrery_bronze_grate"
+        cut_tex = rid(f"block/{cut}")
+        block_model(full, {"parent": "minecraft:block/cube_all", "textures": {"all": rid(f"block/{full}")}})
+        block_model(cut, {"parent": "minecraft:block/cube_all", "textures": {"all": cut_tex}})
+        block_model(grate, {"parent": "minecraft:block/cube_all", "render_type": "minecraft:cutout",
+                            "textures": {"all": rid(f"block/{grate}")}})
+        for suffix, parent in (("", "stairs"), ("_inner", "inner_stairs"), ("_outer", "outer_stairs")):
+            block_model(f"{cut}_stairs{suffix}", {"parent": f"minecraft:block/{parent}",
+                                                  "textures": {"bottom": cut_tex, "side": cut_tex, "top": cut_tex}})
+        block_model(f"{cut}_slab", {"parent": "minecraft:block/slab", "textures": {"bottom": cut_tex, "side": cut_tex, "top": cut_tex}})
+        block_model(f"{cut}_slab_top", {"parent": "minecraft:block/slab_top",
+                                        "textures": {"bottom": cut_tex, "side": cut_tex, "top": cut_tex}})
+        for waxed, waxed_en in (("", ""), ("waxed_", "Waxed ")):
+            for shape, shape_en in BRONZE_SHAPES:
+                name = f"{waxed}{stage}{shape}"
+                model_base = f"{stage}{shape}"           # waxed bronze looks just the same
+                lang[f"block.{NS}.{name}"] = f"{waxed_en}{stage_en}{shape_en}"
+                tag("block", "minecraft:mineable/pickaxe", rid(name))
+                tag("block", "minecraft:needs_stone_tool", rid(name))
+                if shape.endswith("_stairs"):
+                    blockstate(name, stairs_variants_for(name, model_base))
+                    tag("block", "minecraft:stairs", rid(name))
+                    tag("item", "minecraft:stairs", rid(name))
+                    drop_self(name)
+                elif shape.endswith("_slab"):
+                    blockstate(name, {"variants": {
+                        "type=bottom": {"model": rid(f"block/{model_base}")},
+                        "type=double": {"model": rid(f"block/{stage}cut_orrery_bronze")},
+                        "type=top": {"model": rid(f"block/{model_base}_top")}}})
+                    tag("block", "minecraft:slabs", rid(name))
+                    tag("item", "minecraft:slabs", rid(name))
+                    loot(name, [{"entries": [{"type": "minecraft:item", "name": rid(name), "modifier": [
+                        {"type": "minecraft:set_count", "condition": {"type": "minecraft:match_block", "blocks": rid(name),
+                                                                      "state": {"type": "double"}}, "count": 2},
+                        {"type": "minecraft:explosion_decay"}]}], "rolls": 1}])
+                else:
+                    blockstate(name, {"variants": {"" if not shape.endswith("_grate") else "waterlogged=false": {"model": rid(f"block/{model_base}")},
+                                                   **({"waterlogged=true": {"model": rid(f"block/{model_base}")}} if shape.endswith("_grate") else {})}})
+                    drop_self(name)
+                item_def(name, rid(f"block/{model_base}"))
+                if waxed:
+                    shapeless(f"{name}_from_honeycomb", name, [rid(f"{stage}{shape}"), "minecraft:honeycomb"], category="building")
+            # Cutting, like copper: four blocks make four cut blocks, which make stairs and slabs; a diamond
+            # of four blocks makes four grates. The stonecutter does the same.
+            pre = f"{waxed}{stage}"
+            shaped(f"{pre}cut_orrery_bronze", f"{pre}cut_orrery_bronze", ["##", "##"], {"#": rid(f"{pre}orrery_bronze")}, count=4)
+            shaped(f"{pre}cut_orrery_bronze_stairs", f"{pre}cut_orrery_bronze_stairs", ["#  ", "## ", "###"],
+                   {"#": rid(f"{pre}cut_orrery_bronze")}, count=4)
+            shaped(f"{pre}cut_orrery_bronze_slab", f"{pre}cut_orrery_bronze_slab", ["###"], {"#": rid(f"{pre}cut_orrery_bronze")}, count=6)
+            shaped(f"{pre}orrery_bronze_grate", f"{pre}orrery_bronze_grate", [" # ", "# #", " # "], {"#": rid(f"{pre}orrery_bronze")}, count=4)
+            stonecutting(f"{pre}orrery_bronze", f"{pre}cut_orrery_bronze", 4)
+            stonecutting(f"{pre}orrery_bronze", f"{pre}orrery_bronze_grate", 4)
+            stonecutting(f"{pre}cut_orrery_bronze", f"{pre}cut_orrery_bronze_stairs", 1)
+            stonecutting(f"{pre}cut_orrery_bronze", f"{pre}cut_orrery_bronze_slab", 2)
+
+
+def stairs_variants_for(name, model_base):
+    variants = stairs_variants(model_base)
+    return variants
+
+
 def structures_phase6():
     """Phase 6: the structures (templates and worldgen JSON come from tools/structures/make_structures.py),
     their loot, the Temporal Crystal, and Star Charts that mark structures."""
@@ -1369,13 +1439,7 @@ def structures_phase6():
     })
 
     # ---- Batch D: the Orrery
-    for name, english in (("orrery_bronze", "Orrery Bronze"), ("tarnished_orrery_bronze", "Tarnished Orrery Bronze"),
-                          ("weathered_orrery_bronze", "Weathered Orrery Bronze")):
-        cube(name)
-        lang[f"block.{NS}.{name}"] = english
-        tag("block", "minecraft:mineable/pickaxe", rid(name))
-        tag("block", "minecraft:needs_stone_tool", rid(name))
-        drop_self(name)
+    bronze_family()
     shapeless("orrery_bronze", "orrery_bronze", [rid("meteoric_iron_ingot"), rid("meteoric_iron_ingot"),
                                                  rid("solarite_ingot"), rid("solarite_ingot")], count=4, category="building")
     # The Orrery Heart: its sides show how many flares it holds; the top glows once it's rekindled.
@@ -1667,6 +1731,45 @@ def starforging_phase8():
     advancement("starforged", rid("starforge_template"), "Forged in Starlight", "Forge a Starforge upgrade onto a piece of gear")
     advancement("void_recall", rid("rift_pearl"), "Not Today, Void",
                 "Fall into the void and be pulled back by a Rift Pearl", parent=f"{NS}:end/starforged", frame="challenge", hidden=True)
+
+
+def round_out_phase9():
+    """Phase 9: what Mojang would ship with the rest - moss carpet for Nebula Moss, a stew for the
+    End's food plants, a compass that works in the End, and a second use for Cinder."""
+    # Nebula Moss Carpet, like moss carpet: two moss make three.
+    blockstate("nebula_moss_carpet", {"variants": {"": {"model": rid("block/nebula_moss_carpet")}}})
+    block_model("nebula_moss_carpet", {"parent": "minecraft:block/carpet", "textures": {"wool": rid("block/nebula_moss")}})
+    item_def("nebula_moss_carpet", rid("block/nebula_moss_carpet"))
+    drop_self("nebula_moss_carpet")
+    tag("block", "minecraft:mineable/hoe", rid("nebula_moss_carpet"))
+    lang[f"block.{NS}.nebula_moss_carpet"] = "Nebula Moss Carpet"
+    shaped("nebula_moss_carpet", "nebula_moss_carpet", ["##"], {"#": rid("nebula_moss")}, count=3, category="building")
+
+    # Glowing Stew: Lumineshroom, Comet Cress and a bowl. Food, and 30 seconds of Night Vision.
+    item_model("glowing_stew", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("item/glowing_stew")}})
+    item_def("glowing_stew", rid("item/glowing_stew"))
+    lang[f"item.{NS}.glowing_stew"] = "Glowing Stew"
+    shapeless("glowing_stew", "glowing_stew", [rid("lumineshroom"), rid("comet_cress"), "minecraft:bowl"], category="misc")
+
+    # The Star Compass: a compass with four Starblooms round it. Its needle works like a lodestone
+    # compass's (the 32 vanilla needle pictures), with the Starbloom points drawn over the rim.
+    entries = [{"threshold": 0.0, "model": {"type": "minecraft:model", "model": rid("item/star_compass_16")}}]
+    entries += [{"threshold": k - 0.5, "model": {"type": "minecraft:model", "model": rid(f"item/star_compass_{(16 + k) % 32:02d}")}}
+                for k in range(1, 32)]
+    entries += [{"threshold": 31.5, "model": {"type": "minecraft:model", "model": rid("item/star_compass_16")}}]
+    for frame in range(32):
+        item_model(f"star_compass_{frame:02d}", {"parent": "minecraft:item/generated", "textures": {
+            "layer0": f"minecraft:item/compass_{frame:02d}", "layer1": rid("item/star_compass_overlay")}})
+    write(ASSETS / "items" / "star_compass.json", {"model": {
+        "type": "minecraft:range_dispatch", "property": "minecraft:compass", "target": "lodestone", "scale": 32.0,
+        "entries": entries}})
+    lang[f"item.{NS}.star_compass"] = "Star Compass"
+    lang[f"item.{NS}.star_compass.points"] = "Points to the End's central island"
+    shaped("star_compass", "star_compass", [" S ", "SCS", " S "], {"S": rid("starbloom"), "C": "minecraft:compass"}, category="equipment")
+
+    # Cinder, besides burning: like blaze powder, it makes fire charges.
+    write(DATA / "recipe" / "fire_charge_from_cinder.json", {"type": "minecraft:crafting_shapeless", "category": "misc",
+        "ingredients": [rid("cinder"), "minecraft:gunpowder"], "result": {"count": 2, "id": "minecraft:fire_charge"}})
 
 
 def main():
@@ -2004,6 +2107,7 @@ def main():
     flares_phase5()
     structures_phase6()
     starforging_phase8()
+    round_out_phase9()
 
     # ---------------------------------------------------------------- write tags + lang
     for (registry, name), values in tags.items():

@@ -783,3 +783,58 @@ def forge_gui():
 
 
 TEXTURES += [("gui/container/astral_forge.png", forge_gui)]
+
+
+# ------------------------------------------------------------------ Phase 9: Glowing Stew, the Star Compass
+STEW = [
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "..oooooooooooo..",
+    ".ohsmvmsvmvmsho.",
+    ".obsvcmvmcvmsbo.",
+    ".obmmvsmvmmvmbo.",
+    "..obbbbbbbbbbo..",
+    "..odbbbbbbbbdo..",
+    "...oddbbbbddo...",
+    "....oddddddo....",
+    ".....oooooo.....",
+    "................",
+    "................",
+]
+
+
+def glowing_stew():
+    """Glowing Stew: a bowl (vanilla's wood) of violet Lumineshroom broth with glowing cyan flecks."""
+    return from_map(STEW, {"o": hexc("3a2410"), "h": hexc("a0723c"), "b": hexc("8a5e2e"), "d": hexc("6a4422"),
+                           "m": hexc("7a4cc0"), "v": hexc("5a33a0"), "s": hexc("a98cff"), "c": hexc("9ff6ff")})
+
+
+STAR_COMPASS_RIM = [
+    "................",
+    "................",
+    ".......y........",
+    "......yYy.......",
+    "................",
+    "................",
+    "................",
+    "..y.........y...",
+    ".yY.........Yy..",
+    "..y.........y...",
+    "................",
+    "................",
+    "................",
+    "......yYy.......",
+    ".......y........",
+    "................",
+]
+
+
+def star_compass_overlay():
+    """Four Starbloom points set round a compass's rim, the way the Star Compass is made."""
+    return from_map(STAR_COMPASS_RIM, {"y": hexc("e8a930"), "Y": hexc("ffe08a")})
+
+
+TEXTURES += [("item/glowing_stew.png", glowing_stew), ("item/star_compass_overlay.png", star_compass_overlay)]

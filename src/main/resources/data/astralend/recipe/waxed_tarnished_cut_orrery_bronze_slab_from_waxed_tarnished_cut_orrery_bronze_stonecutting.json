@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "astralend:waxed_tarnished_cut_orrery_bronze",
+  "result": {
+    "count": 2,
+    "id": "astralend:waxed_tarnished_cut_orrery_bronze_slab"
+  }
+}

@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "astralend:charred_end_stone_slab",
+    "astralend:cut_orrery_bronze_slab",
     "astralend:lumine_slab",
     "astralend:nullwood_slab",
     "astralend:observatory_quartz_slab",
@@ -11,7 +12,12 @@
     "astralend:polished_umbral_stone_slab",
     "astralend:sunscorched_stone_brick_slab",
     "astralend:sunscorched_stone_slab",
+    "astralend:tarnished_cut_orrery_bronze_slab",
     "astralend:umbral_stone_brick_slab",
-    "astralend:umbral_stone_slab"
+    "astralend:umbral_stone_slab",
+    "astralend:waxed_cut_orrery_bronze_slab",
+    "astralend:waxed_tarnished_cut_orrery_bronze_slab",
+    "astralend:waxed_weathered_cut_orrery_bronze_slab",
+    "astralend:weathered_cut_orrery_bronze_slab"
   ]
 }

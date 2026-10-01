@@ -406,3 +406,64 @@ def stardust_mote():
 
 
 TEXTURES += [("item/stardust_mote.png", stardust_mote)]
+
+
+# ------------------------------------------------------------------ Phase 9: the rest of the Orrery Bronze family
+# Like copper's: cut plates (four bevelled plates, the orbit engraving split between them) and a grate
+# (a bronze lattice you can see through), each in the three stages of tarnish.
+
+def _bronze_pixel(stage, x, y, v, patch, level):
+    cover = (0.0, 0.42, 0.85)[stage]
+    pal = OB_TARNISH if patch < cover else OB_BRONZE
+    return pal, pal[max(0, min(len(pal) - 1, level))]
+
+
+def _cut_orrery(stage):
+    base = fbm(191, octaves=((2, 0.5), (4, 0.3), (8, 0.2)))
+    patch = fbm(92 + stage, octaves=((2, 0.5), (4, 0.35), (8, 0.15)))
+    img = new()
+    for y in range(SIZE):
+        for x in range(SIZE):
+            v = base[y][x]
+            lx, ly = x % 8, y % 8
+            level = 2 + int(v * 2.2)
+            if lx == 0 or ly == 0:
+                level += 1                                    # each plate lit from the top-left
+            if lx == 7 or ly == 7:
+                level = 0                                     # and its seam in shadow
+            pal, c = _bronze_pixel(stage, x, y, v, patch[y][x], level)
+            r = math.hypot(x - 7.5, y - 7.5)
+            if abs(r - 5.0) < 0.5 and lx not in (0, 7) and ly not in (0, 7):
+                c = OB_BRONZE[1] if stage == 2 else pal[0]   # the orbit, cut across the four plates
+            put(img, x, y, c)
+    for px, py in ((3, 3), (12, 3), (3, 12), (12, 12)):         # a rivet at the inner corner of each plate
+        pal, c = _bronze_pixel(stage, px, py, 0, patch[py][px], 5)
+        put(img, px, py, c)
+    return img
+
+
+def _orrery_grate(stage):
+    base = fbm(291, octaves=((2, 0.5), (4, 0.3), (8, 0.2)))
+    patch = fbm(92 + stage, octaves=((2, 0.5), (4, 0.35), (8, 0.15)))
+    img = new()
+    for y in range(SIZE):
+        for x in range(SIZE):
+            lx, ly = x % 4, y % 4
+            frame = x in (0, 15) or y in (0, 15)
+            if not frame and lx in (1, 2) and ly in (1, 2):
+                continue                                      # the holes
+            level = 2 + int(base[y][x] * 2.2)
+            if (lx == 0 and ly in (1, 2)) or (ly == 0 and lx in (1, 2)):
+                level += 1
+            if (lx == 3 and ly in (1, 2)) or (ly == 3 and lx in (1, 2)) or x == 15 or y == 15:
+                level -= 1
+            pal, c = _bronze_pixel(stage, x, y, 0, patch[y][x], level)
+            put(img, x, y, c)
+    return img
+
+
+for _i, _prefix in enumerate(("", "tarnished_", "weathered_")):
+    TEXTURES += [
+        (f"block/{_prefix}cut_orrery_bronze.png", (lambda s=_i: _cut_orrery(s))),
+        (f"block/{_prefix}orrery_bronze_grate.png", (lambda s=_i: _orrery_grate(s))),
+    ]

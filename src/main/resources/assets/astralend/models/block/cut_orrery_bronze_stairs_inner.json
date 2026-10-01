@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "astralend:block/cut_orrery_bronze",
+    "side": "astralend:block/cut_orrery_bronze",
+    "top": "astralend:block/cut_orrery_bronze"
+  }
+}

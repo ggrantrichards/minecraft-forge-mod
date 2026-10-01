@@ -239,16 +239,47 @@ public final class ModBlocks {
             .noOcclusion().noLootTable());
     // Phase 6: the Orrery. Orrery Bronze ages through three stages (an axe scrapes it back);
     // the Orrery Heart, Bronze Shutters and lamps make the Orrery's puzzle.
-    public static final RegistryObject<Block> ORRERY_BRONZE = register("orrery_bronze",
-        p -> new com.ggrantrichards.astralend.orrery.OrreryBronzeBlock(() -> ModBlocks.TARNISHED_ORRERY_BRONZE.get(), null, p),
-        () -> bronze(MapColor.COLOR_ORANGE));
-    public static final RegistryObject<Block> TARNISHED_ORRERY_BRONZE = register("tarnished_orrery_bronze",
-        p -> new com.ggrantrichards.astralend.orrery.OrreryBronzeBlock(() -> ModBlocks.WEATHERED_ORRERY_BRONZE.get(),
-            () -> ModBlocks.ORRERY_BRONZE.get(), p),
-        () -> bronze(MapColor.TERRACOTTA_PURPLE));
-    public static final RegistryObject<Block> WEATHERED_ORRERY_BRONZE = register("weathered_orrery_bronze",
-        p -> new com.ggrantrichards.astralend.orrery.OrreryBronzeBlock(null, () -> ModBlocks.TARNISHED_ORRERY_BRONZE.get(), p),
-        () -> bronze(MapColor.COLOR_PURPLE));
+    // The whole family, like copper's: (waxed) (tarnished|weathered) orrery bronze, cut orrery bronze
+    // with its stairs and slabs, and grates. See Bronze for how it ages, scrapes and waxes.
+    public static final java.util.Map<String, RegistryObject<Block>> BRONZE = new java.util.LinkedHashMap<>();
+    static {
+        String[] stages = {"", "tarnished_", "weathered_"};
+        MapColor[] colours = {MapColor.COLOR_ORANGE, MapColor.TERRACOTTA_PURPLE, MapColor.COLOR_PURPLE};
+        for (String waxed : new String[] {"", "waxed_"}) {
+            for (int i = 0; i < 3; i++) {
+                final int stage = i;
+                MapColor colour = colours[i];
+                for (String shape : new String[] {"orrery_bronze", "cut_orrery_bronze", "cut_orrery_bronze_stairs", "cut_orrery_bronze_slab",
+                                                  "orrery_bronze_grate"}) {
+                    String name = waxed + stages[i] + shape;
+                    com.ggrantrichards.astralend.orrery.Bronze.Aging aging = new com.ggrantrichards.astralend.orrery.Bronze.Aging(
+                        waxed.isEmpty() && stage < 2 ? () -> BRONZE.get(stages[stage + 1] + shape).get() : null,
+                        waxed.isEmpty() && stage > 0 ? () -> BRONZE.get(stages[stage - 1] + shape).get() : null,
+                        waxed.isEmpty() ? () -> BRONZE.get("waxed_" + stages[stage] + shape).get() : null,
+                        waxed.isEmpty() ? null : () -> BRONZE.get(stages[stage] + shape).get());
+                    RegistryObject<Block> block;
+                    if (shape.endsWith("_stairs")) {
+                        String base = waxed + stages[i] + "cut_orrery_bronze";
+                        block = register(name, p -> new com.ggrantrichards.astralend.orrery.Bronze.Stairs(aging,
+                            BRONZE.get(base).get().defaultBlockState(), p), () -> bronze(colour));
+                    } else if (shape.endsWith("_slab")) {
+                        block = register(name, p -> new com.ggrantrichards.astralend.orrery.Bronze.Slab(aging, p), () -> bronze(colour));
+                    } else if (shape.endsWith("_grate")) {
+                        block = register(name, p -> new com.ggrantrichards.astralend.orrery.Bronze.Grate(aging, p),
+                            () -> bronze(colour).sound(SoundType.COPPER_GRATE).noOcclusion()
+                                .isValidSpawn((st, level, pos, type) -> false).isRedstoneConductor((st, level, pos) -> false)
+                                .isSuffocating((st, level, pos) -> false));
+                    } else {
+                        block = register(name, p -> new com.ggrantrichards.astralend.orrery.Bronze.Full(aging, p), () -> bronze(colour));
+                    }
+                    BRONZE.put(name, block);
+                }
+            }
+        }
+    }
+    public static final RegistryObject<Block> ORRERY_BRONZE = BRONZE.get("orrery_bronze");
+    public static final RegistryObject<Block> TARNISHED_ORRERY_BRONZE = BRONZE.get("tarnished_orrery_bronze");
+    public static final RegistryObject<Block> WEATHERED_ORRERY_BRONZE = BRONZE.get("weathered_orrery_bronze");
     public static final RegistryObject<Block> ORRERY_HEART = register("orrery_heart", com.ggrantrichards.astralend.orrery.OrreryHeartBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(-1.0F, 3600000.0F).sound(SoundType.COPPER).noLootTable()
             .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.orrery.OrreryHeartBlock.POWERED) ? 15
@@ -259,6 +290,10 @@ public final class ModBlocks {
     public static final RegistryObject<Block> ORRERY_LAMP = register("orrery_lamp", com.ggrantrichards.astralend.orrery.OrreryLampBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(0.8F).sound(SoundType.GLASS)
             .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.orrery.OrreryLampBlock.LIT) ? 15 : 0));
+    // Phase 9: Nebula Moss carpet, like moss carpet.
+    public static final RegistryObject<Block> NEBULA_MOSS_CARPET = register("nebula_moss_carpet", net.minecraft.world.level.block.CarpetBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.1F).sound(SoundType.MOSS_CARPET)
+            .pushReaction(PushReaction.POPPED));
     // Phase 8 (Starforging): the Astral Forge, and the tiles Rift Walker boots lay over a drop.
     public static final RegistryObject<Block> ASTRAL_FORGE = register("astral_forge", com.ggrantrichards.astralend.starforge.AstralForgeBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).requiresCorrectToolForDrops().strength(5.0F, 1200.0F)
