@@ -396,7 +396,7 @@ public final class WorldgenSurvey {
     // /place command, high over the start, and count what appeared.
     private static void placeByCommand(ServerLevel end, String name, BlockPos start) {
         var server = end.getServer();
-        var source = server.createCommandSourceStack().withLevel(end).withPermission(4);
+        var source = server.createCommandSourceStack().withLevel(end);
         String file = name.equals("comet_crater") ? name + "_1" : name;
         BlockPos a = start.offset(0, 150, 0);
         BlockPos b = start.offset(200, 0, 0);
