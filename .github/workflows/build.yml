@@ -80,7 +80,7 @@ jobs:
       # Opens the survey's world in the real client and photographs every astral biome, then
       # publishes the pictures to the ci-screenshots branch (browse them on GitHub).
       - name: In-game screenshots of every biome
-        if: always() && hashFiles('run/survey-world/level.dat') != ''
+        if: always() && hashFiles('run/survey-world/level.dat') != '' && !contains(github.event.head_commit.message, '[trailer]')
         timeout-minutes: 20
         run: .github/scripts/screenshots.sh
 
@@ -101,6 +101,25 @@ jobs:
             && git -c user.name="CI" -c user.email="ci@users.noreply.github.com" commit -qm "Screenshots from ${GITHUB_SHA::7}" \
             && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-screenshots
 
+      # Films the trailer and cuts it together (client/ClientTrailer.java, tools/trailer/), then
+      # publishes it to the ci-trailer branch. Only for commits whose message says [trailer]: it takes
+      # about half an hour.
+      - name: Film the trailer
+        if: contains(github.event.head_commit.message, '[trailer]') && hashFiles('run/survey-world/level.dat') != ''
+        timeout-minutes: 75
+        run: .github/scripts/trailer.sh
+
+      - name: Publish the trailer
+        if: always() && hashFiles('trailer/*.mp4') != ''
+        run: |
+          mkdir -p /tmp/trailer && cp -r trailer/the_astral_end_trailer.mp4 trailer/poster.png trailer/stills /tmp/trailer/
+          grep "AstralEnd trailer" trailer.log | sed 's/.*\[AstralEnd trailer\] //' > /tmp/trailer/filming.txt || true
+          cd /tmp/trailer
+          printf "# The Astral End - trailer\n\nFrom commit ${GITHUB_SHA::7} on ${GITHUB_REF_NAME}.\n\n![](poster.png)\n\n[Watch it](the_astral_end_trailer.mp4)\n" > README.md
+          git init -q && git checkout -q -b ci-trailer && git add . \
+            && git -c user.name="CI" -c user.email="ci@users.noreply.github.com" commit -qm "Trailer from ${GITHUB_SHA::7}" \
+            && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-trailer
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -112,5 +131,6 @@ jobs:
             client.log
             client-console.log
             screenshots.log
-            run/screenshots/
+            trailer.log
+            run/screenshots/astralend-*.png
           if-no-files-found: ignore

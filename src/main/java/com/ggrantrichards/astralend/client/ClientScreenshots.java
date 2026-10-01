@@ -46,15 +46,15 @@ public final class ClientScreenshots {
     // The optional last word lists styles, comma-separated: "lit" puts a Spore Lantern beside it,
     // "side" turns it side-on, "angled" three-quarters on, "flare=<phase>" sets the Stellar Flare
     // phase for the shot (calm, warning, flare, afterglow), "clear" removes every mob nearby.
-    private record Shot(String name, double x, double y, double z, float yaw, float pitch,
+    record Shot(String name, double x, double y, double z, float yaw, float pitch,
                         String mob, double mobX, double mobY, double mobZ, String style) {}
 
-    private static final List<Shot> SHOTS = new ArrayList<>();
+    static final List<Shot> SHOTS = new ArrayList<>();
     private static int index = -1;
     private static int ticks;
     private static int ticksWithoutWorld;
     private static boolean done;
-    private static Entity summoned;
+    static Entity summoned;
     private static BlockPos lantern;
 
     public static void register() {
@@ -119,7 +119,7 @@ public final class ClientScreenshots {
         }
     }
 
-    private static void load(Minecraft minecraft) {
+    static void load(Minecraft minecraft) {
         File file = new File(minecraft.gameDirectory, "astralend-shots.txt");
         try {
             for (String line : Files.readAllLines(file.toPath())) {
@@ -138,7 +138,7 @@ public final class ClientScreenshots {
         }
     }
 
-    private static void teleport(IntegratedServer server, Shot shot) {
+    static void teleport(IntegratedServer server, Shot shot) {
         // Phase 8: "armor" photographs the player (in third person, wearing upgraded gear); "forge" opens
         // the Astral Forge's screen.
         Minecraft minecraft = Minecraft.getInstance();
@@ -169,51 +169,7 @@ public final class ClientScreenshots {
             // in the middle of the biome shots), and the Phase 5 shots ask for the phase they show.
             StellarFlares flares = StellarFlares.get(end);
             for (String style : shot.style().split(",")) {
-                if (style.startsWith("flare=")) {
-                    flares.setPhase(end, FlarePhase.valueOf(style.substring(6).toUpperCase(java.util.Locale.ROOT)), end.getRandom());
-                }
-                BlockPos here = BlockPos.containing(shot.x(), shot.y(), shot.z());
-                if (style.equals("clear")) {
-                    // A still life: no wandering Endermen in the picture.
-                    for (Entity other : end.getEntities((Entity) null, new AABB(here).inflate(32.0),
-                            e -> !(e instanceof net.minecraft.world.entity.player.Player))) {
-                        other.discard();
-                    }
-                }
-                if (style.equals("bridges")) {
-                    // A Constellation Maze with all its bridges lit (they stay lit 20 s, long enough).
-                    for (int id = 0; id < 4; id++) {
-                        com.ggrantrichards.astralend.maze.MazeScoping.lightBridges(end, here.offset(24, -18, 24), id);
-                    }
-                }
-                if (style.equals("power")) {
-                    // An Orrery, powered: its vault open and its Sentinel awake (but holding still).
-                    for (BlockPos p : BlockPos.betweenClosed(here.offset(-24, -10, -24), here.offset(24, 10, 24))) {
-                        if (end.getBlockState(p).is(ModBlocks.ORRERY_HEART.get())) {
-                            com.ggrantrichards.astralend.orrery.OrreryHeartBlock.power(end, p.immutable(), end.getBlockState(p));
-                            break;
-                        }
-                    }
-                    for (var s : end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.OrrerySentinel.class,
-                            new net.minecraft.world.phys.AABB(here).inflate(24))) {
-                        s.setNoAi(true);
-                    }
-                }
-                if (style.equals("wake")) {
-                    // A Wormhole Maw, woken: light its eyes and open its throat.
-                    BlockPos throat = null;
-                    for (BlockPos p : BlockPos.betweenClosed(here.offset(-40, -24, -40), here.offset(40, 16, 40))) {
-                        var state = end.getBlockState(p);
-                        if (state.is(ModBlocks.MAW_EYE.get())) {
-                            end.setBlock(p, state.setValue(com.ggrantrichards.astralend.maw.MawEyeBlock.LIT, true), 2);
-                        } else if (throat == null && state.is(ModBlocks.MAW_THROAT.get())) {
-                            throat = p.immutable();
-                        }
-                    }
-                    if (throat != null) {
-                        com.ggrantrichards.astralend.maw.MawNetwork.wake(end, throat, null);
-                    }
-                }
+                event(end, BlockPos.containing(shot.x(), shot.y(), shot.z()), style);
             }
             if (index == 0) {
                 flares.setPhase(end, FlarePhase.CALM, end.getRandom());
@@ -221,7 +177,57 @@ public final class ClientScreenshots {
         });
     }
 
-    private static void summon(ServerLevel end, Shot shot) {
+    // One of a shot's styles that changes the world: flare=<phase>, clear, bridges, power or wake (see
+    // the comments in each). `here` is the camera's position.
+    static void event(ServerLevel end, BlockPos here, String style) {
+        StellarFlares flares = StellarFlares.get(end);
+        if (style.startsWith("flare=")) {
+            flares.setPhase(end, FlarePhase.valueOf(style.substring(6).toUpperCase(java.util.Locale.ROOT)), end.getRandom());
+        }
+        if (style.equals("clear")) {
+            // A still life: no wandering Endermen in the picture.
+            for (Entity other : end.getEntities((Entity) null, new AABB(here).inflate(32.0),
+                    e -> !(e instanceof net.minecraft.world.entity.player.Player))) {
+                other.discard();
+            }
+        }
+        if (style.equals("bridges")) {
+            // A Constellation Maze with all its bridges lit (they stay lit 20 s, long enough).
+            for (int id = 0; id < 4; id++) {
+                com.ggrantrichards.astralend.maze.MazeScoping.lightBridges(end, here.offset(24, -18, 24), id);
+            }
+        }
+        if (style.equals("power")) {
+            // An Orrery, powered: its vault open and its Sentinel awake (but holding still).
+            for (BlockPos p : BlockPos.betweenClosed(here.offset(-24, -10, -24), here.offset(24, 10, 24))) {
+                if (end.getBlockState(p).is(ModBlocks.ORRERY_HEART.get())) {
+                    com.ggrantrichards.astralend.orrery.OrreryHeartBlock.power(end, p.immutable(), end.getBlockState(p));
+                    break;
+                }
+            }
+            for (var s : end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.OrrerySentinel.class,
+                    new net.minecraft.world.phys.AABB(here).inflate(24))) {
+                s.setNoAi(true);
+            }
+        }
+        if (style.equals("wake")) {
+            // A Wormhole Maw, woken: light its eyes and open its throat.
+            BlockPos throat = null;
+            for (BlockPos p : BlockPos.betweenClosed(here.offset(-40, -24, -40), here.offset(40, 16, 40))) {
+                var state = end.getBlockState(p);
+                if (state.is(ModBlocks.MAW_EYE.get())) {
+                    end.setBlock(p, state.setValue(com.ggrantrichards.astralend.maw.MawEyeBlock.LIT, true), 2);
+                } else if (throat == null && state.is(ModBlocks.MAW_THROAT.get())) {
+                    throat = p.immutable();
+                }
+            }
+            if (throat != null) {
+                com.ggrantrichards.astralend.maw.MawNetwork.wake(end, throat, null);
+            }
+        }
+    }
+
+    static void summon(ServerLevel end, Shot shot) {
         BlockPos at = BlockPos.containing(shot.mobX(), shot.mobY(), shot.mobZ());
         end.getChunk(at.getX() >> 4, at.getZ() >> 4);  // make sure it's loaded
         if (shot.mob().endsWith("display")) {
