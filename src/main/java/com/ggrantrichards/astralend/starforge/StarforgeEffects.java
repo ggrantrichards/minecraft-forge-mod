@@ -128,7 +128,7 @@ public final class StarforgeEffects {
     // ------------------------------------------------------------------ Voidwalker
 
     // Walking or sprinting over a drop: a tile under you, and one a step ahead.
-    private static void riftWalk(ServerLevel level, ServerPlayer player, Vec3 moved) {
+    public static void riftWalk(ServerLevel level, ServerPlayer player, Vec3 moved) {
         double speed = Math.sqrt(moved.x * moved.x + moved.z * moved.z);
         if (speed < 0.05 || player.isFallFlying() || player.getAbilities().flying || player.isInWater() || player.isPassenger()
             || player.isShiftKeyDown() || moved.y > 0.05 || player.fallDistance > 1.5) {
@@ -170,8 +170,8 @@ public final class StarforgeEffects {
         BlockPos to = s.footing.pos();
         ServerLevel from = (ServerLevel) player.level();
         from.sendParticles(ParticleTypes.REVERSE_PORTAL, player.getX(), player.getY() + 1, player.getZ(), 60, 0.4, 1.0, 0.4, 0.1);
-        player.teleport(new net.minecraft.world.entity.TeleportTransition(target, Vec3.atBottomCenterOf(to), Vec3.ZERO, player.getYRot(),
-            player.getXRot(), net.minecraft.world.entity.TeleportTransition.DO_NOTHING));
+        player.teleport(new net.minecraft.world.level.portal.TeleportTransition(target, Vec3.atBottomCenterOf(to), Vec3.ZERO, player.getYRot(),
+            player.getXRot(), net.minecraft.world.level.portal.TeleportTransition.DO_NOTHING));
         player.resetFallDistance();
         target.sendParticles(ParticleTypes.REVERSE_PORTAL, to.getX() + 0.5, to.getY() + 1, to.getZ() + 0.5, 60, 0.4, 1.0, 0.4, 0.1);
         target.playSound(null, to, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1.0F, 1.2F);
@@ -272,7 +272,6 @@ public final class StarforgeEffects {
         }
         echoing = true;
         try {
-            e.target().invulnerableTime = 0;
             e.target().hurtServer(e.level(), e.level().damageSources().indirectMagic(e.attacker(), e.attacker()), e.amount());
         } finally {
             echoing = false;
@@ -424,12 +423,12 @@ public final class StarforgeEffects {
 
     // ------------------------------------------------------------------ the end of each tick
 
-    private static void onServerTick(TickEvent.ServerTickEvent.Post event) {
-        // Echo Strike's echoes, a second after the hit.
-        for (Iterator<Echo> it = ECHOES.iterator(); it.hasNext(); ) {
+    // Echoes that are due (or all of them, for the survey), and effects waiting to be stretched.
+    public static void flush(boolean allEchoesNow) {
+        for (Iterator<Echo> it = new ArrayList<>(ECHOES).iterator(); it.hasNext(); ) {
             Echo e = it.next();
-            if (e.level().getGameTime() >= e.at()) {
-                it.remove();
+            if (allEchoesNow || e.level().getGameTime() >= e.at()) {
+                ECHOES.remove(e);
                 echo(e);
             }
         }
@@ -438,6 +437,10 @@ public final class StarforgeEffects {
             STRETCHES.clear();
             todo.forEach(StarforgeEffects::stretch);
         }
+    }
+
+    private static void onServerTick(TickEvent.ServerTickEvent.Post event) {
+        flush(false);
         for (Iterator<Projectile> it = FLATTER.iterator(); it.hasNext(); ) {
             Projectile p = it.next();
             if (p.isRemoved()) {

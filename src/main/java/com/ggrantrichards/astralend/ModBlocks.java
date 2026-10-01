@@ -265,7 +265,7 @@ public final class ModBlocks {
             .sound(SoundType.METAL).lightLevel(state -> 7));
     public static final RegistryObject<Block> RIFT_TILE = registerNoItem("rift_tile", com.ggrantrichards.astralend.starforge.RiftTileBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.0F).sound(SoundType.AMETHYST)
-            .noOcclusion().noLootTable().lightLevel(state -> 5).pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
+            .noOcclusion().noLootTable().lightLevel(state -> 5));
     // Life that died out: grey husks of the Nebula Fields' mushrooms and vines, and Pollinator shells.
     public static final RegistryObject<Block> ASHEN_LUMINESHROOM = register("ashen_lumineshroom",
         p -> new EndPlantBlock(Block.column(6.0, 0.0, 10.0), ASTRAL_SOIL, p),

@@ -272,6 +272,9 @@ public final class WorldgenSurvey {
         }
         Map<String, BlockPos> structures = checkStructures(areas, end, failures);
         checkComets(areas.get('W'), end, failures);
+        if (areas.get('N') != null && areas.get('N').standOn != null) {
+            EXTRA_SHOTS.addAll(StarforgeSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log));   // Phase 8
+        }
         writeViewpoints(areas, end, structures);
         checkNebula(areas.get('N'), failures);
         checkAurora(areas.get('A'), failures);

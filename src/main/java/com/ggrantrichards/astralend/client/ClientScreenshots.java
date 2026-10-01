@@ -139,12 +139,24 @@ public final class ClientScreenshots {
     }
 
     private static void teleport(IntegratedServer server, Shot shot) {
+        // Phase 8: "armor" photographs the player (in third person, wearing upgraded gear); "forge" opens
+        // the Astral Forge's screen. Neither wants the HUD.
+        Minecraft minecraft = Minecraft.getInstance();
+        boolean showPlayer = shot.style().contains("armor");
+        minecraft.options.setCameraType(showPlayer ? net.minecraft.client.CameraType.THIRD_PERSON_FRONT : net.minecraft.client.CameraType.FIRST_PERSON);
+        minecraft.options.hideGui = showPlayer || shot.style().contains("forge");
         server.execute(() -> {
             ServerPlayer player = server.getPlayerList().getPlayers().get(0);
             ServerLevel end = server.getLevel(Level.END);
+            player.closeContainer();
+            server.tickRateManager().setFrozen(false);
+            player.getInventory().clearContent();
             player.setGameMode(GameType.SPECTATOR);
             player.teleport(new TeleportTransition(end, new Vec3(shot.x(), shot.y(), shot.z()), Vec3.ZERO, shot.yaw(), shot.pitch(),
                 TeleportTransition.DO_NOTHING));
+            if (showPlayer || shot.style().contains("forge")) {
+                StarforgeShots.setUp(server, end, player, shot.x(), shot.y(), shot.z(), shot.yaw(), shot.style());
+            }
             // Clear away the previous shot's mob and lantern.
             if (summoned != null) {
                 summoned.discard();
