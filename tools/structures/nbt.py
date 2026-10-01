@@ -68,5 +68,6 @@ def write(path, root):
     out = bytearray()
     out += struct.pack(">bH", COMPOUND, 0)
     _payload(out, COMPOUND, root)
-    with gzip.open(path, "wb") as f:
+    # mtime=0 so the same structure always makes the same file (no spurious git changes).
+    with open(path, "wb") as raw, gzip.GzipFile(fileobj=raw, mode="wb", mtime=0, filename="") as f:
         f.write(bytes(out))

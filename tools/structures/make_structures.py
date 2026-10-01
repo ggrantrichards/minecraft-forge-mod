@@ -17,6 +17,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from template import Template  # noqa: E402
+from nbt import Byte, Int  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "src/main/resources/data/astralend"
@@ -120,7 +121,7 @@ def wanderer_relay(seed):
     """A thin spire floating over the edge of the Dark Matter Belt, where Void Wanderers dock: a
     lump of Umbral Stone hanging in the air, a tapering tower of Umbral bricks banded with chiseled
     stone, two docking rings hung with Null Lanterns, and a Void Crystal light at the top. It holds
-    no loot; Wanderers spawn around it."""
+    no loot, but Void Wanderers dock at it."""
     t = Template(17, 44, 17, seed)
     rnd = t.rnd
     c = 8
@@ -164,6 +165,9 @@ def wanderer_relay(seed):
         t.set(c + dx, 39, c + dz, a("astral_glass"))
     t.set(c, 40, c, a("chiseled_umbral_stone"))
     t.set(c, 41, c, a("null_lantern"))
+    # Two Void Wanderers docked at the lower ring.
+    for dx, dz in ((3, 0), (-3, 0)):
+        t.entity(c + dx + 0.5, 17.5, c + dz + 0.5, {"id": a("void_wanderer"), "PersistenceRequired": Byte(1)})
     return t
 
 
@@ -230,6 +234,220 @@ def whalefall(seed):
     return t
 
 
+# ------------------------------------------------------------------ Observatory Ruins
+
+def vault(t, x, y, z, loot, facing):
+    """A vanilla vault that opens for a Data Shard, like a trial key."""
+    t.set(x, y, z, f"minecraft:vault[facing={facing},ominous=false,vault_state=inactive]", nbt={
+        "config": {"loot_table": a(f"chests/{loot}"), "key_item": {"id": a("data_shard"), "count": Int(1)}}})
+
+
+# Constellations laid into the observatory floor (offsets from the centre, joined in order).
+FLOOR_CONSTELLATIONS = [
+    [(-9, -3), (-7, -6), (-4, -8), (-1, -9)],
+    [(4, -8), (7, -6), (8, -2), (6, -4), (4, -8)],
+    [(-8, 4), (-6, 7), (-2, 9), (1, 7)],
+    [(5, 5), (8, 3), (9, 6), (6, 8)],
+]
+
+
+def observatory_ruins(seed):
+    """The Cartographers' observatory, long since shattered: a round hall of pale stone ringed with
+    quartz pillars, its dome broken open on one side, a star map laid into the floor, and the great
+    telescope still on its mount, aimed through the hole at the sky. Two vaults at the foot of the
+    mount open for Data Shards."""
+    t = Template(33, 26, 33, seed)
+    rnd = t.rnd
+    c, floor = 16, 2
+    R = 13
+    q, pillar = a("observatory_quartz"), a("observatory_quartz_pillar")
+    bricks, tiles = a("pale_end_stone_bricks"), a("pale_end_stone_tiles")
+    broken_toward = 0.0                         # the dome is open to the east (+x), where the telescope points
+
+    def angle_gap(ang):
+        return abs((ang - broken_toward + math.pi) % math.tau - math.pi)
+
+    # Foundation and floor.
+    for x in range(33):
+        for z in range(33):
+            d = math.hypot(x - c, z - c)
+            if d > R + 0.5:
+                continue
+            for y in range(0, floor):
+                t.set(x, y, z, bricks)
+            t.set(x, floor, z, tiles if d < R - 0.5 else bricks)
+            for y in range(floor + 1, 26):
+                t.set(x, y, z, "minecraft:air")
+            if 9.3 < d < 10.3:
+                t.set(x, floor, z, q)                # the ring around the star map
+    # The star map.
+    for cons in FLOOR_CONSTELLATIONS:
+        for (x0, z0), (x1, z1) in zip(cons, cons[1:]):
+            t.line((c + x0, floor, c + z0), (c + x1, floor, c + z1), q)
+        for x0, z0 in cons:
+            t.set(c + x0, floor, c + z0, a("star_inlay_observatory_quartz"))
+    # Walls with pillars and tall windows; lower and gapped where the dome came down.
+    for i in range(160):
+        ang = i / 160 * math.tau
+        x, z = round(c + math.cos(ang) * R), round(c + math.sin(ang) * R)
+        gap = angle_gap(ang)
+        height = 7 if gap > 1.0 else max(1, round(7 * (gap / 1.0) ** 1.5) + rnd.randint(-1, 1))
+        for y in range(floor + 1, floor + 1 + height):
+            window = y in (floor + 3, floor + 4, floor + 5) and (i % 20) in range(7, 13)
+            t.set(x, y, z, a("astral_glass") if window else bricks)
+    for k in range(12):
+        ang = k / 12 * math.tau
+        x, z = round(c + math.cos(ang) * R), round(c + math.sin(ang) * R)
+        gap = angle_gap(ang)
+        top = floor + 8 if gap > 1.0 else floor + max(2, round(8 * gap))
+        for y in range(floor + 1, top + 1):
+            t.set(x, y, z, pillar + "[axis=y]")
+        if gap > 1.0:
+            t.set(x, top + 1, z, q)
+            hx, hz = round(c + math.cos(ang) * (R - 1)), round(c + math.sin(ang) * (R - 1))
+            t.set(hx, top, hz, a("null_lantern"))
+    # The dome: a shell of quartz with glass between the ribs, broken open to the east.
+    cy = floor + 8
+    for x in range(33):
+        for y in range(cy, 26):
+            for z in range(33):
+                d = math.sqrt((x - c) ** 2 + (y - cy) ** 2 * 1.15 + (z - c) ** 2)
+                if not (R - 0.6 <= d <= R + 0.4):
+                    continue
+                ang = math.atan2(z - c, x - c)
+                gap = angle_gap(ang)
+                if gap < 1.25 + rnd.uniform(-0.25, 0.25) or rnd.random() < 0.07:
+                    continue
+                rib = min(abs((ang / (math.pi / 4)) - round(ang / (math.pi / 4))), 1) < 0.09 or y == cy
+                t.set(x, y, z, q if rib or y > cy + 9 else a("astral_glass"))
+    # Rubble from the dome, heaped on the floor on the broken side.
+    for i in range(70):
+        ang = broken_toward + rnd.uniform(-1.1, 1.1)
+        dist = rnd.uniform(5, R - 1)
+        x, z = round(c + math.cos(ang) * dist), round(c + math.sin(ang) * dist)
+        if math.hypot(x - c, z - c) < 4:
+            continue
+        y = floor + 1
+        while t.get(x, y, z) not in (None, "minecraft:air") and y < floor + 4:
+            y += 1
+        choice = rnd.random()
+        state = q if choice < 0.4 else (a("observatory_quartz_slab") + "[type=bottom]" if choice < 0.7
+                                        else a("astral_glass") if choice < 0.8 else bricks)
+        t.set(x, y, z, state)
+    # The telescope: a squat mount, and a long tube of Meteoric Iron aimed through the gap.
+    t.fill(c - 1, floor + 1, c - 1, c + 1, floor + 1, c + 1, a("polished_umbral_stone"))
+    for y in range(floor + 2, floor + 5):
+        t.set(c, y, c, pillar + "[axis=y]")
+    t.set(c, floor + 5, c, a("chiseled_umbral_stone"))
+    lo, hi = (c - 4, floor + 4, c), (c + 6, floor + 12, c)
+    t.line(lo, hi, a("meteoric_iron_block"), thickness=1.0)
+    t.line((c + 6, floor + 12, c), (c + 7, floor + 13, c), a("astral_glass"), thickness=1.0)   # the lens
+    t.set(c - 5, floor + 3, c, a("polished_umbral_stone"))                                    # the eyepiece
+    t.set(c + 1, floor + 6, c, a("meteoric_iron_block"))
+    # The vaults, either side of the mount, and lecterns for the star charts that were kept here.
+    vault(t, c, floor + 1, c - 3, "observatory_vault", "north")
+    vault(t, c, floor + 1, c + 3, "observatory_vault", "south")
+    chest(t, c - 3, floor + 1, c - 3, "observatory_ruins", facing="west")
+    return t
+
+
+# ------------------------------------------------------------------ Solar Array Ruins
+
+def mirror(t, x, ground, z, facing_angle, state, rnd):
+    """One Cartographer mirror: a post, and a 3x3 dish of Solarite leaning back so it faces up and
+    toward the array's centre (turned to the nearest compass direction, so the panel stays clean).
+    state is "whole", "cracked" (a corner broken off), "fallen" (the dish lying by its post) or "stump"."""
+    post = a("sunscorched_stone_brick_wall")
+    height = 3 if state != "stump" else rnd.randint(1, 2)
+    for y in range(ground + 1, ground + 1 + height):
+        t.set(x, y, z, post)
+    if state == "stump":
+        return
+    fx, fz = round(math.cos(facing_angle)), round(math.sin(facing_angle))
+    if fx and fz:
+        fz = 0                                          # snap diagonals to one axis
+    wx, wz = -fz, fx                                    # across the dish
+    panel = a("solarite_block")
+    top = ground + 1 + height
+    if state == "fallen":
+        for w in (-1, 0, 1):
+            for back in (1, 2, 3):
+                if rnd.random() < 0.8:
+                    t.set(x + wx * w - fx * back, ground + 1, z + wz * w - fz * back, panel)
+        return
+    t.set(x, top, z, a("polished_sunscorched_stone"))                       # the mount
+    for row in range(3):
+        lean = 1 - row                                   # bottom row toward the centre, top row back
+        for w in (-1, 0, 1):
+            if state == "cracked" and (row, w) in ((2, 1), (2, 0), (1, 1)):
+                continue
+            t.set(x + wx * w + fx * lean, top + 1 + row, z + wz * w + fz * lean, panel)
+
+
+def solar_array(seed):
+    """The Solar Array: a field of Cartographer mirrors that once gathered flare light, most of them
+    cracked or fallen, around a sunken control room where a charged Flare Cell still sits in its
+    pedestal. The mirrors still focus the flares: Flare Burn is doubled on the open field."""
+    S = 49
+    t = Template(S, 18, S, seed)
+    rnd = t.rnd
+    c, ground = S // 2, 8
+    # Paving: a cracked plaza around the room and four causeways out to the edge.
+    for x in range(S):
+        for z in range(S):
+            d = math.hypot(x - c, z - c)
+            on_path = (abs(x - c) <= 1 or abs(z - c) <= 1) and d < S / 2
+            if (d < 8.5 or on_path) and rnd.random() < 0.86:
+                t.set(x, ground, z, a("polished_sunscorched_stone") if d < 8.5 else a("sunscorched_stone_bricks"))
+    # The mirrors, on two rings around the centre, all turned to face it.
+    for ring, count in ((14, 10), (21, 16)):
+        for i in range(count):
+            ang = i / count * math.tau + (0.5 / count * math.tau if ring == 21 else 0) + rnd.uniform(-0.06, 0.06)
+            x, z = round(c + math.cos(ang) * ring), round(c + math.sin(ang) * ring)
+            if abs(x - c) <= 2 or abs(z - c) <= 2:
+                continue                                            # keep the causeways clear
+            roll = rnd.random()
+            state = "whole" if roll < 0.3 else "cracked" if roll < 0.6 else "fallen" if roll < 0.82 else "stump"
+            for dx in (-1, 0, 1):
+                for dz in (-1, 0, 1):
+                    t.set(x + dx, ground, z + dz, a("sunscorched_stone_bricks"))
+            mirror(t, x, ground, z, ang + math.pi, state, rnd)
+    # The sunken control room, 11 x 11, its roof level with the plaza and a glass skylight in it.
+    lo, hi = c - 5, c + 5
+    t.fill(lo, 0, lo, hi, ground, hi, a("sunscorched_stone_bricks"))
+    t.fill(lo + 1, 1, lo + 1, hi - 1, 1, hi - 1, a("polished_sunscorched_stone"))
+    t.fill(lo + 1, 2, lo + 1, hi - 1, ground - 1, hi - 1, "minecraft:air")
+    t.fill(lo, ground, lo, hi, ground, hi, a("polished_sunscorched_stone"))
+    t.fill(c - 1, ground, c - 1, c + 1, ground, c + 1, a("astral_glass"))
+    for x, z in ((lo + 1, lo + 1), (lo + 1, hi - 1), (hi - 1, lo + 1), (hi - 1, hi - 1)):
+        for y in range(2, ground):
+            t.set(x, y, z, a("sunscorched_stone_brick_wall"))
+        t.set(x, ground - 1, z, a("null_lantern"))
+    # A stairway down from the south causeway.
+    for step in range(6):
+        z = hi + 1 + (5 - step)
+        y = ground - step
+        for x in (c - 1, c, c + 1):
+            t.set(x, y, z, a("polished_sunscorched_stone_stairs") + "[facing=north,half=bottom,shape=straight]")
+            for above in range(y + 1, ground + 4):
+                t.set(x, above, z, "minecraft:air")
+            t.set(x, y - 1, z, a("sunscorched_stone_bricks"))
+        for x in (c - 2, c + 2):
+            for yy in range(y - 1, ground + 1):
+                t.set(x, yy, z, a("sunscorched_stone_bricks"))
+    for x in (c - 1, c, c + 1):
+        for y in range(2, 5):
+            t.set(x, y, hi, "minecraft:air")                         # the doorway
+    # The console: a ring of pedestals, emptied long ago, around the one that still holds a cell.
+    t.set(c, 2, c, a("collector_pedestal") + "[holding=charged_flare_cell]",
+          nbt={"held": {"id": a("charged_flare_cell"), "count": Int(1)}, "charge": Int(0)})
+    for dx, dz in ((-2, 0), (2, 0), (0, -2)):
+        t.set(c + dx, 2, c + dz, a("collector_pedestal") + "[holding=none]")
+    chest(t, lo + 2, 2, lo + 1, "solar_array", facing="south")
+    chest(t, hi - 2, 2, lo + 1, "solar_array", facing="south")
+    return t
+
+
 # ------------------------------------------------------------------ worldgen data
 
 def structure_json(name, height, heightmap, spawn_overrides, adaptation, ground):
@@ -244,6 +462,7 @@ def structure_json(name, height, heightmap, spawn_overrides, adaptation, ground)
         "spawn_overrides": {},
         "start_height": height,
         "start_pool": a(f"{name}/start"),
+        "step": "surface_structures",
         "use_expansion_hack": False,
     }
     if heightmap:
@@ -275,12 +494,16 @@ STRUCTURES = [
     dict(name="wanderer_relay", variants=[lambda: wanderer_relay(21)],
          biomes=[a("dark_matter_belt")], spread=(18, 7, 51273391),
          height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 66}, "max_inclusive": {"absolute": 92}},
-         heightmap=None, spawns={"creature": {"bounding_box": "piece", "spawns": [
-             {"type": a("void_wanderer"), "weight": 1, "minCount": 1, "maxCount": 2}]}},
-         adaptation=None, ground=(-4096, 40, 7)),
+         heightmap=None, spawns=None, adaptation=None, ground=(-4096, 40, 7)),
     dict(name="whalefall", variants=[lambda: whalefall(31)],
          biomes=[a("aurora_shallows")], spread=(36, 14, 70127811), height={"absolute": -1}, heightmap="WORLD_SURFACE_WG",
          spawns=None, adaptation=None, ground=(16, 4096, 14)),
+    dict(name="observatory_ruins", variants=[lambda: observatory_ruins(41)],
+         biomes=[a("shattered_observatory"), a("nebula_fields")], spread=(30, 12, 33094871), height={"absolute": -2},
+         heightmap="WORLD_SURFACE_WG", spawns=None, adaptation="beard_thin", ground=(16, 4096, 12)),
+    dict(name="solar_array", variants=[lambda: solar_array(51)],
+         biomes=[a("corona")], spread=(34, 14, 92814473), height={"absolute": -8},
+         heightmap="WORLD_SURFACE_WG", spawns=None, adaptation="beard_thin", ground=(16, 4096, 18)),
 ]
 
 

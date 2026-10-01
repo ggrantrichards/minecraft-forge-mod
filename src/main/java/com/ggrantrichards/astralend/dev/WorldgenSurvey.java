@@ -379,6 +379,9 @@ public final class WorldgenSurvey {
         structureShot(lines, structures, "comet_crater_hot", 18.0, 17.0, 2.0);
         structureShot(lines, structures, "wanderer_relay", 30.0, -6.0, -20.0);
         structureShot(lines, structures, "whalefall", 26.0, 15.0, 4.0);
+        structureShot(lines, structures, "observatory_ruins", 30.0, 18.0, 4.0);
+        structureShot(lines, structures, "solar_array", 30.0, 22.0, 6.0);
+        structureShot(lines, structures, "solar_array_room", 3.0, 2.2, 0.0);
         try {
             java.nio.file.Files.write(java.nio.file.Path.of("astralend-shots.txt"), lines);
             log("Wrote " + lines.size() + " screenshot viewpoints to astralend-shots.txt");
@@ -409,7 +412,8 @@ public final class WorldgenSurvey {
         Map<String, BlockPos> found = new LinkedHashMap<>();
         record Wanted(String name, char biome, Block marker) {}
         for (Wanted w : List.of(new Wanted("comet_crater", 'W', Blocks.CHEST), new Wanted("wanderer_relay", 'D', ModBlocks.VOID_CRYSTAL_BLOCK.get()),
-                                new Wanted("whalefall", 'A', Blocks.CHEST))) {
+                                new Wanted("whalefall", 'A', Blocks.CHEST), new Wanted("observatory_ruins", 'R', Blocks.VAULT),
+                                new Wanted("solar_array", 'C', ModBlocks.COLLECTOR_PEDESTAL.get()))) {
             Area area = areas.get(w.biome());
             BlockPos from = area != null ? area.centre : BlockPos.ZERO;
             net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tag = net.minecraft.tags.TagKey.create(
@@ -476,6 +480,10 @@ public final class WorldgenSurvey {
                 log(String.format("%s: built at %s (start %s)%s%s", w.name(), marker.toShortString(), start.toShortString(),
                     hot ? ", still hot" : "", loot));
                 found.putIfAbsent(key, marker);
+                if (w.name().equals("solar_array")) {
+                    // Inside the control room too: the console, seen from a corner of the room.
+                    found.putIfAbsent("solar_array_room", marker.above());
+                }
             }
             if (placed == 0) {
                 failures.add(w.name() + ": found " + starts.size() + " start(s) but none was built");

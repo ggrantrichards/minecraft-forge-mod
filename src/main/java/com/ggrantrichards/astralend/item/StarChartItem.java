@@ -33,7 +33,8 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 // fill in the first time they're used in the End. Use one to see which way to go and how far.
 public class StarChartItem extends Item {
     // Each destination is a structure tag holding just that structure (data/astralend/tags/worldgen/structure).
-    private static final List<String> STRUCTURES = List.of("comet_crater", "wanderer_relay", "whalefall");
+    private static final List<String> STRUCTURES = List.of("comet_crater", "wanderer_relay", "whalefall",
+        "observatory_ruins", "solar_array");
     private static final List<ResourceKey<Biome>> DESTINATIONS = List.of(ModBiomes.NEBULA_FIELDS, ModBiomes.AURORA_SHALLOWS,
         ModBiomes.COMET_WAKE, ModBiomes.DARK_MATTER_BELT, ModBiomes.CORONA);
 

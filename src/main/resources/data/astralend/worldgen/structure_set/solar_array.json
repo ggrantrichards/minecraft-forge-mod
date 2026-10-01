@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 92814473,
+    "separation": 14,
+    "spacing": 34
+  },
+  "structures": [
+    {
+      "structure": "astralend:solar_array",
+      "weight": 1
+    }
+  ]
+}

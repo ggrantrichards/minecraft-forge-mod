@@ -1275,7 +1275,8 @@ def structures_phase6():
     item_def("temporal_crystal", rid("item/temporal_crystal"))
     lang[f"item.{NS}.temporal_crystal"] = "Temporal Crystal"
     lang[f"item.{NS}.star_chart.marks_structure"] = "Marks a site: %s"
-    for name, english in (("comet_crater", "Comet Crater"), ("wanderer_relay", "Wanderer Relay"), ("whalefall", "Whalefall")):
+    for name, english in (("comet_crater", "Comet Crater"), ("wanderer_relay", "Wanderer Relay"), ("whalefall", "Whalefall"),
+                          ("observatory_ruins", "Observatory Ruins"), ("solar_array", "Solar Array Ruins")):
         lang[f"structure.{NS}.{name}"] = english
         tag("worldgen/structure", rid(name), rid(name))      # a Star Chart looks each one up by its own tag
 
@@ -1296,6 +1297,32 @@ def structures_phase6():
             entry("glowing_spores", 3, (2, 5)), entry("void_crystal", 2, (1, 3)),
             entry("minecraft:nautilus_shell", 1, (1, 1))]},
         chance("temporal_crystal", 0.15),
+    ])
+    # Observatory Ruins: the vaults (opened with a Data Shard) hold the Cartographers' best finds; the
+    # chest holds what was left lying about.
+    chest_loot("observatory_vault", [
+        {"rolls": 1, "entries": [entry("temporal_crystal", 3), entry("charged_void_crystal", 2, (1, 2)),
+                                 entry("star_chart", 2), entry("void_crystal_block", 1)]},
+        {"rolls": {"type": "minecraft:uniform", "min": 1, "max": 3}, "entries": [
+            entry("void_crystal", 4, (2, 5)), entry("meteoric_iron_ingot", 3, (1, 3)), entry("data_shard", 2, (1, 2)),
+            entry("minecraft:spyglass", 2), entry("minecraft:ender_pearl", 3, (1, 3)), entry("star_inlay_observatory_quartz", 2, (2, 6))]},
+    ])
+    chest_loot("observatory_ruins", [
+        {"rolls": 1, "entries": [entry("star_chart")]},
+        {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
+            entry("observatory_quartz", 5, (2, 8)), entry("cracked_lens", 3, (1, 2)), entry("glowing_spores", 3, (2, 5)),
+            entry("void_crystal", 3, (1, 3)), entry("minecraft:paper", 4, (2, 6)), entry("minecraft:book", 2, (1, 2)),
+            entry("minecraft:compass", 1)]},
+        chance("temporal_crystal", 0.1),
+    ])
+    # Solar Array Ruins: the best loot in the End (and a charged Flare Cell sits in the console).
+    chest_loot("solar_array", [
+        {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
+            entry("solarite_ingot", 6, (2, 6)), entry("raw_solarite", 5, (2, 6)), entry("solarite_block", 2, (1, 2)),
+            entry("flare_cell", 3, (1, 2)), entry("flare_pollen", 4, (2, 6)), entry("charged_void_crystal", 2, (1, 1)),
+            entry("minecraft:golden_apple", 2), entry("sunshade", 3, (2, 4))]},
+        chance("temporal_crystal", 0.4),
+        chance("charged_flare_cell", 0.25),
     ])
 
 

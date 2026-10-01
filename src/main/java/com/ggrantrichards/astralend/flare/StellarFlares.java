@@ -237,9 +237,13 @@ public class StellarFlares extends SavedData {
 
     // ------------------------------------------------------------------ Flare Burn
 
+    // The Solar Array's old mirrors still focus the flares onto its field (Phase 6).
+    public static final ResourceKey<net.minecraft.world.level.levelgen.structure.Structure> SOLAR_ARRAY = ResourceKey.create(
+        Registries.STRUCTURE, net.minecraft.resources.Identifier.fromNamespaceAndPath(AstralEnd.MODID, "solar_array"));
+
     // Once a second during a flare: everyone in the Corona under open sky burns - half a heart every
-    // 3 seconds at first, a full heart after 30 seconds of exposure. Cover, a Sunshade or Flare Ward
-    // stops it.
+    // 3 seconds at first, a full heart after 30 seconds of exposure, and twice that on a Solar Array's
+    // field. Cover, a Sunshade or Flare Ward stops it.
     private void burn(ServerLevel level) {
         DamageSource source = new DamageSource(level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(FLARE_BURN));
         for (ServerPlayer player : level.players()) {
@@ -252,7 +256,11 @@ public class StellarFlares extends SavedData {
             }
             int seconds = this.exposure.merge(id, 1, Integer::sum);
             if (seconds % 3 == 0) {
-                player.hurtServer(level, source, seconds >= 30 ? 2.0F : 1.0F);
+                float damage = seconds >= 30 ? 2.0F : 1.0F;
+                if (level.structureManager().getStructureWithPieceAt(player.blockPosition(), SOLAR_ARRAY).isValid()) {
+                    damage *= 2.0F;
+                }
+                player.hurtServer(level, source, damage);
             }
         }
     }

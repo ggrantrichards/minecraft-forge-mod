@@ -181,6 +181,8 @@
   "item.minecraft.tipped_arrow.effect.flare_ward": "Arrow of Flare Ward",
   "itemGroup.astralend": "The Astral End",
   "structure.astralend.comet_crater": "Comet Crater",
+  "structure.astralend.observatory_ruins": "Observatory Ruins",
+  "structure.astralend.solar_array": "Solar Array Ruins",
   "structure.astralend.wanderer_relay": "Wanderer Relay",
   "structure.astralend.whalefall": "Whalefall"
 }
