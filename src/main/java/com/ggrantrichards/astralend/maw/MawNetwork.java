@@ -98,10 +98,13 @@ public class MawNetwork extends SavedData {
     public static Maw wake(ServerLevel level, BlockPos pos, ServerPlayer player) {
         int lit = 0;
         int sockets = 0;
+        long eyeX = 0, eyeZ = 0;
         for (BlockPos p : BlockPos.betweenClosed(pos.offset(-24, -16, -24), pos.offset(24, 20, 24))) {
             BlockState state = level.getBlockState(p);
             if (state.is(ModBlocks.MAW_EYE.get())) {
                 sockets++;
+                eyeX += p.getX();
+                eyeZ += p.getZ();
                 if (state.getValue(MawEyeBlock.LIT)) {
                     lit++;
                 }
@@ -141,21 +144,11 @@ public class MawNetwork extends SavedData {
             z += p.getZ();
         }
         BlockPos centre = new BlockPos((int) (x / throat.size()), (int) (y / throat.size()), (int) (z / throat.size()));
-        // The mouth is the side of the throat that opens onto air.
-        Direction mouth = Direction.NORTH;
-        int best = -1;
-        for (Direction d : Direction.Plane.HORIZONTAL) {
-            int air = 0;
-            for (int k = 2; k <= 10; k++) {
-                if (level.getBlockState(centre.relative(d, k)).isAir()) {
-                    air++;
-                }
-            }
-            if (air > best) {
-                best = air;
-                mouth = d;
-            }
-        }
+        // The mouth opens on the side of the throat away from the eyes (which sit in the cranium behind it).
+        double dx = centre.getX() + 0.5 - (double) eyeX / sockets;
+        double dz = centre.getZ() + 0.5 - (double) eyeZ / sockets;
+        Direction mouth = Math.abs(dx) > Math.abs(dz) ? (dx > 0 ? Direction.EAST : Direction.WEST)
+            : (dz > 0 ? Direction.SOUTH : Direction.NORTH);
         BlockPos exit = standingSpot(level, centre.relative(mouth, 9));
         Maw maw = new Maw(centre, exit, mouth.get2DDataValue());
         MawNetwork network = get(level);

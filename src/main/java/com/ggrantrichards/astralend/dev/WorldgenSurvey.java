@@ -381,7 +381,7 @@ public final class WorldgenSurvey {
         structureShot(lines, structures, "wanderer_relay", 30.0, -6.0, -20.0);
         structureShot(lines, structures, "whalefall", 26.0, 15.0, 4.0);
         structureShot(lines, structures, "observatory_ruins", 30.0, 18.0, 4.0);
-        structureShot(lines, structures, "solar_array", 30.0, 22.0, 6.0);
+        structureShot(lines, structures, "solar_array", 34.0, 36.0, 4.0);
         structureShot(lines, structures, "solar_array_room", 3.0, 2.2, 0.0);
         lines.addAll(EXTRA_SHOTS);
         try {
