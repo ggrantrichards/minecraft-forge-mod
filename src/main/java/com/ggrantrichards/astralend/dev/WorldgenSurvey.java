@@ -558,7 +558,7 @@ public final class WorldgenSurvey {
                 if (marker == null) {
                     log(String.format("%s: start at %s, but nothing of it was built", w.name(), start.toShortString()));
                     // Why not: does its template load, and what did the start chunk record?
-                    var templates = end.getServer().getStructureManager();
+                    var templates = end.getStructureManager();
                     for (String t : List.of(w.name(), w.name() + "_1")) {
                         var id = net.minecraft.resources.Identifier.fromNamespaceAndPath(com.ggrantrichards.astralend.AstralEnd.MODID, t);
                         log("  template " + t + ": " + templates.get(id).map(tpl -> "size " + tpl.getSize().toShortString()).orElse("not found"));
