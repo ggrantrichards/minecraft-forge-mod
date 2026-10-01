@@ -370,7 +370,7 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('A'), end, "drift_whale side", 11.0, 7.0, 7.5);
         mobShot(lines, areas.get('R'), end, "watcher", 6.5, 0.5, 2.6);
         mobShot(lines, areas.get('N'), end, "station_sentinel awake", 7.5, 0.0, 2.6);
-        mobShot(lines, areas.get('W'), end, "live_comet side", 13.0, 6.0, 7.0);
+        mobShot(lines, areas.get('W'), end, "live_comet side", 14.0, 14.0, 4.0);
         // Phase 5: the sky and Stellar Flares.
         skyShot(lines, areas.get('A'), "sky_aurora_shallows", -45.0F, -32.0F, null, "flare=calm");
         skyShot(lines, areas.get('N'), "sky_nebula_fields", -45.0F, -32.0F, null, "flare=calm");
@@ -406,14 +406,17 @@ public final class WorldgenSurvey {
             failures.add("live comet: couldn't be sent");
             return;
         }
-        int itemsBefore = end.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, comet.getBoundingBox().inflate(4)).size();
+        BlockPos from = comet.blockPosition();
+        // The hit: brought overhead first, where the chunks are loaded and ticking.
+        comet.snapTo(near.x, near.y + 6.0, near.z, 0.0F, 0.0F);
+        var around = new net.minecraft.world.phys.AABB(near, near).inflate(8.0);
+        int itemsBefore = end.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, around).size();
         comet.knockChunk(end);
-        int itemsAfter = end.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, comet.getBoundingBox().inflate(4)).size();
-        log(String.format("live comet: sent from %s, landfall %s; a hit knocked off %d chunk(s)", comet.blockPosition().toShortString(),
+        int itemsAfter = end.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, around).size();
+        log(String.format("live comet: sent from %s, landfall %s; a hit knocked off %d chunk(s)", from.toShortString(),
             comet.isLandfall(), itemsAfter - itemsBefore));
         comet.discard();
-        BlockPos target = area.standOn.offset(9, 0, 9);
-        target = new BlockPos(target.getX(), end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, target.getX(), target.getZ()) - 1, target.getZ());
+        BlockPos target = flatSite(end, area.standOn.offset(9, 0, 9));
         int changed = com.ggrantrichards.astralend.comet.CometImpact.strike(end, target, end.getRandom(), null);
         log(String.format("live comet: landfall at %s changed %d blocks (at most %d)", target.toShortString(), changed,
             com.ggrantrichards.astralend.comet.CometImpact.MAX_BLOCKS));
@@ -421,8 +424,40 @@ public final class WorldgenSurvey {
             failures.add("live comet: a hit should knock off a chunk, and a landfall change at most 40 blocks");
         }
         double d = 9.0 / Math.sqrt(2.0);
-        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_comet_landfall %.1f %d %.1f -45 40.0 impact=%d:%d:%d",
-            target.getX() + 0.5 - d, target.getY() + 7, target.getZ() + 0.5 - d, target.getX(), target.getY(), target.getZ()));
+        // (The client opens this same world, so the shot shows the crater just made, loot and all.)
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_comet_landfall %.1f %d %.1f -45 36.0",
+            target.getX() + 0.5 - d, target.getY() + 6, target.getZ() + 0.5 - d));
+    }
+
+    // Somewhere near `around` with level ground for a crater (and not on a Comet Ice spire).
+    private static BlockPos flatSite(ServerLevel end, BlockPos around) {
+        BlockPos best = null;
+        int bestSpread = Integer.MAX_VALUE;
+        for (int r = 0; r <= 24 && bestSpread > 1; r += 3) {
+            for (int ox = -r; ox <= r; ox += 3) {
+                for (int oz = -r; oz <= r; oz += 3) {
+                    if (Math.max(Math.abs(ox), Math.abs(oz)) != r) {
+                        continue;
+                    }
+                    int x = around.getX() + ox, z = around.getZ() + oz;
+                    int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+                    for (int dx = -4; dx <= 4; dx++) {
+                        for (int dz = -4; dz <= 4; dz++) {
+                            int h = end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x + dx, z + dz);
+                            min = Math.min(min, h);
+                            max = Math.max(max, h);
+                        }
+                    }
+                    BlockPos top = new BlockPos(x, end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, z);
+                    if (max - min < bestSpread && min > end.getMinY() + 1 && !end.getBlockState(top).is(ModBlocks.COMET_ICE.get())) {
+                        bestSpread = max - min;
+                        best = top;
+                    }
+                }
+            }
+        }
+        return best != null ? best
+            : new BlockPos(around.getX(), end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, around.getX(), around.getZ()) - 1, around.getZ());
     }
 
     // Extra screenshot lines worked out by the structure tests (they need the structure's layout).

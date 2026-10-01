@@ -168,12 +168,6 @@ public final class ClientScreenshots {
                         com.ggrantrichards.astralend.maze.MazeScoping.lightBridges(end, here.offset(24, -18, 24), id);
                     }
                 }
-                if (style.startsWith("impact=")) {
-                    // A comet's landfall, just now.
-                    String[] c = style.substring(7).split(":");
-                    com.ggrantrichards.astralend.comet.CometImpact.strike(end, new BlockPos(Integer.parseInt(c[0]), Integer.parseInt(c[1]),
-                        Integer.parseInt(c[2])), end.getRandom(), null);
-                }
                 if (style.equals("power")) {
                     // An Orbital Station, powered: its vault open and its Sentinel awake (but holding still).
                     for (BlockPos p : BlockPos.betweenClosed(here.offset(-24, -10, -24), here.offset(24, 10, 24))) {

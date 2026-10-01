@@ -1055,18 +1055,30 @@ def comet_crack_glow(face, px, py, fw, fh, rnd):
 
 def streamer(alpha):
     def f(face, px, py, fw, fh, rnd):
-        a = int(alpha * (0.75 + 0.25 * rnd.random()))
+        a = int(alpha * (0.7 + 0.3 * rnd.random()))
         return hexc("d8f2ff", a) if rnd.random() < 0.8 else hexc("9fdcff", a)
     return f
 
 
 def streamer_glow(alpha):
     def f(face, px, py, fw, fh, rnd):
-        return hexc("e8f8ff", int(alpha * 0.55 * (0.5 + 0.5 * rnd.random())))
+        return hexc("e8f8ff", int(alpha * 0.8 * (0.55 + 0.45 * rnd.random())))
     return f
 
 
-COMET = Mob("live_comet", (64, 64), [
+def coma(edge, fill):
+    """The comet's coma: a shell of frozen light around the head, like an End Crystal's glass. A
+    bright frame, a faint body and a few sparks in it."""
+    def f(face, px, py, fw, fh, rnd):
+        if px in (0, fw - 1) or py in (0, fh - 1):
+            return hexc("d4f3ff", edge)
+        if rnd.random() < 0.07:
+            return hexc("f2fcff", min(255, edge + 40))
+        return hexc("a8dcff", fill)
+    return f
+
+
+COMET = Mob("live_comet", (128, 64), [
     Part("comet", (0, 18, 0), [
         B(-4, -4, -4, 8, 8, 8, comet_rock, comet_crack_glow),
         B(-5, -3, -2, 1, 5, 4, comet_rock),
@@ -1075,11 +1087,14 @@ COMET = Mob("live_comet", (64, 64), [
         B(-3, 4, -2, 6, 1, 4, comet_rock),
         B(-2, -2, -5, 4, 4, 1, comet_rock, comet_crack_glow),
     ], [
+        Part("coma", (0, 0, 0), [B(-4, -4, -4, 8, 8, 8, coma(150, 26), coma(170, 30), key="coma", inflate=2.0)]),
+        Part("coma_outer", (0, 0, 0), [B(-4, -4, -4, 8, 8, 8, coma(150, 26), coma(170, 30), key="coma", inflate=4.5)]),
+        # The tail starts narrow at the head and widens and fades behind it.
         Part("tail", (0, 0, 4), [
-            B(-3, -3, 0, 6, 6, 10, streamer(150), streamer_glow(150)),
+            B(-3, -3, 0, 6, 6, 12, streamer(140), streamer_glow(140)),
         ], [
-            Part("tail_mid", (0, 0, 10), [B(-2, -2, 0, 4, 4, 12, streamer(110), streamer_glow(110))], [
-                Part("tail_end", (0, 0, 12), [B(-1, -1, 0, 2, 2, 14, streamer(70), streamer_glow(70))]),
+            Part("tail_mid", (0, 0, 12), [B(-4.5, -4.5, 0, 9, 9, 14, streamer(85), streamer_glow(85))], [
+                Part("tail_end", (0, 0, 14), [B(-6, -6, 0, 12, 12, 16, streamer(40), streamer_glow(45))]),
             ]),
         ]),
     ]),

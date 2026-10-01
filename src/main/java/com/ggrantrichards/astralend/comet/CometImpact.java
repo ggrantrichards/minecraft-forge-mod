@@ -22,8 +22,8 @@ import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.AABB;
 import org.jspecify.annotations.Nullable;
 
-// A comet's landfall: a flash, a boom, and a small crater - a bowl of Charred End Stone a few blocks
-// across with the Comet Core (Meteoric Iron, with Stardust packed under it) at the bottom. Never more
+// A comet's landfall: a flash, a boom, and a small crater - a bowl a few blocks across, ringed by a
+// thrown-up rim, with the Comet Core (Meteoric Iron, with Stardust packed under it) in the middle. Never more
 // than MAX_BLOCKS blocks change. It leaves the world alone if mob griefing is off, and it never touches
 // anything that looks built (a block entity, planks, glass, wool, a door, a bed...) - the comet still
 // lands, but only its loot is left.
@@ -39,6 +39,7 @@ public final class CometImpact {
         level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, x, y, z, 1, 0, 0, 0, 0);
         level.sendParticles(ParticleTypes.END_ROD, x, y, z, 120, 1.5, 1.0, 1.5, 0.3);
         level.sendParticles(ParticleTypes.SNOWFLAKE, x, y, z, 80, 2.0, 1.0, 2.0, 0.2);
+        level.sendParticles(ParticleTypes.LARGE_SMOKE, x, y, z, 40, 1.6, 0.6, 1.6, 0.04);
         for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, new AABB(top).inflate(3.0), e -> e != comet)) {
             e.hurtServer(level, level.damageSources().explosion(comet, comet), 6.0F);
         }
@@ -90,43 +91,69 @@ public final class CometImpact {
         return false;
     }
 
-    // A bowl about five blocks across and two deep; its floor charred, the Comet Core in the middle.
+    // A small copy of the Comet Craters the world generates with: a bowl five blocks across, a rim of the
+    // ground it threw up around it (some of it charred), the floor glazed with Comet Ice, and the Comet
+    // Core (Meteoric Iron, with Stardust packed under it where it can't fall up) sitting in the middle.
+    // The bowl and the Core come first; the rim and the glaze only use what's left of MAX_BLOCKS.
     private static int carve(ServerLevel level, BlockPos top, RandomSource random) {
-        int changed = 0;
-        List<BlockPos> bowl = new ArrayList<>();
-        for (BlockPos p : BlockPos.betweenClosed(top.offset(-2, -1, -2), top.offset(2, 1, 2))) {
-            double dx = p.getX() - top.getX(), dy = (p.getY() - top.getY()) * 1.6, dz = p.getZ() - top.getZ();
-            if (dx * dx + dy * dy + dz * dz <= 5.2 && dy <= 0.0) {
-                bowl.add(p.immutable());
+        int[] changed = {0};
+        BlockState ground = level.getBlockState(top);
+        if (!ground.isSolid() || ground.getDestroySpeed(level, top) < 0) {
+            ground = ModBlocks.CHARRED_END_STONE.get().defaultBlockState();
+        }
+        // The bowl: the top layer, all but the middle, where the Core sits.
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                if (dx * dx + dz * dz > 5 || (dx == 0 && dz == 0)) {
+                    continue;
+                }
+                BlockPos p = top.offset(dx, 0, dz);
+                BlockState s = level.getBlockState(p);
+                if (!s.isAir() && s.getDestroySpeed(level, p) >= 0) {
+                    set(level, p, Blocks.AIR.defaultBlockState(), changed);
+                }
             }
         }
-        for (BlockPos p : bowl) {
-            if (changed >= MAX_BLOCKS - 6) {
-                break;
-            }
-            if (!level.getBlockState(p).isAir() && level.getBlockState(p).getDestroySpeed(level, p) >= 0) {
-                level.setBlock(p, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
-                changed++;
+        set(level, top, ModBlocks.METEORIC_IRON_ORE.get().defaultBlockState(), changed);
+        set(level, top.below(), ModBlocks.STARDUST_BLOCK.get().defaultBlockState(), changed);
+        // The rim: what the impact threw out, piled around the edge.
+        BlockState charred = ModBlocks.CHARRED_END_STONE.get().defaultBlockState();
+        for (int dx = -4; dx <= 4; dx++) {
+            for (int dz = -4; dz <= 4; dz++) {
+                double d = Math.sqrt(dx * dx + dz * dz) + (random.nextDouble() - 0.5) * 0.6;
+                if (d < 2.6 || d > 3.7 || random.nextInt(5) < 2 || changed[0] >= MAX_BLOCKS - 4) {
+                    continue;
+                }
+                BlockPos p = top.offset(dx, 1, dz);
+                if (level.getBlockState(p).canBeReplaced() && level.getBlockState(p.below()).isSolid()) {
+                    set(level, p, random.nextInt(3) == 0 ? charred : ground, changed);
+                }
             }
         }
-        // Line the bowl: char the floor and walls it's left.
-        for (BlockPos p : BlockPos.betweenClosed(top.offset(-3, -2, -3), top.offset(3, 0, 3))) {
-            if (changed >= MAX_BLOCKS - 3) {
-                break;
+        // The floor: glazed with the comet's ice here and there, scorched elsewhere.
+        for (BlockPos p : BlockPos.betweenClosed(top.offset(-2, -1, -2), top.offset(2, -1, 2))) {
+            int dx = p.getX() - top.getX(), dz = p.getZ() - top.getZ();
+            if (changed[0] >= MAX_BLOCKS || dx * dx + dz * dz > 5 || (dx == 0 && dz == 0) || !level.getBlockState(p.above()).isAir()) {
+                continue;
             }
             BlockState s = level.getBlockState(p);
-            if (!s.isAir() && s.isSolid() && s.getDestroySpeed(level, p) >= 0 && level.getBlockState(p.above()).isAir()
-                && !s.is(ModBlocks.CHARRED_END_STONE.get()) && random.nextInt(3) > 0) {
-                level.setBlock(p, ModBlocks.CHARRED_END_STONE.get().defaultBlockState(), Block.UPDATE_ALL);
-                changed++;
+            if (!s.isSolid() || s.getDestroySpeed(level, p) < 0) {
+                continue;
+            }
+            int roll = random.nextInt(8);
+            if (roll < 3) {
+                set(level, p, ModBlocks.COMET_ICE.get().defaultBlockState(), changed);
+            } else if (roll < 6 && !s.is(ModBlocks.CHARRED_END_STONE.get())) {
+                set(level, p, charred, changed);
             }
         }
-        // The Comet Core: Meteoric Iron in the middle of the floor, Stardust packed under it.
-        BlockPos core = top.below();
-        level.setBlock(core, ModBlocks.METEORIC_IRON_ORE.get().defaultBlockState(), Block.UPDATE_ALL);
-        level.setBlock(core.below(), ModBlocks.STARDUST_BLOCK.get().defaultBlockState(), Block.UPDATE_ALL);
-        level.setBlock(core.north(), ModBlocks.COMET_ICE.get().defaultBlockState(), Block.UPDATE_ALL);
-        return changed + 3;
+        return changed[0];
+    }
+
+    private static void set(ServerLevel level, BlockPos p, BlockState state, int[] changed) {
+        if (changed[0] < MAX_BLOCKS && level.setBlock(p, state, Block.UPDATE_ALL)) {
+            changed[0]++;
+        }
     }
 
     private CometImpact() {}
