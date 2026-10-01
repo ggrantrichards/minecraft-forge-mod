@@ -261,7 +261,7 @@ public class LiveComet extends Mob {
     }
 
     @Override
-    protected @Nullable net.minecraft.sounds.SoundEvent getAmbientSound() {
+    protected net.minecraft.sounds.@Nullable SoundEvent getAmbientSound() {
         return SoundEvents.BEACON_AMBIENT;
     }
 
