@@ -940,8 +940,9 @@ Each phase is playable on its own. Later phases build on earlier ones.
 | **8. Starforging** ✅ | Astral Forge, Starforge Templates and Alloy, the six upgrades, Rift Pearls, upgrade accents. **Done.** | An `ItemCombinerMenu` and screen (like the smithing table's, with five inputs); a data component for the upgrade; vanilla attribute modifiers for gravity, step height and max absorption; a temporary rift-tile block; one global loot modifier for Smelting and Pull; Forge events for hits, projectiles, fire, effects and the void. Accents are drawn over the vanilla item models (`assets/minecraft/items`) and, on worn armour, by a player render layer. |
 | **9. Polish** ✅ | The audit (below), the Orrery revamp, the full Orrery Bronze family, Nebula Moss Carpet, Glowing Stew, Star Compass, the advancement tree, recipe unlocks, data-pack switches. **Done.** | Renames across code, data, structures and textures; a copper-style aging/waxing system shared by four block classes; vanilla advancement triggers; generated recipe-unlock advancements; biome-tag switches |
 | **10. The Mojang pass** | Bring every feature in line with what a real Mojang End update would ship (§14.1): defang the hazards, consolidate the materials, replace Starforging with one smithing upgrade, cut what doesn't fit, rename the science words, and add what's missing: ties to the vanilla End, music and ambience, and a reason to come back. **Next.** | World upgrade path for renamed and removed blocks and items (data fixers or remapping), structure templates rebuilt, loot and recipes rebalanced, a sound and music pipeline, changes to vanilla End content through data packs and events |
+| **11. New additions** | The new content a real End update would add, from the two concepts (§14.2): the vanilla End's barrens and highlands reworked into the **Ashen Barrens** and the **Chorus Thicket**; two new biomes, the **Glimmering Crags** and the **Obsidian Wastes**; the **Drifter**, the **Weaver**, the **Keeper** and **Chorus Moths**; **Nightstone** and **Chorus Wood**; **Resonance Crystal** and **Rift Shards**; the **Resonant Spires** and their **Resonance Vault**; **Fossilized End Ships**; **Voidgel**, **End Chimes**, the **Resonance Anchor**; a music disc and soundscapes. **After Phase 10.** | Biome overrides for vanilla End biomes, a rideable flying mob with fishing-rod pull, a temporary light-bridge block, sound-muffling blocks that also stop vibrations, a vault keyed to a mob drop, new structure templates, composed music |
 
-**Phases 1-9 are done. Phase 10 is next.**
+**Phases 1-9 are done. Phase 10 is next, then Phase 11.**
 
 ### 14.1 Phase 10: the Mojang pass
 
@@ -997,6 +998,113 @@ Whalefall, Star Charts and the Star Compass; and a gateway-based travel network.
    but don't yet add up to one clear answer to *why go back after the elytra?* Tie them together; the
    **Drift Whale gets a real purpose** (something to do with it, like riding, leading or being guided
    by it).
+
+### 14.2 Phase 11: new additions
+
+Phase 10 cuts and reworks. Phase 11 adds the content a real End update would add, held to the same
+rules: fix the End's real problems (*why come back?* and *how do I get around?*), build on what the End
+already has, keep the list small and sharp, use fantasy words, and no unfair item loss, punishing
+weather or power creep. **The mood stays alien and stagnant, not lush.**
+
+It takes the best of two concepts: the backbone of the second (biomes, Drifter, Weaver, the vault)
+with the strongest pieces of the first (Obsidian Wastes, Voidgel, End Chimes, fossil ships, an End City
+guardian), and fixes the problems in both.
+
+#### Biomes: four zones with a strong colour each
+
+Two of them **rework the vanilla End** rather than adding to it, the way the Nether Update reworked the
+Nether's biomes. Phase 11 then settles the outer End at the two reworked vanilla biomes, Phase 10's
+core (the Nebula Fields and the Aurora Shallows) and the two new biomes below. The four remaining
+Phase 3 biomes (Comet Wake, the Dark Matter Belt, the Corona and the Shattered Observatory) are folded
+into these or retired, so the outer End doesn't sprawl.
+
+| Biome | Colour | What it is |
+|---|---|---|
+| **Ashen Barrens** (reworks the End Barrens and small islands) | Pale grey | The classic empty End, made emptier. The ground is dotted with **Ashdust**, a snow-like layer that **muffles footsteps and block-breaking**. Like wool, it also **stops vibrations**, so sculk sensors can't hear you on it. Dead-silent and eerie. |
+| **Chorus Thicket** (reworks the End Highlands) | Bleached magenta | Huge **Chorus Stems** grow as trees, **brittle and bleached** rather than lush, and drop the **Chorus Wood** family (a pale, slightly translucent magenta wood set). The ground is **Chorus Moss**, which **cushions falls**. |
+| **Glimmering Crags** (new) | Dark, desaturated teal | Jagged crystalline peaks rising out of the void, built from **Nightstone**: a dark, teal-tinted block family (stairs, slabs, polished, bricks), the End's deepslate. **Resonance Crystals** are embedded in the rock. The teal is kept dark and cold so it sits beside the End's purples, as warped did in the Nether. |
+| **Obsidian Wastes** (new) | Black | Dark, jagged islands with sharp obsidian spikes that echo the main island's pillars, and scattered ruins. **The Endermen's home**, and where **Fossilized End Ships** lie. |
+
+#### Mobs
+
+| Mob | Role | What it does |
+|---|---|---|
+| **The Drifter** | Signature friendly mob | A massive, passive, jellyfish-like beast that floats lazily between islands. **Lure it with chorus fruit.** **Hook it with a fishing rod** to be pulled across the void, or **saddle it and steer it with a Chorus Flower on a Stick** (like a strider's Warped Fungus on a Stick). It glides between landmasses rather than flying freely. It solves crossing the void **before you have an elytra**. It absorbs the Void Ray idea, and is where the Drift Whale's role goes: one signature mount, not two. |
+| **The Weaver** | Memorable threat | A spindly, pale creature found only in the Resonant Spires. Instead of heavy melee it shoots **Levitation Webs**: get hit and you levitate for 3 seconds, disoriented. You can fight back, and **Silk Touch harvests its webs** to use as vertical jump pads. It drops the **Resonant Key** that opens the vault. |
+| **The Keeper** | Guardian of End Cities and the Obsidian Wastes ruins | A hulking, golem-like guardian that **can't be knocked back**. Its shockwave **grounds a gliding player only when there's land beneath them** (they drift down safely, as with Slow Falling). **Over the void it never touches your flight**, so it can never cause a fall into the void. It forces a ground fight, not an unfair death. *(Not "Sentinel": the Orrery already has one.)* |
+| **Chorus Moths** | Ambient | Small glowing purple moths around the Chorus Thicket. **Sparse**, a flicker of life in a dead place, not a swarm. |
+
+#### Materials: two, to keep the list small
+
+- **Resonance Crystal.** Mined in the Glimmering Crags; it hums when held. It makes the Resonance
+  Anchor.
+- **Rift Shards** (the rework of "Aethel Ore", renamed so it doesn't read as a nod to the *Aether* mod).
+  An exceptionally rare ore found **only on the undersides of End islands**: you risk the void to mine
+  it, as you risk lava for ancient debris. Two uses:
+  - **Rift Shards and Phantom Membranes make Rift Thread.** At a smithing table it **reinforces an
+    elytra so it wears 50% slower**, and that's all: no wearing a chestplate with it (that's the power
+    creep Mojang has refused for years).
+  - **Rift Shards make the Rift Pearl**, Phase 10's standalone Void Recall. Void safety comes from
+    braving the void.
+
+These are the "one gem, one End metal" that Phase 10's material consolidation lands on. Weaver silk
+and Chorus Carapace-style extras aren't added.
+
+#### Blocks and mechanics
+
+- **Nightstone** block family (stairs, slabs, polished, bricks) and the **Chorus Wood** family.
+- **Chorus Moss** (cushions falls) and **Ashdust** (muffles sound, blocks vibrations).
+- **Voidgel.** A gelatinous block found deep in the Glimmering Crags. Bouncing on it gives **5 seconds
+  of Levitation** instead of upward momentum: vertical launch pads for builders, like slime and honey.
+- **End Chimes** (End Rods and Resonance Crystal). Hung up, they hum low. **If an Enderman teleports
+  within 16 blocks, the chime rings sharply and no Enderman can teleport in that radius for 10
+  seconds.**
+- **Levitation Web.** A Weaver web taken with Silk Touch: a jump pad.
+- **Resonance Anchor** (*renamed from "Echo Anchor": "echo" is taken by echo shards and the recovery
+  compass*). Crafted from Resonance Crystals and Purpur. Place it on one island, then throw an Ender
+  Pearl: instead of teleporting you, it lays a **shimmering bridge of light** between you and the Anchor
+  **for 30 seconds**. You can walk across the gap, and so can your friends.
+
+#### The major structure
+
+- **Resonant Spires** (*renamed from "Echo Spires"*). Tall, hollow Nightstone towers, rare in the
+  Glimmering Crags. A vertical dungeon that **mixes climbing and combat**, as trial chambers mix rooms
+  and fights. You climb by bouncing off Weaver webs and Voidgel and by riding **shulker bullets'
+  Levitation** (shulkers guard the shafts, a vanilla tie). You fight Weavers on the way up.
+- **The Resonance Vault**, at the top. It opens with a **Resonant Key** dropped by Weavers (the trial
+  vault pattern), and its rewards are purely lateral, as in Trails & Tales and Tricky Trials:
+  - **two banner patterns**;
+  - the **Eclipse armour trim** (cosmetic only; it glows);
+  - **a new music disc** capturing the End's isolation.
+
+  It answers *why come back?* without power creep.
+
+#### Lore, told by the world
+
+- **Fossilized End Ships**: rare ancient End Ships embedded in the Obsidian Wastes, built from a
+  **different wood than Purpur**. The End was once sailed by builders, before something broke it.
+  No text, just the wrecks.
+
+#### Ties to the vanilla End
+
+Phase 11 is where the mod finally builds on the End it starts from:
+
+| Vanilla piece | What Phase 11 does with it |
+|---|---|
+| **Chorus** | The Chorus Thicket, Chorus Wood, Chorus Moss; it lures the Drifter, and the Chorus Flower on a Stick steers it. |
+| **Endermen** | The Obsidian Wastes are their home, and End Chimes stop their teleports. |
+| **End Cities** | Guarded by the Keeper; the Fossilized End Ships are the ancient ships' ancestors. |
+| **Shulkers** | Their bullets' Levitation is how you climb the Resonant Spires. |
+| **Elytra** | Rift Thread makes it last; the Drifter and the Resonance Anchor carry you before you have one. |
+| **The barrens and highlands** | Reworked into the Ashen Barrens and the Chorus Thicket. |
+
+#### Music and soundscapes
+
+- A **new music disc** (the vault reward).
+- **Biome ambience**, with the Ashen Barrens near-silent, as Ashdust means.
+- **Sounds for every new mob.**
+
+This needs real composed music, as Phase 9 noted.
 
 ---
 

@@ -14,6 +14,27 @@ inversion pockets are cut, the science names go, and the missing pieces come in:
 End (End Cities, chorus, gateways), music and ambience, and a reason to come back. The full list is in
 [the plan, section 14.1](docs/END_UPDATE.md#141-phase-10-the-mojang-pass).
 
+**Then Phase 11: new additions.** What a real End update would add, held to the same rules (fix the
+End's real problems, build on the vanilla End, a small sharp list, fantasy names, no unfair deaths or
+power creep) and keeping the End alien and stagnant, not lush:
+
+- **Biomes:** the vanilla barrens and highlands reworked into the **Ashen Barrens** (Ashdust muffles every
+  sound and blocks sculk vibrations) and the **Chorus Thicket** (brittle, bleached Chorus trees, Chorus
+  Wood, fall-cushioning Chorus Moss); new **Glimmering Crags** (dark teal **Nightstone**, Resonance
+  Crystals) and **Obsidian Wastes** (the Endermen's home, Fossilized End Ships).
+- **Mobs:** the **Drifter**, a void mount you hook with a fishing rod or saddle and steer with a Chorus
+  Flower on a Stick; the **Weaver**, whose Levitation Webs you can Silk Touch into jump pads; the
+  **Keeper**, an End City guardian that grounds gliders only over land; sparse **Chorus Moths**.
+- **Materials:** **Resonance Crystal** and **Rift Shards** (mined from island undersides; Rift Thread makes
+  an elytra wear 50% slower, nothing more).
+- **Blocks:** **Voidgel** (levitation pads), **End Chimes** (stop Endermen teleporting nearby), and the
+  **Resonance Anchor** (an Ender Pearl lays a 30-second bridge of light to it).
+- **The Resonant Spires**, climbed with webs, Voidgel and shulker bullets, with a **Resonance Vault** at
+  the top opened by a Weaver's key: banner patterns, a glowing cosmetic trim and a new music disc.
+- **Music and soundscapes** for all of it.
+
+The full spec is in [the plan, section 14.2](docs/END_UPDATE.md#142-phase-11-new-additions).
+
 ## What's in the mod so far
 
 ### Phase 9: polish
