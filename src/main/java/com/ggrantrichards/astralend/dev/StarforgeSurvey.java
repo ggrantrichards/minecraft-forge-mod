@@ -22,15 +22,16 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
 
 // The survey's Starforging tests (Phase 8): the Astral Forge's menu forges an upgrade and uses up its
-// inputs; which items an upgrade fits; and each upgrade's effect, tried on a fake player or a zombie.
+// inputs; which items an upgrade fits; and each upgrade's effect, tried on a stand-in player or a zombie.
 final class StarforgeSurvey {
     // Returns the screenshot lines for Phase 8.
     static List<String> check(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
-        FakePlayer player = FakePlayerFactory.getMinecraft(end);
+        // A stand-in player, never added to the world (Forge 66 has no fake players).
+        net.minecraft.server.level.ServerPlayer player = new net.minecraft.server.level.ServerPlayer(end.getServer(), end,
+            new com.mojang.authlib.GameProfile(java.util.UUID.nameUUIDFromBytes("astralend-survey".getBytes()), "AstralSurvey"),
+            net.minecraft.server.level.ClientInformation.createDefault());
         player.snapTo(standOn.getX() + 0.5, standOn.getY(), standOn.getZ() + 0.5, 0.0F, 0.0F);
 
         // ---- the Astral Forge: Radiant onto a diamond chestplate
