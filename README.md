@@ -4,7 +4,15 @@ A Forge mod for **Minecraft Java Edition 26.3** with **Forge 66.0.8** that expan
 into a sparse, mysterious network of astral islands. The full plan is in
 [docs/END_UPDATE.md](docs/END_UPDATE.md).
 
-**Status:** all 9 phases done: biomes, mobs, the sky and Stellar Flares, structures, live comets, Starforging, and a final polish pass. Mod ID: `astralend`.
+**Status:** phases 1-9 done: biomes, mobs, the sky and Stellar Flares, structures, live comets, Starforging, and a polish pass. Mod ID: `astralend`.
+
+**Next, Phase 10: the Mojang pass.** Every feature gets held to what a real Mojang End update would
+ship: the hazards are defanged (no Flare Burn, no comet landfall, no Stalker void knockback), the
+materials consolidate to about three, Starforging gives way to a single smithing-table upgrade (Void
+Recall stays, on its own), the Black Hole Guardian, the Watcher, Comet Ice, the Cinder Mite and the
+inversion pockets are cut, the science names go, and the missing pieces come in: ties to the vanilla
+End (End Cities, chorus, gateways), music and ambience, and a reason to come back. The full list is in
+[the plan, section 14.1](docs/END_UPDATE.md#141-phase-10-the-mojang-pass).
 
 ## What's in the mod so far
 

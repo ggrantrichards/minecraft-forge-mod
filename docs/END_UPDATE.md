@@ -939,8 +939,64 @@ Each phase is playable on its own. Later phases build on earlier ones.
 | **7. Live comets** ✅ | The comet entity, tail riding and Stardust Motes, chunks knocked off the head, landfall craters, `/astralend comet`. **Done.** | One server-driven entity with a mob-style model (not block displays: one entity, one model, cheap to sync) flying a quadratic arc; it isn't saved. A level-tick listener sends comets past players. The crater placer changes at most 40 blocks and checks `mobGriefing` and nearby built blocks. The survey sends one, hits it and lands one. |
 | **8. Starforging** ✅ | Astral Forge, Starforge Templates and Alloy, the six upgrades, Rift Pearls, upgrade accents. **Done.** | An `ItemCombinerMenu` and screen (like the smithing table's, with five inputs); a data component for the upgrade; vanilla attribute modifiers for gravity, step height and max absorption; a temporary rift-tile block; one global loot modifier for Smelting and Pull; Forge events for hits, projectiles, fire, effects and the void. Accents are drawn over the vanilla item models (`assets/minecraft/items`) and, on worn armour, by a player render layer. |
 | **9. Polish** ✅ | The audit (below), the Orrery revamp, the full Orrery Bronze family, Nebula Moss Carpet, Glowing Stew, Star Compass, the advancement tree, recipe unlocks, data-pack switches. **Done.** | Renames across code, data, structures and textures; a copper-style aging/waxing system shared by four block classes; vanilla advancement triggers; generated recipe-unlock advancements; biome-tag switches |
+| **10. The Mojang pass** | Bring every feature in line with what a real Mojang End update would ship (§14.1): defang the hazards, consolidate the materials, replace Starforging with one smithing upgrade, cut what doesn't fit, rename the science words, and add what's missing: ties to the vanilla End, music and ambience, and a reason to come back. **Next.** | World upgrade path for renamed and removed blocks and items (data fixers or remapping), structure templates rebuilt, loot and recipes rebalanced, a sound and music pipeline, changes to vanilla End content through data packs and events |
 
-**All nine phases are done.**
+**Phases 1-9 are done. Phase 10 is next.**
+
+### 14.1 Phase 10: the Mojang pass
+
+Phase 9 asked whether each feature was polished. Phase 10 asks a harder question: **would Mojang
+ship it at all, in this form, in a real End update?** The pattern Mojang follows: fix the End's real
+problems (an empty outer End after the dragon and the elytra, slow travel), build on what the End
+already has, keep the feature list small and sharp, use fantasy words rather than science words, and
+never ship unfair item loss, punishing weather or power creep.
+
+**The core to keep and build around:** the Nebula Fields, the Aurora Shallows and the new sky; the
+Drift Whale, Pollinator, Corona Skimmer and Void Wanderer; Stardust; the Observatory vaults, the
+Whalefall, Star Charts and the Star Compass; and a gateway-based travel network.
+
+#### Rework: good ideas, wrong execution
+
+| Feature | Problem | Phase 10 version |
+|---|---|---|
+| **Stellar Flares** | The sky burning you is weather that hurts players. Mojang has never shipped that (lightning aside). | Keep the gold sky, the blooming Flareblooms, the solar wind's elytra boost and the Skimmer flocks; **remove Flare Burn**. A flare becomes a spectacle and a harvest window, not a hazard. Sunshades, Flare Ward and the burn-related loot and advancements go or change with it. |
+| **Live comets** | Landfall that blasts craters into islands is terrain change Mojang wouldn't risk near builds. | **Shooting stars across the sky**, with Comet Cores found only in naturally generated craters. Keep riding the tail and knocking chunks off the head; **remove landfall**. |
+| **Umbral Stalker** | Invisible, plus a pounce that knocks you toward the void: the items are lost for good. An unfair death. | Keep the stealth and light-reveals-it (good, Warden-like counterplay); **remove the void knockback**. |
+| **Abandoned Orrery + Orrery Bronze** | A second tarnishing metal copies copper's whole gimmick. | Build the Orrery from **copper or purpur variants**, or give the bronze a mechanic of its own instead of tarnish. The Sentinel stays as its mini-boss guardian. |
+| **Gravity Inversion pockets / low gravity** | Physics zones are fun but an edge-case nightmare (redstone, mob AI). | Low gravity is plausible now that gravity is an attribute: **keep it to one biome**. **Cut the inversion pockets** (and the Gravity Anomaly). |
+| **Constellation Maze** | Puzzle structures are rare in vanilla. | Shrink it to a **smaller set piece**, not a headline structure. |
+| **Materials** | Void Crystal, Meteoric Iron, Solarite, Temporal Crystal, Singularity Shard, Stardust, Umbral Membrane, Skimmer Film, Chart Fragment... far too many. A real update adds one or two. | **Consolidate to about three: one End metal, one gem, one mob drop.** Every recipe, loot table and structure that used the others is reworked to match. |
+
+#### Cut or fundamentally rethink
+
+- **Starforging** (six stacking upgrade sets and a new forge screen). A parallel perk system with set
+  bonuses is the power creep Mojang avoids; enchantments already fill that role.
+  - The salvageable piece is a **single End-themed upgrade through the smithing table** (the
+    netherite precedent). The Astral Forge, the templates, the alloy and the six upgrades go.
+  - **Void Recall** (a Rift Pearl that saves you from the void) can stand alone, the way the totem
+    does, because void safety is a real End need.
+- **Black Hole Guardian.** The name is pure sci-fi, and a hostile that swallows your items is the kind
+  of mechanic players hate, even though the items come back. Cut it or rethink it from scratch.
+- **The Watcher.** A creepy presence that vanishes when you approach leans into creepypasta territory
+  that Mojang steers away from. **Move the spyglass interaction to a friendly mob** and cut the Watcher.
+- **Science names throughout.** Dark Matter Belt becomes something like **Hollow Isles**; Black Hole
+  Guardian, Singularity and Temporal get mystical equivalents; "Corona" and "Nebula" are borderline and
+  get a second look.
+- **Comet Ice and the Cinder Mite.** Comet Ice is blue ice again; the Mite is an endermite or silverfish
+  variant. Both are filler: cut.
+
+#### Fill the gaps a real End update wouldn't have
+
+1. **Touch the vanilla End.** Endermen, shulkers, chorus, End Cities, gateways and the dragon fight
+   are all untouched so far. Rework the outer islands' relationship with **End Cities and chorus**, and
+   build the travel network on **End gateways**; look at the post-dragon loop too.
+2. **Music and soundscapes.** Cut in Phase 9 for lack of real composed music, but every major Mojang
+   update ships new music and ambience. Phase 10 needs them: biome ambience, mob sounds where they're
+   missing, and new tracks.
+3. **A "reason to return" loop.** The pieces exist (the Drift Whale, the travel network, flight boosts)
+   but don't yet add up to one clear answer to *why go back after the elytra?* Tie them together; the
+   **Drift Whale gets a real purpose** (something to do with it, like riding, leading or being guided
+   by it).
 
 ---
 
