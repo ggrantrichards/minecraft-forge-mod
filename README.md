@@ -4,9 +4,49 @@ A Forge mod for **Minecraft Java Edition 26.3** with **Forge 66.0.8** that expan
 into a sparse, mysterious network of astral islands. The full plan is in
 [docs/END_UPDATE.md](docs/END_UPDATE.md).
 
-**Status:** Phase 7 of 9 (live comets cross the outer End: ride their tails, knock chunks off them, find where they land). Mod ID: `astralend`.
+**Status:** Phase 8 of 9 (Starforging: six late-game upgrades for your gear, forged at the Astral Forge). Mod ID: `astralend`.
 
 ## What's in the mod so far
+
+### Phase 8: Starforging
+
+| The Astral Forge | Forging Radiant onto a chestplate |
+|---|---|
+| ![A quartz forge banded in meteoric iron, a void crystal star on top and violet light in its mouth](docs/images/starforge/game_astral_forge.png) | ![The Astral Forge's screen: template, chestplate, alloy and two materials, and an inventory of upgraded gear](docs/images/starforge/game_forge_screen.png) |
+| **Upgraded armour, worn** | **Rift Walker boots over the void** |
+| ![A player in armour with a coloured accent on each piece](docs/images/starforge/game_armor.png) | ![A player standing on a trail of cracking violet rift tiles high over the End](docs/images/starforge/game_rift_walker.png) |
+
+Starforging is the late-game upgrade system. Every upgrade is better than none; the choice is
+which one goes where. Each one does one clear thing, shown on the tooltip like an enchantment
+("Starforged: Radiant: Soak Light"), and works in every dimension. One upgrade per item; forging
+a new one replaces the old. Upgrades stack with enchantments.
+
+**How:** build an **Astral Forge** (a Meteoric Iron block, five Observatory Quartz and a Void
+Crystal) and put in a **Starforge Template**, the item, **Starforge Alloy** and the upgrade's
+material. Templates come from station vaults, maze rewards, Observatory vaults and Solar Arrays,
+and copy like smithing templates (7 diamonds and Observatory Quartz make two). Alloy is crafted:
+2 Void Crystal, 2 Meteoric Iron Ingots and Glowing Spores.
+
+**What can be upgraded:** diamond and netherite armour, swords, axes and tools, plus bows,
+crossbows, tridents and maces (item tags `astralend:starforgeable/*`, so a data pack can add more).
+Not elytra.
+
+| Upgrade | Material | Armour | Weapons | Tools |
+|---|---|---|---|---|
+| **Voidwalker** | Void Crystal + Umbral Membrane | **Boots, Rift Walker:** walk off an edge and tiles of rift form under your feet and a step ahead, cracking and crumbling a second later (over lava too, which comes back). **Chestplate, Void Recall:** right-click a **Rift Pearl** onto it; fall into the void and the pearl is spent to put you back on your last footing. | - | - |
+| **Meteoric** | Meteoric Iron Ingot | **Heat Shield:** no fire or lava damage for the first 2 seconds per piece; it recharges after 10 seconds out of the fire. | - | **Smelting:** mined blocks drop smelted (ore to ingots, sand to glass, logs to charcoal). Fortune works; Silk Touch wins. |
+| **Stardust** | Stardust | **-5% Gravity** per piece; boots also **+0.5 Step Height** (real attributes, on the tooltip). | **Bows, crossbows, tridents:** shots fall 20% slower, so they fly about 25% further. | - |
+| **Temporal** | Temporal Crystal | **Time Stretch:** good effects last 10% longer per piece, bad ones wear off 10% sooner. | **Echo Strike:** a quarter of every melee hit lands again a second later, with a chime. | - |
+| **Singularity** | Singularity Shard | **Lensing:** 10% chance per piece that a projectile bends around you. | **Swords:** a full sweep pulls the mobs around your target in toward it. | **Pull:** what you mine (and its experience) goes straight into your inventory. |
+| **Radiant** | Solarite Ingot + Charged Void Crystal | **Soak Light:** in bright light (13+) gain a golden heart every 20 s, up to one per piece (five times faster in a Corona flare). **2+ pieces:** no Flare Burn. | **Glow:** whatever you hit glows for 5 seconds. | - |
+
+Each upgrade leaves a **colour accent** on the item, like an armour trim: a gem on a helmet's brow,
+a clasp on a chestplate, a buckle, ankle bands, the guard of a sword, the binding of a tool, a bow's
+grip. You can see it in the inventory and on armour someone is wearing (violet Voidwalker, ember
+Meteoric, sky-blue Stardust, amber Temporal, magenta Singularity, sun-yellow Radiant).
+
+**Rift Pearls** drop from every boss: the Ender Dragon (on its exit portal), the Wither, the Warden,
+Elder Guardians and the Station Sentinel. They're rare in station and Observatory vaults.
 
 ### Phase 7: live comets
 

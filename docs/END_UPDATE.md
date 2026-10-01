@@ -595,7 +595,8 @@ something you can interact with, without the lag and bugs of moving islands.
 | **Orrery Bronze** | Salvaged from Orbital Stations | Mine station hull blocks | Station-style building, lamps and grates |
 
 **Starforge Alloy** = 2 Void Crystal + 2 Meteoric Iron Ingot + 1 Glowing Spore, crafted
-at the Astral Forge (§9).
+on a crafting table like a Netherite Ingot (decided in Phase 8: the Forge's own slots are for
+upgrading).
 
 ### 8.2 Building blocks
 Every stone type gets the full vanilla set: slabs, stairs, walls, polished, bricks and
@@ -658,6 +659,14 @@ chiseled.
 
 Starforging is the late-game upgrade system. **Every upgrade is strictly better than no
 upgrade. The choice is which one.**
+
+> **Built (Phase 8):** everything in this section. Choices made while building it: the Forge has five
+> input slots (template, item, alloy, and one or two materials, since Voidwalker and Radiant take two);
+> a Rift Pearl goes into a Voidwalker chestplate by right-clicking it on, like filling a bundle; "Lighter
+> Gravity" and Radiant's room for golden hearts are ordinary attribute modifiers on the item, so they
+> show on its tooltip; the sweep pull happens on a full-strength sword hit on the ground (the sweep's
+> own conditions); Echo Strike is melee only. Starforged gear works the same on mobs that wear it,
+> except the parts that need a player (Rift Walker, Void Recall, Soak Light).
 
 ### 9.1 The rules
 - **Vanilla-style:** each upgrade does one clear thing that fits on one tooltip line, like
@@ -920,10 +929,10 @@ Each phase is playable on its own. Later phases build on earlier ones.
 | **5. Sky and Stellar Flares** ✅ | Moving stars, auroras, silhouettes, comets, the Remnant, Corona flare phases, Flare Burn, solar wind, flare charging, Sunshade, Flare Ward, Collector Pedestal, Flare Cells. **Done.** | 26.3 has no `DimensionSpecialEffects` hook any more: the End's `SkyRenderer` is swapped for a subclass that draws the vanilla sky, then the mod's. A saved server-side flare timer (`SavedData`), synced to clients with one small packet. Brewing is data (26.3 brewing recipes). |
 | **6. Structures** ✅ | Comet Crater, Observatory Ruins, Wanderer Relay, Whalefall, Solar Array Ruins, Wormhole Maw, Constellation Maze, Orbital Station + Sentinel, Orrery Bronze, Portal Lens, Temporal Crystal, Data Core. **Done.** Simplified for now: stations have normal gravity (no rotating floor), and Starforge Templates and Echo Logs (vault loot in the plan) wait for Phases 8 and 9. | Structures are built block by block in Python (`tools/structures/`) and written as structure templates (26.3 format: palette entries are `{id, properties}`), each placed by a jigsaw wrapped in a small `astralend:island` structure type that checks the ground first, so nothing generates over empty void. Maw travel, maze bridges, station power and the Sentinel are Java. The survey finds, generates and tests every structure. |
 | **7. Live comets** ✅ | The comet entity, tail riding and Stardust Motes, chunks knocked off the head, landfall craters, `/astralend comet`. **Done.** | One server-driven entity with a mob-style model (not block displays: one entity, one model, cheap to sync) flying a quadratic arc; it isn't saved. A level-tick listener sends comets past players. The crater placer changes at most 40 blocks and checks `mobGriefing` and nearby built blocks. The survey sends one, hits it and lands one. |
-| **8. Starforging** | Astral Forge, templates, the six upgrades, Rift Pearls | Data components on items, a menu and screen for the Forge, vanilla attribute modifiers (gravity, step height), a temporary rift-tile block, loot modifiers for smelting and pull, event listeners for hits, projectiles, fire damage and falling into the void |
+| **8. Starforging** ✅ | Astral Forge, Starforge Templates and Alloy, the six upgrades, Rift Pearls, upgrade accents. **Done.** | An `ItemCombinerMenu` and screen (like the smithing table's, with five inputs); a data component for the upgrade; vanilla attribute modifiers for gravity, step height and max absorption; a temporary rift-tile block; one global loot modifier for Smelting and Pull; Forge events for hits, projectiles, fire, effects and the void. Accents are drawn over the vanilla item models (`assets/minecraft/items`) and, on worn armour, by a player render layer. |
 | **9. Polish** | Advancements, Echo Logs, music, config toggles, balance passes | JSON advancements, a Forge config file, playtesting |
 
-**Next:** Phase 8, Starforging.
+**Next:** Phase 9, polish.
 
 ---
 
