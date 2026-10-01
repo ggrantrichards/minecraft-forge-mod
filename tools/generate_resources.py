@@ -1829,7 +1829,7 @@ def advancements_phase9():
     advancement("connect_the_dots", rid("star_inlay_observatory_quartz"), "Connect the Dots",
                 "Cross a Constellation Maze and open the chest on its dais", parent=rid("end/hold_still"),
                 criteria={"maze": {"trigger": "minecraft:player_generates_container_loot",
-                                   "conditions": {"loot_table": rid("chests/constellation_maze")}}})
+                                   "conditions": {"loot_tables": [rid("chests/constellation_maze")]}}})
     advancement("say_ahh", rid("portal_lens"), "Say Ahh", "Wake a Wormhole Maw", parent=rid("end/hold_still"), frame="goal")
     advancement("something_looks_back", rid("star_chart"), "Something Looks Back",
                 "Catch a glimpse of the Watcher through a spyglass", parent=rid("end/hold_still"), hidden=True)
