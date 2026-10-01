@@ -325,9 +325,10 @@ public final class WorldgenSurvey {
         }
     }
 
-    // A sky view from just above an area's centre, looking the given way - or, with `toward`, looking
-    // at that area (yaw from the direction to its centre). Written as "name x y z yaw pitch style".
-    private static void skyShot(List<String> lines, Area area, String name, float yaw, float pitch, Area toward, String style) {
+    // A sky view from just above an area's centre, looking the given way - or, given the End, looking
+    // toward the Remnant (over the nearest Corona, found as the game finds it). Written as
+    // "name x y z yaw pitch style".
+    private static void skyShot(List<String> lines, Area area, String name, float yaw, float pitch, ServerLevel toward, String style) {
         if (area == null) {
             return;
         }
@@ -335,9 +336,12 @@ public final class WorldgenSurvey {
         int top = area.surfaceHeightsIn.keySet().stream().max(Integer::compare).orElse(60);
         BlockPos at = new BlockPos(area.centre.getX(), top + 12, area.centre.getZ());
         if (toward != null) {
-            double dx = toward.centre.getX() - at.getX();
-            double dz = toward.centre.getZ() - at.getZ();
-            yaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
+            BlockPos corona = com.ggrantrichards.astralend.flare.StellarFlares.nearestCorona(toward, at);
+            if (corona != null) {
+                double dx = corona.getX() - at.getX();
+                double dz = corona.getZ() - at.getZ();
+                yaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
+            }
         }
         lines.add(String.format(java.util.Locale.ROOT, "%s %d %d %d %.1f %.1f %s", name, at.getX(), at.getY(), at.getZ(), yaw, pitch, style));
     }
@@ -366,9 +370,9 @@ public final class WorldgenSurvey {
         // Phase 5: the sky and Stellar Flares.
         skyShot(lines, areas.get('A'), "sky_aurora_shallows", -45.0F, -32.0F, null, "flare=calm");
         skyShot(lines, areas.get('N'), "sky_nebula_fields", -45.0F, -32.0F, null, "flare=calm");
-        skyShot(lines, areas.get('W'), "sky_remnant_far", 0.0F, -6.0F, areas.get('C'), "flare=warning");
+        skyShot(lines, areas.get('W'), "sky_remnant_far", 0.0F, -6.0F, end, "flare=warning");
         skyShot(lines, areas.get('C'), "sky_corona_flare", -45.0F, -18.0F, null, "flare=flare");
-        mobShot(lines, areas.get('C'), end, "display flare=flare", 7.0, 0.0, 3.2);
+        mobShot(lines, areas.get('C'), end, "display flare=flare", 5.5, 0.0, 2.6);
         try {
             java.nio.file.Files.write(java.nio.file.Path.of("astralend-shots.txt"), lines);
             log("Wrote " + lines.size() + " screenshot viewpoints to astralend-shots.txt");

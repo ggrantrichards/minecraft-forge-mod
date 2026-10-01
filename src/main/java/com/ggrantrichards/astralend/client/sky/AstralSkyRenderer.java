@@ -265,7 +265,7 @@ public class AstralSkyRenderer extends SkyRenderer {
 
     // The Corona's sky turns gold during a flare: a box round the camera, drawn faintly.
     private void skyTint(Quads quads, float strength) {
-        int colour = argb(0.22F * strength, 1.0F, 0.6F, 0.28F);
+        int colour = argb(0.42F * strength, 1.0F, 0.74F, 0.42F);
         float d = DISTANCE * 0.9F;
         Vector3f[] c = {
             new Vector3f(-d, -d, -d), new Vector3f(d, -d, -d), new Vector3f(d, d, -d), new Vector3f(-d, d, -d),

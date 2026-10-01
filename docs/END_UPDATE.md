@@ -269,8 +269,8 @@ far away, so players always know where the Corona is (and can choose to avoid it
 - **Built (Phase 3):** smoother, low-relief islands (few overhangs) with a crust of
   **Sunscorched Stone** over **Charred End Stone**; **Solarite Ore** in rich veins at the surface
   and sparse ones deep inside; **Flareblooms** (shut tight), glowing **Sunscale Lichen**, and the
-  dead: **Ashen Lumineshrooms**, **Petrified Astral Vines** and **Pollinator Husks**. The Remnant
-  and Stellar Flares themselves come in Phase 5, so the Corona is safe until then.
+  dead: **Ashen Lumineshrooms**, **Petrified Astral Vines** and **Pollinator Husks**. Since
+  Phase 5 the Remnant hangs over it and the Stellar Flares burn it (§7.1).
 
 - **The only place with Stellar Flares** (§7.1). Everywhere else in the End stays calm:
   no burning, no storms. Even at the Corona's border, a flare is only a bright glow on the
@@ -309,8 +309,8 @@ far away, so players always know where the Corona is (and can choose to avoid it
 ## 5. Mobs
 
 > **Built (Phase 4):** all eight, with models, animations, glowing layers, spawn eggs, drops and
-> the advancements below. Adapted until later phases exist: Cinder Mites come in swarms and
-> Skimmer wings refill on a timer instead of following Stellar Flares (Phase 5); the Star Chart
+> the advancements below. Since Phase 5, Cinder Mites swarm out in each flare's afterglow and
+> Skimmer wings refill then. Adapted until later phases exist: the Star Chart
 > marks a region of another astral biome instead of a structure (Phase 6); the Drift Whale's
 > "Leviathan" music disc waits for the music of Phase 9. A pollinated plant spreads to the ground
 > beside it (the End's plants have no growth stages). The Spore Lantern is a glowing block, and it
@@ -465,6 +465,9 @@ Small, glowing burrowers, about the size of an Endermite. They hide in Sunscorch
 ---
 
 ## 6. Atmosphere and the sky
+> **Built (Phase 5):** the two-layer starfield, biome auroras, the Remnant over the nearest Corona,
+> background comets and rare silhouettes (a whale, a ring). Biome ambience, music and the
+> visual toggles come with Phase 9.
 
 Most of the "cosmic" feel costs nothing in performance because it lives in the sky
 renderer, not in the world.
@@ -493,6 +496,12 @@ renderer, not in the world.
 ## 7. Events
 
 ### 7.1 Stellar Flares (Corona only)
+> **Built (Phase 5):** the whole cycle as described below, Flare Burn (armour doesn't help; cover,
+> Sunshades and Flare Ward do), Flareblooms opening (Flare Pollen), Sunscale Lichen charging, Skimmers
+> riding the flare and refilling in the afterglow, Cinder Mite swarms, the solar wind for elytra,
+> and Collector Pedestals charging Void Crystal and Flare Cells. Not yet: the Radiant upgrade (Phase 8)
+> and the config file (Phase 9); `/astralend flare` lets operators set the phase.
+
 The Remnant pulses about every **15–25 minutes**. **Flares happen only in the Corona
 biome.** Everywhere else in the End, including the vanilla central island and all other
 new biomes, there is no flare, no burning and no storm. From elsewhere, a flare appears
@@ -902,13 +911,13 @@ Each phase is playable on its own. Later phases build on earlier ones.
 | **3. Remaining biomes** ✅ | Aurora Shallows, Comet Wake, Dark Matter Belt, Shattered Observatory, the Corona, inversion pockets, 42 new blocks and 2 new items. **Done.** | Biome-shaped terrain as JSON density functions, four Java features, a block entity for the pockets |
 | **3.5. Biome worlds** ✅ | Territories thousands of blocks across on big biome-shaped islands, dense ground cover, giant flora (Lumineshrooms, Nullwood trees, petrified stalks), ribcages, craters, ice spires, the great ring, Lumine and Nullwood wood sets | Landmass density functions, eight Java features, in-game screenshots in CI |
 | **4. Mobs** ✅ | Pollinator, Void Wanderer, Black Hole Guardian, Umbral Stalker, Corona Skimmer, Cinder Mite, Drift Whale and the Watcher, their drops, spawn eggs and advancements. **Done.** | Entity classes and AI goals; models and textures generated together from one description (tools/mobs/make_mobs.py); biome spawn lists plus a hand-placed spawner for the three "one at a time" mobs |
-| **5. Sky and Stellar Flares** | Moving stars, auroras, silhouettes, the Remnant, Corona flare phases, Flare Burn, solar wind, flare charging | A custom `DimensionSpecialEffects` for the End (client), a saved server-side flare timer, a network packet to sync flare state |
+| **5. Sky and Stellar Flares** ✅ | Moving stars, auroras, silhouettes, comets, the Remnant, Corona flare phases, Flare Burn, solar wind, flare charging, Sunshade, Flare Ward, Collector Pedestal, Flare Cells. **Done.** | 26.3 has no `DimensionSpecialEffects` hook any more: the End's `SkyRenderer` is swapped for a subclass that draws the vanilla sky, then the mod's. A saved server-side flare timer (`SavedData`), synced to clients with one small packet. Brewing is data (26.3 brewing recipes). |
 | **6. Structures** | Comet Crater, Observatory Ruins, Wanderer Relay, Whalefall, Solar Array Ruins, Wormhole Maw, Constellation Maze, Orbital Station + Sentinel | Structure templates built in-game and saved as `.nbt`, plus jigsaw JSON. Maw linking, maze bridges and station power need Java. |
 | **7. Live comets** | The comet entity, tail harvesting, landfall craters | An entity with block-display parts, a flight path, and a small crater placer |
 | **8. Starforging** | Astral Forge, templates, the six upgrades, Rift Pearls | Data components on items, a menu and screen for the Forge, vanilla attribute modifiers (gravity, step height), a temporary rift-tile block, loot modifiers for smelting and pull, event listeners for hits, projectiles, fire damage and falling into the void |
 | **9. Polish** | Advancements, Echo Logs, music, config toggles, balance passes | JSON advancements, a Forge config file, playtesting |
 
-**Next:** Phase 5, the sky and Stellar Flares.
+**Next:** Phase 6, structures.
 
 ---
 

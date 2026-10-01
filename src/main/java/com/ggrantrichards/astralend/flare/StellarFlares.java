@@ -341,7 +341,8 @@ public class StellarFlares extends SavedData {
         return found;
     }
 
-    private static BlockPos nearestCorona(ServerLevel level, BlockPos from) {
+    // Also used by the worldgen survey, to aim its screenshot of the Remnant.
+    public static BlockPos nearestCorona(ServerLevel level, BlockPos from) {
         BiomeResolver biomes = level.getChunkSource().getGenerator().getBiomeSource()
             .createUncachedResolver(level.getChunkSource().randomState());
         int step = 128;

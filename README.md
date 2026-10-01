@@ -4,9 +4,58 @@ A Forge mod for **Minecraft Java Edition 26.3** with **Forge 66.0.8** that expan
 into a sparse, mysterious network of astral islands. The full plan is in
 [docs/END_UPDATE.md](docs/END_UPDATE.md).
 
-**Status:** Phase 4 of 9 (the End has its own creatures now). Mod ID: `astralend`.
+**Status:** Phase 5 of 9 (the End has its own sky, and the Corona its Stellar Flares). Mod ID: `astralend`.
 
 ## What's in the mod so far
+
+### Phase 5: the sky and Stellar Flares
+
+The End has a sky of its own now. These are in-game screenshots taken on every build:
+
+| Over the Aurora Shallows | Over the Nebula Fields |
+|---|---|
+| ![Green and gold auroras over the Aurora Shallows, the Remnant low on the horizon](docs/images/sky/aurora_shallows.png) | ![A faint violet aurora over the Nebula Fields](docs/images/sky/nebula_fields.png) |
+| **A Stellar Flare in the Corona** | **The Corona's flare blocks** |
+| ![The Corona's sky burning gold during a flare](docs/images/sky/corona_flare.png) | ![Open Flareblooms, charged lichen, Collector Pedestals under a Sunshade](docs/images/sky/flare_blocks.png) |
+
+**The sky** (drawn in the sky renderer: no entities, nothing in the world):
+
+- **Stars** in two layers. One layer turns, very slowly - once every 40 minutes.
+- **Auroras**: slow curtains of light. Green and gold over the Aurora Shallows, a faint violet over
+  the Nebula Fields, icy blue over the Comet Wake, pale over the Shattered Observatory, faintest
+  in the vanilla End, none at all in the Dark Matter Belt.
+- **The Remnant**, the dim, dying ember of the collapsed star, always hangs over the nearest
+  Corona - low on the horizon from far away, high overhead inside it - so you can always find the
+  Corona (or keep away from it). It brightens before a flare.
+- Now and then a **far-off comet** streaks across the sky, and very rarely something vast - a
+  whale, a ring - drifts across the far distance.
+
+**Stellar Flares** happen every 15-25 minutes, and only the Corona feels them:
+
+| Phase | How long | What happens in the Corona |
+|---|---|---|
+| **Warning** | 1 minute | The Remnant brightens and a rising tone plays; a line above the hotbar tells you to find cover |
+| **Flare** | 1-2 minutes | The sky turns gold and sheets of light roll across it. **Open sky burns you (Flare Burn)**: half a heart every 3 seconds, a full heart after 30 seconds out. Flareblooms open; Skimmers take off and ride the flare; the solar wind pushes you along if you glide with an elytra |
+| **Afterglow** | 2 minutes | Sunscale Lichen glows bright gold, Skimmers' wings fill up again (shear them for Skimmer Film), and **Cinder Mites swarm** out of the stone |
+
+Anything solid over your head protects you from Flare Burn (glass too, so you can watch), and so
+does a **Sunshade** or a **Potion of Flare Ward**. Armour doesn't. Everywhere else in the End, a
+flare is just the Remnant blazing on the horizon.
+
+New blocks and items:
+
+- **Sunshade** (3 Skimmer Film over 2 Solarite Ingots, makes 4): a thin canopy that hangs at the
+  top of its block space with nothing holding it up. Put one over your head and keep mining
+  through a flare.
+- **Collector Pedestal** (Solarite, Astral Glass, Polished Sunscorched Stone): set a **Void
+  Crystal** or a **Flare Cell** on it. Under open sky in the Corona, 30 seconds of flare charges it:
+  **Charged Void Crystal** (for the Wormhole Maws of Phase 6) or a **Charged Flare Cell** (to power
+  the Orbital Stations). Guard it while it charges.
+- **Flare Cell** (Solarite Ingot, Astral Glass, Solarite Ingot).
+- **Flare Pollen**: pick it from an open Flarebloom (use it, or break it).
+- **Potion of Flare Ward**: brew an Awkward Potion with **Skimmer Film** (3:00). Brew Flare Pollen
+  into it for 8:00. Splash and lingering versions brew the usual way.
+- Operators can run `/astralend flare [warning|flare|afterglow|calm]` to see or set the cycle.
 
 ### Phase 4: the mobs
 
@@ -28,7 +77,7 @@ These are in-game screenshots taken on every build:
 | **Void Wanderer** | Dark Matter Belt, Shattered Observatory | An old bronze survey drone with a glass lens and a spinning gimbal ring. It floats over and scans you: **stand still for 5 seconds** and it drops a **Data Shard** and leaves. Each one scans each player once. Hit it and it fires laser pulses back and teleports away when hurt. | Data Shard (for letting it scan you); a **Cracked Lens** if killed |
 | **Umbral Stalker** | Dark Matter Belt (hostile) | A hunched shadow brute that walks on its knuckles, with bone tusks, dark-matter crystals growing from its back and a violet rift glowing in its chest - but in the dark you can't see it at all until it picks you as prey; then a faint shimmer shows where it moves. It creeps up **while your back is turned** and backs off when you face it. It hunts like a lion: hidden, it creeps in low and slow, then **pounces** from a few blocks behind you - a heavy ambush blow that throws you away from it, toward the void near an edge. Light reveals it (block light 7+: Null Lanterns, Spore Lanterns, torches). | **Umbral Membrane** |
 | **Cinder Mite** | The Corona (hostile) | Glowing burrowers that come in swarms of about four, set you on fire, and burrow back into the stone after a minute. Immune to fire; **water kills them** in about two seconds. | **Cinder**, a fuel (smelts 4 items) |
-| **Corona Skimmer** | The Corona | A flat manta that rests on the ground looking like stone, then lifts off and glides in wide circles. **Shear it** while its wings shimmer for **Skimmer Film**; the wings grow back. | Skimmer Film (sheared, not killed) |
+| **Corona Skimmer** | The Corona | A flat manta that rests on the ground looking like stone, then lifts off and glides in wide circles; whole flocks ride the Stellar Flares. **Shear it** while its wings shimmer for **Skimmer Film**; the wings fill again in the next flare's afterglow. | Skimmer Film (sheared, not killed) |
 | **Black Hole Guardian** | Dark Matter Belt, Comet Wake (rare, one at a time) | A small singularity that pulls you and your dropped items in. Items it swallows are **kept, not destroyed**: it drops them when it dies or collapses (after 2-3 minutes). You can only hurt it while its ring **flickers**. | **Singularity Shard**, only from a kill |
 | **Drift Whale** | The void, most often over the Aurora Shallows (one at a time) | A huge translucent whale that swims slowly through the void, turns toward you and hums. Nothing can hurt it. Very rarely sheds a glowing **Whalelight Scale**. | Three advancements: *Something Big Out There*, *Whale Song*, *Tagalong* |
 | **The Watcher** | Shattered Observatory (only when you're alone) | A floating sentinel of pale stone with one great eye, gold bands, glowing runes and shards circling it, at the edge of sight, there for a few seconds. Walk toward it and it's gone. **Catch it in a spyglass** and it vanishes too, leaving you a **Star Chart**. | Star Chart, and the advancement *Something Looks Back* |
@@ -45,9 +94,9 @@ New blocks and items from the mobs:
   later phases (the Portal Lens, Stalker Cloak, Gravity Wells, Flare Ward...). For now they're
   collectables.
 
-What's waiting for later phases: Cinder Mite swarms and Skimmer flocks will follow **Stellar
-Flares** (Phase 5); the Star Chart will point at structures (Phase 6); the Drift Whale's music disc
-needs the music of Phase 9.
+What's waiting for later phases: the Star Chart will point at structures (Phase 6); the Drift
+Whale's music disc needs the music of Phase 9. (Cinder Mite swarms and Skimmer flocks follow the
+Stellar Flares since Phase 5.)
 
 ### Phase 3.5: each biome is its own world
 
