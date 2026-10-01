@@ -569,6 +569,15 @@ public final class WorldgenSurvey {
                                         + st.getPieces().size() + " piece(s), box " + st.getBoundingBox());
                                     for (var piece : st.getPieces()) {
                                         log("    piece " + piece.getClass().getSimpleName() + " " + piece.getBoundingBox());
+                                        var b = piece.getBoundingBox();
+                                        Map<Block, Integer> inBox = new HashMap<>();
+                                        for (BlockPos q : BlockPos.betweenClosed(b.minX(), b.minY(), b.minZ(), b.maxX(), b.maxY(), b.maxZ())) {
+                                            inBox.merge(end.getBlockState(q).getBlock(), 1, Integer::sum);
+                                        }
+                                        StringBuilder top = new StringBuilder();
+                                        inBox.entrySet().stream().sorted((x, y) -> y.getValue() - x.getValue()).limit(6)
+                                            .forEach(e -> top.append(' ').append(e.getKey().getName().getString()).append('=').append(e.getValue()));
+                                        log("    blocks in it:" + top);
                                     }
                                 }
                             });
