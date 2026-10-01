@@ -17,7 +17,9 @@ import com.mojang.renderpearl.api.commands.RenderPass;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import com.mojang.renderpearl.api.vertex.VertexFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import net.minecraft.client.Camera;
@@ -68,6 +70,8 @@ public class AstralSkyRenderer extends SkyRenderer {
 
     private final RenderTarget target;
     private final TextureManager textures;
+    // Loaded up front: a texture can't be loaded (uploaded) while a render pass is open.
+    private final Map<Identifier, AbstractTexture> loaded = new HashMap<>();
     private final GpuBuffer stars;
     private final int fixedStarQuads;
     private final int turningStarQuads;
@@ -88,6 +92,9 @@ public class AstralSkyRenderer extends SkyRenderer {
         super(textures, atlases, target);
         this.target = target;
         this.textures = textures;
+        for (Identifier id : List.of(STAR, REMNANT, REMNANT_FLARE, AURORA, FLARE_SHEET, COMET, WHALE, RING)) {
+            this.loaded.put(id, textures.getTexture(id));
+        }
         int[] counts = new int[2];
         this.stars = buildStars(counts);
         this.fixedStarQuads = counts[0];
@@ -212,7 +219,7 @@ public class AstralSkyRenderer extends SkyRenderer {
     }
 
     private void drawRange(RenderPass pass, GpuBuffer buffer, Identifier texture, int firstQuad, int quadCount, Matrix4f matrix, Vector4f colour) {
-        AbstractTexture tex = this.textures.getTexture(texture);
+        AbstractTexture tex = this.loaded.get(texture);
         GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(matrix, colour);
         pass.setPipeline(RenderSystem.getCompiledPipeline(RenderPipelines.END_SKY));
         pass.setUniform("DynamicTransforms", transforms);
