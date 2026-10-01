@@ -43,6 +43,7 @@ public final class AstralEnd {
         ModEffects.POTIONS.register(modBusGroup);
         ModWorldgen.BIOME_SOURCES.register(modBusGroup);
         ModWorldgen.FEATURE_TYPES.register(modBusGroup);
+        ModWorldgen.STRUCTURE_TYPES.register(modBusGroup);
 
         LowGravity.register();
         GravityInversion.register();

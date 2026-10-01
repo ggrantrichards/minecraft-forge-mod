@@ -17,12 +17,14 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.structure.StructureType;
+import com.ggrantrichards.astralend.world.structure.IslandStructure;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 // Registers the biome source type "astralend:astral_end", which
 // data/minecraft/dimension/the_end.json uses for the End, and the feature types coded in Java
-// (used by data/astralend/worldgen/feature/*.json).
+// (used by data/astralend/worldgen/feature/*.json), and the structure type "astralend:island".
 public final class ModWorldgen {
     public static final DeferredRegister<MapCodec<? extends BiomeSource>> BIOME_SOURCES =
         DeferredRegister.create(Registries.BIOME_SOURCE, AstralEnd.MODID);
@@ -47,6 +49,13 @@ public final class ModWorldgen {
         FEATURE_TYPES.register("petrified_stalk", () -> PetrifiedStalkFeature.CODEC);
         FEATURE_TYPES.register("observatory_ring", () -> ObservatoryRingFeature.CODEC);
     }
+
+    // Phase 6: structures that check the ground before they start (see IslandStructure).
+    public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPES =
+        DeferredRegister.create(Registries.STRUCTURE_TYPE, AstralEnd.MODID);
+
+    public static final RegistryObject<StructureType<IslandStructure>> ISLAND =
+        STRUCTURE_TYPES.register("island", () -> () -> IslandStructure.CODEC);
 
     private ModWorldgen() {}
 }

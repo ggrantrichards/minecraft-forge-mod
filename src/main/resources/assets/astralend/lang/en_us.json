@@ -161,6 +161,7 @@
   "item.astralend.star_chart.direction": "The chart marks the %s, %s blocks %s of here.",
   "item.astralend.star_chart.east": "east",
   "item.astralend.star_chart.marks": "Marks a far-off region: %s",
+  "item.astralend.star_chart.marks_structure": "Marks a site: %s",
   "item.astralend.star_chart.north": "north",
   "item.astralend.star_chart.north_east": "north-east",
   "item.astralend.star_chart.north_west": "north-west",
@@ -168,6 +169,7 @@
   "item.astralend.star_chart.south_east": "south-east",
   "item.astralend.star_chart.south_west": "south-west",
   "item.astralend.star_chart.west": "west",
+  "item.astralend.temporal_crystal": "Temporal Crystal",
   "item.astralend.umbral_membrane": "Umbral Membrane",
   "item.astralend.umbral_stalker_spawn_egg": "Umbral Stalker Spawn Egg",
   "item.astralend.void_crystal": "Void Crystal",
@@ -177,5 +179,8 @@
   "item.minecraft.potion.effect.flare_ward": "Potion of Flare Ward",
   "item.minecraft.splash_potion.effect.flare_ward": "Splash Potion of Flare Ward",
   "item.minecraft.tipped_arrow.effect.flare_ward": "Arrow of Flare Ward",
-  "itemGroup.astralend": "The Astral End"
+  "itemGroup.astralend": "The Astral End",
+  "structure.astralend.comet_crater": "Comet Crater",
+  "structure.astralend.wanderer_relay": "Wanderer Relay",
+  "structure.astralend.whalefall": "Whalefall"
 }

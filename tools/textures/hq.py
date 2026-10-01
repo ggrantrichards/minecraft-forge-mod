@@ -699,3 +699,7 @@ TEXTURES = [
 # Phase 5: Stellar Flares
 from flare_textures import TEXTURES as _FLARE  # noqa: E402
 TEXTURES += _FLARE
+
+# Phase 6: structures
+from structure_textures import TEXTURES as _STRUCTURES  # noqa: E402
+TEXTURES += _STRUCTURES

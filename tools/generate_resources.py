@@ -11,6 +11,7 @@ texture in tools/textures/make_textures.py, then run all three scripts.
 import json
 import re
 import shutil
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1244,6 +1245,60 @@ def flares_phase5():
     lang["flare.astralend.afterglow"] = "The flare is passing. The Corona glows."
 
 
+def chest_loot(name, pools):
+    write(DATA / "loot_table" / "chests" / f"{name}.json",
+          {"type": "minecraft:chest", "pools": pools, "random_sequence": f"{NS}:chests/{name}"})
+
+
+def entry(item, weight=1, count=None):
+    e = {"type": "minecraft:item", "name": item if ":" in item else rid(item), "weight": weight}
+    if count:
+        e["functions"] = [{"function": "minecraft:set_count", "add": False,
+                           "count": {"type": "minecraft:uniform", "min": count[0], "max": count[1]}}]
+    return e
+
+
+def chance(item, p, count=None):
+    """A pool that gives the item with probability p."""
+    return {"rolls": 1, "conditions": [{"condition": "minecraft:random_chance", "chance": p}],
+            "entries": [entry(item, 1, count)]}
+
+
+def structures_phase6():
+    """Phase 6: the structures (templates and worldgen JSON come from tools/structures/make_structures.py),
+    their loot, the Temporal Crystal, and Star Charts that mark structures."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "structures"))
+    import make_structures
+    make_structures.write_data()
+
+    item_model("temporal_crystal", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("item/temporal_crystal")}})
+    item_def("temporal_crystal", rid("item/temporal_crystal"))
+    lang[f"item.{NS}.temporal_crystal"] = "Temporal Crystal"
+    lang[f"item.{NS}.star_chart.marks_structure"] = "Marks a site: %s"
+    for name, english in (("comet_crater", "Comet Crater"), ("wanderer_relay", "Wanderer Relay"), ("whalefall", "Whalefall")):
+        lang[f"structure.{NS}.{name}"] = english
+        tag("worldgen/structure", rid(name), rid(name))      # a Star Chart looks each one up by its own tag
+
+    # A crater's cache: what the comet brought, sometimes a Temporal Crystal, sometimes a chart.
+    chest_loot("comet_crater", [
+        {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
+            entry("raw_meteoric_iron", 6, (1, 4)), entry("meteoric_iron_nugget", 5, (2, 7)),
+            entry("comet_ice", 4, (2, 6)), entry("stardust_block", 3, (1, 4)), entry("comet_cress", 3, (1, 3)),
+            entry("void_crystal", 2, (1, 2)), entry("meteoric_iron_ingot", 1, (1, 2))]},
+        chance("temporal_crystal", 0.25),
+        chance("star_chart", 0.3),
+    ])
+    # The Whalefall's lore chest: a chart, the light of the bones, and what the whale carried.
+    chest_loot("whalefall", [
+        {"rolls": 1, "entries": [entry("star_chart")]},
+        {"rolls": {"type": "minecraft:uniform", "min": 2, "max": 4}, "entries": [
+            entry("whalelight_scale", 5, (1, 3)), entry("leviathan_bone_block", 4, (1, 3)),
+            entry("glowing_spores", 3, (2, 5)), entry("void_crystal", 2, (1, 3)),
+            entry("minecraft:nautilus_shell", 1, (1, 1))]},
+        chance("temporal_crystal", 0.15),
+    ])
+
+
 def main():
     # Clear previously generated folders so renamed/removed content doesn't linger.
     for folder in (ASSETS / "blockstates", ASSETS / "models", ASSETS / "items", DATA / "loot_table",
@@ -1576,6 +1631,7 @@ def main():
     worldgen_phase3()
     mobs_phase4()
     flares_phase5()
+    structures_phase6()
 
     # ---------------------------------------------------------------- write tags + lang
     for (registry, name), values in tags.items():

@@ -1,0 +1,23 @@
+{
+  "type": "astralend:island",
+  "biomes": "#astralend:has_structure/comet_crater",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "min_surface": 16,
+  "max_surface": 4096,
+  "reach": 12,
+  "structure": {
+    "type": "minecraft:jigsaw",
+    "biomes": "#astralend:has_structure/comet_crater",
+    "max_distance_from_center": 80,
+    "size": 1,
+    "spawn_overrides": {},
+    "start_height": {
+      "absolute": -8
+    },
+    "start_pool": "astralend:comet_crater/start",
+    "use_expansion_hack": false,
+    "project_start_to_heightmap": "WORLD_SURFACE_WG"
+  },
+  "terrain_adaptation": "beard_thin"
+}

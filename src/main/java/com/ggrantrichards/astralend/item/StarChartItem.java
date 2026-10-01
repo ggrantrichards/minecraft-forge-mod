@@ -1,5 +1,6 @@
 package com.ggrantrichards.astralend.item;
 
+import com.ggrantrichards.astralend.AstralEnd;
 import com.ggrantrichards.astralend.ModItems;
 import com.ggrantrichards.astralend.world.ModBiomes;
 import com.mojang.datafixers.util.Pair;
@@ -8,10 +9,13 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -21,11 +25,15 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.levelgen.structure.Structure;
 
-// A Star Chart, given by the Watcher. It marks another part of the End for you to find: the
-// nearest region of a biome picked at random from the ones other than where you met the Watcher.
-// Use it to see which way to go and how far. (In Phase 6 it will point at structures instead.)
+// A Star Chart, given by the Watcher or found in ruins. It marks a place in the End for you to
+// find: the nearest of a structure picked at random (a crater, a relay, a whalefall...), or, if none
+// is in reach, the nearest region of a far-off biome. Charts found in chests start out unread and
+// fill in the first time they're used in the End. Use one to see which way to go and how far.
 public class StarChartItem extends Item {
+    // Each destination is a structure tag holding just that structure (data/astralend/tags/worldgen/structure).
+    private static final List<String> STRUCTURES = List.of("comet_crater", "wanderer_relay", "whalefall");
     private static final List<ResourceKey<Biome>> DESTINATIONS = List.of(ModBiomes.NEBULA_FIELDS, ModBiomes.AURORA_SHALLOWS,
         ModBiomes.COMET_WAKE, ModBiomes.DARK_MATTER_BELT, ModBiomes.CORONA);
 
@@ -35,21 +43,39 @@ public class StarChartItem extends Item {
 
     public static ItemStack create(ServerLevel level, BlockPos origin) {
         ItemStack chart = new ItemStack(ModItems.STAR_CHART.get());
+        mark(level, origin, chart);
+        return chart;
+    }
+
+    // Fills in a chart: a structure if one is in reach, otherwise a biome region.
+    private static void mark(ServerLevel level, BlockPos origin, ItemStack chart) {
+        String structure = STRUCTURES.get(level.getRandom().nextInt(STRUCTURES.size()));
+        TagKey<Structure> tag = TagKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath(AstralEnd.MODID, structure));
+        BlockPos site = level.findNearestMapStructure(tag, origin, 64, false);
+        if (site != null) {
+            write(chart, site, "Structure", structure,
+                Component.translatable("item.astralend.star_chart.marks_structure", structureName(structure)));
+            return;
+        }
         ResourceKey<Biome> wanted = DESTINATIONS.get(level.getRandom().nextInt(DESTINATIONS.size()));
         Pair<BlockPos, Holder<Biome>> found = level.findClosestBiome3d(biome -> biome.is(wanted), origin, 3200, 64, 64);
-        if (found == null) {
-            return chart;
+        if (found != null) {
+            String biome = wanted.identifier().getPath();
+            write(chart, found.getFirst(), "Biome", biome, Component.translatable("item.astralend.star_chart.marks", biomeName(biome)));
         }
-        BlockPos pos = found.getFirst();
+    }
+
+    private static void write(ItemStack chart, BlockPos pos, String key, String value, Component lore) {
         CompoundTag tag = new CompoundTag();
         tag.putInt("TargetX", pos.getX());
         tag.putInt("TargetZ", pos.getZ());
-        tag.putString("Biome", wanted.identifier().getPath());
+        tag.putString(key, value);
         chart.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-        chart.set(DataComponents.LORE, new ItemLore(List.of(
-            Component.translatable("item.astralend.star_chart.marks", biomeName(wanted.identifier().getPath()))
-                .withStyle(ChatFormatting.GRAY))));
-        return chart;
+        chart.set(DataComponents.LORE, new ItemLore(List.of(lore.copy().withStyle(ChatFormatting.GRAY))));
+    }
+
+    private static Component structureName(String path) {
+        return Component.translatable("structure.astralend." + path);
     }
 
     private static Component biomeName(String path) {
@@ -64,15 +90,27 @@ public class StarChartItem extends Item {
             return InteractionResult.SUCCESS;
         }
         if (data == null) {
-            player.sendSystemMessage(Component.translatable("item.astralend.star_chart.blank"));
-            return InteractionResult.SUCCESS;
+            // An unread chart from a chest: it only makes sense under the End's sky.
+            if (level.dimension() != Level.END || !(level instanceof ServerLevel server)) {
+                player.sendSystemMessage(Component.translatable("item.astralend.star_chart.blank"));
+                return InteractionResult.SUCCESS;
+            }
+            mark(server, player.blockPosition(), chart);
+            data = chart.get(DataComponents.CUSTOM_DATA);
+            if (data == null) {
+                player.sendSystemMessage(Component.translatable("item.astralend.star_chart.blank"));
+                return InteractionResult.SUCCESS;
+            }
         }
         CompoundTag tag = data.copyTag();
+        Component target = tag.contains("Structure")
+            ? structureName(tag.getStringOr("Structure", "comet_crater"))
+            : biomeName(tag.getStringOr("Biome", "nebula_fields"));
         int dx = tag.getIntOr("TargetX", 0) - player.getBlockX();
         int dz = tag.getIntOr("TargetZ", 0) - player.getBlockZ();
         int distance = (int) Math.sqrt((double) dx * dx + (double) dz * dz);
         player.sendSystemMessage(Component.translatable("item.astralend.star_chart.direction",
-            biomeName(tag.getStringOr("Biome", "nebula_fields")), distance, Component.translatable(compass(dx, dz))));
+            target, distance, Component.translatable(compass(dx, dz))));
         return InteractionResult.SUCCESS;
     }
 

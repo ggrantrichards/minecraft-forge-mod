@@ -8,6 +8,7 @@ you ever launch the game.
 
 Run from the project root:  python3 tools/check_resources.py   (exit code 1 on problems)
 """
+import gzip
 import json
 import re
 import struct
@@ -227,7 +228,7 @@ for file in sorted(WORLDGEN.rglob("*.json")) if WORLDGEN.exists() else []:
     ident = f"{NS}:{'/'.join(path)}"   # density functions live in subfolders: astralend:terrain/outer
     worldgen_ids.setdefault(kind, set()).add(ident)
     known.add(ident)
-known |= {f"{NS}:{n}" for n in re.findall(r'(?:BIOME_SOURCES|FEATURE_TYPES)\.register\("([a-z0-9_]+)"',
+known |= {f"{NS}:{n}" for n in re.findall(r'(?:BIOME_SOURCES|FEATURE_TYPES|STRUCTURE_TYPES)\.register\("([a-z0-9_]+)"',
                                            (JAVA / "world/ModWorldgen.java").read_text())}
 # Phase 5: mob effects and potions (ModEffects.java), and data-driven damage types.
 effects_src = (JAVA / "ModEffects.java").read_text()
@@ -236,6 +237,18 @@ potion_names = set(re.findall(r'new Potion\("([a-z0-9_]+)"', effects_src))
 damage_types = {f.stem for f in (RES / "data" / NS / "damage_type").glob("*.json")}
 potions = set(re.findall(r'POTIONS\.register\("([a-z0-9_]+)"', effects_src))
 known |= {f"{NS}:{n}" for n in effects | damage_types | potions}
+# Phase 6: structure templates (data/astralend/structure/*.nbt) and chest loot tables are registered by
+# their files. Every id written inside a template (block names, chest loot tables) must be real too.
+STRUCTURE_DIR = RES / "data" / NS / "structure"
+templates = {f"{NS}:{f.stem}" for f in STRUCTURE_DIR.glob("*.nbt")}
+chest_loot = {f"{NS}:chests/{f.stem}" for f in (RES / "data" / NS / "loot_table" / "chests").glob("*.json")}
+known |= templates | chest_loot
+for file in sorted(STRUCTURE_DIR.glob("*.nbt")):
+    raw = gzip.decompress(file.read_bytes())
+    for ref in set(re.findall(rb"astralend:[a-z0-9_/]+", raw)):
+        ref = ref.decode()
+        if ref not in known:
+            err(f"{file.relative_to(ROOT)}: uses {ref}, which isn't a block or loot table of the mod")
 
 
 def need(kind, ref, where):
@@ -257,6 +270,17 @@ for file in sorted((WORLDGEN).rglob("*.json")) if WORLDGEN.exists() else []:
             need("density_function", ref, file.relative_to(ROOT))
 for file in sorted((WORLDGEN / "noise_settings").glob("*.json")) if WORLDGEN.exists() else []:
     need("material_rule", (load(file) or {}).get("material_rule", ""), file.relative_to(ROOT))
+for file in sorted((WORLDGEN / "structure").glob("*.json")) if WORLDGEN.exists() else []:
+    obj = load(file) or {}
+    need("template_pool", obj.get("start_pool", ""), file.relative_to(ROOT))
+    biomes = obj.get("biomes", "")
+    if biomes.startswith(f"#{NS}:") and not (RES / "data" / NS / "tags/worldgen/biome" / f"{biomes.split(':')[1]}.json").exists():
+        err(f"{file.relative_to(ROOT)}: biome tag {biomes} has no file")
+    if f"structure.{NS}.{file.stem}" not in lang:
+        err(f"structure {NS}:{file.stem}: missing English name structure.{NS}.{file.stem}")
+for file in sorted((WORLDGEN / "structure_set").glob("*.json")) if WORLDGEN.exists() else []:
+    for s in (load(file) or {}).get("structures", []):
+        need("structure", s.get("structure", ""), file.relative_to(ROOT))
 for file in sorted((RES / "data/minecraft/dimension").glob("*.json")):
     gen = (load(file) or {}).get("generator", {})
     need("noise_settings", gen.get("settings", ""), file.relative_to(ROOT))
@@ -264,7 +288,7 @@ for file in sorted((RES / "data").rglob("*.json")):
     text = file.read_text()
     load(file)
     for ref in set(re.findall(rf'"({NS}:[a-z0-9_/]+)"', text)):
-        if ref.startswith(f"{NS}:blocks/") or ref.startswith(f"{NS}:entities/"):
+        if ref.startswith(f"{NS}:blocks/") or ref.startswith(f"{NS}:entities/") or ref.startswith(f"{NS}:chests/"):
             continue  # loot table random_sequence names
         if ref not in known:
             err(f"{file.relative_to(ROOT)}: refers to {ref}, which the Java code doesn't register")
@@ -281,7 +305,8 @@ for extra in sorted(set(lang) - {f"block.{NS}.{n}" for n in blocks} - {f"item.{N
                     - {f"item.minecraft.{k}.effect.{p}" for p in potion_names
                        for k in ("potion", "splash_potion", "lingering_potion", "tipped_arrow")}
                     - {f"death.attack.{NS}.{d}{suffix}" for d in damage_types for suffix in ("", ".player")}
-                    - {k for k in lang if k.startswith("flare.astralend.")}):
+                    - {k for k in lang if k.startswith("flare.astralend.")}
+                    - {f"structure.{NS}.{st.split(':')[1]}" for st in worldgen_ids.get("structure", set())}):
     err(f"lang/en_us.json: {extra} doesn't match anything registered")
 
 if errors:

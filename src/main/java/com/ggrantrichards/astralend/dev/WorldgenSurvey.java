@@ -270,7 +270,8 @@ public final class WorldgenSurvey {
                 }
             }
         }
-        writeViewpoints(areas, end);
+        Map<String, BlockPos> structures = checkStructures(areas, end, failures);
+        writeViewpoints(areas, end, structures);
         checkNebula(areas.get('N'), failures);
         checkAurora(areas.get('A'), failures);
         checkCometWake(areas.get('W'), failures);
@@ -348,7 +349,7 @@ public final class WorldgenSurvey {
 
     // Two camera positions per biome for dev/ClientScreenshots: one looking across the land from
     // just above it, and one high aerial view. Written to astralend-shots.txt as "name x y z yaw pitch".
-    private static void writeViewpoints(Map<Character, Area> areas, ServerLevel end) {
+    private static void writeViewpoints(Map<Character, Area> areas, ServerLevel end, Map<String, BlockPos> structures) {
         List<String> lines = new ArrayList<>();
         for (Area area : areas.values()) {
             int top = area.surfaceHeightsIn.keySet().stream().max(Integer::compare).orElse(60);
@@ -373,12 +374,114 @@ public final class WorldgenSurvey {
         skyShot(lines, areas.get('W'), "sky_remnant_far", 0.0F, -6.0F, end, "flare=warning");
         skyShot(lines, areas.get('C'), "sky_corona_flare", -45.0F, -18.0F, null, "flare=flare");
         mobShot(lines, areas.get('C'), end, "display flare=flare", 5.5, 0.0, 2.6);
+        // Phase 6: each structure, from above and to the north-west of the block the survey found in it.
+        structureShot(lines, structures, "comet_crater", 18.0, 17.0, 2.0);
+        structureShot(lines, structures, "comet_crater_hot", 18.0, 17.0, 2.0);
+        structureShot(lines, structures, "wanderer_relay", 30.0, -6.0, -20.0);
+        structureShot(lines, structures, "whalefall", 26.0, 15.0, 4.0);
         try {
             java.nio.file.Files.write(java.nio.file.Path.of("astralend-shots.txt"), lines);
             log("Wrote " + lines.size() + " screenshot viewpoints to astralend-shots.txt");
         } catch (java.io.IOException e) {
             LOGGER.error(TAG + "couldn't write viewpoints", e);
         }
+    }
+
+    // A viewpoint "structure_<name> x y z yaw pitch": `distance` blocks north-west of the found block and
+    // `height` above it, looking at a point `aimLift` above that block.
+    private static void structureShot(List<String> lines, Map<String, BlockPos> structures, String name, double distance,
+                                      double height, double aimLift) {
+        BlockPos at = structures.get(name);
+        if (at == null) {
+            return;
+        }
+        double d = distance / Math.sqrt(2.0);
+        double eyeY = at.getY() + height;
+        double pitch = Math.toDegrees(Math.atan2(eyeY - (at.getY() + aimLift), distance));
+        lines.add(String.format(java.util.Locale.ROOT, "structure_%s %.1f %.1f %.1f -45 %.1f", name,
+            at.getX() + 0.5 - d, eyeY - 1.62, at.getZ() + 0.5 - d, pitch));
+    }
+
+    // Phase 6: each structure is found the way /locate finds it, generated, and looked for by a block
+    // only it has: a crater's or whalefall's loot chest, the relay's Void Crystal light behind Astral
+    // Glass. Returns where each was found (for screenshots); a hot crater is reported separately.
+    private static Map<String, BlockPos> checkStructures(Map<Character, Area> areas, ServerLevel end, List<String> failures) {
+        Map<String, BlockPos> found = new LinkedHashMap<>();
+        record Wanted(String name, char biome, Block marker) {}
+        for (Wanted w : List.of(new Wanted("comet_crater", 'W', Blocks.CHEST), new Wanted("wanderer_relay", 'D', ModBlocks.VOID_CRYSTAL_BLOCK.get()),
+                                new Wanted("whalefall", 'A', Blocks.CHEST))) {
+            Area area = areas.get(w.biome());
+            BlockPos from = area != null ? area.centre : BlockPos.ZERO;
+            net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tag = net.minecraft.tags.TagKey.create(
+                net.minecraft.core.registries.Registries.STRUCTURE,
+                net.minecraft.resources.Identifier.fromNamespaceAndPath(com.ggrantrichards.astralend.AstralEnd.MODID, w.name()));
+            List<BlockPos> starts = new ArrayList<>();
+            BlockPos search = from;
+            // The nearest few, so a hot crater turns up too: each search starts past the last one found.
+            for (int i = 0; i < (w.name().equals("comet_crater") ? 6 : 1); i++) {
+                BlockPos start = end.findNearestMapStructure(tag, search, 100, false);
+                if (start == null || starts.contains(start)) {
+                    break;
+                }
+                starts.add(start);
+                search = start.offset(400, 0, 0);
+            }
+            if (starts.isEmpty()) {
+                failures.add(w.name() + ": no structure found within 1600 blocks of " + from.toShortString());
+                continue;
+            }
+            int placed = 0;
+            for (BlockPos start : starts) {
+                BlockPos marker = null;
+                boolean hot = false;
+                for (int cx = -4; cx <= 4; cx++) {
+                    for (int cz = -4; cz <= 4; cz++) {
+                        end.getChunk((start.getX() >> 4) + cx, (start.getZ() >> 4) + cz);
+                    }
+                }
+                BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
+                for (int x = start.getX() - 56; x <= start.getX() + 56 && marker == null; x++) {
+                    for (int z = start.getZ() - 56; z <= start.getZ() + 56 && marker == null; z++) {
+                        for (int y = end.getMinY(); y < end.getMinY() + 256; y++) {
+                            BlockState state = end.getBlockState(p.set(x, y, z));
+                            if (state.is(w.marker()) && (w.marker() != ModBlocks.VOID_CRYSTAL_BLOCK.get()
+                                    || end.getBlockState(p.east()).is(ModBlocks.ASTRAL_GLASS.get()))) {
+                                marker = p.immutable();
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (marker == null) {
+                    log(String.format("%s: start at %s, but nothing of it was built", w.name(), start.toShortString()));
+                    continue;
+                }
+                placed++;
+                String loot = "";
+                if (end.getBlockEntity(marker) instanceof net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity chest) {
+                    loot = ", chest loot " + (chest.getLootTable() == null ? "none" : chest.getLootTable().identifier());
+                    if (chest.getLootTable() == null) {
+                        failures.add(w.name() + ": its chest at " + marker.toShortString() + " has no loot table");
+                    }
+                }
+                if (w.name().equals("comet_crater")) {
+                    for (BlockPos q : BlockPos.betweenClosed(marker.offset(-10, 0, -10), marker.offset(10, 10, 10))) {
+                        if (end.getBlockState(q).is(Blocks.MAGMA_BLOCK)) {
+                            hot = true;
+                            break;
+                        }
+                    }
+                }
+                String key = w.name() + (hot ? "_hot" : "");
+                log(String.format("%s: built at %s (start %s)%s%s", w.name(), marker.toShortString(), start.toShortString(),
+                    hot ? ", still hot" : "", loot));
+                found.putIfAbsent(key, marker);
+            }
+            if (placed == 0) {
+                failures.add(w.name() + ": found " + starts.size() + " start(s) but none was built");
+            }
+        }
+        return found;
     }
 
     // A viewpoint "mob_<name> x y z yaw pitch <entity> mobX mobY mobZ [lit]": the camera (eyes `eye`
