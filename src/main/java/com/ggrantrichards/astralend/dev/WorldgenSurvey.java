@@ -406,6 +406,15 @@ public final class WorldgenSurvey {
         before = countAround(end, b);
         server.getCommands().performPrefixedCommand(source, "place structure astralend:" + name + " " + b.getX() + " " + b.getY() + " " + b.getZ());
         log("  /place structure " + name + ": " + (countAround(end, b) - before) + " blocks changed to non-air");
+        // How does the game itself save a template? Capture three known blocks and print the result.
+        BlockPos c = start.offset(0, 200, 300);
+        end.setBlock(c, Blocks.STONE.defaultBlockState(), 2);
+        end.setBlock(c.east(), ModBlocks.CHARRED_END_STONE.get().defaultBlockState(), 2);
+        end.setBlock(c.east(2), Blocks.CHEST.defaultBlockState(), 2);
+        var template = new net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate();
+        template.fillFromWorld(end, c, new net.minecraft.core.Vec3i(3, 1, 1), false, List.of());
+        String saved = template.save(new net.minecraft.nbt.CompoundTag()).toString();
+        log("  the game saves a template as: " + (saved.length() > 1500 ? saved.substring(0, 1500) : saved));
     }
 
     // Non-air blocks in a 100-block-wide column around a spot (its whole height).
