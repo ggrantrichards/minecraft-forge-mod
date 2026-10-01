@@ -222,7 +222,7 @@ ANIMATED = [
 
 
 # ------------------------------------------------------------------ Batch D: the Orrery
-# Orrery Bronze: the Cartographers' station metal. A plate engraved with orbits, like the face of an
+# Orrery Bronze: the metal the Cartographers built their orreries from. A plate engraved with orbits, like the face of an
 # orrery; it tarnishes violet with age (three stages, like copper's), and an axe scrapes it back.
 OB_BRONZE = [hexc("4a2c16"), hexc("74471f"), hexc("9c6630"), hexc("c48a45"), hexc("e3b062"), hexc("fbe0a0")]
 OB_TARNISH = [hexc("3a2a52"), hexc("54407a"), hexc("6f5a9c"), hexc("8f7bbd"), hexc("b4a3db")]
@@ -350,7 +350,7 @@ def bronze_shutter():
 
 
 def _lamp(lit):
-    """A station lamp: a frosted pane in a bronze frame - grey-violet and dead, or warm and bright."""
+    """An Orrery Lamp: a frosted pane in a bronze frame - grey-violet and dead, or warm and bright."""
     img = new()
     pane = ramp("fff2c8", "ffd27a", 4) if lit else ramp("3a3448", "5a5270", 4)
     for y in range(SIZE):

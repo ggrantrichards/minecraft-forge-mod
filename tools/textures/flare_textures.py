@@ -1,5 +1,5 @@
 """Textures for Phase 5 (Stellar Flares): the Flarebloom shut and open, charged Sunscale Lichen,
-the Sunshade, the Collector Pedestal, flare cells, Charged Void Crystal, Flare Pollen and the Flare
+the Sunshade, the Collector Pedestal, Flare Bottles, Charged Void Crystal, Flare Pollen and the Flare
 Ward effect icon. Imported by hq.py, which adds them to its TEXTURES list."""
 import math
 from pathlib import Path

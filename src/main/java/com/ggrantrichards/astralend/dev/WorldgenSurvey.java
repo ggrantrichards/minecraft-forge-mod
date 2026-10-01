@@ -497,9 +497,9 @@ public final class WorldgenSurvey {
     }
 
     // An Orrery: its Sentinel sleeps (and can't be hurt) until the Orrery Heart is powered; then
-    // the vault's bronze_shutters open and the Sentinel wakes. Then a view of the station from outside, and one
+    // the vault's bronze_shutters open and the Sentinel wakes. Then a view of the Orrery from outside, and one
     // of the Sentinel in its open vault.
-    private static void testStation(ServerLevel end, BlockPos core, List<String> failures) {
+    private static void testOrrery(ServerLevel end, BlockPos core, List<String> failures) {
         var sentinels = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.OrrerySentinel.class,
             new net.minecraft.world.phys.AABB(core).inflate(32, 16, 32));
         boolean hurtAsleep = !sentinels.isEmpty() && sentinels.get(0).hurtServer(end, end.damageSources().generic(), 5.0F);
@@ -685,9 +685,9 @@ public final class WorldgenSurvey {
                     found.put("maze_tested", marker);
                     testMaze(end, marker, failures);
                 }
-                if (w.name().equals("abandoned_orrery") && !found.containsKey("station_tested")) {
-                    found.put("station_tested", marker);
-                    testStation(end, marker, failures);
+                if (w.name().equals("abandoned_orrery") && !found.containsKey("orrery_tested")) {
+                    found.put("orrery_tested", marker);
+                    testOrrery(end, marker, failures);
                 }
                 if (w.name().equals("solar_array")) {
                     // Inside the control room too: the console, seen from a corner of the room.
