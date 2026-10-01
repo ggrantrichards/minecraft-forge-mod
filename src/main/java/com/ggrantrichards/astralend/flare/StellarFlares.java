@@ -257,7 +257,7 @@ public class StellarFlares extends SavedData {
             int seconds = this.exposure.merge(id, 1, Integer::sum);
             if (seconds % 3 == 0) {
                 float damage = seconds >= 30 ? 2.0F : 1.0F;
-                if (level.structureManager().getStructureWithPieceAt(player.blockPosition(), SOLAR_ARRAY).isValid()) {
+                if (level.structureManager().getStructureWithPieceAt(player.blockPosition(), holder -> holder.is(SOLAR_ARRAY)).isValid()) {
                     damage *= 2.0F;
                 }
                 player.hurtServer(level, source, damage);
