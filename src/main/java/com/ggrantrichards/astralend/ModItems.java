@@ -48,6 +48,9 @@ public final class ModItems {
         new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.UNCOMMON));
     public static final RegistryObject<Item> STAR_CHART = register("star_chart", StarChartItem::new, new Item.Properties().stacksTo(1));
     // Phase 6: structures. Temporal Crystals are loot only: they can't be mined or farmed.
+    // The key to the Wormhole Maws: wakes a Maw (with its eyes lit), or attunes you to a woken one.
+    public static final RegistryObject<Item> PORTAL_LENS = register("portal_lens", Item::new,
+        new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON));
     public static final RegistryObject<Item> TEMPORAL_CRYSTAL = register("temporal_crystal", Item::new,
         new Item.Properties().rarity(net.minecraft.world.item.Rarity.RARE));
 

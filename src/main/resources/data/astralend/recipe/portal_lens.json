@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "tools",
+  "ingredients": [
+    "astralend:data_shard",
+    "astralend:data_shard",
+    "astralend:data_shard",
+    "astralend:void_crystal",
+    "astralend:temporal_crystal",
+    "minecraft:spyglass"
+  ],
+  "result": {
+    "id": "astralend:portal_lens"
+  }
+}

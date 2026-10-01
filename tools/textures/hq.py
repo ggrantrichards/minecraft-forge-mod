@@ -701,5 +701,5 @@ from flare_textures import TEXTURES as _FLARE  # noqa: E402
 TEXTURES += _FLARE
 
 # Phase 6: structures
-from structure_textures import TEXTURES as _STRUCTURES  # noqa: E402
+from structure_textures import ANIMATED, TEXTURES as _STRUCTURES  # noqa: E402,F401
 TEXTURES += _STRUCTURES

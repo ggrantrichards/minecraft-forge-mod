@@ -216,6 +216,27 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.SAND).requiresCorrectToolForDrops().strength(2.0F, 6.0F)
             .sound(SoundType.STONE).noOcclusion()
             .lightLevel(state -> state.getValue(CollectorPedestalBlock.HOLDING).charged() ? 10 : 0));
+    // Phase 6 (structures): the Wormhole Maw (eye sockets, the dormant throat, and the woken wormhole)
+    // and the Constellation Maze (star-bridges and telescopes). Built into structures, so the parts
+    // that make the puzzles work can't be broken, like an End Portal frame.
+    public static final RegistryObject<Block> MAW_EYE = register("maw_eye", com.ggrantrichards.astralend.maw.MawEyeBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).instrument(NoteBlockInstrument.XYLOPHONE)
+            .strength(-1.0F, 3600000.0F).sound(SoundType.BONE_BLOCK).noLootTable()
+            .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.maw.MawEyeBlock.LIT) ? 10 : 0));
+    public static final RegistryObject<Block> MAW_THROAT = register("maw_throat", com.ggrantrichards.astralend.maw.MawThroatBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).instrument(NoteBlockInstrument.BASEDRUM)
+            .strength(-1.0F, 3600000.0F).sound(SoundType.DEEPSLATE).noLootTable());
+    public static final RegistryObject<Block> WORMHOLE = registerNoItem("wormhole", com.ggrantrichards.astralend.maw.WormholeBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollision().strength(-1.0F, 3600000.0F)
+            .sound(SoundType.GLASS).lightLevel(state -> 12).noLootTable().pushReaction(PushReaction.BLOCK));
+    public static final RegistryObject<Block> STAR_BRIDGE = registerNoItem("star_bridge", com.ggrantrichards.astralend.maze.StarBridgeBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(-1.0F, 3600000.0F).sound(SoundType.AMETHYST)
+            .noOcclusion().noLootTable().pushReaction(PushReaction.BLOCK).isValidSpawn((s, l, p, e) -> false)
+            .isRedstoneConductor((s, l, p) -> false).isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false)
+            .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.maze.StarBridgeBlock.LIT) ? 10 : 0));
+    public static final RegistryObject<Block> MAZE_TELESCOPE = register("maze_telescope", com.ggrantrichards.astralend.maze.MazeTelescopeBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(-1.0F, 3600000.0F).sound(SoundType.COPPER)
+            .noOcclusion().noLootTable());
     // Life that died out: grey husks of the Nebula Fields' mushrooms and vines, and Pollinator shells.
     public static final RegistryObject<Block> ASHEN_LUMINESHROOM = register("ashen_lumineshroom",
         p -> new EndPlantBlock(Block.column(6.0, 0.0, 10.0), ASTRAL_SOIL, p),

@@ -35,9 +35,15 @@ VANILLA_PARENTS = {
     "minecraft:block/template_orientable_trapdoor_bottom", "minecraft:block/template_orientable_trapdoor_top",
     "minecraft:block/template_orientable_trapdoor_open", "minecraft:block/button", "minecraft:block/button_pressed",
     "minecraft:block/button_inventory", "minecraft:block/pressure_plate_up", "minecraft:block/pressure_plate_down",
+    "minecraft:block/orientable",
 } | {f"minecraft:block/door_{part}_{hinge}{op}" for part in ("bottom", "top") for hinge in ("left", "right") for op in ("", "_open")}
 
 errors = []
+
+# Blocks registered with .noLootTable() (structure parts that can't be broken) need no loot table.
+_blocks_src = (Path(__file__).resolve().parents[1] / "src/main/java/com/ggrantrichards/astralend/ModBlocks.java").read_text()
+no_loot = {m.group(1) for m in re.finditer(r'register(?:NoItem)?\("([a-z0-9_]+)"(?:(?!public static).)*?noLootTable\(\)',
+                                           _blocks_src, re.S)}
 
 
 def err(msg):
@@ -180,7 +186,7 @@ for name in sorted(blocks):
     if f"block.{NS}.{name}" not in lang:
         err(f"block {NS}:{name}: missing English name block.{NS}.{name}")
     loot = RES / "data" / NS / "loot_table/blocks" / f"{name}.json"
-    if not loot.exists():
+    if not loot.exists() and name not in no_loot:
         err(f"block {NS}:{name}: missing loot table {loot.relative_to(ROOT)} (it would drop nothing)")
 
 # ------------------------------------------------------------------ items
@@ -305,7 +311,7 @@ for extra in sorted(set(lang) - {f"block.{NS}.{n}" for n in blocks} - {f"item.{N
                     - {f"item.minecraft.{k}.effect.{p}" for p in potion_names
                        for k in ("potion", "splash_potion", "lingering_potion", "tipped_arrow")}
                     - {f"death.attack.{NS}.{d}{suffix}" for d in damage_types for suffix in ("", ".player")}
-                    - {k for k in lang if k.startswith("flare.astralend.")}
+                    - {k for k in lang if k.startswith(("flare.astralend.", "maw.astralend.", "maze.astralend."))}
                     - {f"structure.{NS}.{st.split(':')[1]}" for st in worldgen_ids.get("structure", set())}):
     err(f"lang/en_us.json: {extra} doesn't match anything registered")
 

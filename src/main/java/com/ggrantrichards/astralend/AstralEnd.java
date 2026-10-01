@@ -52,6 +52,8 @@ public final class AstralEnd {
         MobSpawning.register();   // Drift Whales, the Watcher and Black Hole Guardians
         FlareNetwork.register();  // Phase 5: Stellar Flares - the timer, its effects, and syncing it to clients
         StellarFlares.register();
+        com.ggrantrichards.astralend.maw.MawNetwork.register();
+        com.ggrantrichards.astralend.maze.MazeScoping.register();
         FlareCommand.register();
         if (FMLEnvironment.dist == Dist.CLIENT) {
             ModModelLayers.register();       // mob models and renderers

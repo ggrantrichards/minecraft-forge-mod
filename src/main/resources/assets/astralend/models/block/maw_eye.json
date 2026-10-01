@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "astralend:block/maw_eye",
+    "side": "astralend:block/leviathan_bone_side",
+    "top": "astralend:block/leviathan_bone_top"
+  }
+}

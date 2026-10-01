@@ -1,5 +1,6 @@
 package com.ggrantrichards.astralend.client.sky;
 
+import com.ggrantrichards.astralend.maze.Constellations;
 import com.ggrantrichards.astralend.AstralEnd;
 import com.ggrantrichards.astralend.flare.ClientFlares;
 import com.ggrantrichards.astralend.flare.FlarePhase;
@@ -161,6 +162,7 @@ public class AstralSkyRenderer extends SkyRenderer {
         }
         int behindStars = quads.groups.size();
         this.silhouette(quads);
+        this.constellations(quads, Mth.clamp(1.0F - 1.4F * coronaFlare, 0.0F, 1.0F));
         if (this.auroraStrength > 0.01F) {
             quads.group(AURORA);
             this.auroras(quads);
@@ -274,6 +276,37 @@ public class AstralSkyRenderer extends SkyRenderer {
         for (int[] f : faces) {
             // the bright middle row of the sheet texture: a flat wash of colour
             quads.quad(c[f[0]], c[f[1]], c[f[2]], c[f[3]], 0.2F, 0.66F, 0.3F, 0.67F, colour);
+        }
+    }
+
+    // The four constellations of the Constellation Mazes (maze/Constellations), fixed in the sky: their
+    // stars a little brighter than the rest, joined by faint lines, so you can learn to find them.
+    private void constellations(Quads quads, float alpha) {
+        if (alpha < 0.02F) {
+            return;
+        }
+        quads.group(FLARE_SHEET);
+        int line = argb(0.2F * alpha, 0.72F, 0.82F, 1.0F);
+        for (Constellations.Constellation c : Constellations.ALL) {
+            for (int[] l : c.lines()) {
+                Vec3 a = Constellations.star(c, c.stars()[l[0]][0], c.stars()[l[0]][1]);
+                Vec3 b = Constellations.star(c, c.stars()[l[1]][0], c.stars()[l[1]][1]);
+                Vector3f pa = new Vector3f((float) a.x, (float) a.y, (float) a.z).mul(DISTANCE);
+                Vector3f pb = new Vector3f((float) b.x, (float) b.y, (float) b.z).mul(DISTANCE);
+                Vector3f across = new Vector3f(pb).sub(pa).cross(new Vector3f(pa).add(pb)).normalize().mul(0.12F);
+                // the bright middle row of the sheet texture: a flat wash of colour
+                quads.quad(new Vector3f(pa).add(across), new Vector3f(pa).sub(across), new Vector3f(pb).sub(across),
+                    new Vector3f(pb).add(across), 0.2F, 0.66F, 0.3F, 0.67F, line);
+            }
+        }
+        quads.group(STAR);
+        for (Constellations.Constellation c : Constellations.ALL) {
+            for (float[] star : c.stars()) {
+                Vec3 d = Constellations.star(c, star[0], star[1]);
+                float twinkle = 0.85F + 0.15F * Mth.sin((float) this.time * 0.05F + star[0] * 1.7F + star[1]);
+                quads.sprite(new Vector3f((float) d.x, (float) d.y, (float) d.z), 0.95F, 0.95F, 0.0F, 0, 0, 1, 1,
+                    argb(alpha * twinkle, 0.9F, 0.94F, 1.0F));
+            }
         }
     }
 

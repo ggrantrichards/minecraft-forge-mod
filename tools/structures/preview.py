@@ -56,21 +56,29 @@ def _tex(name):
     return result
 
 
-def voxels(template, cut=None):
-    """cut=(axis, value) leaves out every block past that plane, to show a structure's inside."""
+ALIASES = {"maze_telescope": "telescope_tube", "maw_eye": "maw_eye"}
+
+
+def voxels(template, cut=None, turn=False):
+    """cut=(axis, value) leaves out every block past that plane, to show a structure's inside.
+    turn=True turns it a quarter so its east (+x) face is drawn where the south face was."""
     out = {}
     for (x, y, z), (state, _nbt) in template.blocks.items():
+        if turn:
+            x, z = template.size[2] - 1 - z, x
         if cut and (x, y, z)["xyz".index(cut[0])] > cut[1]:
             continue
         name = state.split("[")[0]
         if name.endswith(":air") or name.endswith("structure_void"):
             continue
-        out[(x, y, z)] = _tex(name if ":" in name else "minecraft:" + name)
+        name = name if ":" in name else "minecraft:" + name
+        ns, path = name.split(":")
+        out[(x, y, z)] = _tex(f"{ns}:{ALIASES.get(path, path)}")
     return out
 
 
-def save(template, name, block=12, cut=None):
-    img = render(voxels(template, cut), block)
+def save(template, name, block=12, cut=None, turn=False):
+    img = render(voxels(template, cut, turn), block)
     out = ROOT / "docs/images/structures" / f"{name}.png"
     out.parent.mkdir(parents=True, exist_ok=True)
     img.save(out)

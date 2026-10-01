@@ -448,6 +448,197 @@ def solar_array(seed):
     return t
 
 
+# ------------------------------------------------------------------ Wormhole Maw
+
+def bone(nx, ny, nz):
+    """Leviathan Bone for a skull surface facing (nx, ny, nz): the grain runs along the skull, so its
+    top and sides show the long grain and only the front and back show the ring of the bone's end."""
+    return a("leviathan_bone_block") + ("[axis=z]" if abs(nx) > max(abs(ny), abs(nz)) else "[axis=x]")
+
+
+def wormhole_maw(seed):
+    """The fossil skull of a Star Leviathan, the size of a small hill, on its own floating island:
+    a great domed cranium, a long snout, the lower jaw fallen half open, rows of bone teeth, and at
+    the back of the mouth the dark stone of the dormant throat. Four empty eye sockets look out from
+    the sides of the skull; with a Charged Void Crystal in each, a Portal Lens wakes it."""
+    t = Template(48, 34, 40, seed)
+    rnd = t.rnd
+    cz = 19
+    # The island: pale stone, an upside-down cone under a flat top.
+    for x in range(48):
+        for z in range(40):
+            d = math.hypot((x - 19) / 1.05, z - cz)
+            for y in range(0, 9):
+                radius = 4 + (y / 8) ** 0.7 * 13.5
+                if d <= radius + rnd.uniform(-0.6, 0.4):
+                    top = y == 8 or d > radius - 1
+                    t.set(x, y, z, a("pale_end_stone") if rnd.random() < 0.92 or not top else "minecraft:end_stone")
+    # The cranium: a hollow dome of bone.
+    ccx, ccy, rx, ry, rz = 13, 17, 10.5, 9.5, 11.5
+    for x in range(0, 26):
+        for y in range(8, 28):
+            for z in range(40):
+                nx, ny, nz = (x - ccx) / rx, (y - ccy) / ry, (z - cz) / rz
+                r = math.sqrt(nx * nx + ny * ny + nz * nz)
+                if 0.8 <= r <= 1.0 and rnd.random() > 0.035:
+                    t.set(x, y, z, bone(nx, ny, nz))
+                elif r < 0.8:
+                    t.set(x, y, z, "minecraft:air")
+    # The snout: a long, tapering roof of bone with a rim that hangs down at the sides.
+    for x in range(20, 45):
+        f = (x - 20) / 24
+        top = 26 - 4 * f
+        w = 10 - 4 * f
+        for z in range(40):
+            dz = (z - cz) / w
+            if abs(dz) > 1:
+                continue
+            surface = round(top - dz * dz * 2.5)
+            bottom = round(top - 2) if abs(dz) < 0.8 else round(top - 4)
+            for y in range(bottom, surface + 1):
+                t.set(x, y, z, bone(0.3, 1, dz))
+    # The lower jaw, fallen half open: a U of bone resting on the island, running out over the void.
+    for x in range(19, 43):
+        f = (x - 19) / 23
+        w = 9 - 3.5 * f
+        floor = 9 + round(1.5 * f)
+        for z in range(40):
+            dz = (z - cz) / w
+            if abs(dz) > 1:
+                continue
+            t.set(x, floor, z, bone(1, 0.2, 0))
+            if abs(dz) > 0.72:
+                for y in range(floor + 1, floor + 4):
+                    t.set(x, y, z, bone(0, 1, 0))
+    # The mouth: open space between the jaws.
+    for x in range(22, 47):
+        f = min(1.0, (x - 20) / 24)
+        w = 9 - 3.5 * f
+        roof = round(26 - 4 * f - 2)
+        for z in range(40):
+            if abs(z - cz) < w - 1.6:
+                for y in range(11 + round(1.5 * f), roof):
+                    t.set(x, y, z, "minecraft:air")
+    # Teeth: hanging from the snout's rim and rising from the jaw, staggered.
+    for x in range(24, 43, 2):
+        f = (x - 20) / 24
+        wu = 10 - 4 * f
+        rim = round(26 - 4 * f - 4)
+        for side in (-1, 1):
+            z = round(cz + side * (wu - 1.2))
+            for k in range(1, 4 if x < 38 else 3):
+                t.set(x, rim - k, z, a("leviathan_bone_block") + "[axis=y]")
+        fl = (x + 1 - 19) / 23
+        wl = 9 - 3.5 * fl
+        jaw_top = 9 + round(1.5 * fl) + 3
+        for side in (-1, 1):
+            z = round(cz + side * (wl - 1.2))
+            for k in range(1, 3):
+                t.set(x + 1, jaw_top + k, z, a("leviathan_bone_block") + "[axis=y]")
+    # The throat: a disc of dark stone closing the back of the mouth.
+    for y in range(8, 24):
+        for z in range(40):
+            if math.hypot(y - 15.5, z - cz) <= 5.2:
+                for x in (21, 22):
+                    t.set(x, y, z, a("maw_throat"))
+    # The eye sockets: two each side, under heavy brows.
+    for ex, ey in ((10, 20), (16, 19)):
+        for side, facing in ((-1, "north"), (1, "south")):
+            z = cz
+            for k in range(1, 20):                      # out to the skull's outer surface
+                if t.get(ex, ey, cz + side * k) not in (None, "minecraft:air"):
+                    z = cz + side * k
+            t.set(ex, ey, z, a("maw_eye") + f"[facing={facing},lit=false]")
+            t.set(ex, ey, z + side, "minecraft:air")
+            t.set(ex, ey - 1, z, a("leviathan_bone_block") + "[axis=x]")
+            for bx in (ex - 1, ex, ex + 1):
+                t.set(bx, ey + 1, z + side, a("leviathan_bone_block") + "[axis=x]")   # the brow juts out
+    # Whalelight Scales still cling to the bone here and there.
+    for (x, y, z), (state, _) in list(t.blocks.items()):
+        if "leviathan_bone" in state and rnd.random() < 0.025 and t.get(x, y + 1, z) in (None, "minecraft:air"):
+            t.set(x, y, z, a("whalelight_scale"))
+    return t
+
+
+# ------------------------------------------------------------------ Constellation Maze
+
+def maze_platform(t, cx, y, cz, radius, rnd):
+    """A broken platform floating in the void: polished stone on a rough cone of Umbral Stone."""
+    for x in range(int(cx - radius - 1), int(cx + radius + 2)):
+        for z in range(int(cz - radius - 1), int(cz + radius + 2)):
+            d = math.hypot(x - cx, z - cz)
+            if d > radius + 0.4:
+                continue
+            edge = d > radius - 0.9
+            if edge and rnd.random() < 0.25:
+                continue                                    # chipped edge
+            t.set(x, y, z, a("umbral_stone_bricks") if edge else a("polished_umbral_stone"))
+            for dy in range(1, 5):
+                if d <= radius * (1 - dy / 4.5) + rnd.uniform(-0.4, 0.3):
+                    t.set(x, y - dy, z, a("umbral_stone"))
+
+
+def bridge(t, a0, a1, bend, constellation):
+    """A star-bridge two blocks wide from a0 to a1, bending sideways by `bend` blocks halfway."""
+    mx, my, mz = [(a0[i] + a1[i]) / 2 for i in range(3)]
+    dx, dz = a1[0] - a0[0], a1[2] - a0[2]
+    length = math.hypot(dx, dz) or 1.0
+    px, pz = -dz / length, dx / length
+    mid = (mx + px * bend, my, mz + pz * bend)
+    state = a("star_bridge") + f"[constellation={constellation},lit=false]"
+    for p, q in ((a0, mid), (mid, a1)):
+        steps = int(max(abs(q[0] - p[0]), abs(q[2] - p[2])) * 2) + 1
+        for s in range(steps + 1):
+            f = s / steps
+            x, y, z = p[0] + (q[0] - p[0]) * f, p[1] + (q[1] - p[1]) * f, p[2] + (q[2] - p[2]) * f
+            for ox, oz in ((0, 0), (1, 0), (0, 1), (1, 1)):
+                if t.get(round(x) + ox, math.floor(y), round(z) + oz) in (None, "minecraft:air"):
+                    t.set(round(x) + ox, math.floor(y), round(z) + oz, state)
+
+
+def constellation_maze(seed):
+    """A ring of broken platforms floating in open void around a central dais, joined by star-bridges
+    that are invisible until lit. Each platform has a telescope aimed at one constellation; find it in
+    the sky and the bridge to the next platform lights for 20 seconds. The last bridge leads to the
+    dais and its chest. Fall, and the maze catches you (MazeScoping)."""
+    S = 49
+    t = Template(S, 44, S, seed)
+    rnd = t.rnd
+    c = S // 2
+    stops = [(5, 28, c), (c, 30, 5), (S - 6, 32, c), (c, 34, S - 6)]
+    facings = ["east", "south", "west", "north"]
+    for i, (x, y, z) in enumerate(stops):
+        maze_platform(t, x, y, z, 3.2, rnd)
+        t.set(x, y + 1, z, a("maze_telescope") + f"[constellation={i},facing={facings[i]}]")
+        lx, lz = (x - 2, z + 2) if i % 2 == 0 else (x + 2, z - 2)
+        t.set(lx, y + 1, lz, a("polished_umbral_stone_wall"))
+        t.set(lx, y + 2, lz, a("null_lantern"))
+    # The dais.
+    dy = 36
+    maze_platform(t, c, dy, c, 5.4, rnd)
+    for x in range(c - 5, c + 6):
+        for z in range(c - 5, c + 6):
+            d = math.hypot(x - c, z - c)
+            if d <= 4.6:
+                t.set(x, dy, z, a("star_inlay_observatory_quartz") if 2.6 < d < 3.4 and (x + z) % 2 == 0 else a("observatory_quartz"))
+    for ox, oz in ((-3, -3), (3, -3), (-3, 3), (3, 3)):
+        for k in range(1, 4 if rnd.random() < 0.7 else 2):
+            t.set(c + ox, dy + k, c + oz, a("observatory_quartz_pillar") + "[axis=y]")
+    t.set(c - 3, dy + 4, c - 3, a("null_lantern"))
+    t.set(c + 3, dy + 4, c + 3, a("null_lantern"))
+    chest(t, c, dy + 1, c, "constellation_maze", facing="west")
+    # The bridges, each answering to the constellation of the telescope it starts from.
+    ends = stops + [(c, dy, c)]
+    for i in range(4):
+        (x0, y0, z0), (x1, y1, z1) = ends[i], ends[i + 1]
+        r0 = 3.6
+        r1 = 5.8 if i == 3 else 3.6
+        d = math.hypot(x1 - x0, z1 - z0)
+        ux, uz = (x1 - x0) / d, (z1 - z0) / d
+        bridge(t, (x0 + ux * r0, y0, z0 + uz * r0), (x1 - ux * r1, y1, z1 - uz * r1), 5 if i % 2 == 0 else -5, i)
+    return t
+
+
 # ------------------------------------------------------------------ worldgen data
 
 def structure_json(name, height, heightmap, spawn_overrides, adaptation, ground):
@@ -504,6 +695,15 @@ STRUCTURES = [
     dict(name="solar_array", variants=[lambda: solar_array(51)],
          biomes=[a("corona")], spread=(34, 14, 92814473), height={"absolute": -8},
          heightmap="WORLD_SURFACE_WG", spawns=None, adaptation="beard_thin", ground=(16, 4096, 18)),
+    # Maws and mazes float out over open void, near the Shattered Observatory.
+    dict(name="wormhole_maw", variants=[lambda: wormhole_maw(61)],
+         biomes=[a("shattered_observatory"), a("nebula_fields"), a("dark_matter_belt")], spread=(26, 9, 48129573),
+         height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 48}, "max_inclusive": {"absolute": 70}},
+         heightmap=None, spawns=None, adaptation=None, ground=(-4096, 36, 22)),
+    dict(name="constellation_maze", variants=[lambda: constellation_maze(71)],
+         biomes=[a("shattered_observatory"), a("nebula_fields")], spread=(24, 8, 77162391),
+         height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 56}, "max_inclusive": {"absolute": 76}},
+         heightmap=None, spawns=None, adaptation=None, ground=(-4096, 40, 22)),
 ]
 
 
@@ -529,6 +729,8 @@ def write_templates(preview=False):
             if preview:
                 import preview as pv
                 pv.save(t, file)
+                if st["name"] in ("wormhole_maw",):
+                    pv.save(t, file + "_front", turn=True)
                 if "--cut" in sys.argv and st["name"] == "comet_crater":
                     pv.save(t, file + "_cut", cut=("z", t.size[2] // 2))
     return made

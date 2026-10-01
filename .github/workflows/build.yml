@@ -79,6 +79,10 @@ jobs:
         if: always() && hashFiles('run/screenshots/astralend-*.png') != ''
         run: |
           mkdir -p /tmp/shots && cp run/screenshots/astralend-*.png /tmp/shots/
+          # The survey's findings and any problems, so they can be read without the job log.
+          { grep -nE "/(WARN|ERROR)\]|Exception|Caused by" survey.log | grep -v "Cache miss" | head -80; echo "---"; \
+            grep "AstralEnd survey" survey.log | sed 's/.*\[AstralEnd survey\] //'; } > /tmp/shots/survey.txt 2>/dev/null || true
+          grep -E "AstralEnd screenshots|/ERROR\]" screenshots.log 2>/dev/null | tail -80 > /tmp/shots/screenshots.txt || true
           cd /tmp/shots
           printf "# In-game screenshots\n\nFrom commit ${GITHUB_SHA::7} on ${GITHUB_REF_NAME}.\n\n" > README.md
           for f in astralend-*.png; do printf "### ${f}\n\n![](${f})\n\n" >> README.md; done

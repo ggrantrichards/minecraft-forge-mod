@@ -1454,6 +1454,10 @@ def main():
     out = [(rel, img) for rel, img in out if rel not in names]
     for rel, make in hq.TEXTURES:
         out.append(save(make(), rel))
+    # Animated textures: the frame strip replaces the still, plus the .mcmeta that animates it.
+    for rel, make, frametime in hq.ANIMATED:
+        save(make(), rel)
+        (TEX / (rel + ".mcmeta")).write_text(json.dumps({"animation": {"frametime": frametime}}, indent=2) + "\n")
     write_preview(out)
     write_tiled_preview(hq.TEXTURES)
     print(f"Wrote {len(out)} textures to {TEX.relative_to(ROOT)} and a preview to {PREVIEW.relative_to(ROOT)}")

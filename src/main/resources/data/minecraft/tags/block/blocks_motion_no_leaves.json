@@ -21,6 +21,9 @@
     "astralend:lumine_stairs",
     "astralend:lumine_stem",
     "astralend:lumine_trapdoor",
+    "astralend:maw_eye",
+    "astralend:maw_throat",
+    "astralend:maze_telescope",
     "astralend:meteoric_iron_block",
     "astralend:meteoric_iron_ore",
     "astralend:nebula_moss",
@@ -62,6 +65,7 @@
     "astralend:solarite_block",
     "astralend:solarite_ore",
     "astralend:spore_lantern",
+    "astralend:star_bridge",
     "astralend:star_inlay_observatory_quartz",
     "astralend:stardust_block",
     "astralend:stripped_lumine_hyphae",
@@ -87,6 +91,7 @@
     "astralend:umbral_stone_wall",
     "astralend:void_crystal_block",
     "astralend:void_crystal_ore",
-    "astralend:whalelight_scale"
+    "astralend:whalelight_scale",
+    "astralend:wormhole"
   ]
 }

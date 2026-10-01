@@ -1,0 +1,20 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "lit": "false"
+      },
+      "apply": {
+        "model": "astralend:block/star_bridge_dark"
+      }
+    },
+    {
+      "when": {
+        "lit": "true"
+      },
+      "apply": {
+        "model": "astralend:block/star_bridge"
+      }
+    }
+  ]
+}

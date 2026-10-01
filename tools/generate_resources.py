@@ -1276,9 +1276,81 @@ def structures_phase6():
     lang[f"item.{NS}.temporal_crystal"] = "Temporal Crystal"
     lang[f"item.{NS}.star_chart.marks_structure"] = "Marks a site: %s"
     for name, english in (("comet_crater", "Comet Crater"), ("wanderer_relay", "Wanderer Relay"), ("whalefall", "Whalefall"),
-                          ("observatory_ruins", "Observatory Ruins"), ("solar_array", "Solar Array Ruins")):
+                          ("observatory_ruins", "Observatory Ruins"), ("solar_array", "Solar Array Ruins"),
+                          ("wormhole_maw", "Wormhole Maw"), ("constellation_maze", "Constellation Maze")):
         lang[f"structure.{NS}.{name}"] = english
         tag("worldgen/structure", rid(name), rid(name))      # a Star Chart looks each one up by its own tag
+
+    # ---- Batch C: the Wormhole Maw and the Constellation Maze
+    facings = {"north": 0, "east": 90, "south": 180, "west": 270}
+    for lit, front in ((False, "maw_eye"), (True, "maw_eye_lit")):
+        block_model(front, {"parent": "minecraft:block/orientable", "textures": {
+            "front": rid(f"block/{front}"), "side": rid("block/leviathan_bone_side"), "top": rid("block/leviathan_bone_top")}})
+    blockstate("maw_eye", {"variants": {f"facing={f},lit={str(l).lower()}": {"model": rid("block/maw_eye_lit" if l else "block/maw_eye"), "y": r}
+                                        for f, r in facings.items() for l in (False, True)}})
+    item_def("maw_eye", rid("block/maw_eye"))
+    cube("maw_throat")
+    blockstate("wormhole", {"variants": {"": {"model": rid("block/wormhole")}}})
+    block_model("wormhole", {"parent": "minecraft:block/cube_all", "textures": {"all": rid("block/wormhole")}})
+    lang[f"block.{NS}.maw_eye"] = "Maw Eye Socket"
+    lang[f"block.{NS}.maw_throat"] = "Dormant Maw Throat"
+    lang[f"block.{NS}.wormhole"] = "Wormhole"
+    # Star-bridges: nothing at all while dark (a model with no faces), a pane of starlight while lit.
+    block_model("star_bridge_dark", {"textures": {"particle": rid("block/star_bridge")}, "elements": []})
+    block_model("star_bridge", {"parent": "minecraft:block/cube_all", "textures": {"all": rid("block/star_bridge")}})
+    blockstate("star_bridge", {"multipart": [
+        {"when": {"lit": "false"}, "apply": {"model": rid("block/star_bridge_dark")}},
+        {"when": {"lit": "true"}, "apply": {"model": rid("block/star_bridge")}}]})
+    lang[f"block.{NS}.star_bridge"] = "Star-Bridge"
+    # The Maze Telescope: a squat stone mount, a bronze post, and the tube tilted up toward the sky.
+    tube = rid("block/telescope_tube")
+    block_model("maze_telescope", {
+        "parent": "minecraft:block/block", "ambientocclusion": False,
+        "textures": {"particle": tube, "tube": tube, "base": rid("block/polished_umbral_stone"), "lens": rid("block/astral_glass")},
+        "elements": [
+            {"from": [3, 0, 3], "to": [13, 2, 13], "faces": {d: {"texture": "#base"} for d in ("north", "south", "east", "west", "up", "down")}},
+            {"from": [7, 2, 7], "to": [9, 9, 9], "faces": {d: {"uv": [0, 0, 2, 7], "texture": "#tube"} for d in ("north", "south", "east", "west")}},
+            {"from": [6, 8, 1], "to": [10, 12, 15], "rotation": {"origin": [8, 10, 8], "axis": "x", "angle": 22.5},
+             "faces": {"north": {"uv": [4, 4, 12, 12], "texture": "#lens"}, "south": {"uv": [0, 12, 4, 16], "texture": "#tube"},
+                       "east": {"uv": [1, 0, 15, 4], "texture": "#tube"}, "west": {"uv": [1, 0, 15, 4], "texture": "#tube"},
+                       "up": {"uv": [6, 1, 10, 15], "texture": "#tube", "rotation": 90}, "down": {"uv": [6, 12, 10, 16], "texture": "#tube"}}},
+            {"from": [5.5, 7.5, 0], "to": [10.5, 12.5, 2], "rotation": {"origin": [8, 10, 8], "axis": "x", "angle": 22.5},
+             "faces": {d: {"uv": [0, 0, 16, 2], "texture": "#tube"} for d in ("east", "west", "up", "down")}
+             | {"north": {"uv": [5, 5, 11, 11], "texture": "#lens"}, "south": {"uv": [0, 0, 5, 5], "texture": "#tube"}}},
+        ]})
+    blockstate("maze_telescope", {"multipart": [
+        {"when": {"facing": f}, "apply": {"model": rid("block/maze_telescope"), "y": r}} for f, r in facings.items()]})
+    item_def("maze_telescope", rid("block/maze_telescope"))
+    lang[f"block.{NS}.maze_telescope"] = "Maze Telescope"
+    # The Portal Lens.
+    item_model("portal_lens", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("item/portal_lens")}})
+    item_def("portal_lens", rid("item/portal_lens"))
+    lang[f"item.{NS}.portal_lens"] = "Portal Lens"
+    shapeless("portal_lens", "portal_lens", [rid("data_shard"), rid("data_shard"), rid("data_shard"), rid("void_crystal"),
+                                             rid("temporal_crystal"), "minecraft:spyglass"], category="tools")
+    lang.update({
+        "maw.astralend.eyes_dark": "The Maw's eyes are dark (%s of %s lit). Set Charged Void Crystals in them.",
+        "maw.astralend.woken": "The Maw groans open. Its throat is a road of stars.",
+        "maw.astralend.attuned": "The Maw knows you now.",
+        "maw.astralend.already": "This Maw already knows you.",
+        "maw.astralend.not_attuned": "The Maw doesn't know you. Use a Portal Lens on its throat.",
+        "maw.astralend.nowhere": "The Maw has nowhere to send you. Wake another.",
+        "maw.astralend.price": "The Maw wants an ender pearl, or four chorus fruit.",
+        "maw.astralend.arrived": "The Maw spits you out.",
+        "maze.astralend.aimed": "The telescope is aimed at the %s, %s. Look there.",
+        "maze.astralend.focusing": "The stars of the %s grow clearer...",
+        "maze.astralend.lit": "The %s blazes, and a bridge of light answers below!",
+        "maze.astralend.nothing": "The %s shines, but nothing answers here.",
+        "maze.astralend.caught": "The maze's starlight catches you.",
+        "maze.astralend.constellation.leviathan": "Leviathan",
+        "maze.astralend.constellation.maw": "Maw",
+        "maze.astralend.constellation.wanderer": "Wanderer",
+        "maze.astralend.constellation.watcher": "Watcher",
+        "maze.astralend.dir.north": "high in the north", "maze.astralend.dir.north_east": "high in the north-east",
+        "maze.astralend.dir.east": "high in the east", "maze.astralend.dir.south_east": "high in the south-east",
+        "maze.astralend.dir.south": "high in the south", "maze.astralend.dir.south_west": "high in the south-west",
+        "maze.astralend.dir.west": "high in the west", "maze.astralend.dir.north_west": "high in the north-west",
+    })
 
     # A crater's cache: what the comet brought, sometimes a Temporal Crystal, sometimes a chart.
     chest_loot("comet_crater", [
@@ -1297,6 +1369,16 @@ def structures_phase6():
             entry("glowing_spores", 3, (2, 5)), entry("void_crystal", 2, (1, 3)),
             entry("minecraft:nautilus_shell", 1, (1, 1))]},
         chance("temporal_crystal", 0.15),
+    ])
+    # The Constellation Maze's reward: a Temporal Crystal, and a Star Chart that marks a Wormhole Maw.
+    chest_loot("constellation_maze", [
+        {"rolls": 1, "entries": [entry("temporal_crystal")]},
+        {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("star_chart"), "functions": [
+            {"function": "minecraft:set_components", "components": {"minecraft:custom_data": {"Structure": "wormhole_maw"}}}]}]},
+        {"rolls": {"type": "minecraft:uniform", "min": 2, "max": 4}, "entries": [
+            entry("charged_void_crystal", 3, (1, 2)), entry("data_shard", 3, (1, 3)), entry("void_crystal", 4, (2, 5)),
+            entry("star_inlay_observatory_quartz", 2, (2, 6)), entry("minecraft:ender_pearl", 3, (2, 4)),
+            entry("minecraft:experience_bottle", 2, (2, 5))]},
     ])
     # Observatory Ruins: the vaults (opened with a Data Shard) hold the Cartographers' best finds; the
     # chest holds what was left lying about.

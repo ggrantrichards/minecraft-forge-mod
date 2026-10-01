@@ -382,12 +382,79 @@ public final class WorldgenSurvey {
         structureShot(lines, structures, "observatory_ruins", 30.0, 18.0, 4.0);
         structureShot(lines, structures, "solar_array", 30.0, 22.0, 6.0);
         structureShot(lines, structures, "solar_array_room", 3.0, 2.2, 0.0);
+        lines.addAll(EXTRA_SHOTS);
         try {
             java.nio.file.Files.write(java.nio.file.Path.of("astralend-shots.txt"), lines);
             log("Wrote " + lines.size() + " screenshot viewpoints to astralend-shots.txt");
         } catch (java.io.IOException e) {
             LOGGER.error(TAG + "couldn't write viewpoints", e);
         }
+    }
+
+    // Extra screenshot lines worked out by the structure tests (they need the structure's layout).
+    private static final List<String> EXTRA_SHOTS = new ArrayList<>();
+
+    // A Wormhole Maw wakes: light its four eyes, wake it, and check the throat became a wormhole and
+    // there's somewhere to stand at its mouth. Then a view into its mouth, from in front.
+    private static void testMaw(ServerLevel end, BlockPos throat, List<String> failures) {
+        int eyes = 0;
+        for (BlockPos p : BlockPos.betweenClosed(throat.offset(-24, -16, -24), throat.offset(24, 20, 24))) {
+            BlockState state = end.getBlockState(p);
+            if (state.is(ModBlocks.MAW_EYE.get())) {
+                end.setBlock(p, state.setValue(com.ggrantrichards.astralend.maw.MawEyeBlock.LIT, true), 2);
+                eyes++;
+            }
+        }
+        var maw = com.ggrantrichards.astralend.maw.MawNetwork.wake(end, throat, null);
+        if (maw == null) {
+            failures.add("wormhole_maw: didn't wake with " + eyes + " eyes lit");
+            return;
+        }
+        boolean wormhole = end.getBlockState(throat).is(ModBlocks.WORMHOLE.get());
+        log(String.format("wormhole_maw: %d eye sockets; woke, throat %s, exit %s facing %s; wormhole %s", eyes,
+            maw.throat().toShortString(), maw.exit().toShortString(), net.minecraft.core.Direction.from2DDataValue(maw.facing()),
+            wormhole ? "open" : "MISSING"));
+        if (eyes != 4 || !wormhole) {
+            failures.add("wormhole_maw: expected 4 eye sockets and an open wormhole, got " + eyes + " and " + wormhole);
+        }
+        net.minecraft.core.Direction out = net.minecraft.core.Direction.from2DDataValue(maw.facing());
+        BlockPos cam = maw.throat().relative(out, 34).above(6);
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_wormhole_maw %d.5 %d %d.5 %.1f 8.0 wake",
+            cam.getX(), cam.getY(), cam.getZ(), out.getOpposite().toYRot()));
+    }
+
+    // A Constellation Maze: its four telescopes are there and each lights some bridges. Then a view of
+    // the whole maze with its bridges lit, from above its edge.
+    private static void testMaze(ServerLevel end, BlockPos telescope, List<String> failures) {
+        List<BlockPos> scopes = new ArrayList<>();
+        for (BlockPos p : BlockPos.betweenClosed(telescope.offset(-48, -12, -48), telescope.offset(48, 12, 48))) {
+            if (end.getBlockState(p).is(ModBlocks.MAZE_TELESCOPE.get())) {
+                scopes.add(p.immutable());
+            }
+        }
+        StringBuilder counts = new StringBuilder();
+        long x = 0, y = 0, z = 0;
+        for (BlockPos scope : scopes) {
+            int id = end.getBlockState(scope).getValue(com.ggrantrichards.astralend.maze.MazeTelescopeBlock.CONSTELLATION);
+            int lit = com.ggrantrichards.astralend.maze.MazeScoping.lightBridges(end, scope, id);
+            counts.append(' ').append(id).append(':').append(lit);
+            if (lit == 0) {
+                failures.add("constellation_maze: the telescope at " + scope.toShortString() + " lights no bridges");
+            }
+            x += scope.getX();
+            y += scope.getY();
+            z += scope.getZ();
+        }
+        log("constellation_maze: " + scopes.size() + " telescopes; bridges lit per constellation:" + counts);
+        if (scopes.size() != 4) {
+            failures.add("constellation_maze: expected 4 telescopes, found " + scopes.size());
+            return;
+        }
+        BlockPos centre = new BlockPos((int) (x / 4), (int) (y / 4), (int) (z / 4));
+        double d = 34.0 / Math.sqrt(2.0);
+        double pitch = Math.toDegrees(Math.atan2(20.0, 34.0));
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_constellation_maze %.1f %d %.1f -45 %.1f bridges",
+            centre.getX() + 0.5 - d, centre.getY() + 18, centre.getZ() + 0.5 - d, pitch));
     }
 
     // A viewpoint "structure_<name> x y z yaw pitch": `distance` blocks north-west of the found block and
@@ -413,7 +480,9 @@ public final class WorldgenSurvey {
         record Wanted(String name, char biome, Block marker) {}
         for (Wanted w : List.of(new Wanted("comet_crater", 'W', Blocks.CHEST), new Wanted("wanderer_relay", 'D', ModBlocks.VOID_CRYSTAL_BLOCK.get()),
                                 new Wanted("whalefall", 'A', Blocks.CHEST), new Wanted("observatory_ruins", 'R', Blocks.VAULT),
-                                new Wanted("solar_array", 'C', ModBlocks.COLLECTOR_PEDESTAL.get()))) {
+                                new Wanted("solar_array", 'C', ModBlocks.COLLECTOR_PEDESTAL.get()),
+                                new Wanted("wormhole_maw", 'R', ModBlocks.MAW_THROAT.get()),
+                                new Wanted("constellation_maze", 'R', ModBlocks.MAZE_TELESCOPE.get()))) {
             Area area = areas.get(w.biome());
             BlockPos from = area != null ? area.centre : BlockPos.ZERO;
             net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tag = net.minecraft.tags.TagKey.create(
@@ -480,6 +549,14 @@ public final class WorldgenSurvey {
                 log(String.format("%s: built at %s (start %s)%s%s", w.name(), marker.toShortString(), start.toShortString(),
                     hot ? ", still hot" : "", loot));
                 found.putIfAbsent(key, marker);
+                if (w.name().equals("wormhole_maw") && !found.containsKey("maw_tested")) {
+                    found.put("maw_tested", marker);
+                    testMaw(end, marker, failures);
+                }
+                if (w.name().equals("constellation_maze") && !found.containsKey("maze_tested")) {
+                    found.put("maze_tested", marker);
+                    testMaze(end, marker, failures);
+                }
                 if (w.name().equals("solar_array")) {
                     // Inside the control room too: the console, seen from a corner of the room.
                     found.putIfAbsent("solar_array_room", marker.above());

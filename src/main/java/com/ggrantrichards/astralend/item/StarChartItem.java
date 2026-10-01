@@ -34,7 +34,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 public class StarChartItem extends Item {
     // Each destination is a structure tag holding just that structure (data/astralend/tags/worldgen/structure).
     private static final List<String> STRUCTURES = List.of("comet_crater", "wanderer_relay", "whalefall",
-        "observatory_ruins", "solar_array");
+        "observatory_ruins", "solar_array", "wormhole_maw", "constellation_maze");
     private static final List<ResourceKey<Biome>> DESTINATIONS = List.of(ModBiomes.NEBULA_FIELDS, ModBiomes.AURORA_SHALLOWS,
         ModBiomes.COMET_WAKE, ModBiomes.DARK_MATTER_BELT, ModBiomes.CORONA);
 
@@ -48,9 +48,12 @@ public class StarChartItem extends Item {
         return chart;
     }
 
-    // Fills in a chart: a structure if one is in reach, otherwise a biome region.
+    // Fills in a chart: a structure if one is in reach, otherwise a biome region. A chart that names a
+    // structure already (the Constellation Maze's, which always marks a Wormhole Maw) marks that one.
     private static void mark(ServerLevel level, BlockPos origin, ItemStack chart) {
-        String structure = STRUCTURES.get(level.getRandom().nextInt(STRUCTURES.size()));
+        CustomData preset = chart.get(DataComponents.CUSTOM_DATA);
+        String named = preset == null ? "" : preset.copyTag().getStringOr("Structure", "");
+        String structure = STRUCTURES.contains(named) ? named : STRUCTURES.get(level.getRandom().nextInt(STRUCTURES.size()));
         TagKey<Structure> tag = TagKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath(AstralEnd.MODID, structure));
         BlockPos site = level.findNearestMapStructure(tag, origin, 64, false);
         if (site != null) {
@@ -90,7 +93,7 @@ public class StarChartItem extends Item {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
-        if (data == null) {
+        if (data == null || !data.copyTag().contains("TargetX")) {
             // An unread chart from a chest: it only makes sense under the End's sky.
             if (level.dimension() != Level.END || !(level instanceof ServerLevel server)) {
                 player.sendSystemMessage(Component.translatable("item.astralend.star_chart.blank"));
@@ -98,7 +101,7 @@ public class StarChartItem extends Item {
             }
             mark(server, player.blockPosition(), chart);
             data = chart.get(DataComponents.CUSTOM_DATA);
-            if (data == null) {
+            if (data == null || !data.copyTag().contains("TargetX")) {
                 player.sendSystemMessage(Component.translatable("item.astralend.star_chart.blank"));
                 return InteractionResult.SUCCESS;
             }

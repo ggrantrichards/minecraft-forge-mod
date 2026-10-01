@@ -161,6 +161,28 @@ public final class ClientScreenshots {
                 if (style.startsWith("flare=")) {
                     flares.setPhase(end, FlarePhase.valueOf(style.substring(6).toUpperCase(java.util.Locale.ROOT)), end.getRandom());
                 }
+                BlockPos here = BlockPos.containing(shot.x(), shot.y(), shot.z());
+                if (style.equals("bridges")) {
+                    // A Constellation Maze with all its bridges lit (they stay lit 20 s, long enough).
+                    for (int id = 0; id < 4; id++) {
+                        com.ggrantrichards.astralend.maze.MazeScoping.lightBridges(end, here.offset(24, -18, 24), id);
+                    }
+                }
+                if (style.equals("wake")) {
+                    // A Wormhole Maw, woken: light its eyes and open its throat.
+                    BlockPos throat = null;
+                    for (BlockPos p : BlockPos.betweenClosed(here.offset(-40, -24, -40), here.offset(40, 16, 40))) {
+                        var state = end.getBlockState(p);
+                        if (state.is(ModBlocks.MAW_EYE.get())) {
+                            end.setBlock(p, state.setValue(com.ggrantrichards.astralend.maw.MawEyeBlock.LIT, true), 2);
+                        } else if (throat == null && state.is(ModBlocks.MAW_THROAT.get())) {
+                            throat = p.immutable();
+                        }
+                    }
+                    if (throat != null) {
+                        com.ggrantrichards.astralend.maw.MawNetwork.wake(end, throat, null);
+                    }
+                }
             }
             if (index == 0) {
                 flares.setPhase(end, FlarePhase.CALM, end.getRandom());
