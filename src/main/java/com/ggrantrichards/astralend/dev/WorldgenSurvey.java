@@ -558,11 +558,6 @@ public final class WorldgenSurvey {
                 if (marker == null) {
                     log(String.format("%s: start at %s, but nothing of it was built", w.name(), start.toShortString()));
                     // Why not: does its template load, and what did the start chunk record?
-                    var templates = end.getStructureManager();
-                    for (String t : List.of(w.name(), w.name() + "_1")) {
-                        var id = net.minecraft.resources.Identifier.fromNamespaceAndPath(com.ggrantrichards.astralend.AstralEnd.MODID, t);
-                        log("  template " + t + ": " + templates.get(id).map(tpl -> "size " + tpl.getSize().toShortString()).orElse("not found"));
-                    }
                     var registry = end.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE);
                     for (int cx = -1; cx <= 1; cx++) {
                         for (int cz = -1; cz <= 1; cz++) {
@@ -572,6 +567,9 @@ public final class WorldgenSurvey {
                                 if (key != null && key.getNamespace().equals(com.ggrantrichards.astralend.AstralEnd.MODID)) {
                                     log("  start of " + key + " in chunk " + chunk.getPos() + ": valid " + st.isValid() + ", "
                                         + st.getPieces().size() + " piece(s), box " + st.getBoundingBox());
+                                    for (var piece : st.getPieces()) {
+                                        log("    piece " + piece.getClass().getSimpleName() + " " + piece.getBoundingBox());
+                                    }
                                 }
                             });
                         }
