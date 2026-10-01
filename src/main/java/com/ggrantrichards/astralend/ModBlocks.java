@@ -228,10 +228,10 @@ public final class ModBlocks {
             .strength(-1.0F, 3600000.0F).sound(SoundType.DEEPSLATE).noLootTable());
     public static final RegistryObject<Block> WORMHOLE = registerNoItem("wormhole", com.ggrantrichards.astralend.maw.WormholeBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollision().strength(-1.0F, 3600000.0F)
-            .sound(SoundType.GLASS).lightLevel(state -> 12).noLootTable().pushReaction(PushReaction.BLOCK));
+            .sound(SoundType.GLASS).lightLevel(state -> 12).noLootTable());
     public static final RegistryObject<Block> STAR_BRIDGE = registerNoItem("star_bridge", com.ggrantrichards.astralend.maze.StarBridgeBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(-1.0F, 3600000.0F).sound(SoundType.AMETHYST)
-            .noOcclusion().noLootTable().pushReaction(PushReaction.BLOCK).isValidSpawn((s, l, p, e) -> false)
+            .noOcclusion().noLootTable().isValidSpawn((s, l, p, e) -> false)
             .isRedstoneConductor((s, l, p) -> false).isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false)
             .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.maze.StarBridgeBlock.LIT) ? 10 : 0));
     public static final RegistryObject<Block> MAZE_TELESCOPE = register("maze_telescope", com.ggrantrichards.astralend.maze.MazeTelescopeBlock::new,

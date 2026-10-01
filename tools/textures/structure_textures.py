@@ -219,3 +219,63 @@ TEXTURES += [
 ANIMATED = [
     ("block/wormhole.png", wormhole_frames, 2),
 ]
+
+
+# ------------------------------------------------------------------ Batch D: the Orbital Station
+# Orrery Bronze: the Cartographers' station metal. A plate engraved with orbits, like the face of an
+# orrery; it tarnishes violet with age (three stages, like copper's), and an axe scrapes it back.
+OB_BRONZE = [hexc("4a2c16"), hexc("74471f"), hexc("9c6630"), hexc("c48a45"), hexc("e3b062"), hexc("fbe0a0")]
+OB_TARNISH = [hexc("3a2a52"), hexc("54407a"), hexc("6f5a9c"), hexc("8f7bbd"), hexc("b4a3db")]
+
+
+def _orrery(stage):
+    """stage 0 = bright bronze, 1 = tarnished (violet creeping in), 2 = weathered (violet, bronze in the grooves)."""
+    base = fbm(91, octaves=((2, 0.5), (4, 0.3), (8, 0.2)))
+    patch = fbm(92 + stage, octaves=((2, 0.5), (4, 0.35), (8, 0.15)))
+    img = new()
+    cover = (0.0, 0.42, 0.85)[stage]
+    for y in range(SIZE):
+        for x in range(SIZE):
+            v = base[y][x]
+            tarnished = patch[y][x] < cover
+            pal = OB_TARNISH if tarnished else OB_BRONZE
+            i = min(len(pal) - 2, 2 + int(v * 2.2))
+            r = math.hypot(x - 7.5, y - 7.5)
+            groove = abs(r - 3.0) < 0.5 or abs(r - 6.2) < 0.5           # the two engraved orbits
+            if groove:
+                c = (OB_BRONZE[1] if stage == 2 else pal[0])
+            else:
+                c = pal[i]
+                if 3.5 <= r < 4.2 or 6.7 <= r < 7.3:                       # a bright lip just outside each groove
+                    c = pal[min(len(pal) - 1, i + 1)]
+            if x == 0 or y == 0:
+                c = pal[min(len(pal) - 1, i + 1)] if not groove else c   # the plate's edge, lit from the top-left
+            if x == 15 or y == 15:
+                c = pal[0]
+            put(img, x, y, c)
+    for (px, py) in ((7, 4), (13, 7), (2, 9)):                         # the planets on their orbits
+        pal = OB_TARNISH if stage == 2 else OB_BRONZE
+        put(img, px, py, pal[-1])
+        put(img, px + 1, py + 1, pal[1])
+    put(img, 7, 7, OB_BRONZE[5] if stage < 2 else OB_TARNISH[4])         # the sun at the centre
+    put(img, 8, 8, OB_BRONZE[2] if stage < 2 else OB_TARNISH[2])
+    return img
+
+
+def orrery_bronze():
+    return _orrery(0)
+
+
+def tarnished_orrery_bronze():
+    return _orrery(1)
+
+
+def weathered_orrery_bronze():
+    return _orrery(2)
+
+
+TEXTURES += [
+    ("block/orrery_bronze.png", orrery_bronze),
+    ("block/tarnished_orrery_bronze.png", tarnished_orrery_bronze),
+    ("block/weathered_orrery_bronze.png", weathered_orrery_bronze),
+]

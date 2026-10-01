@@ -69,7 +69,7 @@ public final class MazeScoping {
             if (!(level.getPlayerByUUID(entry.getKey()) instanceof ServerPlayer player)) {
                 continue;
             }
-            if (now - s.started() > SIGHTING_TICKS || player.distanceToSqr(s.telescope().getCenter()) > 25.0
+            if (now - s.started() > SIGHTING_TICKS || player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(s.telescope())) > 25.0
                 || !level.getBlockState(s.telescope()).is(ModBlocks.MAZE_TELESCOPE.get())) {
                 it.remove();
                 continue;
@@ -129,7 +129,7 @@ public final class MazeScoping {
             player.teleportTo(start.getX() + 0.5, start.getY() + 1.0, start.getZ() + 0.5);
             player.resetFallDistance();
             player.setDeltaMovement(0, 0, 0);
-            player.hurtMarked = true;
+            player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket(player));
             player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 100));
             level.playSound(null, start, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.5F, 0.6F);
             player.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("maze.astralend.caught")));

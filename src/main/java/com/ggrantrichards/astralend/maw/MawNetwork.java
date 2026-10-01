@@ -279,7 +279,7 @@ public class MawNetwork extends SavedData {
         Vec3 to = Vec3.atBottomCenterOf(there.exit());
         player.teleport(new TeleportTransition(level, to, Vec3.ZERO, out.toYRot(), 0.0F, TeleportTransition.DO_NOTHING));
         player.setDeltaMovement(out.getStepX() * 0.9, 0.45, out.getStepZ() * 0.9);
-        player.hurtMarked = true;
+        player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket(player));
         player.resetFallDistance();
         this.cooldowns.put(player.getUUID(), now + COOLDOWN);
         level.playSound(null, there.exit(), SoundEvents.ENDER_DRAGON_FLAP, SoundSource.PLAYERS, 2.0F, 0.6F);
@@ -292,7 +292,7 @@ public class MawNetwork extends SavedData {
     private static void spit(ServerPlayer player, Maw maw, String reason) {
         Direction out = maw.direction();
         player.setDeltaMovement(out.getStepX() * 0.8, 0.35, out.getStepZ() * 0.8);
-        player.hurtMarked = true;
+        player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket(player));
         player.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable(reason)));
     }
 

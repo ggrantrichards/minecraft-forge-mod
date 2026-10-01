@@ -25,7 +25,9 @@ jobs:
         run: python3 tools/check_resources.py
 
       - name: Build
-        run: ./gradlew build --stacktrace
+        run: |
+          ./gradlew build > build.log 2>&1 || { echo "--- compiler errors:"; grep -E "error:" -A4 build.log | head -150; tail -20 build.log; exit 1; }
+          tail -3 build.log
 
       # Boots a headless Minecraft server with the mod loaded, runs its game tests (none yet) and exits.
       # This loads all recipes, loot tables and tags, so broken data files show up here.
