@@ -32,7 +32,13 @@ jobs:
       # Boots a headless Minecraft server with the mod loaded, runs its game tests (none yet) and exits.
       # This loads all recipes, loot tables and tags, so broken data files show up here.
       - name: Load the mod in a server
-        run: timeout 900 ./gradlew runGameTestServer --stacktrace
+        run: |
+          timeout 900 ./gradlew runGameTestServer --stacktrace > gametest.log 2>&1 || {
+            echo "--- data that failed to load:"
+            grep -E "Errors in element|Failed to parse|No key|Unknown|not a valid|Caused by: java.lang.IllegalStateException|Missing" gametest.log \
+              | grep -v "Failed to load registries" | cut -c1-600 | head -60
+            exit 1; }
+          tail -5 gametest.log
 
       - name: Check the server loaded everything
         run: |
