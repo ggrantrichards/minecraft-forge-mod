@@ -45,7 +45,7 @@ public final class ClientScreenshots {
     // camera ("display" instead of a mob builds a small display of the Phase 5 flare blocks there).
     // The optional last word lists styles, comma-separated: "lit" puts a Spore Lantern beside it,
     // "side" turns it side-on, "angled" three-quarters on, "flare=<phase>" sets the Stellar Flare
-    // phase for the shot (calm, warning, flare, afterglow).
+    // phase for the shot (calm, warning, flare, afterglow), "clear" removes every mob nearby.
     private record Shot(String name, double x, double y, double z, float yaw, float pitch,
                         String mob, double mobX, double mobY, double mobZ, String style) {}
 
@@ -173,6 +173,13 @@ public final class ClientScreenshots {
                     flares.setPhase(end, FlarePhase.valueOf(style.substring(6).toUpperCase(java.util.Locale.ROOT)), end.getRandom());
                 }
                 BlockPos here = BlockPos.containing(shot.x(), shot.y(), shot.z());
+                if (style.equals("clear")) {
+                    // A still life: no wandering Endermen in the picture.
+                    for (Entity other : end.getEntities((Entity) null, new AABB(here).inflate(32.0),
+                            e -> !(e instanceof net.minecraft.world.entity.player.Player))) {
+                        other.discard();
+                    }
+                }
                 if (style.equals("bridges")) {
                     // A Constellation Maze with all its bridges lit (they stay lit 20 s, long enough).
                     for (int id = 0; id < 4; id++) {

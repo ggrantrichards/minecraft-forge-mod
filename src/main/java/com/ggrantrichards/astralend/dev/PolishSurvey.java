@@ -94,12 +94,19 @@ final class PolishSurvey {
                 BlockPos p = new BlockPos(bx + col * 2, by, bz + row * 2);
                 BlockState state = ModBlocks.BRONZE.get(stages[row] + shapes[col]).get().defaultBlockState();
                 if (state.hasProperty(net.minecraft.world.level.block.StairBlock.FACING)) {
-                    state = state.setValue(net.minecraft.world.level.block.StairBlock.FACING, net.minecraft.core.Direction.NORTH);
+                    state = state.setValue(net.minecraft.world.level.block.StairBlock.FACING, net.minecraft.core.Direction.SOUTH);   // steps toward the camera
                 }
                 end.setBlock(p, state, 3);
             }
         }
-        return String.format(java.util.Locale.ROOT, "polish_orrery_bronze %.1f %d %.1f 0 38.0", bx + 4.5, by + 5, bz - 4.5);
+        // Lit from above by invisible light blocks, as if by day.
+        for (int dx = 0; dx <= 8; dx += 4) {
+            for (int dz = 0; dz <= 4; dz += 2) {
+                end.setBlock(new BlockPos(bx + dx, by + 2, bz + dz), Blocks.LIGHT.defaultBlockState()
+                    .setValue(net.minecraft.world.level.block.LightBlock.LEVEL, 15), 3);
+            }
+        }
+        return String.format(java.util.Locale.ROOT, "polish_orrery_bronze %.1f %.1f %.1f 0 32.0 clear", bx + 4.5, by + 3.5, bz - 3.0);
     }
 
     private static String use(ServerLevel end, ServerPlayer player, BlockPos at, ItemStack tool) {
