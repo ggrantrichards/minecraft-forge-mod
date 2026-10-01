@@ -399,17 +399,20 @@ public final class WorldgenSurvey {
         var source = server.createCommandSourceStack().withLevel(end).withPermission(4);
         String file = name.equals("comet_crater") ? name + "_1" : name;
         BlockPos a = start.offset(0, 150, 0);
-        BlockPos b = start.offset(160, 150, 0);
+        BlockPos b = start.offset(200, 0, 0);
+        int before = countAround(end, a);
         server.getCommands().performPrefixedCommand(source, "place template astralend:" + file + " " + a.getX() + " " + a.getY() + " " + a.getZ());
-        log("  /place template " + file + ": " + countAround(end, a) + " blocks appeared");
+        log("  /place template " + file + ": " + (countAround(end, a) - before) + " blocks appeared");
+        before = countAround(end, b);
         server.getCommands().performPrefixedCommand(source, "place structure astralend:" + name + " " + b.getX() + " " + b.getY() + " " + b.getZ());
-        log("  /place structure " + name + ": " + countAround(end, b) + " blocks appeared");
+        log("  /place structure " + name + ": " + (countAround(end, b) - before) + " blocks changed to non-air");
     }
 
+    // Non-air blocks in a 100-block-wide column around a spot (its whole height).
     private static int countAround(ServerLevel end, BlockPos at) {
         int n = 0;
-        for (BlockPos q : BlockPos.betweenClosed(at.offset(-60, -60, -60), at.offset(60, 60, 60))) {
-            if (q.getY() >= end.getMinY() && q.getY() < end.getMinY() + 256 && !end.getBlockState(q).isAir() && q.getY() > 140) {
+        for (BlockPos q : BlockPos.betweenClosed(at.getX() - 50, end.getMinY(), at.getZ() - 50, at.getX() + 50, end.getMinY() + 255, at.getZ() + 50)) {
+            if (!end.getBlockState(q).isAir()) {
                 n++;
             }
         }
