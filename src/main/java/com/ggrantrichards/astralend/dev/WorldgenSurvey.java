@@ -392,6 +392,30 @@ public final class WorldgenSurvey {
         }
     }
 
+    // Diagnosis: place the structure's template, and then the whole structure, with the game's own
+    // /place command, high over the start, and count what appeared.
+    private static void placeByCommand(ServerLevel end, String name, BlockPos start) {
+        var server = end.getServer();
+        var source = server.createCommandSourceStack().withLevel(end).withPermission(4);
+        String file = name.equals("comet_crater") ? name + "_1" : name;
+        BlockPos a = start.offset(0, 150, 0);
+        BlockPos b = start.offset(160, 150, 0);
+        server.getCommands().performPrefixedCommand(source, "place template astralend:" + file + " " + a.getX() + " " + a.getY() + " " + a.getZ());
+        log("  /place template " + file + ": " + countAround(end, a) + " blocks appeared");
+        server.getCommands().performPrefixedCommand(source, "place structure astralend:" + name + " " + b.getX() + " " + b.getY() + " " + b.getZ());
+        log("  /place structure " + name + ": " + countAround(end, b) + " blocks appeared");
+    }
+
+    private static int countAround(ServerLevel end, BlockPos at) {
+        int n = 0;
+        for (BlockPos q : BlockPos.betweenClosed(at.offset(-60, -60, -60), at.offset(60, 60, 60))) {
+            if (q.getY() >= end.getMinY() && q.getY() < end.getMinY() + 256 && !end.getBlockState(q).isAir() && q.getY() > 140) {
+                n++;
+            }
+        }
+        return n;
+    }
+
     // Extra screenshot lines worked out by the structure tests (they need the structure's layout).
     private static final List<String> EXTRA_SHOTS = new ArrayList<>();
 
@@ -624,6 +648,10 @@ public final class WorldgenSurvey {
             }
             if (placed == 0) {
                 failures.add(w.name() + ": found " + starts.size() + " start(s) but none was built");
+                if (!found.containsKey("place_tested")) {
+                    found.put("place_tested", BlockPos.ZERO);
+                    placeByCommand(end, w.name(), starts.get(0));
+                }
             }
         }
         return found;
