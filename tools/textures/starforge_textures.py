@@ -282,19 +282,24 @@ def _runs(points):
     return [(x, y, s) for x, y, s in points]
 
 
+def _band(y, x0, x1, shades=(1, 2, 3, 2)):
+    return [(x, y, shades[(x - x0) % len(shades)]) for x in range(x0, x1 + 1)]
+
+
 WORN = {
-    # Helmet gem on the brow; chestplate clasp at the collar and bands on the shoulders; boots bands.
+    # Helmet: a gem on the brow with studs at the temples. Chestplate: a clasp at the collar and a
+    # sash down the front, bands round the shoulders. Boots: a band round the ankle.
     "humanoid": _runs([
         (11, 9, 3), (12, 9, 4), (10, 10, 2), (11, 10, 4), (12, 10, 4), (13, 10, 2), (11, 11, 1), (12, 11, 2),
-        (23, 21, 3), (24, 21, 4), (22, 22, 2), (23, 22, 4), (24, 22, 4), (25, 22, 2), (23, 23, 1), (24, 23, 2),
-        (44, 21, 2), (45, 21, 3), (46, 21, 3), (47, 21, 2), (40, 21, 1), (41, 21, 2), (42, 21, 2), (43, 21, 1),
-        (4, 27, 2), (5, 27, 3), (6, 27, 3), (7, 27, 2), (0, 27, 1), (1, 27, 2), (2, 27, 2), (3, 27, 1),
-    ]),
-    # Leggings: the belt buckle and knee bands.
+        (3, 10, 2), (4, 10, 3), (19, 10, 3), (20, 10, 2),
+        (23, 20, 3), (24, 20, 4), (22, 21, 2), (23, 21, 4), (24, 21, 4), (25, 21, 2), (23, 22, 1), (24, 22, 2),
+        (23, 24, 2), (24, 25, 3), (23, 26, 2), (24, 27, 3), (23, 28, 1),
+    ] + _band(22, 40, 55) + _band(28, 0, 15)),
+    # Leggings: the belt buckle, and knee guards.
     "humanoid_leggings": _runs([
-        (23, 21, 3), (24, 21, 4), (23, 22, 2), (24, 22, 1),
-        (4, 25, 2), (5, 25, 3), (6, 25, 3), (7, 25, 2), (0, 25, 1), (1, 25, 2), (2, 25, 2), (3, 25, 1),
-    ]),
+        (22, 21, 2), (23, 21, 3), (24, 21, 4), (25, 21, 2), (23, 22, 2), (24, 22, 1),
+        (4, 25, 2), (5, 25, 3), (6, 25, 4), (7, 25, 2), (5, 26, 1), (6, 26, 2),
+    ] + _band(24, 0, 3) + _band(24, 8, 15)),
 }
 
 

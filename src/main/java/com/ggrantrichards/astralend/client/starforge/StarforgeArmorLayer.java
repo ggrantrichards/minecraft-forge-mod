@@ -44,7 +44,8 @@ public class StarforgeArmorLayer<S extends HumanoidRenderState, M extends Humano
         String layer = slot == EquipmentSlot.LEGS ? "humanoid_leggings" : "humanoid";
         Identifier texture = Identifier.fromNamespaceAndPath(AstralEnd.MODID,
             "textures/entity/equipment/starforge/" + layer + "_" + upgrade.getSerializedName() + ".png");
-        collector.submitModel(model, state, poseStack, RenderTypes.armorTrim(texture, false), light, OverlayTexture.NO_OVERLAY, -1, null,
+        // Drawn after the armour itself (and its trim), like a trim, or the armour would cover it.
+        collector.order(4).submitModel(model, state, poseStack, RenderTypes.armorTrim(texture, false), light, OverlayTexture.NO_OVERLAY, -1, null,
             state.outlineColor);
     }
 }
