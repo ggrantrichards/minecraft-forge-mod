@@ -237,7 +237,8 @@ def render(frames_dir, font_path, out_dir):
     mp4 = out_dir / "the_astral_end_trailer.mp4"
     ffmpeg = os.environ.get("FFMPEG", "ffmpeg")
     enc = subprocess.Popen([ffmpeg, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
-                            "-r", str(FPS), "-i", "-", "-i", str(wav), "-c:v", "libx264", "-preset", "slow", "-crf", "17",
+                            "-r", str(FPS), "-i", "-", "-i", str(wav), "-c:v", "libx264", "-preset", "slow", "-crf", "20",
+                            "-maxrate", "3200k", "-bufsize", "6400k", "-g", "48",
                             "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart",
                             str(mp4)], stdin=subprocess.PIPE)
     logo = logo_layer(font)

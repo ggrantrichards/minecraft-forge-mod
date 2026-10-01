@@ -39,7 +39,9 @@ import org.slf4j.Logger;
 public final class ClientTrailer {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String TAG = "[AstralEnd trailer] ";
-    private static final float RATE = Float.parseFloat(System.getProperty("astralend.trailerRate", "4"));
+    // The game's speed while filming is set per shot from how fast that view draws, so that there is
+    // always a fresh picture for every tick (never more than this, never less than a tick in 3 s).
+    private static final float MAX_RATE = Float.parseFloat(System.getProperty("astralend.trailerRate", "5"));
 
     private record Scene(int index, String shot, int frames, Map<String, String> opts, Map<Integer, List<String>> events) {
         double num(String key, double fallback) {
@@ -56,6 +58,10 @@ public final class ClientTrailer {
     private static int frame;
     private static boolean done;
     private static long recordStart;
+    private static int renders;           // pictures drawn so far (counted as each one sets its camera angles)
+    private static int rendersAtGrab;
+    private static int repeats;           // frames saved with no new picture since the last one
+    private static float rate;
 
     // the shot being filmed: its starting eye position and angles, and what it looks at
     private static Vec3 eye0;
@@ -72,6 +78,7 @@ public final class ClientTrailer {
         if (Boolean.getBoolean("astralend.trailer")) {
             TickEvent.ClientTickEvent.Post.BUS.addListener(ClientTrailer::onTick);
             ViewportEvent.ComputeCameraAngles.BUS.addListener(event -> {
+                renders++;
                 if (phase == Phase.RECORD || phase == Phase.ARM || phase == Phase.SETTLE) {
                     event.setRoll(roll);
                 }
@@ -119,29 +126,49 @@ public final class ClientTrailer {
                 pose(minecraft, server, scene, 0);
                 boolean inEnd = minecraft.level != null && minecraft.level.dimension() == Level.END;
                 if ((inEnd && ticks >= 140 && minecraft.levelRenderer.hasRenderedAllSections()) || ticks >= 700) {
-                    server.execute(() -> server.tickRateManager().setTickRate(RATE));
+                    server.execute(() -> server.tickRateManager().setTickRate(2.0F));
+                    rendersAtGrab = renders;
+                    recordStart = System.nanoTime();
                     phase = Phase.ARM;
                     ticks = 0;
                 }
             }
             case ARM -> {
+                // Measure how fast this view draws (for about two seconds at 2 ticks a second), then
+                // film at a third of that.
                 Scene scene = SCENES.get(sceneIndex);
                 pose(minecraft, server, scene, 0);
-                if (++ticks >= 3) {
+                ++ticks;
+                if (ticks == 5) {
+                    double seconds = (System.nanoTime() - recordStart) / 1e9;
+                    double fps = (renders - rendersAtGrab) / Math.max(0.1, seconds);
+                    rate = (float) Mth.clamp(fps / 3.0, 0.34, MAX_RATE);
+                    float r = rate;
+                    server.execute(() -> server.tickRateManager().setTickRate(r));
+                    LOGGER.info(TAG + "{} draws at {} fps; filming at {} ticks a second", scene.shot(),
+                        String.format("%.1f", fps), String.format("%.2f", rate));
+                }
+                if (ticks >= 8) {
                     phase = Phase.RECORD;
                     frame = 0;
+                    repeats = 0;
+                    rendersAtGrab = renders;
                     recordStart = System.nanoTime();
                 }
             }
             case RECORD -> {
                 Scene scene = SCENES.get(sceneIndex);
                 if (frame > 0) {
+                    if (renders == rendersAtGrab) {
+                        repeats++;
+                    }
+                    rendersAtGrab = renders;
                     grab(minecraft, scene, frame - 1);
                 }
                 if (frame == scene.frames()) {
                     double seconds = (System.nanoTime() - recordStart) / 1e9;
-                    LOGGER.info(TAG + "filmed {} ({} frames in {} s, {} fps drawn)", scene.shot(), scene.frames(),
-                        String.format("%.1f", seconds), minecraft.getFps());
+                    LOGGER.info(TAG + "filmed {} ({} frames in {} s; {} repeated)", scene.shot(), scene.frames(),
+                        String.format("%.1f", seconds), repeats);
                     server.execute(() -> server.tickRateManager().setTickRate(20.0F));
                     next(minecraft, server);
                     return;

@@ -106,7 +106,7 @@ jobs:
       # about half an hour.
       - name: Film the trailer
         if: contains(github.event.head_commit.message, '[trailer]') && hashFiles('run/survey-world/level.dat') != ''
-        timeout-minutes: 75
+        timeout-minutes: 100
         run: .github/scripts/trailer.sh
 
       - name: Publish the trailer

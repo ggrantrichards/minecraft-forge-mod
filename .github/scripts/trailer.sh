@@ -14,7 +14,7 @@ export VK_ICD_FILENAMES=$(ls /usr/share/vulkan/icd.d/lvp_icd*.json 2>/dev/null |
 setsid xvfb-run -a -s "-screen 0 1280x720x24 +extension GLX +render -noreset" ./gradlew runClient -PastralendTrailer \
     > trailer-console.log 2>&1 &
 PGID=$!
-for i in $(seq 1 540); do
+for i in $(seq 1 1000); do
     sleep 5
     if grep -q "ASTRALEND TRAILER DONE" "$LOG" 2>/dev/null; then
         sleep 10       # let the last frames finish saving
