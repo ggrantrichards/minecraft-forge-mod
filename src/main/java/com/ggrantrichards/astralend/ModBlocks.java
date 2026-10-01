@@ -232,7 +232,7 @@ public final class ModBlocks {
     public static final RegistryObject<Block> STAR_BRIDGE = registerNoItem("star_bridge", com.ggrantrichards.astralend.maze.StarBridgeBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(-1.0F, 3600000.0F).sound(SoundType.AMETHYST)
             .noOcclusion().noLootTable().isValidSpawn((s, l, p, e) -> false)
-            .isRedstoneConductor((s, l, p) -> false).isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false)
+            .isRedstoneConductor((s, l, p) -> false).isSuffocating((s, l, p) -> false)
             .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.maze.StarBridgeBlock.LIT) ? 10 : 0));
     public static final RegistryObject<Block> MAZE_TELESCOPE = register("maze_telescope", com.ggrantrichards.astralend.maze.MazeTelescopeBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(-1.0F, 3600000.0F).sound(SoundType.COPPER)
