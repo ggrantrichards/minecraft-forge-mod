@@ -310,8 +310,8 @@ far away, so players always know where the Corona is (and can choose to avoid it
 
 > **Built (Phase 4):** all eight, with models, animations, glowing layers, spawn eggs, drops and
 > the advancements below. Since Phase 5, Cinder Mites swarm out in each flare's afterglow and
-> Skimmer wings refill then. Adapted until later phases exist: the Star Chart
-> marks a region of another astral biome instead of a structure (Phase 6); the Drift Whale's
+> Skimmer wings refill then. Since Phase 6 the Star Chart marks a structure (a region of another
+> biome only if no structure is in reach). Adapted until later phases exist: the Drift Whale's
 > "Leviathan" music disc waits for the music of Phase 9. A pollinated plant spreads to the ground
 > beside it (the End's plants have no growth stages). The Spore Lantern is a glowing block, and it
 > (like any light of 7 or more) reveals Umbral Stalkers.
@@ -912,12 +912,12 @@ Each phase is playable on its own. Later phases build on earlier ones.
 | **3.5. Biome worlds** ✅ | Territories thousands of blocks across on big biome-shaped islands, dense ground cover, giant flora (Lumineshrooms, Nullwood trees, petrified stalks), ribcages, craters, ice spires, the great ring, Lumine and Nullwood wood sets | Landmass density functions, eight Java features, in-game screenshots in CI |
 | **4. Mobs** ✅ | Pollinator, Void Wanderer, Black Hole Guardian, Umbral Stalker, Corona Skimmer, Cinder Mite, Drift Whale and the Watcher, their drops, spawn eggs and advancements. **Done.** | Entity classes and AI goals; models and textures generated together from one description (tools/mobs/make_mobs.py); biome spawn lists plus a hand-placed spawner for the three "one at a time" mobs |
 | **5. Sky and Stellar Flares** ✅ | Moving stars, auroras, silhouettes, comets, the Remnant, Corona flare phases, Flare Burn, solar wind, flare charging, Sunshade, Flare Ward, Collector Pedestal, Flare Cells. **Done.** | 26.3 has no `DimensionSpecialEffects` hook any more: the End's `SkyRenderer` is swapped for a subclass that draws the vanilla sky, then the mod's. A saved server-side flare timer (`SavedData`), synced to clients with one small packet. Brewing is data (26.3 brewing recipes). |
-| **6. Structures** | Comet Crater, Observatory Ruins, Wanderer Relay, Whalefall, Solar Array Ruins, Wormhole Maw, Constellation Maze, Orbital Station + Sentinel | Structure templates built in-game and saved as `.nbt`, plus jigsaw JSON. Maw linking, maze bridges and station power need Java. |
+| **6. Structures** ✅ | Comet Crater, Observatory Ruins, Wanderer Relay, Whalefall, Solar Array Ruins, Wormhole Maw, Constellation Maze, Orbital Station + Sentinel, Orrery Bronze, Portal Lens, Temporal Crystal, Data Core. **Done.** Simplified for now: stations have normal gravity (no rotating floor), and Starforge Templates and Echo Logs (vault loot in the plan) wait for Phases 8 and 9. | Structures are built block by block in Python (`tools/structures/`) and written as structure templates (26.3 format: palette entries are `{id, properties}`), each placed by a jigsaw wrapped in a small `astralend:island` structure type that checks the ground first, so nothing generates over empty void. Maw travel, maze bridges, station power and the Sentinel are Java. The survey finds, generates and tests every structure. |
 | **7. Live comets** | The comet entity, tail harvesting, landfall craters | An entity with block-display parts, a flight path, and a small crater placer |
 | **8. Starforging** | Astral Forge, templates, the six upgrades, Rift Pearls | Data components on items, a menu and screen for the Forge, vanilla attribute modifiers (gravity, step height), a temporary rift-tile block, loot modifiers for smelting and pull, event listeners for hits, projectiles, fire damage and falling into the void |
 | **9. Polish** | Advancements, Echo Logs, music, config toggles, balance passes | JSON advancements, a Forge config file, playtesting |
 
-**Next:** Phase 6, structures.
+**Next:** Phase 7, live comets.
 
 ---
 
@@ -925,7 +925,7 @@ Each phase is playable on its own. Later phases build on earlier ones.
 
 | Question | Decision |
 |---|---|
-| Telescope | Minecraft 26.3 has one. Constellation Mazes and the Watcher use the vanilla telescope. |
+| Telescope | Minecraft 26.3 has one, but the Constellation Mazes use their own **Maze Telescope** block: each is fixed on a platform, says which constellation it's aimed at and where, and the maze watches where you look. (Looking through a vanilla telescope or spyglass while you do it works too, and makes it easier.) |
 | Mod name and ID | **The Astral End**, mod ID `astralend`. The former `rubymod` project was renamed; its Ruby example content stays until Phase 1 replaces it. |
 | Flares | **Only in the Corona biome.** Unprotected players there get Flare Burn; cover, Sunshades, Flare Ward potions and the Radiant upgrade protect them. The vanilla End and all other biomes never burn. The Corona makes up for the risk with exclusive materials. |
 | Another hostile mob | **Yes: Cinder Mites**, Corona only. |

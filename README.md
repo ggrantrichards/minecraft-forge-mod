@@ -4,9 +4,69 @@ A Forge mod for **Minecraft Java Edition 26.3** with **Forge 66.0.8** that expan
 into a sparse, mysterious network of astral islands. The full plan is in
 [docs/END_UPDATE.md](docs/END_UPDATE.md).
 
-**Status:** Phase 5 of 9 (the End has its own sky, and the Corona its Stellar Flares). Mod ID: `astralend`.
+**Status:** Phase 6 of 9 (the End has structures: ruins, fossils, gates, puzzles and a station in the sky). Mod ID: `astralend`.
 
 ## What's in the mod so far
+
+### Phase 6: structures
+
+Eight structures, all built block by block in Python (`tools/structures/`) and saved as ordinary
+structure templates. These are in-game screenshots taken on every build:
+
+| Comet Crater (Comet Wake) | Whalefall (Aurora Shallows) |
+|---|---|
+| ![A crater blasted into a charred island, Comet Ice shards round a Comet Core](docs/images/structures/game_comet_crater.png) | ![The fossil ribs of a Leviathan arched over an island](docs/images/structures/game_whalefall.png) |
+| **Observatory Ruins (Shattered Observatory)** | **Solar Array Ruins (the Corona)** |
+| ![A domed hall broken open, a block-built telescope aimed through the gap](docs/images/structures/game_observatory_ruins.png) | ![A field of tilted Solarite mirrors around a sunken control room](docs/images/structures/game_solar_array.png) |
+| **Wormhole Maw** | **Constellation Maze, its bridges lit** |
+| ![The fossil skull of a Star Leviathan on its own island, its throat a wormhole](docs/images/structures/game_wormhole_maw.png) | ![Floating platforms joined by star-bridges around a central dais](docs/images/structures/game_constellation_maze.png) |
+| **Abandoned Orbital Station** | **The Station Sentinel in its vault** |
+| ![A wheel of tarnished bronze hanging high over the End](docs/images/structures/game_orbital_station.png) | ![A bronze automaton with a Wanderer's lens, between two vault chests](docs/images/structures/game_station_vault.png) |
+
+| Structure | Where | What's there |
+|---|---|---|
+| **Comet Crater** | Comet Wake, common | A bowl blasted into an island, ringed with thrown-up Charred End Stone, with Comet Ice shards and a Comet Core (Meteoric Iron) at the bottom and a cache buried under it. Some are still hot: magma in the floor and fires round the rim. |
+| **Wanderer Relay** | Dark Matter Belt | A thin spire floating in the void with two docking rings and Null Lanterns; Void Wanderers are docked at it. No loot. |
+| **Whalefall** | Aurora Shallows, rare | A Leviathan's fossil ribs and skull, Whalelight Scales still on the bones, and one lore chest with a Star Chart. |
+| **Observatory Ruins** | Shattered Observatory, Nebula Fields | A domed hall broken open, a star map in the floor, a telescope of Meteoric Iron aimed through the gap, and two **vaults** that open for a **Data Shard** (like trial keys). |
+| **Solar Array Ruins** | The Corona | Fields of cracked and fallen Solarite mirrors round a sunken control room: two chests of the best loot in the End and a pedestal still holding a **Charged Flare Cell**. The mirrors still focus the flares: **Flare Burn is doubled on the field**. |
+| **Wormhole Maw** | Shattered Observatory, Nebula Fields, Dark Matter Belt | See below. |
+| **Constellation Maze** | Shattered Observatory, Nebula Fields | See below. |
+| **Abandoned Orbital Station** | High in the sky (Y 176-200), anywhere but the Corona | See below. |
+
+**Wormhole Maws.** The fossil skull of a Star Leviathan, jaws half open, on its own floating island.
+Set a **Charged Void Crystal** in each of its four eye sockets, then use a **Portal Lens** on the dark
+stone at the back of its throat: the Maw groans awake and its throat becomes a churning wormhole.
+Walk in and you're sent to the next Maw you've woken, and spat out of its mouth. Each trip costs
+an **ender pearl** or **four chorus fruit**. Someone who didn't wake a Maw can use a Portal Lens on its
+wormhole to add it to their own road. *Portal Lens: 3 Data Shards, a Void Crystal, a Temporal
+Crystal and a spyglass.*
+
+**Constellation Mazes.** Platforms floating in the void round a central dais, joined by
+**star-bridges you can't see**. Use the telescope on a platform: it tells you which constellation it's
+aimed at and roughly where (four of them are drawn in the End's sky: the Leviathan, the Maw, the
+Wanderer and the Watcher). Hold your gaze on that constellation for a moment and its bridge lights
+up, solid, for 20 seconds. The last bridge leads to the dais and its chest: a Temporal Crystal and a
+Star Chart that marks a Wormhole Maw. Fall, and the maze catches you and sets you back at the
+start.
+
+**Abandoned Orbital Stations.** A wheel of tarnished **Orrery Bronze** hanging high in the sky: a ring
+corridor with a docking bay (Void Wanderers parked in it), overgrown hydroponics and crew
+quarters, joined by spokes to a hub where a dead **Solar Core** waits. Bring **three Charged Flare
+Cells** from the Corona: the lamps come on, the vault's bulkheads open for five minutes, and the
+**Station Sentinel** wakes. It's a big bronze automaton with a Wanderer's lens. Up close it swings its
+fists. At range its scanning beam winds up for a second and a half (you see the sparks trace toward
+you) and then fires: break its line of sight before it does and it misses. It always drops a **Data
+Core**.
+
+New blocks and items:
+
+- **Orrery Bronze** (2 Meteoric Iron and 2 Solarite ingots make 4): the stations' metal, engraved with
+  orbits. It tarnishes violet over time in three stages, like copper; an axe scrapes it back.
+- **Station Lamp** (Orrery Bronze round glowstone).
+- **Temporal Crystal**: loot only (craters, vaults, the maze, the station).
+- **Star Charts** now mark structures, not just biomes. Charts found in chests are unread until you
+  first use one in the End.
 
 ### Phase 5: the sky and Stellar Flares
 
