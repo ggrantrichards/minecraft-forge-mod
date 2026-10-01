@@ -6,7 +6,6 @@ import com.ggrantrichards.astralend.client.entity.ModModelLayers;
 import com.ggrantrichards.astralend.entity.ModEntities;
 import com.ggrantrichards.astralend.client.sky.AstralSky;
 import com.ggrantrichards.astralend.dev.WorldgenSurvey;
-import com.ggrantrichards.astralend.flare.FlareBrewing;
 import com.ggrantrichards.astralend.flare.FlareCommand;
 import com.ggrantrichards.astralend.flare.FlareNetwork;
 import com.ggrantrichards.astralend.flare.StellarFlares;
@@ -65,7 +64,6 @@ public final class AstralEnd {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
-        event.enqueueWork(FlareBrewing::register);
         // Look for this line in the console/log to confirm the mod loaded.
         LOGGER.info("The Astral End loaded.");
     }

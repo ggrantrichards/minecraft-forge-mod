@@ -234,7 +234,8 @@ effects_src = (JAVA / "ModEffects.java").read_text()
 effects = set(re.findall(r'EFFECTS\.register\("([a-z0-9_]+)"', effects_src))
 potion_names = set(re.findall(r'new Potion\("([a-z0-9_]+)"', effects_src))
 damage_types = {f.stem for f in (RES / "data" / NS / "damage_type").glob("*.json")}
-known |= {f"{NS}:{n}" for n in effects | damage_types}
+potions = set(re.findall(r'POTIONS\.register\("([a-z0-9_]+)"', effects_src))
+known |= {f"{NS}:{n}" for n in effects | damage_types | potions}
 
 
 def need(kind, ref, where):

@@ -10,7 +10,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 // Flare Ward (Phase 5): while it lasts, Stellar Flares can't burn you (StellarFlares checks for it).
-// Brewed from an Awkward Potion and Skimmer Film; Flare Pollen makes it last longer (FlareBrewing).
+// Brewed from an Awkward Potion and Skimmer Film; Flare Pollen makes it last longer (the brewing
+// recipes are data: data/astralend/recipe/brewing/, written by tools/generate_resources.py).
 public final class ModEffects {
     public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, AstralEnd.MODID);
     public static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(ForgeRegistries.POTIONS, AstralEnd.MODID);

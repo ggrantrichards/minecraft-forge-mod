@@ -1213,6 +1213,23 @@ def flares_phase5():
                           ("lingering_potion", "Lingering Potion of Flare Ward"), ("tipped_arrow", "Arrow of Flare Ward")):
         lang[f"item.minecraft.{kind}.effect.flare_ward"] = english
 
+    # Brewing (26.3 brews from data, like crafting): Awkward + Skimmer Film -> Flare Ward;
+    # Flare Ward + Flare Pollen -> the long one; gunpowder and dragon's breath as for any potion.
+    def brew(name, container, potion, reagent, out_container, out_potion):
+        recipe(f"brewing/{name}", {"type": "minecraft:brewing",
+            "input": {"item": container, "potion_contents": {"potions": potion}},
+            "reagent": {"item": reagent},
+            "output": {"id": out_container, "components": {"minecraft:potion_contents": {"potion": out_potion}}}})
+    for kind in ("potion", "splash_potion", "lingering_potion"):
+        c = f"minecraft:{kind}"
+        brew(f"{kind}_awkward_skimmer_film", c, "minecraft:awkward", rid("skimmer_film"), c, rid("flare_ward"))
+        brew(f"{kind}_flare_ward_flare_pollen", c, rid("flare_ward"), rid("flare_pollen"), c, rid("long_flare_ward"))
+    for potion in ("flare_ward", "long_flare_ward"):
+        brew(f"potion_{potion}_gunpowder", "minecraft:potion", rid(potion), "minecraft:gunpowder",
+             "minecraft:splash_potion", rid(potion))
+        brew(f"splash_potion_{potion}_dragon_breath", "minecraft:splash_potion", rid(potion), "minecraft:dragon_breath",
+             "minecraft:lingering_potion", rid(potion))
+
     # Flare Burn: armour doesn't help (only cover, a Sunshade, Flare Ward)
     write(DATA / "damage_type" / "flare_burn.json",
           {"message_id": f"{NS}.flare_burn", "exhaustion": 0.0, "scaling": "never", "effects": "burning"})
