@@ -51,7 +51,7 @@ public class OrreryBronzeBlock extends Block {
         if (this.previous == null || !stack.is(ItemTags.AXES)) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
-        level.playSound(player, pos, SoundEvents.AXE_SCRAPE, SoundSource.BLOCKS, 1.0F, 1.0F);
+        level.playSound(player, pos, SoundEvents.AXE_SCRAPE.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
         level.levelEvent(player, 3005, pos, 0);   // the scrape particles copper uses
         if (!level.isClientSide()) {
             level.setBlockAndUpdate(pos, this.previous.get().defaultBlockState());

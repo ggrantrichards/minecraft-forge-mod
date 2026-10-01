@@ -47,7 +47,7 @@ public class StationSentinel extends Monster {
     public static final int CHARGE_TICKS = 30;
     private static final float BEAM_DAMAGE = 9.0F;
 
-    private final ServerBossEvent bossBar = new ServerBossEvent(Component.translatable("entity.astralend.station_sentinel"),
+    private final ServerBossEvent bossBar = new ServerBossEvent(java.util.UUID.randomUUID(), Component.translatable("entity.astralend.station_sentinel"),
         BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.NOTCHED_10);
 
     public StationSentinel(EntityType<? extends StationSentinel> type, Level level) {
