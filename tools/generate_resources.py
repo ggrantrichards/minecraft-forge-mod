@@ -83,7 +83,7 @@ ITEMS = [
     ("solarite_ingot", "Solarite Ingot"),
     # Phase 4: what the mobs leave behind
     ("glowing_spores", "Glowing Spores"),
-    ("data_shard", "Data Shard"),
+    ("chart_fragment", "Chart Fragment"),
     ("cracked_lens", "Cracked Lens"),
     ("singularity_shard", "Singularity Shard"),
     ("umbral_membrane", "Umbral Membrane"),
@@ -1039,7 +1039,7 @@ MOBS = [
     ("black_hole_guardian", "Black Hole Guardian"),
     ("drift_whale", "Drift Whale"),
     ("watcher", "The Watcher"),
-    ("station_sentinel", "Station Sentinel"),
+    ("orrery_sentinel", "Orrery Sentinel"),
     ("live_comet", "Live Comet"),
 ]
 
@@ -1084,10 +1084,11 @@ def mobs_phase4():
     entity_loot("drift_whale", [])
     entity_loot("watcher", [])
     entity_loot("live_comet", [])   # what it gives, it gives while it flies (see LiveComet)
-    # The Station Sentinel always drops its Data Core.
-    entity_loot("station_sentinel", [
-        {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("data_core")}]},
-        {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("rift_pearl")}]},   # Phase 8: every boss drops one
+    # The Orrery Sentinel guards the Cartographers' craft: it always drops a Starforge Template and a
+    # Rift Pearl (every boss drops one).
+    entity_loot("orrery_sentinel", [
+        {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("starforge_template")}]},
+        {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("rift_pearl")}]},
         {"rolls": 1, "conditions": [{"condition": "minecraft:random_chance", "chance": 0.5}],
          "entries": [{"type": "minecraft:item", "name": rid("temporal_crystal")}]},
         {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("orrery_bronze"), "functions": [
@@ -1194,7 +1195,7 @@ def flares_phase5():
         box([1, 10, 1], [15, 13, 15], [1, 0, 15, 3], [0, 0, 16, 16]),
     ]})
     parts = [{"apply": {"model": rid("block/collector_pedestal")}}]
-    for holding in ("void_crystal", "charged_void_crystal", "flare_cell", "charged_flare_cell"):
+    for holding in ("void_crystal", "charged_void_crystal", "flare_bottle", "bottled_flare"):
         t = rid(f"block/pedestal_{holding}")
         planes = []
         for angle in (45, -45):
@@ -1214,11 +1215,11 @@ def flares_phase5():
 
     # Items
     for name, english in (("flare_pollen", "Flare Pollen"), ("charged_void_crystal", "Charged Void Crystal"),
-                          ("flare_cell", "Flare Cell"), ("charged_flare_cell", "Charged Flare Cell")):
+                          ("flare_bottle", "Flare Bottle"), ("bottled_flare", "Bottled Flare")):
         item_model(name, {"parent": "minecraft:item/generated", "textures": {"layer0": rid(f"item/{name}")}})
         item_def(name, rid(f"item/{name}"))
         lang[f"item.{NS}.{name}"] = english
-    shaped("flare_cell", "flare_cell", ["S", "G", "S"], {"S": rid("solarite_ingot"), "G": rid("astral_glass")})
+    shaped("flare_bottle", "flare_bottle", ["S", "G", "S"], {"S": rid("solarite_ingot"), "G": rid("astral_glass")})
 
     # Flare Ward, the potion and its effect
     lang[f"effect.{NS}.flare_ward"] = "Flare Ward"
@@ -1290,7 +1291,7 @@ def structures_phase6():
     for name, english in (("comet_crater", "Comet Crater"), ("wanderer_relay", "Wanderer Relay"), ("whalefall", "Whalefall"),
                           ("observatory_ruins", "Observatory Ruins"), ("solar_array", "Solar Array Ruins"),
                           ("wormhole_maw", "Wormhole Maw"), ("constellation_maze", "Constellation Maze"),
-                          ("orbital_station", "Abandoned Orbital Station")):
+                          ("abandoned_orrery", "Abandoned Orrery")):
         lang[f"structure.{NS}.{name}"] = english
         tag("worldgen/structure", rid(name), rid(name))      # a Star Chart looks each one up by its own tag
 
@@ -1339,8 +1340,10 @@ def structures_phase6():
     item_model("portal_lens", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("item/portal_lens")}})
     item_def("portal_lens", rid("item/portal_lens"))
     lang[f"item.{NS}.portal_lens"] = "Portal Lens"
-    shapeless("portal_lens", "portal_lens", [rid("data_shard"), rid("data_shard"), rid("data_shard"), rid("void_crystal"),
-                                             rid("temporal_crystal"), "minecraft:spyglass"], category="equipment")
+    # A spyglass fitted with a Void Wanderer's lens and a crystal to see through time and the void; the
+    # Wanderers' Chart Fragments show it the way.
+    shapeless("portal_lens", "portal_lens", ["minecraft:spyglass", rid("cracked_lens"), rid("void_crystal"), rid("temporal_crystal"),
+                                             rid("chart_fragment"), rid("chart_fragment")], category="equipment")
     lang.update({
         "maw.astralend.eyes_dark": "The Maw's eyes are dark (%s of %s lit). Set Charged Void Crystals in them.",
         "maw.astralend.woken": "The Maw groans open. Its throat is a road of stars.",
@@ -1365,7 +1368,7 @@ def structures_phase6():
         "maze.astralend.dir.west": "high in the west", "maze.astralend.dir.north_west": "high in the north-west",
     })
 
-    # ---- Batch D: the Orbital Station
+    # ---- Batch D: the Orrery
     for name, english in (("orrery_bronze", "Orrery Bronze"), ("tarnished_orrery_bronze", "Tarnished Orrery Bronze"),
                           ("weathered_orrery_bronze", "Weathered Orrery Bronze")):
         cube(name)
@@ -1375,47 +1378,43 @@ def structures_phase6():
         drop_self(name)
     shapeless("orrery_bronze", "orrery_bronze", [rid("meteoric_iron_ingot"), rid("meteoric_iron_ingot"),
                                                  rid("solarite_ingot"), rid("solarite_ingot")], count=4, category="building")
-    # The Solar Core: its sides show how many cells are in; the top glows when it's powered.
+    # The Orrery Heart: its sides show how many flares it holds; the top glows once it's rekindled.
     variants = {}
     for cells in range(4):
         for powered in (False, True):
-            model = "solar_core_on" if powered else f"solar_core_{cells}"
-            variants[f"cells={cells},powered={str(powered).lower()}"] = {"model": rid(f"block/{model}")}
+            model = "orrery_heart_on" if powered else f"orrery_heart_{cells}"
+            variants[f"flares={cells},powered={str(powered).lower()}"] = {"model": rid(f"block/{model}")}
     for cells in range(4):
-        block_model(f"solar_core_{cells}", {"parent": "minecraft:block/cube_bottom_top", "textures": {
-            "side": rid(f"block/solar_core_side_{cells}"), "top": rid("block/solar_core_top"),
+        block_model(f"orrery_heart_{cells}", {"parent": "minecraft:block/cube_bottom_top", "textures": {
+            "side": rid(f"block/orrery_heart_side_{cells}"), "top": rid("block/orrery_heart_top"),
             "bottom": rid("block/weathered_orrery_bronze")}})
-    block_model("solar_core_on", {"parent": "minecraft:block/cube_bottom_top", "textures": {
-        "side": rid("block/solar_core_side_on"), "top": rid("block/solar_core_top_on"), "bottom": rid("block/weathered_orrery_bronze")}})
-    blockstate("solar_core", {"variants": variants})
-    item_def("solar_core", rid("block/solar_core_0"))
-    lang[f"block.{NS}.solar_core"] = "Solar Core"
-    # Bulkheads: a solid slab of armour shut, nothing at all open (it has slid into the walls).
-    block_model("bulkhead", {"parent": "minecraft:block/cube_all", "textures": {"all": rid("block/bulkhead")}})
-    block_model("bulkhead_open", {"textures": {"particle": rid("block/bulkhead")}, "elements": []})
-    blockstate("bulkhead", {"multipart": [
-        {"when": {"open": "false"}, "apply": {"model": rid("block/bulkhead")}},
-        {"when": {"open": "true"}, "apply": {"model": rid("block/bulkhead_open")}}]})
-    item_def("bulkhead", rid("block/bulkhead"))
-    lang[f"block.{NS}.bulkhead"] = "Station Bulkhead"
-    # Station lamps.
-    block_model("station_lamp", {"parent": "minecraft:block/cube_all", "textures": {"all": rid("block/station_lamp")}})
-    block_model("station_lamp_on", {"parent": "minecraft:block/cube_all", "textures": {"all": rid("block/station_lamp_on")}})
-    blockstate("station_lamp", {"variants": {"lit=false": {"model": rid("block/station_lamp")},
-                                             "lit=true": {"model": rid("block/station_lamp_on")}}})
-    item_def("station_lamp", rid("block/station_lamp"))
-    drop_self("station_lamp")
-    lang[f"block.{NS}.station_lamp"] = "Station Lamp"
-    shaped("station_lamp", "station_lamp", [" B ", "BGB", " B "], {"B": rid("orrery_bronze"), "G": "minecraft:glowstone"})
-    # The Data Core.
-    item_model("data_core", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("item/data_core")}})
-    item_def("data_core", rid("item/data_core"))
-    lang[f"item.{NS}.data_core"] = "Data Core"
+    block_model("orrery_heart_on", {"parent": "minecraft:block/cube_bottom_top", "textures": {
+        "side": rid("block/orrery_heart_side_on"), "top": rid("block/orrery_heart_top_on"), "bottom": rid("block/weathered_orrery_bronze")}})
+    blockstate("orrery_heart", {"variants": variants})
+    item_def("orrery_heart", rid("block/orrery_heart_0"))
+    lang[f"block.{NS}.orrery_heart"] = "Orrery Heart"
+    # Bronze Shutters: a solid slab of bronze shut, nothing at all open (it has slid into the walls).
+    block_model("bronze_shutter", {"parent": "minecraft:block/cube_all", "textures": {"all": rid("block/bronze_shutter")}})
+    block_model("bronze_shutter_open", {"textures": {"particle": rid("block/bronze_shutter")}, "elements": []})
+    blockstate("bronze_shutter", {"multipart": [
+        {"when": {"open": "false"}, "apply": {"model": rid("block/bronze_shutter")}},
+        {"when": {"open": "true"}, "apply": {"model": rid("block/bronze_shutter_open")}}]})
+    item_def("bronze_shutter", rid("block/bronze_shutter"))
+    lang[f"block.{NS}.bronze_shutter"] = "Bronze Shutter"
+    # Orrery Lamps.
+    block_model("orrery_lamp", {"parent": "minecraft:block/cube_all", "textures": {"all": rid("block/orrery_lamp")}})
+    block_model("orrery_lamp_on", {"parent": "minecraft:block/cube_all", "textures": {"all": rid("block/orrery_lamp_on")}})
+    blockstate("orrery_lamp", {"variants": {"lit=false": {"model": rid("block/orrery_lamp")},
+                                             "lit=true": {"model": rid("block/orrery_lamp_on")}}})
+    item_def("orrery_lamp", rid("block/orrery_lamp"))
+    drop_self("orrery_lamp")
+    lang[f"block.{NS}.orrery_lamp"] = "Orrery Lamp"
+    shaped("orrery_lamp", "orrery_lamp", [" B ", "BGB", " B "], {"B": rid("orrery_bronze"), "G": "minecraft:glowstone"})
     lang.update({
-        "station.astralend.cell": "The Solar Core takes the cell (%s of 3).",
-        "station.astralend.powered": "The Solar Core blazes up. Lights flicker on along the ring, and somewhere a bulkhead grinds open...",
-        "station.astralend.running": "The Solar Core is running.",
-        "station.astralend.dead": "The Solar Core is cold and dead (%s of 3 cells). It wants charged Flare Cells.",
+        "orrery.astralend.flare": "The Orrery Heart drinks the flare (%s of 3).",
+        "orrery.astralend.powered": "The Orrery Heart blazes up. The rings shudder and turn, lamps kindle along the gallery, and somewhere a shutter grinds open...",
+        "orrery.astralend.running": "The Orrery Heart is burning.",
+        "orrery.astralend.dead": "The Orrery Heart is cold (%s of 3 flares). It wants Bottled Flares.",
     })
 
     # ---- Phase 7: live comets
@@ -1451,29 +1450,29 @@ def structures_phase6():
         {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("star_chart"), "functions": [
             {"function": "minecraft:set_components", "components": {"minecraft:custom_data": {"Structure": "wormhole_maw"}}}]}]},
         {"rolls": {"type": "minecraft:uniform", "min": 2, "max": 4}, "entries": [
-            entry("charged_void_crystal", 3, (1, 2)), entry("data_shard", 3, (1, 3)), entry("void_crystal", 4, (2, 5)),
+            entry("charged_void_crystal", 3, (1, 2)), entry("chart_fragment", 3, (1, 3)), entry("void_crystal", 4, (2, 5)),
             entry("star_inlay_observatory_quartz", 2, (2, 6)), entry("minecraft:ender_pearl", 3, (2, 4)),
             entry("minecraft:experience_bottle", 2, (2, 5))]},
     ])
-    # The Orbital Station: the vault (behind the bulkheads) and the crew's lockers.
-    chest_loot("station_vault", [
+    # The Orrery: the vault (behind the shutters) and the keepers' quarters.
+    chest_loot("orrery_vault", [
         {"rolls": 1, "entries": [entry("temporal_crystal")]},
         {"rolls": 1, "entries": [entry("starforge_template")]},
         chance("rift_pearl", 0.15),
         {"rolls": 1, "entries": [entry("charged_void_crystal", 1, (1, 2))]},
         {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 5}, "entries": [
             entry("orrery_bronze", 4, (4, 12)), entry("solarite_ingot", 3, (2, 5)), entry("meteoric_iron_ingot", 3, (2, 5)),
-            entry("data_shard", 3, (1, 3)), entry("charged_flare_cell", 1), entry("minecraft:diamond", 2, (1, 3)),
+            entry("chart_fragment", 3, (1, 3)), entry("bottled_flare", 1), entry("minecraft:diamond", 2, (1, 3)),
             entry("minecraft:enchanted_golden_apple", 1)]},
     ])
-    chest_loot("station_quarters", [
+    chest_loot("orrery_quarters", [
         {"rolls": 1, "entries": [entry("star_chart")]},
         {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
             entry("comet_cress", 4, (2, 6)), entry("glowing_spores", 3, (2, 5)), entry("lumineshroom", 2, (1, 3)),
-            entry("minecraft:paper", 3, (1, 5)), entry("minecraft:book", 2), entry("flare_cell", 1),
+            entry("minecraft:paper", 3, (1, 5)), entry("minecraft:book", 2), entry("flare_bottle", 1),
             entry("orrery_bronze", 3, (2, 6))]},
     ])
-    # Observatory Ruins: the vaults (opened with a Data Shard) hold the Cartographers' best finds; the
+    # Observatory Ruins: the vaults (opened with a Chart Fragment) hold the Cartographers' best finds; the
     # chest holds what was left lying about.
     chest_loot("observatory_vault", [
         {"rolls": 1, "entries": [entry("temporal_crystal", 3), entry("charged_void_crystal", 2, (1, 2)),
@@ -1481,7 +1480,7 @@ def structures_phase6():
         chance("starforge_template", 0.5),
         chance("rift_pearl", 0.05),
         {"rolls": {"type": "minecraft:uniform", "min": 1, "max": 3}, "entries": [
-            entry("void_crystal", 4, (2, 5)), entry("meteoric_iron_ingot", 3, (1, 3)), entry("data_shard", 2, (1, 2)),
+            entry("void_crystal", 4, (2, 5)), entry("meteoric_iron_ingot", 3, (1, 3)), entry("chart_fragment", 2, (1, 2)),
             entry("minecraft:spyglass", 2), entry("minecraft:ender_pearl", 3, (1, 3)), entry("star_inlay_observatory_quartz", 2, (2, 6))]},
     ])
     chest_loot("observatory_ruins", [
@@ -1492,14 +1491,14 @@ def structures_phase6():
             entry("minecraft:compass", 1)]},
         chance("temporal_crystal", 0.1),
     ])
-    # Solar Array Ruins: the best loot in the End (and a charged Flare Cell sits in the console).
+    # Solar Array Ruins: the best loot in the End (and a Bottled Flare sits in the console).
     chest_loot("solar_array", [
         {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
             entry("solarite_ingot", 6, (2, 6)), entry("raw_solarite", 5, (2, 6)), entry("solarite_block", 2, (1, 2)),
-            entry("flare_cell", 3, (1, 2)), entry("flare_pollen", 4, (2, 6)), entry("charged_void_crystal", 2, (1, 1)),
+            entry("flare_bottle", 3, (1, 2)), entry("flare_pollen", 4, (2, 6)), entry("charged_void_crystal", 2, (1, 1)),
             entry("minecraft:golden_apple", 2), entry("sunshade", 3, (2, 4))]},
         chance("temporal_crystal", 0.4),
-        chance("charged_flare_cell", 0.25),
+        chance("bottled_flare", 0.25),
         chance("starforge_template", 0.35),
     ])
 

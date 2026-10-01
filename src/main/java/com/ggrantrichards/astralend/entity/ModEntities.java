@@ -48,10 +48,10 @@ public final class ModEntities {
         () -> EntityType.Builder.of(Watcher::new, MobCategory.MISC).sized(1.0F, 2.9F).eyeHeight(2.4F).fireImmune()
             .clientTrackingRange(16).build(ENTITY_TYPES.key("watcher")));
 
-    // Phase 6: the Orbital Station's guardian.
-    public static final RegistryObject<EntityType<StationSentinel>> STATION_SENTINEL = ENTITY_TYPES.register("station_sentinel",
-        () -> EntityType.Builder.of(StationSentinel::new, MobCategory.MONSTER).sized(1.6F, 3.2F).eyeHeight(2.7F).fireImmune()
-            .clientTrackingRange(16).build(ENTITY_TYPES.key("station_sentinel")));
+    // Phase 6: the Orrery's guardian.
+    public static final RegistryObject<EntityType<OrrerySentinel>> ORRERY_SENTINEL = ENTITY_TYPES.register("orrery_sentinel",
+        () -> EntityType.Builder.of(OrrerySentinel::new, MobCategory.MONSTER).sized(1.6F, 3.2F).eyeHeight(2.7F).fireImmune()
+            .clientTrackingRange(16).build(ENTITY_TYPES.key("orrery_sentinel")));
 
     // Phase 7: live comets. Seen from far off and moved every tick, so they're tracked far and often.
     public static final RegistryObject<EntityType<com.ggrantrichards.astralend.comet.LiveComet>> LIVE_COMET = ENTITY_TYPES.register("live_comet",
@@ -68,7 +68,7 @@ public final class ModEntities {
             event.put(BLACK_HOLE_GUARDIAN.get(), BlackHoleGuardian.createAttributes().build());
             event.put(DRIFT_WHALE.get(), DriftWhale.createAttributes().build());
             event.put(WATCHER.get(), Watcher.createAttributes().build());
-            event.put(STATION_SENTINEL.get(), StationSentinel.createAttributes().build());
+            event.put(ORRERY_SENTINEL.get(), OrrerySentinel.createAttributes().build());
             event.put(LIVE_COMET.get(), com.ggrantrichards.astralend.comet.LiveComet.createAttributes().build());
         });
         SpawnPlacementRegisterEvent.BUS.addListener(event -> {

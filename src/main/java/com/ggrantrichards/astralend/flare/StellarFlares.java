@@ -47,7 +47,7 @@ import net.minecraftforge.fml.LogicalSide;
 //
 //   WARNING   ~1 min    the Remnant brightens and a hum rises; there's always time to get under cover
 //   FLARE     1-2 min   open sky in the Corona burns (Flare Burn); Flareblooms open; Skimmers take off;
-//                       Void Crystal and Flare Cells on Collector Pedestals charge
+//                       Void Crystal and Flare Bottles on Collector Pedestals charge
 //   AFTERGLOW ~2 min    Sunscale Lichen glows bright, Skimmer wings refill, Cinder Mites swarm out
 //
 // One timer for the whole End, saved with the world. Clients hear about it through FlareNetwork.

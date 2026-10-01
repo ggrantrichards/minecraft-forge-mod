@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "B": "astralend:orrery_bronze",
+    "G": "minecraft:glowstone"
+  },
+  "pattern": [
+    " B ",
+    "BGB",
+    " B "
+  ],
+  "result": {
+    "id": "astralend:orrery_lamp"
+  }
+}

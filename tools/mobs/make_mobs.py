@@ -383,10 +383,10 @@ POLLINATOR = Mob("pollinator", (32, 32), [
 ], egg=(hexc("7fd9d0"), hexc("b48cf0")))
 
 
-# ---- Void Wanderer: a Cartographer survey drone that is still running. A rounded bronze body
-# gone green with verdigris in patches (like vanilla's weathering copper), riveted panels, one big
-# glass lens, an antenna with a signal light, two small stabiliser fins and a gimbal ring that
-# spins around it.
+# ---- Void Wanderer: a clockwork construct of the Cartographers, still drifting the dark charting the
+# stars. A rounded bronze body gone green with verdigris in patches (like vanilla's weathering copper),
+# riveted panels with Void Crystal inlaid along the seam, one big glass lens, a finial tipped with a
+# void crystal (like a copper golem's rod), two small fins and a gimbal ring that spins around it.
 BRONZE = [hexc("4a2e18"), hexc("6e4526"), hexc("8e5c32"), hexc("b07a44"), hexc("d19c5e"), hexc("f0c888")]
 PATINA = [hexc("2f6b5c"), hexc("45907a"), hexc("68b89c")]
 
@@ -416,9 +416,9 @@ def bronze_plain(face, px, py, fw, fh, rnd):
     return bronze(face, px, py, fw, fh, rnd, panels=False)
 
 
-def drone_glow(face, px, py, fw, fh, rnd):
+def inlay_glow(face, px, py, fw, fh, rnd):
     if face in ("east", "west", "south") and fh >= 6 and py == fh // 2 and px % 3 == 1:
-        return hexc("7ff3ff")                             # status lights along the seam
+        return hexc("b49cff")                             # void crystal inlaid along the seam
     return None
 
 
@@ -443,8 +443,8 @@ def lens_glow(face, px, py, fw, fh, rnd):
     return None
 
 
-def antenna_tip(face, px, py, fw, fh, rnd):
-    return hexc("ff9a5a")
+def finial_crystal(face, px, py, fw, fh, rnd):
+    return hexc("c8b0ff") if (px + py) % 2 else hexc("8a64f0")
 
 
 def ring_bar(face, px, py, fw, fh, rnd):
@@ -457,7 +457,7 @@ def ring_bar(face, px, py, fw, fh, rnd):
 
 WANDERER = Mob("void_wanderer", (64, 64), [
     Part("body", (0, 14, 0), [
-        Box(0, 0, -4, -4, -4, 8, 8, 8, paint=bronze, glow=drone_glow),
+        Box(0, 0, -4, -4, -4, 8, 8, 8, paint=bronze, glow=inlay_glow),
         Box(32, 0, -3, -5, -3, 6, 1, 6, paint=bronze_plain),       # rounded top
         Box(32, 0, -3, 4, -3, 6, 1, 6, paint=bronze_plain),        # and bottom
         Box(0, 16, -5, -3, -3, 1, 6, 6, paint=bronze_plain),       # rounded sides
@@ -465,8 +465,8 @@ WANDERER = Mob("void_wanderer", (64, 64), [
         Box(14, 16, -3, -3, 4, 6, 6, 1, paint=bronze_plain),       # rounded back
         Box(28, 16, -2.5, -2.5, -5, 5, 5, 1, paint=lens_housing),  # the lens housing
         Box(40, 16, -2, -2, -5.6, 4, 4, 1, paint=lens_glass, glow=lens_glow),
-        Box(56, 0, -0.5, -8, -0.5, 1, 3, 1, paint=bronze_plain),   # antenna
-        Box(50, 16, -1, -9, -1, 2, 1, 2, paint=antenna_tip, glow=antenna_tip),
+        Box(56, 0, -0.5, -8, -0.5, 1, 3, 1, paint=bronze_plain),   # the finial
+        Box(50, 16, -1, -9, -1, 2, 1, 2, paint=finial_crystal, glow=finial_crystal),
     ], [
         Part("left_fin", (5, 1, 1), [Box(0, 28, 0, -1, -2, 3, 2, 5, paint=bronze_plain)]),
         Part("right_fin", (-5, 1, 1), [Box(0, 28, -3, -1, -2, 3, 2, 5, mirror=True, paint=bronze_plain)]),
@@ -944,21 +944,21 @@ WATCHER = Mob("watcher", (64, 64), [
 ], egg=(STONE[3], RUNE))
 
 
-# ---- Station Sentinel: the Orbital Station's guardian, a big, slow automaton built like a Void
-# Wanderer: a Wanderer's drone head with its great lens, on a riveted bronze body with heavy fists,
-# and a gimbal ring on its back. It's tarnished violet with age, like the station's bronze.
+# ---- Orrery Sentinel: the Orrery's guardian, a big, slow clockwork construct built like a Void
+# Wanderer: a Wanderer's head with its great lens, on a riveted bronze body with heavy fists, and a
+# gimbal ring on its back. It's tarnished violet with age, like the Orrery's own bronze.
 TARNISH = [hexc("5e4a86"), hexc("75609e"), hexc("9a86c6")]
 
 
-def station_bronze(face, px, py, fw, fh, rnd, panels=True):
+def orrery_bronze(face, px, py, fw, fh, rnd, panels=True):
     c = bronze(face, px, py, fw, fh, rnd, panels)
     if c in PATINA:
         c = TARNISH[PATINA.index(c)]                     # violet tarnish instead of verdigris
     return c
 
 
-def station_bronze_plain(face, px, py, fw, fh, rnd):
-    return station_bronze(face, px, py, fw, fh, rnd, panels=False)
+def orrery_bronze_plain(face, px, py, fw, fh, rnd):
+    return orrery_bronze(face, px, py, fw, fh, rnd, panels=False)
 
 
 def big_lens_glass(face, px, py, fw, fh, rnd):
@@ -980,14 +980,14 @@ def big_lens_glow(face, px, py, fw, fh, rnd):
 
 def chest_lights(face, px, py, fw, fh, rnd):
     if face == "north" and py == 3 and px % 3 == 2 and 2 <= px <= fw - 3:
-        return hexc("7ff3ff")                             # a row of status lights across the chest
+        return hexc("b49cff")                             # a row of void crystals set across the chest
     if face in ("east", "west") and py == fh // 2 and px % 3 == 1:
-        return hexc("7ff3ff")
+        return hexc("b49cff")
     return None
 
 
 def fist(face, px, py, fw, fh, rnd):
-    c = station_bronze_plain(face, px, py, fw, fh, rnd)
+    c = orrery_bronze_plain(face, px, py, fw, fh, rnd)
     if face == "down" or (face == "north" and py >= fh - 2):
         c = BRONZE[1]                                     # the knuckles, worn dark
     if face == "north" and py == 1 and px % 2 == 1:
@@ -995,26 +995,26 @@ def fist(face, px, py, fw, fh, rnd):
     return c
 
 
-SENTINEL = Mob("station_sentinel", (128, 64), [
-    Part("right_leg", (-4, 6, 0), [B(-2.5, 0, -2.5, 5, 18, 5, station_bronze, key="leg")]),
-    Part("left_leg", (4, 6, 0), [B(-2.5, 0, -2.5, 5, 18, 5, station_bronze, key="leg", mirror=True)]),
+SENTINEL = Mob("orrery_sentinel", (128, 64), [
+    Part("right_leg", (-4, 6, 0), [B(-2.5, 0, -2.5, 5, 18, 5, orrery_bronze, key="leg")]),
+    Part("left_leg", (4, 6, 0), [B(-2.5, 0, -2.5, 5, 18, 5, orrery_bronze, key="leg", mirror=True)]),
     Part("body", (0, 6, 0), [
-        B(-8, -16, -5, 16, 14, 10, station_bronze, chest_lights),
-        B(-6, -2, -4, 12, 3, 8, station_bronze_plain),                  # the waist
+        B(-8, -16, -5, 16, 14, 10, orrery_bronze, chest_lights),
+        B(-6, -2, -4, 12, 3, 8, orrery_bronze_plain),                  # the waist
     ], [
         Part("head", (0, -16, 0), [
-            B(-5, -10, -5, 10, 10, 10, station_bronze, drone_glow),
+            B(-5, -10, -5, 10, 10, 10, orrery_bronze, inlay_glow),
             B(-3.5, -8.5, -6, 7, 7, 1, lens_housing),
             B(-2.5, -7.5, -6.6, 5, 5, 1, big_lens_glass, big_lens_glow),
-            B(-0.5, -14, -0.5, 1, 4, 1, station_bronze_plain),           # antenna
-            B(-1, -15, -1, 2, 1, 2, antenna_tip, antenna_tip),
+            B(-0.5, -14, -0.5, 1, 4, 1, orrery_bronze_plain),           # the finial
+            B(-1, -15, -1, 2, 1, 2, finial_crystal, finial_crystal),
         ]),
         Part("right_arm", (-10, -13, 0), [
-            B(-3, -2, -3, 5, 13, 6, station_bronze, key="arm"),
+            B(-3, -2, -3, 5, 13, 6, orrery_bronze, key="arm"),
             B(-3.5, 11, -3.5, 6, 6, 7, fist, key="fist"),
         ]),
         Part("left_arm", (10, -13, 0), [
-            B(-2, -2, -3, 5, 13, 6, station_bronze, key="arm", mirror=True),
+            B(-2, -2, -3, 5, 13, 6, orrery_bronze, key="arm", mirror=True),
             B(-2.5, 11, -3.5, 6, 6, 7, fist, key="fist", mirror=True),
         ]),
         Part("ring", (0, -10, 7), [

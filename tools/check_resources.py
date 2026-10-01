@@ -316,7 +316,7 @@ for extra in sorted(set(lang) - {f"block.{NS}.{n}" for n in blocks} - {f"item.{N
                     - {f"item.minecraft.{k}.effect.{p}" for p in potion_names
                        for k in ("potion", "splash_potion", "lingering_potion", "tipped_arrow")}
                     - {f"death.attack.{NS}.{d}{suffix}" for d in damage_types for suffix in ("", ".player")}
-                    - {k for k in lang if k.startswith(("flare.astralend.", "maw.astralend.", "maze.astralend.", "station.astralend.",
+                    - {k for k in lang if k.startswith(("flare.astralend.", "maw.astralend.", "maze.astralend.", "orrery.astralend.",
                                                         "upgrade.astralend.", "container.astralend."))}
                     - {f"structure.{NS}.{st.split(':')[1]}" for st in worldgen_ids.get("structure", set())}):
     err(f"lang/en_us.json: {extra} doesn't match anything registered")

@@ -237,9 +237,9 @@ def whalefall(seed):
 # ------------------------------------------------------------------ Observatory Ruins
 
 def vault(t, x, y, z, loot, facing):
-    """A vanilla vault that opens for a Data Shard, like a trial key."""
+    """A vanilla vault that opens for a Chart Fragment, like a trial key."""
     t.set(x, y, z, f"minecraft:vault[facing={facing},ominous=false,vault_state=inactive]", nbt={
-        "config": {"loot_table": a(f"chests/{loot}"), "key_item": {"id": a("data_shard"), "count": Int(1)}}})
+        "config": {"loot_table": a(f"chests/{loot}"), "key_item": {"id": a("chart_fragment"), "count": Int(1)}}})
 
 
 # Constellations laid into the observatory floor (offsets from the centre, joined in order).
@@ -255,7 +255,7 @@ def observatory_ruins(seed):
     """The Cartographers' observatory, long since shattered: a round hall of pale stone ringed with
     quartz pillars, its dome broken open on one side, a star map laid into the floor, and the great
     telescope still on its mount, aimed through the hole at the sky. Two vaults at the foot of the
-    mount open for Data Shards."""
+    mount open for Chart Fragments."""
     t = Template(33, 26, 33, seed)
     rnd = t.rnd
     c, floor = 16, 2
@@ -386,7 +386,7 @@ def mirror(t, x, ground, z, facing_angle, state, rnd):
 
 def solar_array(seed):
     """The Solar Array: a field of Cartographer mirrors that once gathered flare light, most of them
-    cracked or fallen, around a sunken control room where a charged Flare Cell still sits in its
+    cracked or fallen, around a sunken control room where a Bottled Flare still sits in its
     pedestal. The mirrors still focus the flares: Flare Burn is doubled on the open field."""
     S = 49
     t = Template(S, 18, S, seed)
@@ -439,8 +439,8 @@ def solar_array(seed):
         for y in range(2, 5):
             t.set(x, y, hi, "minecraft:air")                         # the doorway
     # The console: a ring of pedestals, emptied long ago, around the one that still holds a cell.
-    t.set(c, 2, c, a("collector_pedestal") + "[holding=charged_flare_cell]",
-          nbt={"held": {"id": a("charged_flare_cell"), "count": Int(1)}, "charge": Int(0)})
+    t.set(c, 2, c, a("collector_pedestal") + "[holding=bottled_flare]",
+          nbt={"held": {"id": a("bottled_flare"), "count": Int(1)}, "charge": Int(0)})
     for dx, dz in ((-2, 0), (2, 0), (0, -2)):
         t.set(c + dx, 2, c + dz, a("collector_pedestal") + "[holding=none]")
     chest(t, lo + 2, 2, lo + 1, "solar_array", facing="south")
@@ -639,21 +639,22 @@ def constellation_maze(seed):
     return t
 
 
-# ------------------------------------------------------------------ Orbital Station
+# ------------------------------------------------------------------ Orrery
 
-def orbital_station(seed):
-    """An abandoned Cartographer station hanging high over the End: a wheel of tarnished Orrery Bronze.
-    A ring corridor (docking bay with Void Wanderers parked in it to the north, hydroponics overgrown
-    with Lumineshrooms to the east, crew quarters to the west) joined by spokes to a hub, where the
-    dead Solar Core waits for three charged Flare Cells. The south spoke is the vault, sealed at both
-    ends by bulkheads, with the Station Sentinel asleep inside."""
+def abandoned_orrery(seed):
+    """An Abandoned Orrery: the Cartographers' great clockwork model of the heavens, hanging high over
+    the End, a wheel of tarnished Orrery Bronze. A ring gallery (a roost of dormant Void Wanderers to the
+    north, a garden gone wild with Lumineshrooms to the east, the keepers' quarters to the west) joined
+    by spokes to the hub, where the cold Orrery Heart waits for three Bottled Flares under the orrery's
+    axle and its gilded sun. The south spoke is the vault, sealed at both ends by Bronze Shutters, with
+    the Orrery Sentinel dormant inside."""
     S = 47
     t = Template(S, 18, S, seed)
     rnd = t.rnd
     c = S // 2
     floor, roof = 4, 9
 
-    # Tarnish spreads in broad patches, not block by block: a smooth noise over the station.
+    # Tarnish spreads in broad patches, not block by block: a smooth noise over the whole orrery.
     cell = 7
     lattice = [[rnd.random() for _ in range(S // cell + 3)] for _ in range(S // cell + 3)]
 
@@ -686,7 +687,7 @@ def orbital_station(seed):
             wall = r > R_OUT - 0.7 or r < R_IN + 0.3
             t.set(x, floor, z, bronze_tone(x, floor, z))
             t.set(x, roof, z, bronze_tone(x, roof, z))
-            docking = ang_gap(ang, -math.pi / 2) < 0.42            # north: the docking bay, open to the sky
+            docking = ang_gap(ang, -math.pi / 2) < 0.42            # north: the Wanderers' roost, open to the sky
             for y in range(floor + 1, roof):
                 if wall:
                     outer = r > R_OUT - 0.7
@@ -697,18 +698,18 @@ def orbital_station(seed):
                     else:
                         state = bronze_tone(x, y, z)
                     if rnd.random() < 0.04 and not docking:
-                        state = "minecraft:air"                     # holes torn in the hull
+                        state = "minecraft:air"                     # holes torn in the gallery
                     t.set(x, y, z, state)
                 else:
                     t.set(x, y, z, "minecraft:air")
             if not wall and abs(r - 19.5) < 0.5 and int(math.degrees(ang) + 360) % 30 < 4:
-                t.set(x, roof, z, a("station_lamp") + "[lit=false]")
-            # hydroponics (east): beds of moss with Lumineshrooms and Starblooms
+                t.set(x, roof, z, a("orrery_lamp") + "[lit=false]")
+            # the garden (east): beds of moss gone wild with Lumineshrooms and Starblooms
             if not wall and ang_gap(ang, 0.0) < 0.6 and 17.8 < r < 21.2 and abs(r - 19.5) > 0.6:
                 t.set(x, floor, z, a("nebula_moss"))
                 if rnd.random() < 0.45:
                     t.set(x, floor + 1, z, a("lumineshroom") if rnd.random() < 0.6 else a("starbloom"))
-            # Astral Vines have grown in through the hull here and there
+            # Astral Vines have grown in through the gallery walls here and there
             if not wall and rnd.random() < 0.015:
                 t.set(x, roof - 1, z, a("astral_vine"))
     # ---- the hub
@@ -723,15 +724,17 @@ def orbital_station(seed):
             for y in range(floor + 1, roof + 2):
                 t.set(x, y, z, bronze_tone(x, y, z) if r > HUB - 0.6 else "minecraft:air")
             if abs(r - 5) < 0.5 and int(math.degrees(ang) + 360) % 90 < 10:
-                t.set(x, roof + 2, z, a("station_lamp") + "[lit=false]")
+                t.set(x, roof + 2, z, a("orrery_lamp") + "[lit=false]")
     for ox, oz in ((-4, -4), (4, -4), (-4, 4), (4, 4)):          # bone pillars round the core
         for y in range(floor + 1, roof + 2):
             t.set(c + ox, y, c + oz, a("leviathan_bone_block") + "[axis=y]")
     t.set(c, floor + 1, c, a("polished_umbral_stone"))
-    t.set(c, floor + 2, c, a("solar_core") + "[cells=0,powered=false]")
-    for y in range(roof + 3, roof + 8):                          # the antenna mast
+    t.set(c, floor + 2, c, a("orrery_heart") + "[flares=0,powered=false]")
+    for y in range(roof + 3, roof + 8):                          # the orrery's axle...
         t.set(c, y, c, a("leviathan_bone_block") + "[axis=y]")
-    t.set(c, roof + 8, c, a("null_lantern"))
+    t.set(c, roof + 8, c, a("solarite_block"))                   # ...and the gilded sun at its top
+    for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+        t.set(c + dx, roof + 8, c + dz, a("orrery_lamp") + "[lit=false]")
     # ---- the spokes: north, east and west are open corridors; south is the vault
     for dx, dz in ((0, -1), (1, 0), (-1, 0), (0, 1)):
         vault = dz == 1
@@ -746,27 +749,27 @@ def orbital_station(seed):
                 for y in range(floor + 1, top + 1):
                     t.set(x, y, z, bronze_tone(x, y, z) if abs(w) == half + 1 else "minecraft:air")
                 if not vault and w == 0 and k % 4 == 0:
-                    t.set(x, top + 1, z, a("station_lamp") + "[lit=false]")
+                    t.set(x, top + 1, z, a("orrery_lamp") + "[lit=false]")
         if vault:
-            # bulkheads at both ends
+            # Bronze Shutters at both ends
             for k in (int(HUB) - 1, int(R_IN)):
                 for w in range(-half, half + 1):
                     for y in range(floor + 1, top + 1):
-                        t.set(c + dx * k + px * w, y, c + dz * k + pz * w, a("bulkhead") + "[open=false]")
+                        t.set(c + dx * k + px * w, y, c + dz * k + pz * w, a("bronze_shutter") + "[open=false]")
             mid = (int(HUB) + int(R_IN)) // 2
-            chest(t, c + dx * mid + px * (half - 0), floor + 1, c + dz * mid + pz * (half - 0), "station_vault", facing="west")
-            chest(t, c + dx * mid - px * half, floor + 1, c + dz * mid - pz * half, "station_vault", facing="east")
-            t.set(c, top + 1, c + dz * mid, a("station_lamp") + "[lit=false]")
-            t.entity(c + 0.5, floor + 1.0, c + dz * mid + 0.5 - 2, {"id": a("station_sentinel"), "PersistenceRequired": Byte(1),
+            chest(t, c + dx * mid + px * (half - 0), floor + 1, c + dz * mid + pz * (half - 0), "orrery_vault", facing="west")
+            chest(t, c + dx * mid - px * half, floor + 1, c + dz * mid - pz * half, "orrery_vault", facing="east")
+            t.set(c, top + 1, c + dz * mid, a("orrery_lamp") + "[lit=false]")
+            t.entity(c + 0.5, floor + 1.0, c + dz * mid + 0.5 - 2, {"id": a("orrery_sentinel"), "PersistenceRequired": Byte(1),
                                                                     "Rotation": nbt_list_float(180.0, 0.0)})
-    # ---- crew quarters (west): bunks and a locker
+    # ---- the keepers' quarters (west): bunks and a chest
     for k in range(6):
         ang = math.pi + (k - 2.5) * 0.12
         x, z = round(c + math.cos(ang) * 21.2), round(c + math.sin(ang) * 21.2)
         t.set(x, floor + 1, z, a("lumine_slab") + "[type=bottom]")
         t.set(x, floor + 3, z, a("lumine_slab") + "[type=bottom]")
-    chest(t, c - 18, floor + 1, c + 4, "station_quarters", facing="east")
-    # ---- the docking bay (north): Void Wanderers parked along it
+    chest(t, c - 18, floor + 1, c + 4, "orrery_quarters", facing="east")
+    # ---- the roost (north): dormant Void Wanderers along it
     for k in (-1, 0, 1):
         ang = -math.pi / 2 + k * 0.22
         t.entity(c + math.cos(ang) * 19.5 + 0.5, floor + 1.5, c + math.sin(ang) * 19.5 + 0.5,
@@ -844,8 +847,8 @@ STRUCTURES = [
          biomes=[a("shattered_observatory"), a("nebula_fields")], spread=(24, 8, 77162391),
          height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 56}, "max_inclusive": {"absolute": 76}},
          heightmap=None, spawns=None, adaptation=None, ground=(-4096, 40, 22)),
-    # Orbital Stations hang high in the sky, anywhere but the Corona.
-    dict(name="orbital_station", variants=[lambda: orbital_station(81)],
+    # Orreries hang high in the sky, anywhere but the Corona.
+    dict(name="abandoned_orrery", variants=[lambda: abandoned_orrery(81)],
          biomes=[a("nebula_fields"), a("aurora_shallows"), a("comet_wake"), a("dark_matter_belt"), a("shattered_observatory")],
          spread=(38, 14, 20934117),
          height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 176}, "max_inclusive": {"absolute": 200}},

@@ -1,0 +1,20 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "open": "false"
+      },
+      "apply": {
+        "model": "astralend:block/bronze_shutter"
+      }
+    },
+    {
+      "when": {
+        "open": "true"
+      },
+      "apply": {
+        "model": "astralend:block/bronze_shutter_open"
+      }
+    }
+  ]
+}

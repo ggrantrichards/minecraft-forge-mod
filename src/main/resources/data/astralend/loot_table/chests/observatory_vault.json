@@ -110,7 +110,7 @@
         },
         {
           "type": "minecraft:item",
-          "name": "astralend:data_shard",
+          "name": "astralend:chart_fragment",
           "weight": 2,
           "functions": [
             {

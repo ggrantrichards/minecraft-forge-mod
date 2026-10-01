@@ -221,7 +221,7 @@ ANIMATED = [
 ]
 
 
-# ------------------------------------------------------------------ Batch D: the Orbital Station
+# ------------------------------------------------------------------ Batch D: the Orrery
 # Orrery Bronze: the Cartographers' station metal. A plate engraved with orbits, like the face of an
 # orrery; it tarnishes violet with age (three stages, like copper's), and an axe scrapes it back.
 OB_BRONZE = [hexc("4a2c16"), hexc("74471f"), hexc("9c6630"), hexc("c48a45"), hexc("e3b062"), hexc("fbe0a0")]
@@ -282,7 +282,7 @@ TEXTURES += [
 
 
 def _core_side(cells, powered):
-    """The Solar Core's side: a heavy bronze casing with three upright slots for Flare Cells; each
+    """The Orrery Heart's side: a heavy bronze casing with three upright slots for Flare Bottles; each
     slot glows gold once a charged cell is in it, and the whole casing's seams glow when powered."""
     img = _orrery(1).copy()
     for y in range(SIZE):
@@ -329,8 +329,8 @@ def _core_top(powered):
     return img
 
 
-def bulkhead():
-    """A sealed bulkhead: a slab of armoured, tarnished bronze with a heavy diagonal brace and a band
+def bronze_shutter():
+    """A sealed bronze_shutter: a slab of armoured, tarnished bronze with a heavy diagonal brace and a band
     of warning chevrons, violet and gold."""
     img = _orrery(2).copy()
     for y in range(SIZE):
@@ -368,40 +368,13 @@ def _lamp(lit):
     return img
 
 
-DATA_CORE = [
-    "................",
-    "......oooo......",
-    "....oobbbboo....",
-    "...obbBBBBbbo...",
-    "..obBccccccBbo..",
-    "..obcCwwCCccbo..",
-    ".obBcwCCCCcccBo.",
-    ".obBcCCCCCcccBo.",
-    ".obBcCCCCccccBo.",
-    ".obBccCCccccdBo.",
-    "..obccccccccdbo.",
-    "..obBcccccddBbo.",
-    "...obbBBBBbbo...",
-    "....oobbbboo....",
-    "......oooo......",
-    "................",
-]
-
-
-def data_core():
-    """The Data Core: the Sentinel's mind, a glowing cyan sphere in a bronze cage."""
-    return from_map(DATA_CORE, {"o": hexc("2a1a0c"), "b": hexc("8c5e2a"), "B": hexc("c48a45"),
-                                "c": hexc("2f9fb8"), "C": hexc("7fe9f5"), "w": hexc("ffffff"), "d": hexc("1d5e72")})
-
-
-TEXTURES += [("block/solar_core_side_%d.png" % n, (lambda n=n: _core_side(n, False))) for n in range(4)] + [
-    ("block/solar_core_side_on.png", lambda: _core_side(3, True)),
-    ("block/solar_core_top.png", lambda: _core_top(False)),
-    ("block/solar_core_top_on.png", lambda: _core_top(True)),
-    ("block/bulkhead.png", bulkhead),
-    ("block/station_lamp.png", lambda: _lamp(False)),
-    ("block/station_lamp_on.png", lambda: _lamp(True)),
-    ("item/data_core.png", data_core),
+TEXTURES += [("block/orrery_heart_side_%d.png" % n, (lambda n=n: _core_side(n, False))) for n in range(4)] + [
+    ("block/orrery_heart_side_on.png", lambda: _core_side(3, True)),
+    ("block/orrery_heart_top.png", lambda: _core_top(False)),
+    ("block/orrery_heart_top_on.png", lambda: _core_top(True)),
+    ("block/bronze_shutter.png", bronze_shutter),
+    ("block/orrery_lamp.png", lambda: _lamp(False)),
+    ("block/orrery_lamp_on.png", lambda: _lamp(True)),
 ]
 
 

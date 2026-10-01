@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "astralend:block/orrery_lamp"
+    },
+    "lit=true": {
+      "model": "astralend:block/orrery_lamp_on"
+    }
+  }
+}

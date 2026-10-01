@@ -22,26 +22,28 @@ GLOWING_SPORES = [
 ]
 GLOWING_SPORES_PAL = dict(o="1d4a4f", g="2fae9f", G="6ff2da", w="e6fffa")
 
-# Data Shard: a thin crystal wafer with glowing circuitry (from a Void Wanderer's scan).
-DATA_SHARD = [
+# Chart Fragment: a thin crystal wafer with glowing circuitry (from a Void Wanderer's scan).
+# Chart Fragment: a shard of a Void Wanderer's star map, pale lens-glass with a constellation etched
+# in gold. The Wanderers leave them with whoever stands still to be charted.
+CHART_FRAGMENT = [
     "................",
     "..........oo....",
     ".........ohwo...",
-    "........ohlhlo..",
-    ".......ohcllco..",
-    "......ohllcclo..",
-    ".....ohlcllmo...",
-    "....ohllcllmo...",
-    "...ohlcclcmo....",
-    "..ohllllcmo.....",
-    "..olcllmmo......",
-    "..olclmmo.......",
-    "...ommmo........",
-    "....ooo.........",
+    "........ohllho..",
+    ".......ohlyllo..",
+    "......ohllsllo..",
+    ".....ohllllsmo..",
+    "....ohlyllsylo..",
+    "...ohllsllmmo...",
+    "..ohllsllllmo...",
+    "..olyllllmmo....",
+    "..ollllmmmo.....",
+    "...ommmmo.......",
+    "....oooo........",
     "................",
     "................",
 ]
-DATA_SHARD_PAL = dict(o="12202e", m="2d5f7a", l="4b93b3", h="9fe0ff", w="ffffff", c="7dfff0")
+CHART_FRAGMENT_PAL = dict(o="2a3040", m="8e9ab8", l="c8d2e6", h="eef2fa", w="ffffff", y="ffd24a", s="d8b45a")
 
 # Cracked Lens: the Wanderer's broken eye.
 CRACKED_LENS = [
@@ -150,7 +152,7 @@ CINDER_PAL = dict(o="2a1410", r="8a2a14", f="e0561c", y="ffb03a", w="fff0b0")
 
 ITEM_MAPS = {
     "glowing_spores": (GLOWING_SPORES, GLOWING_SPORES_PAL),
-    "data_shard": (DATA_SHARD, DATA_SHARD_PAL),
+    "chart_fragment": (CHART_FRAGMENT, CHART_FRAGMENT_PAL),
     "cracked_lens": (CRACKED_LENS, CRACKED_LENS_PAL),
     "singularity_shard": (SINGULARITY_SHARD, SINGULARITY_SHARD_PAL),
     "umbral_membrane": (UMBRAL_MEMBRANE, UMBRAL_MEMBRANE_PAL),

@@ -34,15 +34,18 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-// Void Wanderer: a Cartographer survey drone that is still running.
+// Void Wanderer: a clockwork construct of the Cartographers, still drifting the dark and charting
+// whatever it finds.
 //
-// When it notices a player it floats over and shines a slow scanning beam over them. If the player
-// stands still for the whole scan (5 seconds) it drops a Data Shard and leaves. Each Wanderer
-// scans each player once. Attack it and it fires short laser pulses back, and teleports away when
-// badly hurt; killed, it drops only a Cracked Lens.
+// When it notices a player it floats over and studies them, a ring of light sweeping up and down them.
+// If the player stands still for the whole study (5 seconds) it leaves them a Chart Fragment - a
+// shard of the star map it carries - and drifts away. Each Wanderer studies each player once. Attack
+// it and it looses homing starbolts back (shulker bullets: they lift you if they hit), and it blinks
+// away when badly hurt; killed, it drops its Cracked Lens.
 public class VoidWanderer extends PathfinderMob {
     public static final int SCAN_TICKS = 100;
     private static final EntityDataAccessor<Integer> DATA_SCAN = SynchedEntityData.defineId(VoidWanderer.class, EntityDataSerializers.INT);
@@ -82,7 +85,7 @@ public class VoidWanderer extends PathfinderMob {
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(1, new LaserGoal());
+        this.goalSelector.addGoal(1, new StarboltGoal());
         this.goalSelector.addGoal(2, new ScanGoal());
         this.goalSelector.addGoal(3, new HoverNearGroundGoal(this, 1.0, 12, 2, 6));
         this.goalSelector.addGoal(4, new LookAtPlayerGoal(this, Player.class, 12.0F));
@@ -189,7 +192,7 @@ public class VoidWanderer extends PathfinderMob {
         this.entityData.set(DATA_HOSTILE, input.getBooleanOr("Hostile", false));
     }
 
-    // Floats in front of a player and scans them. Moving more than a little restarts the scan.
+    // Floats in front of a player and studies them. Moving more than a little starts it over.
     private class ScanGoal extends Goal {
         private @Nullable Player player;
         private @Nullable Vec3 standingAt;
@@ -249,7 +252,7 @@ public class VoidWanderer extends PathfinderMob {
             }
             if (this.standingAt == null || this.standingAt.distanceToSqr(target.position()) > 0.25) {
                 if (this.standingAt != null && self.getScanProgress() > 10) {
-                    self.playSound(SoundEvents.BEACON_DEACTIVATE, 0.5F, 1.8F);  // scan interrupted
+                    self.playSound(SoundEvents.BEACON_DEACTIVATE, 0.5F, 1.8F);  // the study is spoilt
                 }
                 this.standingAt = target.position();
                 self.entityData.set(DATA_SCAN, 0);
@@ -263,7 +266,7 @@ public class VoidWanderer extends PathfinderMob {
             double y = target.getY() + target.getBbHeight() * (sweep < 0.5 ? sweep * 2 : 2 - sweep * 2);
             for (int i = 0; i < 6; i++) {
                 double a = i * Math.PI / 3 + progress * 0.2;
-                level.sendParticles(ParticleTypes.ELECTRIC_SPARK, target.getX() + Math.cos(a) * 0.6, y, target.getZ() + Math.sin(a) * 0.6,
+                level.sendParticles(ParticleTypes.END_ROD, target.getX() + Math.cos(a) * 0.6, y, target.getZ() + Math.sin(a) * 0.6,
                     1, 0.0, 0.0, 0.0, 0.0);
             }
             if (progress % 20 == 0) {
@@ -272,7 +275,7 @@ public class VoidWanderer extends PathfinderMob {
             if (progress >= SCAN_TICKS) {
                 self.scanned.add(target.getUUID());
                 self.playSound(SoundEvents.AMETHYST_BLOCK_CHIME, 1.0F, 1.2F);
-                var shard = self.spawnAtLocation(level, new ItemStack(ModItems.DATA_SHARD.get()));
+                var shard = self.spawnAtLocation(level, new ItemStack(ModItems.CHART_FRAGMENT.get()));
                 if (shard != null) {
                     shard.setDeltaMovement(target.position().subtract(self.position()).normalize().scale(0.2));
                 }
@@ -284,11 +287,11 @@ public class VoidWanderer extends PathfinderMob {
         }
     }
 
-    // When angered: keep some distance and fire short laser pulses.
-    private class LaserGoal extends Goal {
+    // When angered: keep some distance and loose starbolts.
+    private class StarboltGoal extends Goal {
         private int cooldown;
 
-        LaserGoal() {
+        StarboltGoal() {
             this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
         }
 
@@ -323,17 +326,12 @@ public class VoidWanderer extends PathfinderMob {
                 self.getMoveControl().setWantedPosition(want.x, want.y, want.z, 1.0);
             }
             if (--this.cooldown <= 0 && self.hasLineOfSight(target) && distance < 16.0) {
-                this.cooldown = 30;
+                this.cooldown = 40 + self.getRandom().nextInt(20);
                 ServerLevel level = (ServerLevel) self.level();
-                Vec3 from = self.getEyePosition();
-                Vec3 to = target.getEyePosition().subtract(0.0, 0.3, 0.0);
-                Vec3 step = to.subtract(from).scale(1.0 / 16.0);
-                for (int i = 0; i <= 16; i++) {
-                    Vec3 p = from.add(step.scale(i));
-                    level.sendParticles(ParticleTypes.END_ROD, p.x, p.y, p.z, 1, 0.0, 0.0, 0.0, 0.0);
-                }
-                self.playSound(SoundEvents.BLAZE_SHOOT, 0.7F, 1.9F);
-                target.hurtServer(level, self.damageSources().mobAttack(self), 3.0F);
+                // A starbolt: the End's own homing shot, slow enough to dodge or knock away.
+                ShulkerBullet bolt = new ShulkerBullet(level, self, target, net.minecraft.core.Direction.Axis.Y);
+                level.addFreshEntity(bolt);
+                self.playSound(SoundEvents.SHULKER_SHOOT, 1.0F, 1.4F);
             }
         }
     }

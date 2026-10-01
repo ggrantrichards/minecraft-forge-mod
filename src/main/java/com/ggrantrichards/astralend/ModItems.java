@@ -33,7 +33,7 @@ public final class ModItems {
 
     // ---- Phase 4: what the mobs leave behind
     public static final RegistryObject<Item> GLOWING_SPORES = register("glowing_spores", GlowingSporesItem::new, new Item.Properties());
-    public static final RegistryObject<Item> DATA_SHARD = simple("data_shard");
+    public static final RegistryObject<Item> CHART_FRAGMENT = simple("chart_fragment");
     public static final RegistryObject<Item> CRACKED_LENS = simple("cracked_lens");
     public static final RegistryObject<Item> SINGULARITY_SHARD = simple("singularity_shard");
     public static final RegistryObject<Item> UMBRAL_MEMBRANE = simple("umbral_membrane");
@@ -43,17 +43,14 @@ public final class ModItems {
     public static final RegistryObject<Item> FLARE_POLLEN = simple("flare_pollen");
     public static final RegistryObject<Item> CHARGED_VOID_CRYSTAL = register("charged_void_crystal", Item::new,
         new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON));
-    public static final RegistryObject<Item> FLARE_CELL = register("flare_cell", Item::new, new Item.Properties().stacksTo(16));
-    public static final RegistryObject<Item> CHARGED_FLARE_CELL = register("charged_flare_cell", Item::new,
+    public static final RegistryObject<Item> FLARE_BOTTLE = register("flare_bottle", Item::new, new Item.Properties().stacksTo(16));
+    public static final RegistryObject<Item> BOTTLED_FLARE = register("bottled_flare", Item::new,
         new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.UNCOMMON));
     public static final RegistryObject<Item> STAR_CHART = register("star_chart", StarChartItem::new, new Item.Properties().stacksTo(1));
     // Phase 6: structures. Temporal Crystals are loot only: they can't be mined or farmed.
     // The key to the Wormhole Maws: wakes a Maw (with its eyes lit), or attunes you to a woken one.
     public static final RegistryObject<Item> PORTAL_LENS = register("portal_lens", Item::new,
         new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON));
-    // What the Station Sentinel leaves behind: the core of its mind.
-    public static final RegistryObject<Item> DATA_CORE = register("data_core", Item::new,
-        new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.EPIC));
     // Phase 7: caught from a live comet's tail.
     public static final RegistryObject<Item> STARDUST_MOTE = simple("stardust_mote");
     public static final RegistryObject<Item> TEMPORAL_CRYSTAL = register("temporal_crystal", Item::new,
@@ -77,7 +74,7 @@ public final class ModItems {
     public static final RegistryObject<Item> DRIFT_WHALE_SPAWN_EGG = spawnEgg("drift_whale", ModEntities.DRIFT_WHALE);
     public static final RegistryObject<Item> WATCHER_SPAWN_EGG = spawnEgg("watcher", ModEntities.WATCHER);
     public static final RegistryObject<Item> LIVE_COMET_SPAWN_EGG = spawnEgg("live_comet", ModEntities.LIVE_COMET);
-    public static final RegistryObject<Item> STATION_SENTINEL_SPAWN_EGG = spawnEgg("station_sentinel", ModEntities.STATION_SENTINEL);
+    public static final RegistryObject<Item> ORRERY_SENTINEL_SPAWN_EGG = spawnEgg("orrery_sentinel", ModEntities.ORRERY_SENTINEL);
 
     private static RegistryObject<Item> register(String name, Function<Item.Properties, Item> factory, Item.Properties properties) {
         return ITEMS.register(name, () -> factory.apply(properties.setId(ITEMS.key(name))));

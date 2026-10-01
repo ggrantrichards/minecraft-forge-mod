@@ -74,7 +74,7 @@ import net.minecraftforge.event.level.BlockEvent;
 //                piece; 2+ pieces and Flare Burn can't touch you. weapons: targets glow for 5 s.
 //
 // Rift Pearls drop from every boss: the Ender Dragon, the Wither, the Warden, Elder Guardians (and
-// the Station Sentinel, in its loot table).
+// the Orrery Sentinel, in its loot table).
 public final class StarforgeEffects {
     public static void register() {
         TickEvent.PlayerTickEvent.Post.BUS.addListener(StarforgeEffects::onPlayerTick);

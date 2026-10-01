@@ -170,17 +170,38 @@ CELL = [
 CELL_METAL = {"o": hexc("2a1a10"), "B": hexc("e8b060"), "b": hexc("b07a34"), "D": hexc("6e4a1e"), "H": hexc("dff0ff")}
 
 
-def flare_cell(charged):
-    """A glass capsule with bronze caps: dim and empty, or full of flare light."""
-    pal = dict(CELL_METAL)
+FLASK = [
+    "................",
+    "......oooo......",
+    "......oBDo......",
+    ".....oBBbDo.....",
+    "......ohgo......",
+    "......ohgo......",
+    ".....ohgggo.....",
+    "....ohhgggGo....",
+    "...ohhggggGGo...",
+    "...ohgggggGGo...",
+    "...ogggggggGo...",
+    "...ogggggGGGo...",
+    "....oggGGGGo....",
+    ".....oooooo.....",
+    "................",
+    "................",
+]
+
+
+def flare_bottle(charged):
+    """A Flare Bottle: a round glass flask with a Solarite stopper - clear and empty, or, once a
+    Stellar Flare has filled it on a Collector Pedestal, a Bottled Flare swirling with gold light."""
+    pal = {"o": hexc("2a1a10"), "B": hexc("ffd36a"), "b": hexc("e0a030"), "D": hexc("8a5a18")}
     if charged:
-        pal.update(g=hexc("ffb040"), G=hexc("e4621e"))
-        img = from_map(CELL, pal)
-        for y in range(5, 11):
-            put(img, 7, y, hexc("fff4c0"))                    # the bright core
+        pal.update(g=hexc("ffb040"), G=hexc("e4621e"), h=hexc("fff4c0"))
+        img = from_map(FLASK, pal)
+        for x, y in ((7, 9), (8, 10), (6, 11), (9, 8)):
+            put(img, x, y, hexc("fff8d8"))                  # sparks of the flare inside
         return img
-    pal.update(g=hexc("3a4a66"), G=hexc("27324a"))
-    return from_map(CELL, pal)
+    pal.update(g=hexc("b8cce0", 150), G=hexc("7f95b0", 170), h=hexc("f0f8ff", 200))
+    return from_map(FLASK, pal)
 
 
 CRYSTAL = [
@@ -276,8 +297,8 @@ TEXTURES = [
     ("block/sunshade.png", sunshade),
     ("block/collector_pedestal_side.png", pedestal_side),
     ("block/collector_pedestal_top.png", pedestal_top),
-    ("item/flare_cell.png", lambda: flare_cell(False)),
-    ("item/charged_flare_cell.png", lambda: flare_cell(True)),
+    ("item/flare_bottle.png", lambda: flare_bottle(False)),
+    ("item/bottled_flare.png", lambda: flare_bottle(True)),
     ("item/charged_void_crystal.png", charged_void_crystal),
     ("item/flare_pollen.png", flare_pollen),
     ("mob_effect/flare_ward.png", flare_ward_icon),
@@ -286,5 +307,5 @@ TEXTURES = [
 # What a Collector Pedestal holds is drawn on top of it with the item's own picture; block models can
 # only use block textures, so the item pictures are copied (after they are drawn above).
 _TEX = Path(__file__).resolve().parents[2] / "src/main/resources/assets/astralend/textures"
-for _name in ("void_crystal", "charged_void_crystal", "flare_cell", "charged_flare_cell"):
+for _name in ("void_crystal", "charged_void_crystal", "flare_bottle", "bottled_flare"):
     TEXTURES.append((f"block/pedestal_{_name}.png", lambda n=_name: Image.open(_TEX / f"item/{n}.png").convert("RGBA").copy()))

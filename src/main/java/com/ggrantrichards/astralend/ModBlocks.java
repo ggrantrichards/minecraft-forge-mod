@@ -237,28 +237,28 @@ public final class ModBlocks {
     public static final RegistryObject<Block> MAZE_TELESCOPE = register("maze_telescope", com.ggrantrichards.astralend.maze.MazeTelescopeBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(-1.0F, 3600000.0F).sound(SoundType.COPPER)
             .noOcclusion().noLootTable());
-    // Phase 6: the Orbital Station. Orrery Bronze ages through three stages (an axe scrapes it back);
-    // the Solar Core, bulkheads and lamps make the station's power puzzle.
+    // Phase 6: the Orrery. Orrery Bronze ages through three stages (an axe scrapes it back);
+    // the Orrery Heart, Bronze Shutters and lamps make the Orrery's puzzle.
     public static final RegistryObject<Block> ORRERY_BRONZE = register("orrery_bronze",
-        p -> new com.ggrantrichards.astralend.station.OrreryBronzeBlock(() -> ModBlocks.TARNISHED_ORRERY_BRONZE.get(), null, p),
+        p -> new com.ggrantrichards.astralend.orrery.OrreryBronzeBlock(() -> ModBlocks.TARNISHED_ORRERY_BRONZE.get(), null, p),
         () -> bronze(MapColor.COLOR_ORANGE));
     public static final RegistryObject<Block> TARNISHED_ORRERY_BRONZE = register("tarnished_orrery_bronze",
-        p -> new com.ggrantrichards.astralend.station.OrreryBronzeBlock(() -> ModBlocks.WEATHERED_ORRERY_BRONZE.get(),
+        p -> new com.ggrantrichards.astralend.orrery.OrreryBronzeBlock(() -> ModBlocks.WEATHERED_ORRERY_BRONZE.get(),
             () -> ModBlocks.ORRERY_BRONZE.get(), p),
         () -> bronze(MapColor.TERRACOTTA_PURPLE));
     public static final RegistryObject<Block> WEATHERED_ORRERY_BRONZE = register("weathered_orrery_bronze",
-        p -> new com.ggrantrichards.astralend.station.OrreryBronzeBlock(null, () -> ModBlocks.TARNISHED_ORRERY_BRONZE.get(), p),
+        p -> new com.ggrantrichards.astralend.orrery.OrreryBronzeBlock(null, () -> ModBlocks.TARNISHED_ORRERY_BRONZE.get(), p),
         () -> bronze(MapColor.COLOR_PURPLE));
-    public static final RegistryObject<Block> SOLAR_CORE = register("solar_core", com.ggrantrichards.astralend.station.SolarCoreBlock::new,
+    public static final RegistryObject<Block> ORRERY_HEART = register("orrery_heart", com.ggrantrichards.astralend.orrery.OrreryHeartBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(-1.0F, 3600000.0F).sound(SoundType.COPPER).noLootTable()
-            .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.station.SolarCoreBlock.POWERED) ? 15
-                : 2 + state.getValue(com.ggrantrichards.astralend.station.SolarCoreBlock.CELLS) * 2));
-    public static final RegistryObject<Block> BULKHEAD = register("bulkhead", com.ggrantrichards.astralend.station.BulkheadBlock::new,
+            .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.orrery.OrreryHeartBlock.POWERED) ? 15
+                : 2 + state.getValue(com.ggrantrichards.astralend.orrery.OrreryHeartBlock.FLARES) * 2));
+    public static final RegistryObject<Block> BRONZE_SHUTTER = register("bronze_shutter", com.ggrantrichards.astralend.orrery.BronzeShutterBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(-1.0F, 3600000.0F).sound(SoundType.COPPER)
             .noOcclusion().noLootTable());
-    public static final RegistryObject<Block> STATION_LAMP = register("station_lamp", com.ggrantrichards.astralend.station.StationLampBlock::new,
+    public static final RegistryObject<Block> ORRERY_LAMP = register("orrery_lamp", com.ggrantrichards.astralend.orrery.OrreryLampBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(0.8F).sound(SoundType.GLASS)
-            .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.station.StationLampBlock.LIT) ? 15 : 0));
+            .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.orrery.OrreryLampBlock.LIT) ? 15 : 0));
     // Phase 8 (Starforging): the Astral Forge, and the tiles Rift Walker boots lay over a drop.
     public static final RegistryObject<Block> ASTRAL_FORGE = register("astral_forge", com.ggrantrichards.astralend.starforge.AstralForgeBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).requiresCorrectToolForDrops().strength(5.0F, 1200.0F)

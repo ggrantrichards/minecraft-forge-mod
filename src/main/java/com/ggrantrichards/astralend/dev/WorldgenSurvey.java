@@ -372,7 +372,7 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('W'), end, "black_hole_guardian", 3.0, 1.6, 2.0);
         mobShot(lines, areas.get('A'), end, "drift_whale side", 11.0, 7.0, 7.5);
         mobShot(lines, areas.get('R'), end, "watcher", 6.5, 0.5, 2.6);
-        mobShot(lines, areas.get('N'), end, "station_sentinel awake", 7.5, 0.0, 2.6);
+        mobShot(lines, areas.get('N'), end, "orrery_sentinel awake", 7.5, 0.0, 2.6);
         mobShot(lines, areas.get('W'), end, "live_comet side", 14.0, 14.0, 4.0);
         // Phase 5: the sky and Stellar Flares.
         skyShot(lines, areas.get('A'), "sky_aurora_shallows", -45.0F, -32.0F, null, "flare=calm");
@@ -495,22 +495,22 @@ public final class WorldgenSurvey {
             cam.getX(), cam.getY(), cam.getZ(), out.getOpposite().toYRot()));
     }
 
-    // An Orbital Station: its Sentinel sleeps (and can't be hurt) until the Solar Core is powered; then
-    // the vault's bulkheads open and the Sentinel wakes. Then a view of the station from outside, and one
+    // An Orrery: its Sentinel sleeps (and can't be hurt) until the Orrery Heart is powered; then
+    // the vault's bronze_shutters open and the Sentinel wakes. Then a view of the station from outside, and one
     // of the Sentinel in its open vault.
     private static void testStation(ServerLevel end, BlockPos core, List<String> failures) {
-        var sentinels = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.StationSentinel.class,
+        var sentinels = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.OrrerySentinel.class,
             new net.minecraft.world.phys.AABB(core).inflate(32, 16, 32));
         boolean hurtAsleep = !sentinels.isEmpty() && sentinels.get(0).hurtServer(end, end.damageSources().generic(), 5.0F);
-        int opened = com.ggrantrichards.astralend.station.SolarCoreBlock.power(end, core, end.getBlockState(core));
+        int opened = com.ggrantrichards.astralend.orrery.OrreryHeartBlock.power(end, core, end.getBlockState(core));
         boolean awake = !sentinels.isEmpty() && sentinels.get(0).isAwake();
-        log(String.format("orbital_station: %d sentinel(s), hurt while asleep: %s; powering the core opened %d bulkhead blocks; sentinel awake: %s",
+        log(String.format("abandoned_orrery: %d sentinel(s), hurt while asleep: %s; powering the core opened %d bronze_shutter blocks; sentinel awake: %s",
             sentinels.size(), hurtAsleep, opened, awake));
         if (sentinels.isEmpty() || hurtAsleep || opened == 0 || !awake) {
-            failures.add("orbital_station: expected a sleeping, unhurt Sentinel that wakes and bulkheads that open when the core is powered");
+            failures.add("abandoned_orrery: expected a sleeping, unhurt Sentinel that wakes and bronze_shutters that open when the core is powered");
         }
         double d = 44.0 / Math.sqrt(2.0);
-        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_orbital_station %.1f %d %.1f -45 %.1f", core.getX() + 0.5 - d,
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_abandoned_orrery %.1f %d %.1f -45 %.1f", core.getX() + 0.5 - d,
             core.getY() + 16, core.getZ() + 0.5 - d, Math.toDegrees(Math.atan2(16.0, 44.0))));
         if (!sentinels.isEmpty()) {
             var s = sentinels.get(0);
@@ -518,7 +518,7 @@ public final class WorldgenSurvey {
             double dx = s.getX() - core.getX();
             double dz = s.getZ() - core.getZ();
             float yaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
-            EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_station_vault %.1f %.1f %.1f %.1f 8.0 power", core.getX() + 0.5 + dx * 0.35,
+            EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_orrery_vault %.1f %.1f %.1f %.1f 8.0 power", core.getX() + 0.5 + dx * 0.35,
                 s.getY() + 0.6, core.getZ() + 0.5 + dz * 0.35, yaw));
         }
     }
@@ -583,7 +583,7 @@ public final class WorldgenSurvey {
                                 new Wanted("solar_array", 'C', ModBlocks.COLLECTOR_PEDESTAL.get()),
                                 new Wanted("wormhole_maw", 'R', ModBlocks.MAW_THROAT.get()),
                                 new Wanted("constellation_maze", 'R', ModBlocks.MAZE_TELESCOPE.get()),
-                                new Wanted("orbital_station", 'N', ModBlocks.SOLAR_CORE.get()))) {
+                                new Wanted("abandoned_orrery", 'N', ModBlocks.ORRERY_HEART.get()))) {
             Area area = areas.get(w.biome());
             BlockPos from = area != null ? area.centre : BlockPos.ZERO;
             net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tag = net.minecraft.tags.TagKey.create(
@@ -684,7 +684,7 @@ public final class WorldgenSurvey {
                     found.put("maze_tested", marker);
                     testMaze(end, marker, failures);
                 }
-                if (w.name().equals("orbital_station") && !found.containsKey("station_tested")) {
+                if (w.name().equals("abandoned_orrery") && !found.containsKey("station_tested")) {
                     found.put("station_tested", marker);
                     testStation(end, marker, failures);
                 }

@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 
-// The Starforge Template: found in station vaults, Observatory vaults and maze rewards, and
+// The Starforge Template: found in Orrery vaults, Observatory vaults and maze rewards, and carried by Orrery Sentinels, and
 // copied like a smithing template. Its tooltip reads like a smithing template's.
 public class StarforgeTemplateItem extends Item {
     public StarforgeTemplateItem(Properties properties) {

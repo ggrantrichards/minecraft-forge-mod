@@ -20,7 +20,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 // What a Collector Pedestal holds, and how long it has been charging. Once a second during a flare,
 // if the pedestal is in the Corona with nothing above it, the charge grows; after 30 seconds of
-// flare the Void Crystal or Flare Cell is charged.
+// flare the Void Crystal or Flare Bottle is charged.
 public class CollectorPedestalBlockEntity extends BlockEntity {
     public static final int CHARGE_SECONDS = 30;
     private ItemStack held = ItemStack.EMPTY;
@@ -60,7 +60,7 @@ public class CollectorPedestalBlockEntity extends BlockEntity {
             return;
         }
         CollectorPedestalBlock.Holding holding = CollectorPedestalBlock.Holding.of(pedestal.held);
-        if (holding != CollectorPedestalBlock.Holding.VOID_CRYSTAL && holding != CollectorPedestalBlock.Holding.FLARE_CELL) {
+        if (holding != CollectorPedestalBlock.Holding.VOID_CRYSTAL && holding != CollectorPedestalBlock.Holding.FLARE_BOTTLE) {
             return;
         }
         if (StellarFlares.phaseIn(level) != FlarePhase.FLARE || !StellarFlares.isCorona(level, pos)
@@ -72,7 +72,7 @@ public class CollectorPedestalBlockEntity extends BlockEntity {
         server.sendParticles(ParticleTypes.END_ROD, pos.getX() + 0.5, pos.getY() + 1.3, pos.getZ() + 0.5, 3, 0.2, 0.3, 0.2, 0.02);
         if (pedestal.charge >= CHARGE_SECONDS) {
             pedestal.held = new ItemStack(holding == CollectorPedestalBlock.Holding.VOID_CRYSTAL
-                ? ModItems.CHARGED_VOID_CRYSTAL.get() : ModItems.CHARGED_FLARE_CELL.get());
+                ? ModItems.CHARGED_VOID_CRYSTAL.get() : ModItems.BOTTLED_FLARE.get());
             pedestal.charge = 0;
             pedestal.update();
             server.playSound(null, pos, SoundEvents.BEACON_POWER_SELECT, SoundSource.BLOCKS, 1.0F, 1.4F);

@@ -112,7 +112,7 @@ public final class MobMeshes {
         return LayerDefinition.create(mesh, 64, 64);
     }
 
-    public static LayerDefinition stationSentinel() {
+    public static LayerDefinition orrerySentinel() {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
         root.addOrReplaceChild("right_leg", CubeListBuilder.create().texOffs(52, 0).addBox(-2.5F, 0.0F, -2.5F, 5.0F, 18.0F, 5.0F), PartPose.offset(-4.0F, 6.0F, 0.0F));

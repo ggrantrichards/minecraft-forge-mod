@@ -58,7 +58,7 @@
         },
         {
           "type": "minecraft:item",
-          "name": "astralend:flare_cell",
+          "name": "astralend:flare_bottle",
           "weight": 3,
           "functions": [
             {
@@ -154,7 +154,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "astralend:charged_flare_cell",
+          "name": "astralend:bottled_flare",
           "weight": 1
         }
       ]

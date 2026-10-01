@@ -23,18 +23,18 @@
     },
     {
       "when": {
-        "holding": "flare_cell"
+        "holding": "flare_bottle"
       },
       "apply": {
-        "model": "astralend:block/collector_pedestal_flare_cell"
+        "model": "astralend:block/collector_pedestal_flare_bottle"
       }
     },
     {
       "when": {
-        "holding": "charged_flare_cell"
+        "holding": "bottled_flare"
       },
       "apply": {
-        "model": "astralend:block/collector_pedestal_charged_flare_cell"
+        "model": "astralend:block/collector_pedestal_bottled_flare"
       }
     }
   ]

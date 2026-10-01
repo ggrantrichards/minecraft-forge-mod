@@ -1,0 +1,94 @@
+{
+  "textures": {
+    "item": "astralend:block/pedestal_bottled_flare",
+    "particle": "astralend:block/pedestal_bottled_flare"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        13,
+        8
+      ],
+      "to": [
+        14,
+        25,
+        8
+      ],
+      "shade": false,
+      "rotation": {
+        "origin": [
+          8,
+          13,
+          8
+        ],
+        "axis": "y",
+        "angle": 45,
+        "rescale": true
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#item"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#item"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        13,
+        8
+      ],
+      "to": [
+        14,
+        25,
+        8
+      ],
+      "shade": false,
+      "rotation": {
+        "origin": [
+          8,
+          13,
+          8
+        ],
+        "axis": "y",
+        "angle": -45,
+        "rescale": true
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#item"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#item"
+        }
+      }
+    }
+  ]
+}
