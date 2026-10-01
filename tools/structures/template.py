@@ -77,14 +77,15 @@ class Template:
         for (x, y, z), (state, tag) in sorted(self.blocks.items(), key=lambda kv: (kv[0][1], kv[0][2], kv[0][0])):
             if state not in index:
                 name, props = parse_state(state)
-                entry = {"Name": name}
+                # Minecraft 26.3 writes a palette entry as {id, properties} (older versions: Name, Properties).
+                entry = {"id": name}
                 if props:
-                    entry["Properties"] = {k: v for k, v in sorted(props.items())}
+                    entry["properties"] = {k: v for k, v in sorted(props.items())}
                 index[state] = len(palette)
                 palette.append(entry)
             b = {"pos": nbt.List([nbt.Int(x), nbt.Int(y), nbt.Int(z)], nbt.INT), "state": nbt.Int(index[state])}
             if tag:
-                b["nbt"] = tag
+                b["nbt"] = {"id": parse_state(state)[0], **tag}   # block entity data names its type
             blocks.append(b)
         entities = []
         for (x, y, z, tag) in self.entities:
