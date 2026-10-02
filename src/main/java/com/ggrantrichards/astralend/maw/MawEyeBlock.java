@@ -25,8 +25,8 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
-// One of a Rift Maw's four eye sockets. Set a Charged Void Crystal in it and it lights; with all
-// four lit, a Portal Lens wakes the Maw (see MawThroatBlock).
+// One of a Rift Maw's four eye sockets. Set a Charged Void Crystal in it and it lights, and the dark eye
+// nearest it with it (two crystals for a Maw); with all four lit, a Portal Lens wakes the Maw (MawThroatBlock).
 public class MawEyeBlock extends Block {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
@@ -65,6 +65,20 @@ public class MawEyeBlock extends Block {
         if (!level.isClientSide()) {
             stack.consume(1, player);
             level.setBlock(pos, state.setValue(LIT, true), Block.UPDATE_ALL);
+            // One crystal lights two eyes: this one and the nearest dark one, so two wake a Maw.
+            BlockPos twin = null;
+            double best = Double.MAX_VALUE;
+            for (BlockPos p : BlockPos.betweenClosed(pos.offset(-12, -6, -12), pos.offset(12, 6, 12))) {
+                BlockState s = level.getBlockState(p);
+                if (s.getBlock() instanceof MawEyeBlock && !s.getValue(LIT) && p.distSqr(pos) < best) {
+                    best = p.distSqr(pos);
+                    twin = p.immutable();
+                }
+            }
+            if (twin != null) {
+                level.setBlock(twin, level.getBlockState(twin).setValue(LIT, true), Block.UPDATE_ALL);
+                level.playSound(null, twin, SoundEvents.END_PORTAL_FRAME_FILL, SoundSource.BLOCKS, 1.0F, 0.8F);
+            }
             level.playSound(null, pos, SoundEvents.END_PORTAL_FRAME_FILL, SoundSource.BLOCKS, 1.0F, 0.7F);
             if (level instanceof ServerLevel server) {
                 Direction f = state.getValue(FACING);

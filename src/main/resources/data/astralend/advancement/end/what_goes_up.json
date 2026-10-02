@@ -1,0 +1,35 @@
+{
+  "parent": "astralend:end/astral_horizons",
+  "display": {
+    "icon": {
+      "id": "astralend:upwell_mote"
+    },
+    "title": {
+      "translate": "advancements.astralend.what_goes_up.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.what_goes_up.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "mote": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:upwell_mote"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "mote"
+    ]
+  ]
+}

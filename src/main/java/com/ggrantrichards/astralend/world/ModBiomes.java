@@ -15,6 +15,8 @@ public final class ModBiomes {
     public static final ResourceKey<Biome> COMET_WAKE = key("comet_wake");
     public static final ResourceKey<Biome> HOLLOW_ISLES = key("hollow_isles");
     public static final ResourceKey<Biome> CORONA = key("corona");
+    public static final ResourceKey<Biome> CHORUS_THICKET = key("chorus_thicket");
+    public static final ResourceKey<Biome> GLIMMERING_CRAGS = key("glimmering_crags");
 
     // Biomes with low gravity. Datapacks can empty this tag to turn low gravity off.
     public static final TagKey<Biome> LOW_GRAVITY = TagKey.create(Registries.BIOME, id("low_gravity"));

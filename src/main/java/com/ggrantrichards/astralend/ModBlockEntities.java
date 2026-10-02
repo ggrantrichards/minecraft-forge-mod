@@ -26,5 +26,9 @@ public final class ModBlockEntities {
         BLOCK_ENTITIES.register("lodestar",
             () -> new BlockEntityType<>(LodestarBlockEntity::new, Set.of(ModBlocks.LODESTAR.get())));
 
+    public static final RegistryObject<BlockEntityType<com.ggrantrichards.astralend.block.EndChimesBlockEntity>> END_CHIMES =
+        BLOCK_ENTITIES.register("end_chimes",
+            () -> new BlockEntityType<>(com.ggrantrichards.astralend.block.EndChimesBlockEntity::new, Set.of(ModBlocks.END_CHIMES.get())));
+
     private ModBlockEntities() {}
 }

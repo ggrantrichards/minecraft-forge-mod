@@ -31,7 +31,9 @@ public class AstralEndBiomeSource extends BiomeSource {
                 RegistryOps.retrieveElement(ModBiomes.ASHEN_BARRENS),
                 RegistryOps.retrieveElement(ModBiomes.COMET_WAKE),
                 RegistryOps.retrieveElement(ModBiomes.HOLLOW_ISLES),
-                RegistryOps.retrieveElement(ModBiomes.CORONA)
+                RegistryOps.retrieveElement(ModBiomes.CORONA),
+                RegistryOps.retrieveElement(ModBiomes.CHORUS_THICKET),
+                RegistryOps.retrieveElement(ModBiomes.GLIMMERING_CRAGS)
             )
             .apply(i, i.stable(AstralEndBiomeSource::new))
     );
@@ -49,11 +51,13 @@ public class AstralEndBiomeSource extends BiomeSource {
     private final Holder<Biome> cometWake;
     private final Holder<Biome> hollowIsles;
     private final Holder<Biome> corona;
+    private final Holder<Biome> chorusThicket;
+    private final Holder<Biome> glimmeringCrags;
 
     private AstralEndBiomeSource(Holder<Biome> end, Holder<Biome> highlands, Holder<Biome> midlands,
                                  Holder<Biome> islands, Holder<Biome> barrens, Holder<Biome> nebulaFields,
                                  Holder<Biome> ashenBarrens, Holder<Biome> cometWake, Holder<Biome> hollowIsles,
-                                 Holder<Biome> corona) {
+                                 Holder<Biome> corona, Holder<Biome> chorusThicket, Holder<Biome> glimmeringCrags) {
         this.end = end;
         this.highlands = highlands;
         this.midlands = midlands;
@@ -64,12 +68,15 @@ public class AstralEndBiomeSource extends BiomeSource {
         this.cometWake = cometWake;
         this.hollowIsles = hollowIsles;
         this.corona = corona;
+        this.chorusThicket = chorusThicket;
+        this.glimmeringCrags = glimmeringCrags;
     }
 
     @Override
     protected Stream<Holder<Biome>> collectPossibleBiomes() {
         return Stream.of(this.end, this.highlands, this.midlands, this.islands, this.barrens, this.nebulaFields,
-            this.ashenBarrens, this.cometWake, this.hollowIsles, this.corona);
+            this.ashenBarrens, this.cometWake, this.hollowIsles, this.corona, this.chorusThicket,
+            this.glimmeringCrags);
     }
 
     @Override
@@ -97,6 +104,8 @@ public class AstralEndBiomeSource extends BiomeSource {
             case COMET_WAKE: return this.cometWake;
             case HOLLOW_ISLES: return this.hollowIsles;
             case CORONA: return this.corona;
+            case CHORUS_THICKET: return this.chorusThicket;
+            case GLIMMERING_CRAGS: return this.glimmeringCrags;
             case VANILLA: break;
         }
         // Vanilla's outer-End choice, unchanged.

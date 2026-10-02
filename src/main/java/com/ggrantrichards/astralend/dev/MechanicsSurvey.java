@@ -58,5 +58,43 @@ final class MechanicsSurvey {
         }
     }
 
+    // Batch C: Upwelling turns gravity around, End Chimes still a second teleport, Voidgel bounces.
+    static void checkContent(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
+        var mite = ModEntities.CINDER_MITE.get().create(end, EntitySpawnReason.COMMAND);
+        if (mite != null) {
+            mite.snapTo(standOn.getX() + 0.5, standOn.getY() + 1.0, standOn.getZ() + 0.5, 0.0F, 0.0F);
+            end.addFreshEntity(mite);
+            double before = mite.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.GRAVITY);
+            mite.addEffect(new net.minecraft.world.effect.MobEffectInstance(com.ggrantrichards.astralend.ModEffects.upwelling(), 100));
+            double during = mite.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.GRAVITY);
+            mite.removeEffect(com.ggrantrichards.astralend.ModEffects.upwelling());
+            boolean slowFalling = mite.hasEffect(net.minecraft.world.effect.MobEffects.SLOW_FALLING);
+            log.accept(String.format("content: Upwelling - gravity %.3f -> %.3f; Slow Falling once it ends: %s", before, during, slowFalling));
+            if (!(during < 0.0) || !slowFalling) {
+                failures.add("content: Upwelling should reverse gravity, and leave Slow Falling when it ends");
+            }
+            mite.discard();
+        }
+        BlockPos chime = standOn.above(6);
+        end.setBlockAndUpdate(chime.above(), ModBlocks.NIGHTSTONE.get().defaultBlockState());
+        end.setBlockAndUpdate(chime, ModBlocks.END_CHIMES.get().defaultBlockState());
+        Vec3 near = Vec3.atCenterOf(chime).add(4, -3, 0);
+        boolean first = com.ggrantrichards.astralend.block.EndChimesBlockEntity.stillsTeleport(end, near, near.add(8, 0, 0));
+        boolean second = com.ggrantrichards.astralend.block.EndChimesBlockEntity.stillsTeleport(end, near, near.add(8, 0, 0));
+        boolean far = com.ggrantrichards.astralend.block.EndChimesBlockEntity.stillsTeleport(end, near.add(60, 0, 0), near.add(70, 0, 0));
+        end.setBlockAndUpdate(chime, Blocks.AIR.defaultBlockState());
+        end.setBlockAndUpdate(chime.above(), Blocks.AIR.defaultBlockState());
+        log.accept(String.format("content: End Chimes - first teleport stopped: %s, second: %s, far away: %s", first, second, far));
+        if (first || !second || far) {
+            failures.add("content: End Chimes should let one teleport through, still the next, and leave far ones alone");
+        }
+        float bounce = ModBlocks.VOIDGEL.get().getBounceRestitution();
+        float moss = ModBlocks.CHORUS_MOSS.get().getSpeedFactor();
+        log.accept(String.format("content: Voidgel bounce %.2f, Chorus Moss speed %.2f", bounce, moss));
+        if (bounce <= 0.0F || moss >= 1.0F) {
+            failures.add("content: Voidgel should bounce and Chorus Moss should slow you a little");
+        }
+    }
+
     private MechanicsSurvey() {}
 }

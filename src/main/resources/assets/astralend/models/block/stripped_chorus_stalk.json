@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "astralend:block/stripped_chorus_stalk_top",
+    "side": "astralend:block/stripped_chorus_stalk"
+  }
+}

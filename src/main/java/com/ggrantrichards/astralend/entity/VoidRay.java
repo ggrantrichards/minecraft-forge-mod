@@ -38,9 +38,10 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-// Void Ray: a flat, manta-shaped flier with thin glowing wing-membranes.
+// Void Ray: a flat manta of the open void, its back dark as the sky between the stars and its wing
+// edges and underside gold with stored sunlight.
 //
-// Most of the time it rests flat on the ground and looks almost like stone. Now and then - or
+// Most of the time it rests flat on the ground. Now and then - or
 // when a player walks right up to it - it lifts off and glides in wide circles over its island,
 // then lands again. Whole flocks take off when a Sunstorm comes and ride it. Shearing full,
 // shimmering wings gives Ray Film, a heat-proof membrane; sheared wings fill up again in the

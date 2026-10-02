@@ -1,0 +1,57 @@
+{
+  "attributes": {
+    "minecraft:gameplay/natural_mob_spawns": {
+      "argument": {
+        "spawn_costs": {},
+        "spawns_by_category": {
+          "monster": [
+            {
+              "type": "minecraft:enderman",
+              "count": 4,
+              "weight": 10
+            }
+          ]
+        }
+      },
+      "modifier": "overlay"
+    },
+    "minecraft:visual/fog_color": "#0f3a3c",
+    "minecraft:visual/ambient_particles": {
+      "argument": [
+        {
+          "particle": {
+            "type": "minecraft:glow"
+          },
+          "probability": 0.004
+        }
+      ],
+      "modifier": "append"
+    }
+  },
+  "carvers": [],
+  "downfall": 0.5,
+  "effects": {
+    "water_color": "#3fd6c4"
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [
+      "minecraft:end_gateway_return",
+      "astralend:glimmering_crags_spires"
+    ],
+    [],
+    [],
+    [],
+    [],
+    [
+      "astralend:glimmering_crags_clusters",
+      "astralend:glimmering_crags_void_crystal",
+      "astralend:glimmering_crags_voidgel"
+    ]
+  ],
+  "has_precipitation": false,
+  "temperature": 0.5
+}

@@ -47,6 +47,8 @@ public final class ModItems {
     public static final RegistryObject<Item> BOTTLED_FLARE = register("bottled_flare", Item::new,
         new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.UNCOMMON));
     // Phase 10: steers a Drift Whale.
+    // Phase 10: caught drifting up through an Upwell; brews the Potion of Upwelling.
+    public static final RegistryObject<Item> UPWELL_MOTE = simple("upwell_mote");
     public static final RegistryObject<Item> CHORUS_FLOWER_ON_A_STICK = register("chorus_flower_on_a_stick",
         com.ggrantrichards.astralend.item.ChorusFlowerOnAStickItem::new, new Item.Properties().durability(30));
     public static final RegistryObject<Item> STAR_CHART = register("star_chart", StarChartItem::new, new Item.Properties().stacksTo(1));

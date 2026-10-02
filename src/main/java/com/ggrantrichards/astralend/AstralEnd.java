@@ -50,6 +50,8 @@ public final class AstralEnd {
 
         LowGravity.register();
         Upwells.register();
+        com.ggrantrichards.astralend.world.UpwellingEffect.register();
+        com.ggrantrichards.astralend.block.EndChimesBlockEntity.register();
         WoodStripping.register();
         ModEntities.register();   // mob attributes and where they may spawn
         MobSpawning.register();   // Drift Whales, the Watcher and the Hollow

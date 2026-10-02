@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "astralend:chorus_fence",
     "astralend:lumine_fence",
     "astralend:nullwood_fence"
   ]

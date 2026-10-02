@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "#astralend:chorus_stalks",
     "#astralend:lumine_stems",
     "#astralend:nullwood_logs"
   ]

@@ -28,6 +28,20 @@ public class UpwellCoreBlockEntity extends BlockEntity {
         if (level.getGameTime() % INTERVAL == 0 && Upwells.enabledAt(level, pos)) {
             invertInside(level, pos);
         }
+        // Now and then an Upwell Mote condenses at the bottom of the pocket and drifts up it.
+        if (level.getRandom().nextInt(900) == 0) {
+            Vec3 bottom = centre(pos).subtract(0, RADIUS - 0.5, 0);
+            AABB box = AABB.ofSize(centre(pos), RADIUS * 2, RADIUS * 2, RADIUS * 2);
+            if (level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, box,
+                    e -> e.getItem().is(com.ggrantrichards.astralend.ModItems.UPWELL_MOTE.get())).size() < 2) {
+                var mote = new net.minecraft.world.entity.item.ItemEntity(level, bottom.x, bottom.y, bottom.z,
+                    new net.minecraft.world.item.ItemStack(com.ggrantrichards.astralend.ModItems.UPWELL_MOTE.get()));
+                mote.setNoGravity(true);
+                mote.setDeltaMovement(0.0, 0.02, 0.0);
+                mote.setUnlimitedLifetime();
+                level.addFreshEntity(mote);
+            }
+        }
     }
 
     // Flips gravity for every living thing inside the pocket below the core at `pos`.

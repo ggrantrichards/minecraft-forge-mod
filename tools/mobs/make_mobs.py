@@ -644,19 +644,21 @@ CINDER_MITE = Mob("cinder_mite", (64, 32), [
 ], egg=(hexc("2d211b"), hexc("ff7a1f")))
 
 
-# ---- Void Ray: a flat, manta-shaped flier that rests looking like stone
-K_STONE = [hexc("c9a86a"), hexc("b8965a"), hexc("d4b476"), hexc("a8864e")]
+# ---- Void Ray: a flat manta of the open void. Its back is the void itself - near-black violet, flecked
+# with points of light like a starfield - and its underside and wing edges hold the sun's gold: it
+# soaks up Sunstorms and glows with them.
+K_STONE = [hexc("2a1c40"), hexc("221636"), hexc("34244e"), hexc("1c122c")]
 K_MEMBRANE = [hexc("e8913a"), hexc("d97e2c"), hexc("f0a04a")]
 
 
-K_CRUST = [hexc("6e4521"), hexc("a8783e"), hexc("c49a5a"), hexc("dcb676"), hexc("efd29a")]
+K_CRUST = [hexc("07040e"), hexc("140c24"), hexc("1e1434"), hexc("2a1c46"), hexc("3a2a5c")]
 
 
 def crust(px, py):
-    """The Void Ray's camouflage: the same cracked, sun-baked crust as the Corona's ground."""
+    """The Void Ray's back: the dark of the void, with a few stars in it."""
     t = n()
-    if 0.48 < t < 0.53:
-        return K_CRUST[0]                      # a crack
+    if t > 0.93:
+        return hexc("e8e0ff") if t > 0.97 else hexc("9a88d0")   # a star
     return K_CRUST[1 + min(3, int(t * 4))]
 
 
@@ -665,13 +667,15 @@ def ray_body(face, px, py, fw, fh, rnd):
         return crust(px, py)
     if face == "down":
         return mix(rnd.choice(K_MEMBRANE), hexc("7a3a12"), 0.35)
-    return mix(rnd.choice(K_STONE), hexc("6b4e2a"), 0.4)
+    return rnd.choice(K_STONE)
 
 
 def ray_wing(face, px, py, fw, fh, rnd):
     if face == "up":
-        if py in (0, fh - 1) or px == fw - 1:
-            return K_CRUST[0]                  # the wing's dark rim
+        if px == fw - 1:
+            return hexc("f0a04a")              # the wing's edge holds the sun
+        if py in (0, fh - 1):
+            return K_CRUST[0]
         c = crust(px, py)
         if px % 3 == 0:
             c = mix(c, K_CRUST[0], 0.35)       # ribs under the skin
@@ -681,20 +685,20 @@ def ray_wing(face, px, py, fw, fh, rnd):
         if px % 3 == 0:
             c = hexc("a85a1c")
         return c
-    return hexc("8a6a3a")
+    return hexc("d97e2c")
 
 
 def ray_wing_glow(face, px, py, fw, fh, rnd):
     if face == "down" and px % 3 != 0:
         return mix(hexc("ffd27a"), hexc("fff6d8"), rnd.random() * 0.5)
-    if face == "up" and px % 3 == 1 and rnd.random() < 0.5:
+    if face == "up" and px == fw - 1:
         return hexc("ffcf70")
     return None
 
 
 def ray_head(face, px, py, fw, fh, rnd):
     if face == "north" and px in (0, 3):
-        return hexc("2a1410")
+        return hexc("ffcf70")
     return ray_body(face, px, py, fw, fh, rnd)
 
 
@@ -707,7 +711,7 @@ VOID_RAY = Mob("void_ray", (64, 32), [
         Part("right_wing", (-4, 0, 0), [Box(0, 14, -10, -1, -5, 10, 1, 10, mirror=True, paint=ray_wing, glow=ray_wing_glow)]),
         Part("tail", (0, -1, 6), [Box(40, 4, -0.5, 0, 0, 1, 1, 9, paint=ray_body)]),
     ]),
-], egg=(hexc("c9a86a"), hexc("e8913a")))
+], egg=(hexc("1e1434"), hexc("f0a04a")))
 
 
 # ---- The Hollow: a small singularity with a spinning accretion ring

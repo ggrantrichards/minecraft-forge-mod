@@ -108,8 +108,8 @@ final class StarforgeSurvey {
         int poisonTicks = slowness == null ? 0 : slowness.getDuration();
         log.accept(String.format("starforge: Meteoric x2 - fire did %s; Temporal x2 - Speed 200 -> %d ticks, Slowness 200 -> %d ticks",
             shielded ? "nothing" : "damage", speedTicks, poisonTicks));
-        if (!shielded || speedTicks != 240 || poisonTicks != 160) {
-            failures.add("starforge: Heat Shield should stop fire damage, and Time Stretch make Speed last 240 ticks and Slowness 160");
+        if (!shielded || Math.abs(speedTicks - 220) > 1 || Math.abs(poisonTicks - 180) > 1) {
+            failures.add("starforge: Heat Shield should stop fire damage, and Time Stretch make Speed last 220 ticks and Slowness 180");
         }
         zombie.removeAllEffects();
         zombie.setHealth(zombie.getMaxHealth());

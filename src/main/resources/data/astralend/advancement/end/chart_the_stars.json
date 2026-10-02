@@ -85,6 +85,34 @@
           }
         }
       }
+    },
+    "chorus_thicket": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "biomes": "astralend:chorus_thicket"
+            }
+          }
+        }
+      }
+    },
+    "glimmering_crags": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "biomes": "astralend:glimmering_crags"
+            }
+          }
+        }
+      }
     }
   },
   "requirements": [
@@ -102,6 +130,12 @@
     ],
     [
       "corona"
+    ],
+    [
+      "chorus_thicket"
+    ],
+    [
+      "glimmering_crags"
     ]
   ]
 }

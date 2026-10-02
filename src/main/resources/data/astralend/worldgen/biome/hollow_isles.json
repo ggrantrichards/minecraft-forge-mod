@@ -56,13 +56,12 @@
     ],
     [],
     [],
-    [
-      "astralend:hollow_isles_void_crystal"
-    ],
+    [],
     [],
     [
       "astralend:hollow_isles_nullwood_trees",
-      "minecraft:chorus_plant"
+      "minecraft:chorus_plant",
+      "astralend:hollow_isles_voidgel"
     ]
   ],
   "has_precipitation": false,

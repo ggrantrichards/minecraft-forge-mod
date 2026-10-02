@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "astralend:chorus_button",
     "astralend:lumine_button",
     "astralend:nullwood_button"
   ]

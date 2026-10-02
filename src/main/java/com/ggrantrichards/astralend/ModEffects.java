@@ -23,6 +23,18 @@ public final class ModEffects {
     public static final RegistryObject<Potion> LONG_SUN_WARD_POTION = POTIONS.register("long_sun_ward",
         () -> new Potion("sun_ward", new MobEffectInstance(ward(), 9600)));      // 8 minutes
 
+    // Upwelling (Phase 10): brewed from an Upwell Mote; gravity reversed for a while (UpwellingEffect).
+    public static final RegistryObject<MobEffect> UPWELLING = EFFECTS.register("upwelling",
+        com.ggrantrichards.astralend.world.UpwellingEffect::new);
+    public static final RegistryObject<Potion> UPWELLING_POTION = POTIONS.register("upwelling",
+        () -> new Potion("upwelling", new MobEffectInstance(upwelling(), 400)));     // 20 seconds
+    public static final RegistryObject<Potion> LONG_UPWELLING_POTION = POTIONS.register("long_upwelling",
+        () -> new Potion("upwelling", new MobEffectInstance(upwelling(), 900)));     // 45 seconds
+
+    public static Holder<MobEffect> upwelling() {
+        return UPWELLING.getHolder().orElseThrow();
+    }
+
     public static Holder<MobEffect> ward() {
         return SUN_WARD.getHolder().orElseThrow();
     }

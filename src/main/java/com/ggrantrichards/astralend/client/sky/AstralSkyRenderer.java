@@ -125,6 +125,10 @@ public class AstralSkyRenderer extends SkyRenderer {
             set(t, 1.0F, 0.35F, 1.0F, 0.6F, 1.0F, 0.82F, 0.35F);
         } else if (biome.is(ModBiomes.NEBULA_FIELDS)) {
             set(t, 0.55F, 0.7F, 0.45F, 1.0F, 1.0F, 0.5F, 0.85F);
+        } else if (biome.is(ModBiomes.CHORUS_THICKET)) {
+            set(t, 0.45F, 0.95F, 0.5F, 1.0F, 1.0F, 0.75F, 0.95F);
+        } else if (biome.is(ModBiomes.GLIMMERING_CRAGS)) {
+            set(t, 0.7F, 0.25F, 1.0F, 0.85F, 0.5F, 1.0F, 0.9F);
         } else if (biome.is(ModBiomes.COMET_WAKE)) {
             set(t, 0.4F, 0.55F, 0.9F, 1.0F, 0.8F, 0.95F, 1.0F);
         } else if (biome.is(ModBiomes.HOLLOW_ISLES) || this.inCorona) {

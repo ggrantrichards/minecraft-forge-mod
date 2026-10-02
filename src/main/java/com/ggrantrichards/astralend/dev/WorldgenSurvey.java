@@ -59,7 +59,9 @@ public final class WorldgenSurvey {
     private record BiomeInfo(ResourceKey<Biome> key, char symbol, String name, double minShare, double maxShare, int areaChunks) {}
 
     private static final List<BiomeInfo> ASTRAL = List.of(
-        new BiomeInfo(ModBiomes.NEBULA_FIELDS, 'N', "Nebula Fields", 15, 45, 4),
+        new BiomeInfo(ModBiomes.NEBULA_FIELDS, 'N', "Nebula Fields", 8, 45, 4),
+        new BiomeInfo(ModBiomes.CHORUS_THICKET, 'T', "Chorus Thicket", 2, 25, 3),
+        new BiomeInfo(ModBiomes.GLIMMERING_CRAGS, 'G', "Glimmering Crags", 1, 15, 3),
         new BiomeInfo(ModBiomes.ASHEN_BARRENS, 'A', "Ashen Barrens", 3, 25, 3),
         new BiomeInfo(ModBiomes.COMET_WAKE, 'W', "Comet Wake", 3, 25, 3),
         new BiomeInfo(ModBiomes.HOLLOW_ISLES, 'D', "Hollow Isles", 2, 20, 3),
@@ -176,7 +178,7 @@ public final class WorldgenSurvey {
         log("Biome map of the End, " + (2 * MAP_RADIUS) + " x " + (2 * MAP_RADIUS) + " blocks, north up, one character = "
             + MAP_STEP + " blocks:");
         log("  O central island   N Nebula Fields   A Ashen Barrens   W Comet Wake   D Hollow Isles   "
-            + "C The Corona   H/M/B/s vanilla Highlands/Midlands/Barrens/Small Islands");
+            + "C The Corona   T Chorus Thicket   G Glimmering Crags   H/M/B/s vanilla Highlands/Midlands/Barrens/Small Islands");
         Map<Character, Integer> outerCounts = new HashMap<>();
         Map<Character, Integer> runs = new HashMap<>();
         Map<Character, Integer> continued = new HashMap<>();
@@ -275,6 +277,7 @@ public final class WorldgenSurvey {
             EXTRA_SHOTS.addAll(StarforgeSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log));   // Phase 8
             PolishSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log);         // Phase 9
             MechanicsSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log);      // Phase 10
+            MechanicsSurvey.checkContent(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
         }
         writeViewpoints(areas, end, structures);
         checkNebula(areas.get('N'), failures);
@@ -282,6 +285,8 @@ public final class WorldgenSurvey {
         checkCometWake(areas.get('W'), failures);
         checkHollowIsles(areas.get('D'), end, failures);
         checkCorona(areas.get('C'), failures);
+        checkThicket(areas.get('T'), failures);
+        checkCrags(areas.get('G'), failures);
         checkLowGravity(areas.get('N'), vanillaSpot, end, failures);
         checkMobs(areas, end, failures);
     }
@@ -957,12 +962,34 @@ public final class WorldgenSurvey {
         atLeast(area, ModBlocks.COMET_CRESS.get(), 0.2, failures);
     }
 
+    // Phase 10: chorus trees over Chorus Moss, and vanilla chorus between them.
+    private static void checkThicket(Area area, List<String> failures) {
+        if (!enoughLand(area, failures)) {
+            return;
+        }
+        atLeast(area, ModBlocks.CHORUS.log().get(), 6, failures);
+        atLeast(area, ModBlocks.CHORUS_BLOOM.get(), 20, failures);
+        atLeast(area, Blocks.CHORUS_PLANT, 1, failures);
+        atLeast(area, ModBlocks.CHORUS_MOSS.get(), 40, failures);
+    }
+
+    // Phase 10: Nightstone peaks grown through with Glimmer Crystal; Void Crystal under the islands.
+    private static void checkCrags(Area area, List<String> failures) {
+        if (!enoughLand(area, failures)) {
+            return;
+        }
+        replacesEndStone(area, ModBlocks.NIGHTSTONE.get(), failures);
+        atLeast(area, ModBlocks.GLIMMER_CRYSTAL.get(), 10, failures);
+        atLeast(area, ModBlocks.GLIMMER_CLUSTER.get(), 1, failures);
+        atLeast(area, ModBlocks.VOID_CRYSTAL_ORE.get(), 0.05, failures);
+    }
+
     private static void checkHollowIsles(Area area, ServerLevel end, List<String> failures) {
         if (!enoughLand(area, failures)) {
             return;
         }
         replacesEndStone(area, ModBlocks.NIGHTSTONE.get(), failures);
-        atLeast(area, ModBlocks.VOID_CRYSTAL_ORE.get(), 0.5, failures);
+        atLeast(area, ModBlocks.VOIDGEL.get(), 0.5, failures);
         atLeast(area, ModBlocks.NULLWOOD.log().get(), 15, failures);
         atLeast(area, ModBlocks.NULLWOOD_LEAVES.get(), 40, failures);
         atLeast(area, ModBlocks.NULL_LANTERN.get(), 2, failures);
@@ -1094,6 +1121,8 @@ public final class WorldgenSurvey {
         if (biome.is(ModBiomes.COMET_WAKE)) return 'W';
         if (biome.is(ModBiomes.HOLLOW_ISLES)) return 'D';
         if (biome.is(ModBiomes.CORONA)) return 'C';
+        if (biome.is(ModBiomes.CHORUS_THICKET)) return 'T';
+        if (biome.is(ModBiomes.GLIMMERING_CRAGS)) return 'G';
         if (biome.is(Biomes.THE_END)) return 'O';
         if (biome.is(Biomes.END_HIGHLANDS)) return 'H';
         if (biome.is(Biomes.END_MIDLANDS)) return 'M';

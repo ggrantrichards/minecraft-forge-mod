@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "astralend:chorus_pressure_plate",
     "astralend:lumine_pressure_plate",
     "astralend:nullwood_pressure_plate"
   ]

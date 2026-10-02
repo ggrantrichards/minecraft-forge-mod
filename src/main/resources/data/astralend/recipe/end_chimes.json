@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "R": "minecraft:end_rod"
+  },
+  "pattern": [
+    "AAA",
+    "R R",
+    "R R"
+  ],
+  "result": {
+    "id": "astralend:end_chimes"
+  }
+}

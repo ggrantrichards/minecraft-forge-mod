@@ -70,7 +70,7 @@ CROSS_PLANTS = [
     ("lumineshroom", "Lumineshroom"), ("starbloom", "Starbloom"),
     ("shimmer_grass", "Shimmer Grass"), ("ashen_lumineshroom", "Ashen Lumineshroom"),
     ("petrified_astral_vine", "Petrified Astral Vine"),
-    ("nebula_tufts", "Nebula Tufts"), ("nullwood_sapling", "Nullwood Sapling"),
+    ("nebula_tufts", "Nebula Tufts"), ("nullwood_sapling", "Nullwood Sapling"), ("chorus_sprout", "Chorus Sprout"),
 ]
 ITEMS = [
     ("void_crystal", "Void Crystal"),
@@ -89,6 +89,7 @@ ITEMS = [
     ("ray_film", "Ray Film"),
     ("cinder", "Cinder"),
     ("star_chart", "Star Chart"),
+    ("upwell_mote", "Upwell Mote"),
 ]
 
 PLURAL = {"nightstone_bricks": "nightstone_brick", "pale_end_stone_bricks": "pale_end_stone_brick",
@@ -300,6 +301,7 @@ def stone_family(base, english, texture=None, with_wall=True, stem=None, tool="p
 WOOD_SETS = [
     ("lumine", "stem", "hyphae", "Lumine", "Lumine Stem", "Lumine Hyphae"),
     ("nullwood", "log", "wood", "Nullwood", "Nullwood Log", "Nullwood"),
+    ("chorus", "stalk", "wood", "Chorus", "Chorus Stalk", "Chorus Wood"),
 ]
 
 FACING_Y = {"north": 0, "east": 90, "south": 180, "west": 270}
@@ -599,6 +601,8 @@ REGION_NEBULA = 0.18      # nebula > this: Nebula Fields
 REGION_COLD = -0.2        # nebula < this: the "cold" band (Ashen Barrens / Comet Wake)
 REGION_COLD_BELT = 0.2    # |belt| beyond this in the cold band
 REGION_MID_BELT = 0.3     # |belt| beyond this in the middle band (Hollow Isles / Corona)
+REGION_THICKET = 0.22     # belt < -this in the nebula band: the Chorus Thicket
+REGION_CRAGS = 0.45       # ruin > this, in what would be vanilla: the Glimmering Crags
 BLEND = 0.03              # terrain blends between shapes over +-this much noise at a border
 
 
@@ -667,7 +671,10 @@ def terrain():
         "corona": mul(middle, ramp(mul(belt, -1.0), REGION_MID_BELT)),
     }
     vanilla_share = sub(sub(sub(sub(not_nebula, raw["ashen_barrens"]), raw["comet_wake"]), raw["hollow_isles"]), raw["corona"])
-    raw["nebula_fields"] = ramp(nebula, REGION_NEBULA)
+    raw["glimmering_crags"] = mul(vanilla_share, ramp(ruin, REGION_CRAGS))
+    thicket = ramp(mul(belt, -1.0), REGION_THICKET)
+    raw["nebula_fields"] = mul(ramp(nebula, REGION_NEBULA), sub(1.0, thicket))
+    raw["chorus_thicket"] = mul(ramp(nebula, REGION_NEBULA), thicket)
     for biome, weight in raw.items():
         df(f"terrain/weight/{biome}", mul(rid("terrain/outer"), weight))
 
@@ -709,8 +716,18 @@ def terrain():
     # The Corona: flat-topped mesas with sheer cliffs, so there's little natural shelter.
     df("terrain/corona", dmax(vanilla, landmass(add(62.0, mul(hills, 1.5)), depth_from(add(mask, -0.02), 400.0, 30.0))))
 
+    # Chorus Thicket: like the Nebula Fields, but gentler: low, broad mounds for the chorus to stand on.
+    df("terrain/chorus_thicket", dmax(vanilla, landmass(add(60.0, mul(hills, 4.0)), depth_from(add(mask, -0.02), 110.0, 38.0))))
+
+    # Glimmering Crags: islands bristling with jagged peaks. A fast noise lifts the top surface into
+    # spires up to ~50 blocks high (and deepens the island under them, so they stand on something).
+    df("terrain/crag_peaks", {"type": "minecraft:noise", "noise": "minecraft:ridge", "xz_scale": 6.0, "y_scale": 0.0})
+    peaks = clamp(mul(add(rid("terrain/crag_peaks"), -0.15), 90.0), 0.0, 48.0)
+    df("terrain/glimmering_crags", dmax(vanilla, landmass(add(add(56.0, mul(hills, 4.0)), peaks),
+                                                          add(depth_from(add(mask, 0.04), 110.0, 40.0), mul(peaks, 0.6)))))
+
     shaped = vanilla
-    for biome in ("nebula_fields", "corona", "hollow_isles", "comet_wake", "ashen_barrens"):
+    for biome in ("nebula_fields", "chorus_thicket", "corona", "hollow_isles", "comet_wake", "ashen_barrens", "glimmering_crags"):
         shaped = lerp(rid(f"terrain/weight/{biome}"), shaped, rid(f"terrain/{biome}"))
     df("terrain/shaped", shaped)
 
@@ -755,6 +772,9 @@ def worldgen():
     write(WG / "material_rule" / "end.json", {"type": "minecraft:sequence", "sequence": [
         in_biome("nebula_fields", {"type": "minecraft:condition", "if_true": "minecraft:on_floor",
                                    "then_run": block("chorus_moss")}),
+        in_biome("chorus_thicket", {"type": "minecraft:condition", "if_true": "minecraft:on_floor",
+                                    "then_run": block("chorus_moss")}),
+        in_biome("glimmering_crags", block("nightstone")),
         # Whole islands of a different stone:
         in_biome("ashen_barrens", block("pale_end_stone")),
         in_biome("comet_wake", block("charred_end_stone")),
@@ -828,7 +848,7 @@ def worldgen():
     tag("worldgen/biome", f"{NS}:low_gravity", rid("nebula_fields"))
     # Phase 9: data-pack switches for the two events (empty a tag to turn its event off).
     tag("worldgen/biome", f"{NS}:sunstorms", rid("corona"))
-    for comet_biome in ("nebula_fields", "ashen_barrens", "comet_wake", "hollow_isles", "corona",
+    for comet_biome in ("nebula_fields", "ashen_barrens", "comet_wake", "hollow_isles", "corona", "chorus_thicket", "glimmering_crags",
                         "minecraft:end_highlands", "minecraft:end_midlands", "minecraft:end_barrens", "minecraft:small_end_islands"):
         tag("worldgen/biome", f"{NS}:live_comets", comet_biome if ":" in comet_biome else rid(comet_biome))
     # Biomes where Upwell Cores flip gravity. Empty this tag in a datapack to turn it off.
@@ -894,7 +914,7 @@ def java_feature(name):
 # Watcher and the Hollow aren't here: MobSpawning.java places them one at a time.
 MOB_SPAWNS = {
     "nebula_fields": {"creature": [("pollinator", 12, 3)]},
-    "ashen_barrens": {"creature": [("pollinator", 8, 2)]},
+    "chorus_thicket": {"creature": [("pollinator", 8, 2)]},
     "hollow_isles": {"monster": [("umbral_stalker", 4, 1)], "creature": [("void_wanderer", 4, 1)]},
     "corona": {"monster": [("cinder_mite", 8, 4)], "creature": [("void_ray", 10, 3)]},
 }
@@ -936,10 +956,13 @@ def end_biome(name, english, fog, water, features_step4=(), features_step7=(), f
 def worldgen_phase3():
     air = {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"}
 
-    # ---- Ashen Barrens: Pale End Stone shelves, Shimmer Grass, standing stones, bone ribs
-    ground_cover("aurora_shimmer_grass", "shimmer_grass", 150)
-    plant_patch("aurora_shimmer_reeds", "shimmer_reed", rarity=1, count=48, spread=6)
-    big_feature("aurora_ribcages", "leviathan_ribcage", rarity=7, heightmap="WORLD_SURFACE_WG")
+    # ---- Ashen Barrens: the dead country. Pale End Stone shelves under the auroras, thin Shimmer Grass,
+    # standing stones, the ribs of things long dead, and withered Lumineshrooms. Nothing lives here.
+    ground_cover("aurora_shimmer_grass", "shimmer_grass", 90)
+    plant_patch("aurora_shimmer_reeds", "shimmer_reed", rarity=3, count=24, spread=6)
+    plant_patch("ashen_barrens_withered_lumineshrooms", "ashen_lumineshroom", rarity=2, count=8, spread=5,
+                on=[rid("pale_end_stone")])
+    big_feature("aurora_ribcages", "leviathan_ribcage", rarity=5, heightmap="WORLD_SURFACE_WG")
     feature("standing_stone", {"type": "minecraft:block_column", "allowed_placement": air, "direction": "up",
                                "layers": [{"height": {"type": "minecraft:uniform", "min_inclusive": 1, "max_inclusive": 3},
                                            "provider": {"id": rid("pale_end_stone_bricks")}},
@@ -962,10 +985,10 @@ def worldgen_phase3():
             air, {"type": "minecraft:matching_blocks", "blocks": [rid("pale_end_stone")], "offset": [0, -1, 0]}]}},
         {"type": "minecraft:biome"},
     ]})
-    end_biome("ashen_barrens", "Ashen Barrens", fog="#1f3b4d", water="#5fc8c2",
+    end_biome("ashen_barrens", "Ashen Barrens", fog="#1b2329", water="#5a7e80",
               features_step4=[rid("aurora_ribcages"), rid("aurora_standing_stones"), rid("aurora_leviathan_ribs")],
-              features_step9=[rid("aurora_shimmer_reeds"), rid("aurora_shimmer_grass")],
-              particle="minecraft:end_rod", particle_chance=0.002)
+              features_step9=[rid("aurora_shimmer_reeds"), rid("aurora_shimmer_grass"), rid("ashen_barrens_withered_lumineshrooms")],
+              particle="minecraft:white_ash", particle_chance=0.012)
 
     # ---- Comet Wake: Charred End Stone, Stardust veins, blue ice, Comet Cores, Comet Cress
     ore("stardust_vein", "stardust_block", rid("charred_end_stone"), size=14)
@@ -988,16 +1011,17 @@ def worldgen_phase3():
               features_step9=[rid("comet_wake_stardust_underhangs")], particle="minecraft:ash", particle_chance=0.01)
 
     # ---- Hollow Isles: Nightstone rings, Void Crystal Ore, Upwells
-    ore("void_crystal_vein", "void_crystal_ore", rid("nightstone"), size=5, discard=0.5)
-    placed_ore("hollow_isles_void_crystal", "void_crystal_vein", count=9, min_y=10, max_y=90)
+    # (Void Crystal grows only under the Glimmering Crags now.) Voidgel drips from the undersides.
+    feature("voidgel_drip", {"type": rid("underside"), "kind": "voidgel"})
+    placed("hollow_isles_voidgel", {"feature": rid("voidgel_drip"), "placement": [
+        {"type": "minecraft:count", "count": 3}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
     java_feature("upwell")
     placed("hollow_isles_upwells", {"feature": rid("upwell"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 3}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
     big_feature("hollow_isles_nullwood_trees", "nullwood_tree", count=3)
     end_biome("hollow_isles", "Hollow Isles", fog="#2c2150", water="#3a2a66",
               features_step4=[rid("hollow_isles_upwells")],
-              features_step7=[rid("hollow_isles_void_crystal")],
-              features_step9=[rid("hollow_isles_nullwood_trees"), "minecraft:chorus_plant"],
+              features_step9=[rid("hollow_isles_nullwood_trees"), "minecraft:chorus_plant", rid("hollow_isles_voidgel")],
               particle="minecraft:reverse_portal", particle_chance=0.002)
 
     # ---- The Corona: Sunscorched Stone over Charred End Stone; Solarite; adapted and dead life
@@ -1018,6 +1042,36 @@ def worldgen_phase3():
               features_step9=[rid("corona_petrified_stalks"), rid("corona_sunscale_lichen"), rid("corona_flareblooms"), rid("corona_ashen_lumineshrooms"),
                               rid("corona_petrified_vines"), rid("corona_pollinator_husks")],
               particle="minecraft:white_ash", particle_chance=0.03)
+
+
+    # ---- Chorus Thicket (Phase 10): the Nebula Fields' sister. Chorus trees crowded on Chorus Moss,
+    # vanilla chorus between them, and the Endermen who eat it.
+    big_feature("chorus_thicket_trees", "chorus_tree", count=5)
+    plant_patch("chorus_thicket_sprouts", "chorus_sprout", rarity=3, count=6, spread=5)
+    plant_patch("chorus_thicket_starblooms", "starbloom", rarity=2, count=16, spread=6)
+    ground_cover("chorus_thicket_carpet", "chorus_moss_carpet", 20, on=[rid("chorus_moss")])
+    placed("chorus_thicket_chorus", {"feature": "minecraft:chorus_plant", "placement": [
+        {"type": "minecraft:count", "count": {"type": "minecraft:uniform", "min_inclusive": 2, "max_inclusive": 6}},
+        {"type": "minecraft:in_square"}, {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"},
+        {"type": "minecraft:biome"}]})
+    end_biome("chorus_thicket", "Chorus Thicket", fog="#3a1c3e", water="#c06ad0",
+              features_step9=[rid("chorus_thicket_trees"), rid("chorus_thicket_chorus"), rid("chorus_thicket_sprouts"),
+                              rid("chorus_thicket_starblooms"), rid("chorus_thicket_carpet")],
+              particle="minecraft:portal", particle_chance=0.006)
+
+    # ---- Glimmering Crags (Phase 10): jagged Nightstone peaks grown through with teal Glimmer Crystal.
+    # Void Crystal grows here and only here: in the very bottoms of the islands.
+    big_feature("glimmering_crags_spires", "glimmer_spire", count=2, heightmap="WORLD_SURFACE_WG")
+    plant_patch("glimmering_crags_clusters", "glimmer_cluster", rarity=1, count=12, spread=6, on=[rid("nightstone")])
+    feature("void_crystal_underside", {"type": rid("underside"), "kind": "void_crystal"})
+    placed("glimmering_crags_void_crystal", {"feature": rid("void_crystal_underside"), "placement": [
+        {"type": "minecraft:rarity_filter", "chance": 3}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
+    placed("glimmering_crags_voidgel", {"feature": rid("voidgel_drip"), "placement": [
+        {"type": "minecraft:rarity_filter", "chance": 2}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
+    end_biome("glimmering_crags", "Glimmering Crags", fog="#0f3a3c", water="#3fd6c4",
+              features_step4=[rid("glimmering_crags_spires")],
+              features_step9=[rid("glimmering_crags_clusters"), rid("glimmering_crags_void_crystal"), rid("glimmering_crags_voidgel")],
+              particle="minecraft:glow", particle_chance=0.004)
 
 
 # ------------------------------------------------------------------ Phase 4: mobs
@@ -1633,7 +1687,7 @@ def round_out_phase9():
         "ingredients": [rid("cinder"), "minecraft:gunpowder"], "result": {"count": 2, "id": "minecraft:fire_charge"}})
 
 
-ASTRAL_BIOMES = ("nebula_fields", "ashen_barrens", "comet_wake", "hollow_isles", "corona")
+ASTRAL_BIOMES = ("nebula_fields", "ashen_barrens", "comet_wake", "hollow_isles", "corona", "chorus_thicket", "glimmering_crags")
 
 
 def has_item(item):
@@ -1731,6 +1785,98 @@ def mechanics_phase10():
         "conditions": [{"type": "forge:loot_table_id", "loot_table_id": "minecraft:chests/end_city_treasure"}]})
     write(RES / "data" / "forge" / "loot_modifiers" / "global_loot_modifiers.json",
           {"replace": False, "entries": [rid("starforge_tools"), rid("end_city_templates")]})
+
+
+
+def content_phase10():
+    """Phase 10, batch C: the Chorus Thicket's wood and bloom, the Glimmering Crags' crystal, Voidgel
+    and End Chimes. (The wood set itself is in WOOD_SETS.)"""
+    # Chorus Bloom: leaves. Shears or Silk Touch keep them; otherwise Chorus Sprouts, sticks and now
+    # and then a Chorus Fruit.
+    blockstate("chorus_bloom", {"variants": {"": {"model": rid("block/chorus_bloom")}}})
+    block_model("chorus_bloom", {"parent": "minecraft:block/leaves", "textures": {"all": rid("block/chorus_bloom")}})
+    item_def("chorus_bloom", rid("block/chorus_bloom"))
+    lang[f"block.{NS}.chorus_bloom"] = "Chorus Bloom"
+    keep = {"type": "minecraft:any_of", "terms": ["minecraft:tool/can_shear", "minecraft:tool/can_silk_touch"]}
+    loot("chorus_bloom", [
+        {"entries": [{"type": "minecraft:alternatives", "children": [
+            {"type": "minecraft:item", "condition": keep, "name": rid("chorus_bloom")},
+            {"type": "minecraft:item", "condition": {"type": "minecraft:all_of", "terms": [
+                {"type": "minecraft:survives_explosion"},
+                {"type": "minecraft:table_bonus", "chances": [0.05, 0.0625, 0.083333336, 0.1], "enchantment": "minecraft:fortune"}]},
+             "name": rid("chorus_sprout")}]}], "rolls": 1},
+        {"condition": {"type": "minecraft:inverted", "term": keep}, "entries": [{
+            "type": "minecraft:item",
+            "condition": {"type": "minecraft:table_bonus", "chances": [0.03, 0.04, 0.05, 0.08], "enchantment": "minecraft:fortune"},
+            "name": "minecraft:chorus_fruit"}], "rolls": 1},
+    ])
+    drop_self("chorus_sprout")
+    for kind in ("block", "item"):
+        tag(kind, "minecraft:leaves", rid("chorus_bloom"))
+        tag(kind, "minecraft:saplings", rid("chorus_sprout"))
+        for log in ("chorus_stalk", "chorus_wood", "stripped_chorus_stalk", "stripped_chorus_wood"):
+            tag(kind, f"{NS}:chorus_logs", rid(log))
+        tag(kind, "minecraft:logs_that_burn", f"#{NS}:chorus_logs")
+    tag("block", "minecraft:mineable/hoe", rid("chorus_bloom"))
+
+    # Glimmer Crystal and Glimmer Clusters (they point the way they grow, like amethyst clusters).
+    cube("glimmer_crystal")
+    lang[f"block.{NS}.glimmer_crystal"] = "Glimmer Crystal"
+    drop_self("glimmer_crystal")
+    block_model("glimmer_cluster", {"parent": "minecraft:block/cross", "textures": {"cross": rid("block/glimmer_cluster")}})
+    turns = {"up": {}, "down": {"x": 180}, "north": {"x": 90}, "south": {"x": 90, "y": 180}, "east": {"x": 90, "y": 90},
+             "west": {"x": 90, "y": 270}}
+    blockstate("glimmer_cluster", {"variants": {
+        f"facing={f}": {"model": rid("block/glimmer_cluster"), **r} for f, r in turns.items()}})
+    item_model("glimmer_cluster", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("block/glimmer_cluster")}})
+    item_def("glimmer_cluster", rid("item/glimmer_cluster"))
+    lang[f"block.{NS}.glimmer_cluster"] = "Glimmer Cluster"
+    drop_self("glimmer_cluster")
+    for name in ("glimmer_crystal", "glimmer_cluster"):
+        tag("block", "minecraft:mineable/pickaxe", rid(name))
+    shaped("glimmer_crystal", "glimmer_crystal", ["CC", "CC"], {"C": rid("glimmer_cluster")}, category="building")
+
+    # Voidgel: see-through jelly.
+    blockstate("voidgel", {"variants": {"": {"model": rid("block/voidgel")}}})
+    block_model("voidgel", {"parent": "minecraft:block/cube_all", "render_type": "minecraft:translucent",
+                            "textures": {"all": rid("block/voidgel")}})
+    item_def("voidgel", rid("block/voidgel"))
+    lang[f"block.{NS}.voidgel"] = "Voidgel"
+    drop_self("voidgel")
+
+    # End Chimes: hung under a block. End Rods and amethyst.
+    blockstate("end_chimes", {"variants": {"": {"model": rid("block/end_chimes")}}})
+    block_model("end_chimes", {"parent": "minecraft:block/cross", "textures": {"cross": rid("block/end_chimes")}})
+    item_model("end_chimes", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("block/end_chimes")}})
+    item_def("end_chimes", rid("item/end_chimes"))
+    lang[f"block.{NS}.end_chimes"] = "End Chimes"
+    drop_self("end_chimes")
+    shaped("end_chimes", "end_chimes", ["AAA", "R R", "R R"], {"A": "minecraft:amethyst_shard", "R": "minecraft:end_rod"},
+           category="misc")
+    # The Potion of Upwelling: an Upwell Mote in an Awkward Potion; redstone makes it last longer.
+    lang[f"effect.{NS}.upwelling"] = "Upwelling"
+    for kind, english in (("potion", "Potion of Upwelling"), ("splash_potion", "Splash Potion of Upwelling"),
+                          ("lingering_potion", "Lingering Potion of Upwelling"), ("tipped_arrow", "Arrow of Upwelling")):
+        lang[f"item.minecraft.{kind}.effect.upwelling"] = english
+
+    def brew(name, container, potion, reagent, out_container, out_potion):
+        recipe(f"brewing/{name}", {"type": "minecraft:brewing",
+            "input": {"item": container, "potion_contents": {"potions": potion}},
+            "reagent": {"item": reagent},
+            "output": {"id": out_container, "components": {"minecraft:potion_contents": {"potion": out_potion}}}})
+    for kind in ("potion", "splash_potion", "lingering_potion"):
+        c = f"minecraft:{kind}"
+        brew(f"{kind}_awkward_upwell_mote", c, "minecraft:awkward", rid("upwell_mote"), c, rid("upwelling"))
+        brew(f"{kind}_upwelling_redstone", c, rid("upwelling"), "minecraft:redstone", c, rid("long_upwelling"))
+    for potion in ("upwelling", "long_upwelling"):
+        brew(f"potion_{potion}_gunpowder", "minecraft:potion", rid(potion), "minecraft:gunpowder",
+             "minecraft:splash_potion", rid(potion))
+        brew(f"splash_potion_{potion}_dragon_breath", "minecraft:splash_potion", rid(potion), "minecraft:dragon_breath",
+             "minecraft:lingering_potion", rid(potion))
+    advancement("what_goes_up", rid("upwell_mote"), "What Goes Up", "Catch an Upwell Mote",
+                parent=rid("end/astral_horizons"), criteria={"mote": has_item(rid("upwell_mote"))})
+    advancement("still_air", rid("end_chimes"), "Still the Air", "Hang End Chimes, and stop an Enderman's teleport with them",
+                parent=rid("end/astral_horizons"))
 
 
 def recipe_unlocks():
@@ -2002,7 +2148,7 @@ def main():
     not_solid = {"lumineshroom", "starbloom", "astral_vine", "astral_vine_plant", "comet_cress", "shimmer_grass",
                  "flarebloom", "sunscale_lichen", "ashen_lumineshroom", "petrified_astral_vine", "nebula_tufts",
                  "nebula_tendril", "nebula_tendril_plant", "nullwood_leaves", "nullwood_sapling", "shimmer_reed",
-                 "null_lantern"}
+                 "null_lantern", "chorus_bloom", "chorus_sprout", "glimmer_cluster", "end_chimes"}
     solid = sorted(set(re.findall(r'\b(?:register|registerNoItem|stairs|slab|wall)\("([a-z0-9_]+)"',
                                   (ROOT / "src/main/java/com/ggrantrichards/astralend/ModBlocks.java").read_text()))
                    - not_solid - {"name"})
@@ -2101,6 +2247,7 @@ def main():
     round_out_phase9()
     advancements_phase9()
     mechanics_phase10()
+    content_phase10()
     recipe_unlocks()      # last: it reads every recipe written above
 
     # ---------------------------------------------------------------- write tags + lang

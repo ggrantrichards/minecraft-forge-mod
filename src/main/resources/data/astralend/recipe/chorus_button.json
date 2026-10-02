@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "group": "wooden_button",
+  "ingredients": [
+    "astralend:chorus_planks"
+  ],
+  "result": {
+    "id": "astralend:chorus_button"
+  }
+}

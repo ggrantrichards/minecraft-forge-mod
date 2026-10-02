@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=up": {
+      "model": "astralend:block/glimmer_cluster"
+    },
+    "facing=down": {
+      "model": "astralend:block/glimmer_cluster",
+      "x": 180
+    },
+    "facing=north": {
+      "model": "astralend:block/glimmer_cluster",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "astralend:block/glimmer_cluster",
+      "x": 90,
+      "y": 180
+    },
+    "facing=east": {
+      "model": "astralend:block/glimmer_cluster",
+      "x": 90,
+      "y": 90
+    },
+    "facing=west": {
+      "model": "astralend:block/glimmer_cluster",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

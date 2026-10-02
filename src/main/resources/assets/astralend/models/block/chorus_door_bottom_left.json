@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_bottom_left",
+  "textures": {
+    "bottom": "astralend:block/chorus_door_bottom",
+    "top": "astralend:block/chorus_door_top"
+  }
+}

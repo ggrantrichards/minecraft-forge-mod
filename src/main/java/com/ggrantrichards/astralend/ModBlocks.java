@@ -120,10 +120,11 @@ public final class ModBlocks {
     public static final RegistryObject<Block> LEVIATHAN_BONE_BLOCK = register("leviathan_bone_block", RotatedPillarBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).instrument(NoteBlockInstrument.XYLOPHONE)
             .requiresCorrectToolForDrops().strength(2.0F).sound(SoundType.BONE_BLOCK));
-    // Chorus Moss: the soft ground cover of the Nebula Fields.
-    public static final RegistryObject<Block> CHORUS_MOSS = register("chorus_moss", Block::new,
+    // Chorus Moss: the soft ground cover of the Nebula Fields and the Chorus Thicket. It's springy:
+    // you walk a little slower on it, and it softens a fall (ChorusMossBlock).
+    public static final RegistryObject<Block> CHORUS_MOSS = register("chorus_moss", com.ggrantrichards.astralend.block.ChorusMossBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.1F).sound(SoundType.MOSS)
-            .pushReaction(PushReaction.POPPED));
+            .speedFactor(0.9F).pushReaction(PushReaction.POPPED));
 
     // ---- Plants ----
     // Lumineshroom: a glowing mushroom whose texture slowly "breathes". Light level is fixed, for performance.
@@ -277,6 +278,40 @@ public final class ModBlocks {
     public static final RegistryObject<Block> LODESTAR = register("lodestar", com.ggrantrichards.astralend.block.LodestarBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).instrument(NoteBlockInstrument.BASEDRUM)
             .requiresCorrectToolForDrops().strength(3.5F).sound(SoundType.LODESTONE).lightLevel(state -> 4));
+
+    // ---- Phase 10: the Chorus Thicket. Chorus trees of pale, glassy Chorus Wood, crowned with
+    // Chorus Bloom; Chorus Sprouts grow them back. ----
+    public static final WoodSet CHORUS = woodSet("chorus", "stalk", "wood", MapColor.COLOR_MAGENTA, MapColor.TERRACOTTA_WHITE,
+        SoundType.CHERRY_WOOD, BlockSetType.CHERRY, WoodType.CHERRY);
+    public static final RegistryObject<Block> CHORUS_BLOOM = register("chorus_bloom", p -> new TintedParticleLeavesBlock(0.01F, p),
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(0.2F).randomTicks().sound(SoundType.CHERRY_LEAVES)
+            .noOcclusion().lightLevel(state -> 3).isValidSpawn((state, level, pos, type) -> false).isSuffocating((state, level, pos) -> false)
+            .isViewBlocking((state, level, pos, aabb) -> false).pushReaction(PushReaction.POPPED)
+            .isRedstoneConductor((state, level, pos) -> false));
+    public static final RegistryObject<Block> CHORUS_SPROUT = register("chorus_sprout", com.ggrantrichards.astralend.block.ChorusSproutBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).noCollision().instabreak().sound(SoundType.CHERRY_SAPLING)
+            .pushReaction(PushReaction.POPPED).randomTicks());
+
+    // ---- Phase 10: the Glimmering Crags. Teal crystal grown through the Nightstone peaks. ----
+    public static final RegistryObject<Block> GLIMMER_CRYSTAL = register("glimmer_crystal", Block::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).strength(1.5F).sound(SoundType.AMETHYST)
+            .requiresCorrectToolForDrops().lightLevel(state -> 6));
+    public static final RegistryObject<Block> GLIMMER_CLUSTER = register("glimmer_cluster",
+        p -> new net.minecraft.world.level.block.AmethystClusterBlock(7.0F, 3.0F, p),
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).forceSolidOn().noOcclusion().strength(1.5F)
+            .sound(SoundType.AMETHYST_CLUSTER).lightLevel(state -> 5).pushReaction(PushReaction.DESTROY));
+
+    // ---- Phase 10: Voidgel - jelly from the undersides of the islands. It bounces you like slime and
+    // lets you down gently (Slow Falling). ----
+    public static final RegistryObject<Block> VOIDGEL = register("voidgel", com.ggrantrichards.astralend.block.VoidgelBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).friction(0.8F).bounceRestitution(0.8F).sound(SoundType.SLIME_BLOCK)
+            .noOcclusion().lightLevel(state -> 2));
+
+    // ---- Phase 10: End Chimes - End Rods and amethyst on a chain. They hum, and when something
+    // teleports near them they ring and still the air: no more teleporting near them for a while. ----
+    public static final RegistryObject<Block> END_CHIMES = register("end_chimes", com.ggrantrichards.astralend.block.EndChimesBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).strength(0.5F).sound(SoundType.AMETHYST_CLUSTER)
+            .noOcclusion().noCollision().lightLevel(state -> 10).pushReaction(PushReaction.DESTROY));
 
     // ================================================================ Phase 3.5: the biome worlds
 

@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "astralend:chorus_trapdoor",
     "astralend:lumine_trapdoor",
     "astralend:nullwood_trapdoor"
   ]

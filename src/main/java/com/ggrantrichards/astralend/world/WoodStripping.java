@@ -31,7 +31,9 @@ public final class WoodStripping {
                 ModBlocks.LUMINE.log().get(), ModBlocks.LUMINE.strippedLog().get(),
                 ModBlocks.LUMINE.wood().get(), ModBlocks.LUMINE.strippedWood().get(),
                 ModBlocks.NULLWOOD.log().get(), ModBlocks.NULLWOOD.strippedLog().get(),
-                ModBlocks.NULLWOOD.wood().get(), ModBlocks.NULLWOOD.strippedWood().get());
+                ModBlocks.NULLWOOD.wood().get(), ModBlocks.NULLWOOD.strippedWood().get(),
+                ModBlocks.CHORUS.log().get(), ModBlocks.CHORUS.strippedLog().get(),
+                ModBlocks.CHORUS.wood().get(), ModBlocks.CHORUS.strippedWood().get());
         }
         return stripped;
     }
