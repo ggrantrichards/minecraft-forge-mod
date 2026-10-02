@@ -32,8 +32,8 @@ public final class UpwellingEffect extends MobEffect {
     }
 
     public static void register() {
-        MobEffectEvent.Expired.BUS.addListener(event -> wearOff(event.getEntity(), event.getEffectInstance()));
-        MobEffectEvent.Remove.BUS.addListener(event -> wearOff(event.getEntity(), event.getEffectInstance()));
+        MobEffectEvent.Expired.BUS.addListener((java.util.function.Consumer<MobEffectEvent.Expired>) event -> wearOff(event.getEntity(), event.getEffectInstance()));
+        MobEffectEvent.Remove.BUS.addListener((java.util.function.Consumer<MobEffectEvent.Remove>) event -> wearOff(event.getEntity(), event.getEffectInstance()));
     }
 
     @Override

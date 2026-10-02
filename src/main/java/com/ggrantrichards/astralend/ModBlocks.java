@@ -299,7 +299,7 @@ public final class ModBlocks {
     public static final RegistryObject<Block> GLIMMER_CLUSTER = register("glimmer_cluster",
         p -> new net.minecraft.world.level.block.AmethystClusterBlock(7.0F, 3.0F, p),
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).forceSolidOn().noOcclusion().strength(1.5F)
-            .sound(SoundType.AMETHYST_CLUSTER).lightLevel(state -> 5).pushReaction(PushReaction.DESTROY));
+            .sound(SoundType.AMETHYST_CLUSTER).lightLevel(state -> 5).pushReaction(PushReaction.POPPED));
 
     // ---- Phase 10: Voidgel - jelly from the undersides of the islands. It bounces you like slime and
     // lets you down gently (Slow Falling). ----
@@ -311,7 +311,7 @@ public final class ModBlocks {
     // teleports near them they ring and still the air: no more teleporting near them for a while. ----
     public static final RegistryObject<Block> END_CHIMES = register("end_chimes", com.ggrantrichards.astralend.block.EndChimesBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).strength(0.5F).sound(SoundType.AMETHYST_CLUSTER)
-            .noOcclusion().noCollision().lightLevel(state -> 10).pushReaction(PushReaction.DESTROY));
+            .noOcclusion().noCollision().lightLevel(state -> 10).pushReaction(PushReaction.POPPED));
 
     // ================================================================ Phase 3.5: the biome worlds
 
