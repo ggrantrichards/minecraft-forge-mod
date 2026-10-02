@@ -1,5 +1,15 @@
 {
   "values": [
-    "astralend:ashen_barrens"
+    "minecraft:small_end_islands",
+    "minecraft:end_barrens",
+    "minecraft:end_midlands",
+    "minecraft:end_highlands",
+    "astralend:nebula_fields",
+    "astralend:chorus_thicket",
+    "astralend:ashen_barrens",
+    "astralend:comet_wake",
+    "astralend:hollow_isles",
+    "astralend:corona",
+    "astralend:glimmering_crags"
   ]
 }

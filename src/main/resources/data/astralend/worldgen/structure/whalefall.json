@@ -1,23 +1,7 @@
 {
-  "type": "astralend:island",
+  "type": "astralend:whalefall",
   "biomes": "#astralend:has_structure/whalefall",
   "step": "surface_structures",
   "spawn_overrides": {},
-  "min_surface": 16,
-  "max_surface": 4096,
-  "reach": 14,
-  "structure": {
-    "type": "minecraft:jigsaw",
-    "biomes": "#astralend:has_structure/whalefall",
-    "max_distance_from_center": 80,
-    "size": 1,
-    "spawn_overrides": {},
-    "start_height": {
-      "absolute": -1
-    },
-    "start_pool": "astralend:whalefall/start",
-    "step": "surface_structures",
-    "use_expansion_hack": false,
-    "project_start_to_heightmap": "WORLD_SURFACE_WG"
-  }
+  "terrain_adaptation": "none"
 }

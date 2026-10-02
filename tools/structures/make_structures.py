@@ -173,69 +173,6 @@ def wanderer_relay(seed):
 
 # ------------------------------------------------------------------ Whalefall
 
-def whalefall(seed):
-    """The fossil of a Leviathan that fell here long ago: a spine of Leviathan Bone arched over the
-    island, ribs curving down to the ground on both sides, a blunt skull at one end and a tapering
-    tail at the other. Whalelight Scales still grow on the bones, and someone left a chest inside."""
-    t = Template(50, 20, 19, seed)
-    rnd = t.rnd
-    cz = 9
-    head, tail = 39, 3
-    bone_x = a("leviathan_bone_block") + "[axis=x]"
-    bone_y = a("leviathan_bone_block") + "[axis=y]"
-    bone_z = a("leviathan_bone_block") + "[axis=z]"
-
-    def spine_y(x):
-        return 3 + round(10 * math.sin((x - tail) / (head - tail) * math.pi * 0.95 + 0.1))
-
-    for x in range(tail, head + 1):
-        t.set(x, spine_y(x), cz, bone_x)
-        if (x - tail) % 3 == 0:
-            t.set(x, spine_y(x) + 1, cz, bone_y)          # the knobs of the vertebrae
-    # Ribs: arcs down both sides, longest in the middle of the body.
-    for x in range(tail + 8, head - 6, 3):
-        top = spine_y(x)
-        width = 2 + round(6 * math.sin((x - tail) / (head - tail) * math.pi))
-        for side in (-1, 1):
-            prev = None
-            snapped = 21 if rnd.random() < 0.6 else rnd.randint(8, 16)   # some ribs broke off long ago
-            for s in range(0, snapped):
-                ang = s / 20 * math.pi * 0.55
-                z = cz + side * round(math.sin(ang) * width * 1.15)
-                y = top - round((1 - math.cos(ang)) * top * 0.95)
-                if y < 1:
-                    break
-                state = bone_y if s > 6 else bone_z
-                t.set(x, y, z, state)
-                prev = (x, y, z)
-            if prev and rnd.random() < 0.6:
-                t.set(prev[0], prev[1] + 1, prev[2] + side, a("whalelight_scale"))
-    # The skull: long and blunt, with eye sockets, half buried, and the lower jaw fallen open beside it.
-    for x in range(head - 2, head + 8):
-        for y in range(0, 7):
-            for z in range(cz - 4, cz + 5):
-                dx, dy, dz = (x - head - 2.5) / 5.2, (y - 2.5) / 3.2, (z - cz) / (3.8 - max(0, x - head - 3) * 0.35)
-                if dx * dx + dy * dy + dz * dz <= 1.0:
-                    t.set(x, y, z, bone_x)
-    for z in (cz - 2, cz + 2):
-        t.set(head + 2, 4, z, "minecraft:air")
-        t.set(head + 2, 3, z, "minecraft:air")
-    for x in range(head + 4, head + 9):                          # the open mouth
-        for z in range(cz - 2, cz + 3):
-            t.set(x, 1, z, "minecraft:air")
-    for x in range(head + 1, head + 10):                         # the lower jaw, lying on the ground
-        for z in (cz - 3 + (x - head) // 4, cz + 3 - (x - head) // 4):
-            t.set(x, 0, z, bone_x)
-    # Scales on the spine.
-    for x in range(tail + 4, head - 2, 4):
-        if rnd.random() < 0.7:
-            t.set(x, spine_y(x) + (2 if (x - tail) % 3 == 0 else 1), cz, a("whalelight_scale"))
-    chest(t, 22, 1, cz, "whalefall", facing="south")
-    return t
-
-
-# ------------------------------------------------------------------ Observatory Ruins
-
 def vault(t, x, y, z, loot, facing):
     """A vanilla vault that opens for a Chart Fragment, like a trial key."""
     t.set(x, y, z, f"minecraft:vault[facing={facing},ominous=false,vault_state=inactive]", nbt={
@@ -899,9 +836,6 @@ STRUCTURES = [
          biomes=[a("hollow_isles")], spread=(18, 7, 51273391),
          height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 66}, "max_inclusive": {"absolute": 92}},
          heightmap=None, spawns=None, adaptation=None, ground=(-4096, 40, 7)),
-    dict(name="whalefall", variants=[lambda: whalefall(31)],
-         biomes=[a("ashen_barrens")], spread=(36, 14, 70127811), height={"absolute": -1}, heightmap="WORLD_SURFACE_WG",
-         spawns=None, adaptation=None, ground=(16, 4096, 14)),
     # A landmark: rare, out on the vanilla Highlands or in the Nebula Fields.
     dict(name="shattered_observatory", variants=[lambda: shattered_observatory(41)],
          biomes=["minecraft:end_highlands", a("nebula_fields")], spread=(40, 16, 33094871), height={"absolute": -2},
@@ -972,6 +906,18 @@ def write_data():
             "structures": [{"structure": a(name), "weight": 1}],
         })
         write_json(DATA / "tags/worldgen/biome/has_structure" / f"{name}.json", {"values": st["biomes"]})
+    # The Whalefall is built by Java (WhalefallStructure / WhalefallPiece: too big for a template). It
+    # drifts over open void anywhere in the outer End, very rarely.
+    write_json(DATA / "worldgen/structure/whalefall.json", {
+        "type": a("whalefall"), "biomes": f"#{NS}:has_structure/whalefall", "step": "surface_structures",
+        "spawn_overrides": {}, "terrain_adaptation": "none"})
+    write_json(DATA / "worldgen/structure_set/whalefall.json", {
+        "placement": {"type": "minecraft:random_spread", "salt": 70127811, "separation": 30, "spacing": 64},
+        "structures": [{"structure": a("whalefall"), "weight": 1}]})
+    write_json(DATA / "tags/worldgen/biome/has_structure/whalefall.json", {"values": [
+        "minecraft:small_end_islands", "minecraft:end_barrens", "minecraft:end_midlands", "minecraft:end_highlands",
+        a("nebula_fields"), a("chorus_thicket"), a("ashen_barrens"), a("comet_wake"), a("hollow_isles"), a("corona"),
+        a("glimmering_crags")]})
 
 
 def main():

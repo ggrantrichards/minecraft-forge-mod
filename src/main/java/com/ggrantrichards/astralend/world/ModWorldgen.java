@@ -57,5 +57,13 @@ public final class ModWorldgen {
     public static final RegistryObject<StructureType<IslandStructure>> ISLAND =
         STRUCTURE_TYPES.register("island", () -> () -> IslandStructure.CODEC);
 
+    // Phase 10: the colossal Whalefall, built by a piece of its own (too big for a template).
+    public static final RegistryObject<StructureType<com.ggrantrichards.astralend.world.structure.WhalefallStructure>> WHALEFALL =
+        STRUCTURE_TYPES.register("whalefall", () -> () -> com.ggrantrichards.astralend.world.structure.WhalefallStructure.CODEC);
+    public static final DeferredRegister<net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType> STRUCTURE_PIECES =
+        DeferredRegister.create(Registries.STRUCTURE_PIECE, AstralEnd.MODID);
+    public static final RegistryObject<net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType> WHALEFALL_PIECE =
+        STRUCTURE_PIECES.register("whalefall", () -> com.ggrantrichards.astralend.world.structure.WhalefallPiece::new);
+
     private ModWorldgen() {}
 }

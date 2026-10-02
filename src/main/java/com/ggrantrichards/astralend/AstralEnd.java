@@ -44,6 +44,7 @@ public final class AstralEnd {
         ModWorldgen.BIOME_SOURCES.register(modBusGroup);
         ModWorldgen.FEATURE_TYPES.register(modBusGroup);
         ModWorldgen.STRUCTURE_TYPES.register(modBusGroup);
+        ModWorldgen.STRUCTURE_PIECES.register(modBusGroup);
         com.ggrantrichards.astralend.starforge.Starforge.COMPONENTS.register(modBusGroup);   // Phase 8: Starforging
         com.ggrantrichards.astralend.starforge.ModMenus.MENUS.register(modBusGroup);
         com.ggrantrichards.astralend.starforge.StarforgeLoot.SERIALIZERS.register(modBusGroup);

@@ -389,7 +389,7 @@ public final class WorldgenSurvey {
         structureShot(lines, structures, "comet_crater", 18.0, 17.0, 2.0);
         structureShot(lines, structures, "comet_crater_hot", 18.0, 17.0, 2.0);
         structureShot(lines, structures, "wanderer_relay", 30.0, -6.0, -20.0);
-        structureShot(lines, structures, "whalefall", 26.0, 15.0, 4.0);
+        structureShot(lines, structures, "whalefall", 150.0, 60.0, 30.0);
         structureShot(lines, structures, "shattered_observatory", 46.0, 26.0, 4.0);
         structureShot(lines, structures, "solar_array", 34.0, 36.0, 4.0);
         structureShot(lines, structures, "resonant_spire", 60.0, 40.0, 30.0);
