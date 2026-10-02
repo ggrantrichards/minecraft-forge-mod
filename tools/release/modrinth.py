@@ -29,7 +29,9 @@ USER_AGENT = "ggrantrichards/minecraft-forge-mod (release workflow)"
 
 
 def request(method, path, token, body=None, content_type=None, ok=(200, 201, 204)):
-    headers = {"User-Agent": USER_AGENT, "Authorization": token}
+    headers = {"User-Agent": USER_AGENT}
+    if token:
+        headers["Authorization"] = token
     if content_type:
         headers["Content-Type"] = content_type
     req = urllib.request.Request(API + path, data=body, method=method, headers=headers)
@@ -91,18 +93,21 @@ def main():
 
     if not token.startswith("mrp_"):
         print("::warning::The token doesn't start with 'mrp_', so it may not be a Modrinth personal access token.")
+    # Who the token belongs to: only for the log. Modrinth answers "Invalid Authentication Credentials"
+    # both for a bad token and for one missing a scope, so a refusal here isn't fatal; the requests that
+    # need other scopes report their own errors.
     status, me = request("GET", "/user", token)
-    if status != 200:
-        die(f"Modrinth refused the token ({status}): {me}. Check that the MODRINTH_TOKEN secret holds "
-            f"the whole personal access token (it starts with 'mrp_'), that it hasn't expired or been revoked, "
-            f"and that it has the Read user data, Create projects, Read projects, Write projects and Create "
-            f"versions scopes.")
-    print(f"Publishing as {me['username']}")
+    if status == 200:
+        print(f"Publishing as {me['username']}")
+    else:
+        print(f"::warning::Couldn't read the token's user ({status}); it may lack the Read user data scope. Carrying on.")
 
     body_text = (ROOT / "docs/modrinth/description.md").read_text()
     gallery = json.loads((ROOT / "docs/modrinth/gallery.json").read_text())
 
     status, project = request("GET", f"/project/{SLUG}", token)
+    if status == 401:
+        status, project = request("GET", f"/project/{SLUG}", None)   # the token may lack Read projects
     created = False
     if status == 404:
         data = {
@@ -116,7 +121,8 @@ def main():
         payload, ctype = multipart({"data": data}, {"icon": ("icon.png", icon, "image/png")})
         status, project = request("POST", "/project", token, payload, ctype)
         if status not in (200, 201):
-            die(f"Couldn't create the project ({status}): {project}")
+            die(f"Couldn't create the project ({status}): {project}. If this is an authentication error, the "
+                f"token needs the Create projects scope (and Write projects, Create versions).")
         created = True
         print(f"Created the project {project['slug']} ({project['id']})")
     elif status != 200:
