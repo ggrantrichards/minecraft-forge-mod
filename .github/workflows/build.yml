@@ -33,7 +33,7 @@ jobs:
           cp /tmp/probe.txt /tmp/probe-out.txt || echo none > /tmp/probe-out.txt
           git config user.name ci && git config user.email ci@example.com
           git checkout -q --orphan probe-out && git rm -rqf . && cp /tmp/probe-out.txt probe.txt && git add probe.txt
-          git commit -qm "probe output" && git push -qf origin probe-out
+          git commit -qm "probe output" && git push -qf origin probe-out; exit 1
 
       - name: Build
         run: ./gradlew build --stacktrace
