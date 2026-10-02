@@ -13,11 +13,10 @@ public final class ModModelLayers {
     public static final ModelLayerLocation VOID_WANDERER = layer("void_wanderer");
     public static final ModelLayerLocation UMBRAL_STALKER = layer("umbral_stalker");
     public static final ModelLayerLocation CINDER_MITE = layer("cinder_mite");
-    public static final ModelLayerLocation CORONA_SKIMMER = layer("corona_skimmer");
-    public static final ModelLayerLocation BLACK_HOLE_GUARDIAN = layer("black_hole_guardian");
+    public static final ModelLayerLocation VOID_RAY = layer("void_ray");
+    public static final ModelLayerLocation HOLLOW = layer("hollow");
     public static final ModelLayerLocation DRIFT_WHALE = layer("drift_whale");
     public static final ModelLayerLocation WATCHER = layer("watcher");
-    public static final ModelLayerLocation ORRERY_SENTINEL = layer("orrery_sentinel");
     public static final ModelLayerLocation LIVE_COMET = layer("live_comet");
 
     public static void register() {
@@ -26,11 +25,10 @@ public final class ModModelLayers {
             event.registerLayerDefinition(VOID_WANDERER, MobMeshes::voidWanderer);
             event.registerLayerDefinition(UMBRAL_STALKER, MobMeshes::umbralStalker);
             event.registerLayerDefinition(CINDER_MITE, MobMeshes::cinderMite);
-            event.registerLayerDefinition(CORONA_SKIMMER, MobMeshes::coronaSkimmer);
-            event.registerLayerDefinition(BLACK_HOLE_GUARDIAN, MobMeshes::blackHoleGuardian);
+            event.registerLayerDefinition(VOID_RAY, MobMeshes::voidRay);
+            event.registerLayerDefinition(HOLLOW, MobMeshes::hollow);
             event.registerLayerDefinition(DRIFT_WHALE, MobMeshes::driftWhale);
             event.registerLayerDefinition(WATCHER, MobMeshes::watcher);
-            event.registerLayerDefinition(ORRERY_SENTINEL, MobMeshes::orrerySentinel);
             event.registerLayerDefinition(LIVE_COMET, MobMeshes::liveComet);
         });
         EntityRenderersEvent.RegisterRenderers.BUS.addListener(event -> {
@@ -38,11 +36,10 @@ public final class ModModelLayers {
             event.registerEntityRenderer(ModEntities.VOID_WANDERER.get(), VoidWandererRenderer::new);
             event.registerEntityRenderer(ModEntities.UMBRAL_STALKER.get(), UmbralStalkerRenderer::new);
             event.registerEntityRenderer(ModEntities.CINDER_MITE.get(), CinderMiteRenderer::new);
-            event.registerEntityRenderer(ModEntities.CORONA_SKIMMER.get(), CoronaSkimmerRenderer::new);
-            event.registerEntityRenderer(ModEntities.BLACK_HOLE_GUARDIAN.get(), BlackHoleGuardianRenderer::new);
+            event.registerEntityRenderer(ModEntities.VOID_RAY.get(), VoidRayRenderer::new);
+            event.registerEntityRenderer(ModEntities.HOLLOW.get(), HollowRenderer::new);
             event.registerEntityRenderer(ModEntities.DRIFT_WHALE.get(), DriftWhaleRenderer::new);
             event.registerEntityRenderer(ModEntities.WATCHER.get(), WatcherRenderer::new);
-            event.registerEntityRenderer(ModEntities.ORRERY_SENTINEL.get(), OrrerySentinelRenderer::new);
             event.registerEntityRenderer(ModEntities.LIVE_COMET.get(), LiveCometRenderer::new);
         });
     }

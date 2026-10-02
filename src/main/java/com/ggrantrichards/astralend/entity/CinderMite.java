@@ -33,7 +33,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 // They come out of the Sunscorched Stone in small swarms, go for players and set them alight,
 // and burrow back into the stone after about a minute - timed pressure, not a constant threat.
 // Fire can't hurt them, but water puts them out: they die in about two seconds in water or rain.
-// (Once Stellar Flares arrive in Phase 5, the swarms will come out right after each flare.)
+// (Once Sunstorms arrive in Phase 5, the swarms will come out right after each flare.)
 public class CinderMite extends Monster {
     private static final int BURROW_AFTER = 1200;  // one minute
     private int life;

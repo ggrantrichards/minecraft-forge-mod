@@ -8,8 +8,8 @@ import com.ggrantrichards.astralend.client.sky.AstralSky;
 import com.ggrantrichards.astralend.dev.WorldgenSurvey;
 import com.ggrantrichards.astralend.flare.FlareCommand;
 import com.ggrantrichards.astralend.flare.FlareNetwork;
-import com.ggrantrichards.astralend.flare.StellarFlares;
-import com.ggrantrichards.astralend.world.GravityInversion;
+import com.ggrantrichards.astralend.flare.Sunstorms;
+import com.ggrantrichards.astralend.world.Upwells;
 import com.ggrantrichards.astralend.world.LowGravity;
 import com.ggrantrichards.astralend.world.MobSpawning;
 import com.ggrantrichards.astralend.world.ModWorldgen;
@@ -49,12 +49,12 @@ public final class AstralEnd {
         com.ggrantrichards.astralend.starforge.StarforgeLoot.SERIALIZERS.register(modBusGroup);
 
         LowGravity.register();
-        GravityInversion.register();
+        Upwells.register();
         WoodStripping.register();
         ModEntities.register();   // mob attributes and where they may spawn
-        MobSpawning.register();   // Drift Whales, the Watcher and Black Hole Guardians
-        FlareNetwork.register();  // Phase 5: Stellar Flares - the timer, its effects, and syncing it to clients
-        StellarFlares.register();
+        MobSpawning.register();   // Drift Whales, the Watcher and the Hollow
+        FlareNetwork.register();  // Phase 5: Sunstorms - the timer, its effects, and syncing it to clients
+        Sunstorms.register();
         com.ggrantrichards.astralend.maw.MawNetwork.register();
         com.ggrantrichards.astralend.maze.MazeScoping.register();
         com.ggrantrichards.astralend.comet.CometShowers.register();

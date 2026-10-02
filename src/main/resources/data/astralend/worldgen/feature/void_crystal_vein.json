@@ -7,7 +7,7 @@
       "state": "astralend:void_crystal_ore",
       "target": {
         "predicate_type": "minecraft:block_match",
-        "block": "astralend:umbral_stone"
+        "block": "astralend:nightstone"
       }
     }
   ]

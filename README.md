@@ -95,8 +95,8 @@ real End update?* Anything that wasn't up to that was revamped or cut.
   *Hold Still*, *Connect the Dots*, *Say Ahh*, *Something Looks Back*, *Weather the Storm*, *Harvest Moon*,
   *Bottled Sunlight*, *Wind It Up*, *Clockwork Undone*, *Event Horizon*, and the Drift Whale's three.
 - **Every recipe unlocks in the recipe book** when you pick up one of its ingredients.
-- **Switches are data-pack tags**, like vanilla's: empty `#astralend:stellar_flares` to turn flares
-  off, `#astralend:live_comets` for comets (and `low_gravity`, `gravity_inversion` as before).
+- **Switches are data-pack tags**, like vanilla's: empty `#astralend:sunstorms` to turn flares
+  off, `#astralend:live_comets` for comets (and `low_gravity`, `upwells` as before).
 
 **Cut**, because they couldn't be done to that standard (the plan, `docs/END_UPDATE.md`, says why for
 each): Echo Logs (Mojang never puts readable lore in the game), new music and the "Leviathan" disc
@@ -182,7 +182,7 @@ structure templates. These are in-game screenshots taken on every build:
 | **Observatory Ruins (Shattered Observatory)** | **Solar Array Ruins (the Corona)** |
 | ![A domed hall broken open, a block-built telescope aimed through the gap](docs/images/structures/game_observatory_ruins.png) | ![A field of tilted Solarite mirrors around a sunken chamber](docs/images/structures/game_solar_array.png) |
 | **Wormhole Maw** | **Constellation Maze, its bridges lit** |
-| ![The fossil skull of a Star Leviathan on its own island, its throat a wormhole](docs/images/structures/game_wormhole_maw.png) | ![Floating platforms joined by star-bridges around a central dais](docs/images/structures/game_constellation_maze.png) |
+| ![The fossil skull of a Star Leviathan on its own island, its throat a wormhole](docs/images/structures/game_rift_maw.png) | ![Floating platforms joined by star-bridges around a central dais](docs/images/structures/game_constellation_maze.png) |
 | **Abandoned Orrery** | **The Orrery Sentinel in its vault** |
 | ![A wheel of tarnished bronze hanging high over the End](docs/images/structures/game_abandoned_orrery.png) | ![A bronze clockwork construct with a Wanderer's lens, between two vault chests](docs/images/structures/game_orrery_vault.png) |
 
@@ -239,7 +239,7 @@ The End has a sky of its own now. These are in-game screenshots taken on every b
 
 | Over the Aurora Shallows | Over the Nebula Fields |
 |---|---|
-| ![Green and gold auroras over the Aurora Shallows, the Remnant low on the horizon](docs/images/sky/aurora_shallows.png) | ![A faint violet aurora over the Nebula Fields](docs/images/sky/nebula_fields.png) |
+| ![Green and gold auroras over the Aurora Shallows, the Remnant low on the horizon](docs/images/sky/ashen_barrens.png) | ![A faint violet aurora over the Nebula Fields](docs/images/sky/nebula_fields.png) |
 | **A Stellar Flare in the Corona** | **The Corona's flare blocks** |
 | ![The Corona's sky burning gold during a flare](docs/images/sky/corona_flare.png) | ![Open Flareblooms, charged lichen, Collector Pedestals under a Sunshade](docs/images/sky/flare_blocks.png) |
 
@@ -292,7 +292,7 @@ These are in-game screenshots taken on every build:
 |---|---|---|
 | ![End Pollinator](docs/images/mobs/pollinator.png) | ![Void Wanderer](docs/images/mobs/void_wanderer.png) | ![Umbral Stalker in the light](docs/images/mobs/umbral_stalker_lit.png) |
 | **Cinder Mite** | **Corona Skimmer** | **Black Hole Guardian** |
-| ![Cinder Mite](docs/images/mobs/cinder_mite.png) | ![Corona Skimmer](docs/images/mobs/corona_skimmer.png) | ![Black Hole Guardian](docs/images/mobs/black_hole_guardian.png) |
+| ![Cinder Mite](docs/images/mobs/cinder_mite.png) | ![Corona Skimmer](docs/images/mobs/void_ray.png) | ![Black Hole Guardian](docs/images/mobs/hollow.png) |
 | **Drift Whale** | **The Watcher** | **The same Umbral Stalker, hunting in the dark** |
 | ![Drift Whale](docs/images/mobs/drift_whale.png) | ![The Watcher](docs/images/mobs/watcher.png) | ![Umbral Stalker hunting in the dark: a faint shimmer](docs/images/mobs/umbral_stalker.png) |
 
@@ -329,9 +329,9 @@ landing somewhere new. These are real in-game screenshots, taken automatically o
 
 | Nebula Fields | Dark Matter Belt |
 |---|---|
-| ![Nebula Fields in game](docs/images/screens/nebula_fields.png) | ![Dark Matter Belt in game](docs/images/screens/dark_matter_belt.png) |
+| ![Nebula Fields in game](docs/images/screens/nebula_fields.png) | ![Dark Matter Belt in game](docs/images/screens/hollow_isles.png) |
 | **Aurora Shallows** | **Comet Wake** |
-| ![Aurora Shallows in game](docs/images/screens/aurora_shallows.png) | ![Comet Wake in game](docs/images/screens/comet_wake.png) |
+| ![Aurora Shallows in game](docs/images/screens/ashen_barrens.png) | ![Comet Wake in game](docs/images/screens/comet_wake.png) |
 | **The Corona** | **Shattered Observatory** |
 | ![The Corona in game](docs/images/screens/corona.png) | ![Shattered Observatory in game](docs/images/screens/shattered_observatory.png) |
 
@@ -388,7 +388,7 @@ What the survey found in each biome, seen from above (dimmed = just outside the 
 
 | Aurora Shallows | Comet Wake | Dark Matter Belt |
 |---|---|---|
-| ![Aurora Shallows from above](docs/images/biome-aurora-shallows.png) | ![Comet Wake from above](docs/images/biome-comet-wake.png) | ![Dark Matter Belt from above](docs/images/biome-dark-matter-belt.png) |
+| ![Aurora Shallows from above](docs/images/biome-ashen-barrens.png) | ![Comet Wake from above](docs/images/biome-comet-wake.png) | ![Dark Matter Belt from above](docs/images/biome-hollow-isles.png) |
 | **The Corona** | **Shattered Observatory** | **Nebula Fields** |
 | ![The Corona from above](docs/images/biome-corona.png) | ![Shattered Observatory from above](docs/images/biome-shattered-observatory.png) | ![Nebula Fields from above](docs/images/biome-nebula-fields.png) |
 
@@ -397,7 +397,7 @@ block) is set into the underside of an island, with a sphere of flipped gravity 
 across hanging below it, marked by rising purple motes. Walk into one and you fall *upward* onto
 the island above; step out and normal gravity returns. It works on mobs too. The island is
 always above the pocket, so you never fall up into the void. To turn pockets off, add a datapack
-with an empty `data/astralend/tags/worldgen/biome/gravity_inversion.json`:
+with an empty `data/astralend/tags/worldgen/biome/upwells.json`:
 `{"replace": true, "values": []}`.
 
 The Corona is safe for now: the Remnant and its Stellar Flares arrive in Phase 5. The mobs
@@ -451,8 +451,8 @@ All the pictures come from a real world generated by the automatic survey (see s
 
 **To find any astral biome:** start a **new world**, or explore parts of the End you haven't
 visited yet (areas already generated stay as they were). Go to the End, then use an End Gateway
-or fly outward. In creative, `/locate biome astralend:nebula_fields` (or `aurora_shallows`,
-`comet_wake`, `dark_matter_belt`, `shattered_observatory`, `corona`) gives the nearest one, and
+or fly outward. In creative, `/locate biome astralend:nebula_fields` (or `ashen_barrens`,
+`comet_wake`, `hollow_isles`, `shattered_observatory`, `corona`) gives the nearest one, and
 the F3 screen shows the biome you're in.
 
 **To turn low gravity off** (for a server, say), add a datapack with an empty
@@ -668,7 +668,7 @@ Everything uses IDs like `astralend:void_crystal`, where the namespace is your m
 The JSON files are generated, so you rarely write them by hand:
 
 1. **Java:** register it in `ModBlocks.java` (a block, which also gets an item) or
-   `ModItems.java` (an item only). Copy a similar line, like `NEBULA_MOSS` or `VOID_CRYSTAL`.
+   `ModItems.java` (an item only). Copy a similar line, like `CHORUS_MOSS` or `VOID_CRYSTAL`.
    It appears in the **The Astral End** creative tab automatically (the tab lists every block
    and item the mod registers, in the order they're declared).
 2. **Texture:** add a function to `tools/textures/hq.py` and list it in `TEXTURES` at the bottom

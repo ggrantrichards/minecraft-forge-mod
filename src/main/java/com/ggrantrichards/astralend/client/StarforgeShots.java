@@ -69,7 +69,7 @@ final class StarforgeShots {
                     up(Items.MACE, StarforgeUpgrade.RADIANT), up(Items.DIAMOND_HOE, StarforgeUpgrade.METEORIC),
                     new ItemStack(ModItems.STARFORGE_TEMPLATE.get(), 3), new ItemStack(ModItems.STARFORGE_ALLOY.get(), 5),
                     new ItemStack(ModItems.RIFT_PEARL.get()), new ItemStack(ModItems.TEMPORAL_CRYSTAL.get(), 2),
-                    new ItemStack(ModItems.SINGULARITY_SHARD.get(), 4), new ItemStack(ModItems.VOID_CRYSTAL.get(), 12)}) {
+                    new ItemStack(ModItems.ABYSS_SHARD.get(), 4), new ItemStack(ModItems.VOID_CRYSTAL.get(), 12)}) {
                 player.getInventory().setItem(slot++, stack);
             }
             player.openMenu(new SimpleMenuProvider((id, inventory, p) -> new AstralForgeMenu(id, inventory, ContainerLevelAccess.create(end, forge)),

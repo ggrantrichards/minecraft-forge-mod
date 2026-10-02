@@ -30,7 +30,7 @@
         }
       }
     },
-    "aurora_shallows": {
+    "ashen_barrens": {
       "trigger": "minecraft:location",
       "conditions": {
         "player": {
@@ -38,7 +38,7 @@
           "entity": "this",
           "predicate": {
             "minecraft:location": {
-              "biomes": "astralend:aurora_shallows"
+              "biomes": "astralend:ashen_barrens"
             }
           }
         }
@@ -58,7 +58,7 @@
         }
       }
     },
-    "dark_matter_belt": {
+    "hollow_isles": {
       "trigger": "minecraft:location",
       "conditions": {
         "player": {
@@ -66,21 +66,7 @@
           "entity": "this",
           "predicate": {
             "minecraft:location": {
-              "biomes": "astralend:dark_matter_belt"
-            }
-          }
-        }
-      }
-    },
-    "shattered_observatory": {
-      "trigger": "minecraft:location",
-      "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "biomes": "astralend:shattered_observatory"
+              "biomes": "astralend:hollow_isles"
             }
           }
         }
@@ -104,10 +90,9 @@
   "requirements": [
     [
       "nebula_fields",
-      "aurora_shallows",
+      "ashen_barrens",
       "comet_wake",
-      "dark_matter_belt",
-      "shattered_observatory",
+      "hollow_isles",
       "corona"
     ]
   ]

@@ -1,8 +1,8 @@
 {
   "replace": false,
   "values": [
-    "astralend:gravity_anomaly",
     "astralend:meteoric_iron_ore",
-    "astralend:solarite_ore"
+    "astralend:solarite_ore",
+    "astralend:upwell_core"
   ]
 }

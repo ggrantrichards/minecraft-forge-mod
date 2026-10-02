@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "astralend:block/nightstone_bricks",
+    "side": "astralend:block/nightstone_bricks",
+    "top": "astralend:block/nightstone_bricks"
+  }
+}

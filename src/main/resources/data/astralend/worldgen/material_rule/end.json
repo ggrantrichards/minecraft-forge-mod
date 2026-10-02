@@ -14,7 +14,7 @@
         "if_true": "minecraft:on_floor",
         "then_run": {
           "type": "minecraft:block",
-          "result_state": "astralend:nebula_moss"
+          "result_state": "astralend:chorus_moss"
         }
       }
     },
@@ -23,7 +23,7 @@
       "if_true": {
         "type": "minecraft:biome",
         "biome_is": [
-          "astralend:aurora_shallows"
+          "astralend:ashen_barrens"
         ]
       },
       "then_run": {
@@ -49,12 +49,12 @@
       "if_true": {
         "type": "minecraft:biome",
         "biome_is": [
-          "astralend:dark_matter_belt"
+          "astralend:hollow_isles"
         ]
       },
       "then_run": {
         "type": "minecraft:block",
-        "result_state": "astralend:umbral_stone"
+        "result_state": "astralend:nightstone"
       }
     },
     {

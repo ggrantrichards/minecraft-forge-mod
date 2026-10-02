@@ -37,7 +37,7 @@ def chest(t, x, y, z, loot, facing="north", kind="chest"):
 
 def comet_crater(seed, hot):
     """A bowl blasted into an island by a comet: a raised rim of Charred End Stone thrown up by the
-    impact, a scorched floor glazed with Comet Ice, and the Comet Core (a boulder with a heart of
+    impact, a scorched floor glazed with blue ice, and the Comet Core (a boulder with a heart of
     Meteoric Iron Ore) half sunk at the bottom, with a cache buried under it. Stardust only lies
     under the floor, where it can't fall up. Hot craters still smoulder: magma in the floor's cracks
     and fires burning along the rim, and no ice."""
@@ -64,7 +64,7 @@ def comet_crater(seed, hot):
                     if hot and roll < 0.16 and d < r_bowl - 1:
                         state = "minecraft:magma_block"
                     elif not hot and roll < 0.2 + 0.25 * (1 - d / r_bowl):
-                        state = a("comet_ice")
+                        state = "minecraft:blue_ice"
                     elif roll > 0.94:
                         state = a("meteoric_iron_ore")
                 elif y == top - 1 and d < r_bowl - 1 and rnd.random() < 0.45:
@@ -97,7 +97,7 @@ def comet_crater(seed, hot):
                     elif hot and roll < 0.8:
                         state = "minecraft:magma_block"
                     elif not hot and roll < 0.72:
-                        state = a("comet_ice")
+                        state = "minecraft:blue_ice"
                     else:
                         state = a("charred_end_stone")
                     t.set(x, y, z, state)
@@ -111,15 +111,15 @@ def comet_crater(seed, hot):
             bottom = ground - round(6.5 * (1 - (dist / r_bowl) ** 2)) + 1
             h = rnd.randint(2, 4)
             t.line((x0, bottom - 1, z0), (x0 + math.cos(ang) * h * 0.6, bottom + h, z0 + math.sin(ang) * h * 0.6),
-                   a("comet_ice"))
+                   "minecraft:blue_ice")
     return t
 
 
 # ------------------------------------------------------------------ Wanderer Relay
 
 def wanderer_relay(seed):
-    """A thin spire floating over the edge of the Dark Matter Belt, where Void Wanderers dock: a
-    lump of Umbral Stone hanging in the air, a tapering tower of Umbral bricks banded with chiseled
+    """A thin spire floating over the edge of the Hollow Isles, where Void Wanderers dock: a
+    lump of Nightstone hanging in the air, a tapering tower of Umbral bricks banded with chiseled
     stone, two mooring rings hung with Null Lanterns, and a Void Crystal light at the top. It holds
     no loot, but Void Wanderers dock at it."""
     t = Template(17, 44, 17, seed)
@@ -132,30 +132,30 @@ def wanderer_relay(seed):
             for z in range(17):
                 d = math.hypot(x - c, z - c)
                 if d <= radius + rnd.uniform(-0.5, 0.3):
-                    state = a("umbral_stone")
+                    state = a("nightstone")
                     if rnd.random() < 0.06:
                         state = a("void_crystal_ore")
                     t.set(x, y, z, state)
     for x in range(17):
         for z in range(17):
             if math.hypot(x - c, z - c) <= 5.2:
-                t.set(x, 8, z, a("polished_umbral_stone"))
+                t.set(x, 8, z, a("polished_nightstone"))
     # The spire.
     for y in range(9, 38):
         half = 1 if y < 30 else 0
         band = (y - 9) % 7 == 6
         for x in range(c - half, c + half + 1):
             for z in range(c - half, c + half + 1):
-                t.set(x, y, z, a("chiseled_umbral_stone") if band else a("umbral_stone_bricks"))
+                t.set(x, y, z, a("chiseled_nightstone") if band else a("nightstone_bricks"))
     # Mooring rings with spokes; lanterns hang under the ring at the four corners.
     for ring_y, radius in ((17, 5), (27, 4)):
         for i in range(64):
             ang = i / 64 * math.tau
             t.set(c + round(math.cos(ang) * radius), ring_y, c + round(math.sin(ang) * radius),
-                  a("polished_umbral_stone_slab") + "[type=bottom]")
+                  a("polished_nightstone_slab") + "[type=bottom]")
         for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
             for k in range(2, radius):
-                t.set(c + dx * k, ring_y, c + dz * k, a("polished_umbral_stone_slab") + "[type=bottom]")
+                t.set(c + dx * k, ring_y, c + dz * k, a("polished_nightstone_slab") + "[type=bottom]")
             t.set(c + dx * radius, ring_y - 1, c + dz * radius, a("null_lantern"))
     # The light at the top, behind glass.
     t.set(c, 38, c, a("void_crystal_block"))
@@ -163,7 +163,7 @@ def wanderer_relay(seed):
     for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
         t.set(c + dx, 38, c + dz, a("astral_glass"))
         t.set(c + dx, 39, c + dz, a("astral_glass"))
-    t.set(c, 40, c, a("chiseled_umbral_stone"))
+    t.set(c, 40, c, a("chiseled_nightstone"))
     t.set(c, 41, c, a("null_lantern"))
     # Two Void Wanderers docked at the lower ring.
     for dx, dz in ((3, 0), (-3, 0)):
@@ -251,12 +251,93 @@ FLOOR_CONSTELLATIONS = [
 ]
 
 
-def observatory_ruins(seed):
+class Shifted:
+    """Draws onto part of a bigger template, as if it were its own (x and z moved by dx, dz)."""
+    def __init__(self, t, dx, dz):
+        self.t, self.dx, self.dz, self.rnd = t, dx, dz, t.rnd
+
+    def set(self, x, y, z, state, nbt=None):
+        self.t.set(x + self.dx, y, z + self.dz, state, nbt=nbt)
+
+    def get(self, x, y, z):
+        return self.t.get(x + self.dx, y, z + self.dz)
+
+    def fill(self, x0, y0, z0, x1, y1, z1, state):
+        self.t.fill(x0 + self.dx, y0, z0 + self.dz, x1 + self.dx, y1, z1 + self.dz, state)
+
+    def line(self, a, b, state, thickness=0.0):
+        self.t.line((a[0] + self.dx, a[1], a[2] + self.dz), (b[0] + self.dx, b[1], b[2] + self.dz), state, thickness)
+
+
+def shattered_observatory(seed):
+    """The Shattered Observatory (a biome until Phase 10; a landmark structure now): the Cartographers'
+    domed hall in the middle of a great ring of quartz pillars, most of them fallen, with Starblooms
+    and Astral Vines grown over the ground between."""
+    size, c, floor = 61, 30, 2
+    t = Template(size, 28, size, seed)
+    rnd = t.rnd
+    q, pillar = a("observatory_quartz"), a("observatory_quartz_pillar")
+    bricks = a("pale_end_stone_bricks")
+    # The ground: a disc of End Stone, its edge ragged, so the island under it is levelled.
+    for x in range(size):
+        for z in range(size):
+            d = math.hypot(x - c, z - c)
+            if d > 29.5 - rnd.random() * 2.5:
+                continue
+            for y in range(0, floor + 1):
+                t.set(x, y, z, "minecraft:end_stone")
+            for y in range(floor + 1, 28):
+                t.set(x, y, z, "minecraft:air")
+            # Overgrown: Chorus Moss in drifts, Starblooms on it, now and then an Astral Vine.
+            if 14.5 < d < 28 and rnd.random() < 0.55 + 0.35 * math.sin(x * 0.4) * math.cos(z * 0.35):
+                t.set(x, floor, z, a("chorus_moss"))
+                roll = rnd.random()
+                if roll < 0.22:
+                    t.set(x, floor + 1, z, a("starbloom"))
+                elif roll < 0.25:
+                    tall = rnd.randint(1, 4)
+                    for y in range(floor + 1, floor + tall):
+                        t.set(x, y, z, a("astral_vine_plant"))
+                    t.set(x, floor + tall, z, a("astral_vine") + f"[age={rnd.randint(17, 25)}]")
+    # The great ring: sixteen pillars joined by lintels, a few still standing.
+    R, count, tall = 25, 16, 10
+    bases, heights = [], []
+    for k in range(count):
+        ang = k / count * math.tau + 0.1
+        x, z = round(c + math.cos(ang) * R), round(c + math.sin(ang) * R)
+        roll = rnd.random()
+        h = tall if roll < 0.4 else rnd.randint(2, tall - 2) if roll < 0.8 else 1
+        t.fill(x - 1, floor, z - 1, x + 1, floor, z + 1, bricks)
+        for y in range(floor + 1, floor + 1 + h):
+            t.set(x, y, z, pillar + "[axis=y]")
+        if h < tall and rnd.random() < 0.6:
+            # The fallen top lies beside it, pointing away from the ring.
+            dx, dz = (1, 0) if abs(math.cos(ang)) > abs(math.sin(ang)) else (0, 1)
+            sign = 1 if (math.cos(ang) if dx else math.sin(ang)) > 0 else -1
+            axis = "x" if dx else "z"
+            for i in range(2, 2 + min(4, tall - h)):
+                t.set(x + dx * sign * i, floor + 1, z + dz * sign * i, pillar + f"[axis={axis}]")
+        bases.append((x, z))
+        heights.append(h)
+    for k in range(count):
+        j = (k + 1) % count
+        if heights[k] == tall and heights[j] == tall:
+            (x0, z0), (x1, z1) = bases[k], bases[j]
+            t.line((x0, floor + tall + 1, z0), (x1, floor + tall + 1, z1), q)
+    # A path of quartz from the ring to the hall's broken east side.
+    for x in range(c + 14, c + R):
+        for z in (c - 1, c, c + 1):
+            if rnd.random() < 0.8:
+                t.set(x, floor, z, a("observatory_quartz_slab") + "[type=top]" if rnd.random() < 0.3 else q)
+    observatory_hall(Shifted(t, c - 16, c - 16))
+    return t
+
+
+def observatory_hall(t):
     """The Cartographers' observatory, long since shattered: a round hall of pale stone ringed with
     quartz pillars, its dome broken open on one side, a star map laid into the floor, and the great
     telescope still on its mount, aimed through the hole at the sky. Two vaults at the foot of the
-    mount open for Chart Fragments."""
-    t = Template(33, 26, 33, seed)
+    mount open for Chart Fragments. Drawn in a 33x26x33 space."""
     rnd = t.rnd
     c, floor = 16, 2
     R = 13
@@ -335,20 +416,19 @@ def observatory_ruins(seed):
                                         else a("astral_glass") if choice < 0.8 else bricks)
         t.set(x, y, z, state)
     # The telescope: a squat mount, and a long tube of Meteoric Iron aimed through the gap.
-    t.fill(c - 1, floor + 1, c - 1, c + 1, floor + 1, c + 1, a("polished_umbral_stone"))
+    t.fill(c - 1, floor + 1, c - 1, c + 1, floor + 1, c + 1, a("polished_nightstone"))
     for y in range(floor + 2, floor + 5):
         t.set(c, y, c, pillar + "[axis=y]")
-    t.set(c, floor + 5, c, a("chiseled_umbral_stone"))
+    t.set(c, floor + 5, c, a("chiseled_nightstone"))
     lo, hi = (c - 4, floor + 4, c), (c + 6, floor + 12, c)
     t.line(lo, hi, a("meteoric_iron_block"), thickness=1.0)
     t.line((c + 6, floor + 12, c), (c + 7, floor + 13, c), a("astral_glass"), thickness=1.0)   # the lens
-    t.set(c - 5, floor + 3, c, a("polished_umbral_stone"))                                    # the eyepiece
+    t.set(c - 5, floor + 3, c, a("polished_nightstone"))                                    # the eyepiece
     t.set(c + 1, floor + 6, c, a("meteoric_iron_block"))
     # The vaults, either side of the mount, and lecterns for the star charts that were kept here.
     vault(t, c, floor + 1, c - 3, "observatory_vault", "north")
     vault(t, c, floor + 1, c + 3, "observatory_vault", "south")
     chest(t, c - 3, floor + 1, c - 3, "observatory_ruins", facing="west")
-    return t
 
 
 # ------------------------------------------------------------------ Solar Array Ruins
@@ -387,7 +467,7 @@ def mirror(t, x, ground, z, facing_angle, state, rnd):
 def solar_array(seed):
     """The Solar Array: a field of Cartographer mirrors that once gathered flare light, most of them
     cracked or fallen, around a sunken chamber where a Bottled Flare still sits in its
-    pedestal. The mirrors still focus the flares: Flare Burn is doubled on the open field."""
+    pedestal. The mirrors still focus the flares: Sunburn is doubled on the open field."""
     S = 49
     t = Template(S, 18, S, seed)
     rnd = t.rnd
@@ -448,7 +528,7 @@ def solar_array(seed):
     return t
 
 
-# ------------------------------------------------------------------ Wormhole Maw
+# ------------------------------------------------------------------ Rift Maw
 
 def bone(nx, ny, nz):
     """Leviathan Bone for a skull surface facing (nx, ny, nz): the grain runs along the skull, so its
@@ -456,7 +536,7 @@ def bone(nx, ny, nz):
     return a("leviathan_bone_block") + ("[axis=z]" if abs(nx) > max(abs(ny), abs(nz)) else "[axis=x]")
 
 
-def wormhole_maw(seed):
+def rift_maw(seed):
     """The fossil skull of a Star Leviathan, the size of a small hill, on its own floating island:
     a great domed cranium, a long snout, the lower jaw fallen half open, rows of bone teeth, and at
     the back of the mouth the dark stone of the dormant throat. Four empty eye sockets look out from
@@ -563,7 +643,7 @@ def wormhole_maw(seed):
 # ------------------------------------------------------------------ Constellation Maze
 
 def maze_platform(t, cx, y, cz, radius, rnd):
-    """A broken platform floating in the void: polished stone on a rough cone of Umbral Stone."""
+    """A broken platform floating in the void: polished stone on a rough cone of Nightstone."""
     for x in range(int(cx - radius - 1), int(cx + radius + 2)):
         for z in range(int(cz - radius - 1), int(cz + radius + 2)):
             d = math.hypot(x - cx, z - cz)
@@ -572,10 +652,10 @@ def maze_platform(t, cx, y, cz, radius, rnd):
             edge = d > radius - 0.9
             if edge and rnd.random() < 0.25:
                 continue                                    # chipped edge
-            t.set(x, y, z, a("umbral_stone_bricks") if edge else a("polished_umbral_stone"))
+            t.set(x, y, z, a("nightstone_bricks") if edge else a("polished_nightstone"))
             for dy in range(1, 5):
                 if d <= radius * (1 - dy / 4.5) + rnd.uniform(-0.4, 0.3):
-                    t.set(x, y - dy, z, a("umbral_stone"))
+                    t.set(x, y - dy, z, a("nightstone"))
 
 
 def bridge(t, a0, a1, bend, constellation):
@@ -611,7 +691,7 @@ def constellation_maze(seed):
         maze_platform(t, x, y, z, 3.2, rnd)
         t.set(x, y + 1, z, a("maze_telescope") + f"[constellation={i},facing={facings[i]}]")
         lx, lz = (x - 2, z + 2) if i % 2 == 0 else (x + 2, z - 2)
-        t.set(lx, y + 1, lz, a("polished_umbral_stone_wall"))
+        t.set(lx, y + 1, lz, a("polished_nightstone_wall"))
         t.set(lx, y + 2, lz, a("null_lantern"))
     # The dais.
     dy = 36
@@ -636,144 +716,6 @@ def constellation_maze(seed):
         d = math.hypot(x1 - x0, z1 - z0)
         ux, uz = (x1 - x0) / d, (z1 - z0) / d
         bridge(t, (x0 + ux * r0, y0, z0 + uz * r0), (x1 - ux * r1, y1, z1 - uz * r1), 5 if i % 2 == 0 else -5, i)
-    return t
-
-
-# ------------------------------------------------------------------ Orrery
-
-def abandoned_orrery(seed):
-    """An Abandoned Orrery: the Cartographers' great clockwork model of the heavens, hanging high over
-    the End, a wheel of tarnished Orrery Bronze. A ring gallery (a roost of dormant Void Wanderers to the
-    north, a garden gone wild with Lumineshrooms to the east, the keepers' quarters to the west) joined
-    by spokes to the hub, where the cold Orrery Heart waits for three Bottled Flares under the orrery's
-    axle and its gilded sun. The south spoke is the vault, sealed at both ends by Bronze Shutters, with
-    the Orrery Sentinel dormant inside."""
-    S = 47
-    t = Template(S, 18, S, seed)
-    rnd = t.rnd
-    c = S // 2
-    floor, roof = 4, 9
-
-    # Tarnish spreads in broad patches, not block by block: a smooth noise over the whole orrery.
-    cell = 7
-    lattice = [[rnd.random() for _ in range(S // cell + 3)] for _ in range(S // cell + 3)]
-
-    def tarnish(x, z):
-        gx, gz = x / cell, z / cell
-        x0, z0 = int(gx), int(gz)
-        tx, tz = gx - x0, gz - z0
-        tx, tz = tx * tx * (3 - 2 * tx), tz * tz * (3 - 2 * tz)
-        a0 = lattice[z0][x0] + (lattice[z0][x0 + 1] - lattice[z0][x0]) * tx
-        a1 = lattice[z0 + 1][x0] + (lattice[z0 + 1][x0 + 1] - lattice[z0 + 1][x0]) * tx
-        return a0 + (a1 - a0) * tz
-
-    def bronze_tone(x=None, y=None, z=None):
-        v = tarnish(x, z) + (rnd.random() - 0.5) * 0.12 if x is not None else rnd.random()
-        return a("weathered_orrery_bronze") if v < 0.5 else a("tarnished_orrery_bronze") if v < 0.82 else a("orrery_bronze")
-
-    def polar(x, z):
-        return math.hypot(x - c, z - c), math.atan2(z - c, x - c)
-
-    def ang_gap(ang, target):
-        return abs((ang - target + math.pi) % math.tau - math.pi)
-
-    # ---- the ring
-    R_IN, R_OUT = 16.5, 22.4
-    for x in range(S):
-        for z in range(S):
-            r, ang = polar(x, z)
-            if not R_IN - 0.6 <= r <= R_OUT + 0.6:
-                continue
-            wall = r > R_OUT - 0.7 or r < R_IN + 0.3
-            t.set(x, floor, z, bronze_tone(x, floor, z))
-            t.set(x, roof, z, bronze_tone(x, roof, z))
-            docking = ang_gap(ang, -math.pi / 2) < 0.42            # north: the Wanderers' roost, open to the sky
-            for y in range(floor + 1, roof):
-                if wall:
-                    outer = r > R_OUT - 0.7
-                    if outer and docking:
-                        state = "minecraft:air"
-                    elif outer and y in (floor + 2, floor + 3) and int(math.degrees(ang) + 360) % 12 < 7:
-                        state = a("astral_glass")
-                    else:
-                        state = bronze_tone(x, y, z)
-                    if rnd.random() < 0.04 and not docking:
-                        state = "minecraft:air"                     # holes torn in the gallery
-                    t.set(x, y, z, state)
-                else:
-                    t.set(x, y, z, "minecraft:air")
-            if not wall and abs(r - 19.5) < 0.5 and int(math.degrees(ang) + 360) % 30 < 4:
-                t.set(x, roof, z, a("orrery_lamp") + "[lit=false]")
-            # the garden (east): beds of moss gone wild with Lumineshrooms and Starblooms
-            if not wall and ang_gap(ang, 0.0) < 0.6 and 17.8 < r < 21.2 and abs(r - 19.5) > 0.6:
-                t.set(x, floor, z, a("nebula_moss"))
-                if rnd.random() < 0.45:
-                    t.set(x, floor + 1, z, a("lumineshroom") if rnd.random() < 0.6 else a("starbloom"))
-            # Astral Vines have grown in through the gallery walls here and there
-            if not wall and rnd.random() < 0.015:
-                t.set(x, roof - 1, z, a("astral_vine"))
-    # ---- the hub
-    HUB = 7.4
-    for x in range(S):
-        for z in range(S):
-            r, ang = polar(x, z)
-            if r > HUB + 0.5:
-                continue
-            t.set(x, floor, z, bronze_tone(x, floor, z) if r > 2.5 else a("polished_umbral_stone"))
-            t.set(x, roof + 2, z, bronze_tone(x, roof, z) if r > 2.2 else a("astral_glass"))
-            for y in range(floor + 1, roof + 2):
-                t.set(x, y, z, bronze_tone(x, y, z) if r > HUB - 0.6 else "minecraft:air")
-            if abs(r - 5) < 0.5 and int(math.degrees(ang) + 360) % 90 < 10:
-                t.set(x, roof + 2, z, a("orrery_lamp") + "[lit=false]")
-    for ox, oz in ((-4, -4), (4, -4), (-4, 4), (4, 4)):          # bone pillars round the core
-        for y in range(floor + 1, roof + 2):
-            t.set(c + ox, y, c + oz, a("leviathan_bone_block") + "[axis=y]")
-    t.set(c, floor + 1, c, a("polished_umbral_stone"))
-    t.set(c, floor + 2, c, a("orrery_heart") + "[flares=0,powered=false]")
-    for y in range(roof + 3, roof + 8):                          # the orrery's axle...
-        t.set(c, y, c, a("leviathan_bone_block") + "[axis=y]")
-    t.set(c, roof + 8, c, a("solarite_block"))                   # ...and the gilded sun at its top
-    for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-        t.set(c + dx, roof + 8, c + dz, a("orrery_lamp") + "[lit=false]")
-    # ---- the spokes: north, east and west are open corridors; south is the vault
-    for dx, dz in ((0, -1), (1, 0), (-1, 0), (0, 1)):
-        vault = dz == 1
-        half = 3 if vault else 1
-        top = roof + 1 if vault else roof - 1
-        px, pz = -dz, dx
-        for k in range(int(HUB) - 1, int(R_IN) + 1):
-            for w in range(-half - 1, half + 2):
-                x, z = c + dx * k + px * w, c + dz * k + pz * w
-                t.set(x, floor, z, bronze_tone(x, floor, z))
-                t.set(x, top + 1, z, bronze_tone(x, top, z))
-                for y in range(floor + 1, top + 1):
-                    t.set(x, y, z, bronze_tone(x, y, z) if abs(w) == half + 1 else "minecraft:air")
-                if not vault and w == 0 and k % 4 == 0:
-                    t.set(x, top + 1, z, a("orrery_lamp") + "[lit=false]")
-        if vault:
-            # Bronze Shutters at both ends
-            for k in (int(HUB) - 1, int(R_IN)):
-                for w in range(-half, half + 1):
-                    for y in range(floor + 1, top + 1):
-                        t.set(c + dx * k + px * w, y, c + dz * k + pz * w, a("bronze_shutter") + "[open=false]")
-            mid = (int(HUB) + int(R_IN)) // 2
-            chest(t, c + dx * mid + px * (half - 0), floor + 1, c + dz * mid + pz * (half - 0), "orrery_vault", facing="west")
-            chest(t, c + dx * mid - px * half, floor + 1, c + dz * mid - pz * half, "orrery_vault", facing="east")
-            t.set(c, top + 1, c + dz * mid, a("orrery_lamp") + "[lit=false]")
-            t.entity(c + 0.5, floor + 1.0, c + dz * mid + 0.5 - 2, {"id": a("orrery_sentinel"), "PersistenceRequired": Byte(1),
-                                                                    "Rotation": nbt_list_float(180.0, 0.0)})
-    # ---- the keepers' quarters (west): bunks and a chest
-    for k in range(6):
-        ang = math.pi + (k - 2.5) * 0.12
-        x, z = round(c + math.cos(ang) * 21.2), round(c + math.sin(ang) * 21.2)
-        t.set(x, floor + 1, z, a("lumine_slab") + "[type=bottom]")
-        t.set(x, floor + 3, z, a("lumine_slab") + "[type=bottom]")
-    chest(t, c - 18, floor + 1, c + 4, "orrery_quarters", facing="east")
-    # ---- the roost (north): dormant Void Wanderers along it
-    for k in (-1, 0, 1):
-        ang = -math.pi / 2 + k * 0.22
-        t.entity(c + math.cos(ang) * 19.5 + 0.5, floor + 1.5, c + math.sin(ang) * 19.5 + 0.5,
-                 {"id": a("void_wanderer"), "PersistenceRequired": Byte(1)})
     return t
 
 
@@ -826,33 +768,28 @@ STRUCTURES = [
          spawns=None, adaptation="beard_thin", ground=(16, 4096, 12)),
     # Relays float out over the void, so they want open space (or low ground) under them.
     dict(name="wanderer_relay", variants=[lambda: wanderer_relay(21)],
-         biomes=[a("dark_matter_belt")], spread=(18, 7, 51273391),
+         biomes=[a("hollow_isles")], spread=(18, 7, 51273391),
          height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 66}, "max_inclusive": {"absolute": 92}},
          heightmap=None, spawns=None, adaptation=None, ground=(-4096, 40, 7)),
     dict(name="whalefall", variants=[lambda: whalefall(31)],
-         biomes=[a("aurora_shallows")], spread=(36, 14, 70127811), height={"absolute": -1}, heightmap="WORLD_SURFACE_WG",
+         biomes=[a("ashen_barrens")], spread=(36, 14, 70127811), height={"absolute": -1}, heightmap="WORLD_SURFACE_WG",
          spawns=None, adaptation=None, ground=(16, 4096, 14)),
-    dict(name="observatory_ruins", variants=[lambda: observatory_ruins(41)],
-         biomes=[a("shattered_observatory"), a("nebula_fields")], spread=(30, 12, 33094871), height={"absolute": -2},
-         heightmap="WORLD_SURFACE_WG", spawns=None, adaptation="beard_thin", ground=(16, 4096, 12)),
+    # A landmark: rare, out on the vanilla Highlands or in the Nebula Fields.
+    dict(name="shattered_observatory", variants=[lambda: shattered_observatory(41)],
+         biomes=["minecraft:end_highlands", a("nebula_fields")], spread=(40, 16, 33094871), height={"absolute": -2},
+         heightmap="WORLD_SURFACE_WG", spawns=None, adaptation="beard_thin", ground=(16, 4096, 18)),
     dict(name="solar_array", variants=[lambda: solar_array(51)],
          biomes=[a("corona")], spread=(34, 14, 92814473), height={"absolute": -8},
          heightmap="WORLD_SURFACE_WG", spawns=None, adaptation="beard_thin", ground=(16, 4096, 18)),
-    # Maws and mazes float out over open void, near the Shattered Observatory.
-    dict(name="wormhole_maw", variants=[lambda: wormhole_maw(61)],
-         biomes=[a("shattered_observatory"), a("nebula_fields"), a("dark_matter_belt")], spread=(26, 9, 48129573),
+    # Maws and mazes float out over open void, among the small islands.
+    dict(name="rift_maw", variants=[lambda: rift_maw(61)],
+         biomes=["minecraft:small_end_islands", a("nebula_fields"), a("hollow_isles")], spread=(26, 9, 48129573),
          height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 48}, "max_inclusive": {"absolute": 70}},
          heightmap=None, spawns=None, adaptation=None, ground=(-4096, 36, 22)),
     dict(name="constellation_maze", variants=[lambda: constellation_maze(71)],
-         biomes=[a("shattered_observatory"), a("nebula_fields")], spread=(24, 8, 77162391),
+         biomes=["minecraft:small_end_islands", a("nebula_fields")], spread=(24, 8, 77162391),
          height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 56}, "max_inclusive": {"absolute": 76}},
          heightmap=None, spawns=None, adaptation=None, ground=(-4096, 40, 22)),
-    # Orreries hang high in the sky, anywhere but the Corona.
-    dict(name="abandoned_orrery", variants=[lambda: abandoned_orrery(81)],
-         biomes=[a("nebula_fields"), a("aurora_shallows"), a("comet_wake"), a("dark_matter_belt"), a("shattered_observatory")],
-         spread=(38, 14, 20934117),
-         height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 176}, "max_inclusive": {"absolute": 200}},
-         heightmap=None, spawns=None, adaptation=None, ground=(-4096, 4096, 0)),
 ]
 
 
@@ -878,7 +815,7 @@ def write_templates(preview=False):
             if preview:
                 import preview as pv
                 pv.save(t, file)
-                if st["name"] in ("wormhole_maw",):
+                if st["name"] in ("rift_maw",):
                     pv.save(t, file + "_front", turn=True)
                 if "--cut" in sys.argv and st["name"] == "comet_crater":
                     pv.save(t, file + "_cut", cut=("z", t.size[2] // 2))

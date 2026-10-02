@@ -22,7 +22,7 @@ public enum StarforgeUpgrade implements StringRepresentable {
     METEORIC("meteoric", 0xF07A3C, () -> List.of(ModItems.METEORIC_IRON_INGOT.get())),
     STARDUST("stardust", 0xA8D4FF, () -> List.of(ModBlocks.STARDUST_BLOCK.get().asItem())),
     TEMPORAL("temporal", 0xEEA650, () -> List.of(ModItems.TEMPORAL_CRYSTAL.get())),
-    SINGULARITY("singularity", 0xEE62D4, () -> List.of(ModItems.SINGULARITY_SHARD.get())),
+    SINGULARITY("singularity", 0xEE62D4, () -> List.of(ModItems.ABYSS_SHARD.get())),
     RADIANT("radiant", 0xFFF07A, () -> List.of(ModItems.SOLARITE_INGOT.get(), ModItems.CHARGED_VOID_CRYSTAL.get()));
 
     public static final Codec<StarforgeUpgrade> CODEC = StringRepresentable.fromEnum(StarforgeUpgrade::values);

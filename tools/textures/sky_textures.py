@@ -2,7 +2,7 @@
 """The sky's textures for Phase 5, written to assets/astralend/textures/environment/:
 
   remnant.png         the Remnant: the dim, dying ember of the collapsed star (a disc with a corona)
-  remnant_flare.png   the glow that swells round it during a Stellar Flare
+  remnant_flare.png   the glow that swells round it during a Sunstorm
   star.png            one soft star (tinted per star by the sky renderer)
   aurora.png          a curtain of aurora: bright lower hem, streaks fading upward
   flare_sheet.png     a sheet of flare light that rolls across the Corona's sky

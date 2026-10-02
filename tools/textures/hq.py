@@ -89,7 +89,7 @@ def charred_end_stone():
 UMBRAL = ramp("09070f", "4f4470", 6, hue_shift=0.03)
 
 
-def umbral_stone():
+def nightstone():
     """Dark violet-black stone, faintly layered, with rare glints of light caught inside it."""
     img = rock(1, UMBRAL[1:5], shares=[2, 4, 3, 1], octaves=((4, 0.5), (8, 0.35), (16, 0.15)))
     ids, _ = voronoi(4, 9)
@@ -119,20 +119,6 @@ def pale_end_stone():
 ICE = ramp("3d6ea8", "eef8ff", 6, hue_shift=-0.02)
 
 
-def comet_ice():
-    """Glassy comet ice: bright, with long diagonal fracture planes like packed ice."""
-    img = rock(112, ICE[2:6], shares=[1, 3, 4, 2], octaves=((2, 0.4), (4, 0.4), (8, 0.2)))
-    rnd = random.Random(113)
-    for (start, y0, length) in ((2, 0, 9), (9, 6, 10), (13, 11, 7)):  # fracture lines, not full planes
-        x = start
-        for i in range(length):
-            y = y0 + i
-            put(img, x, y, ICE[2])
-            put(img, x + 1, y, ICE[5])
-            if rnd.random() < 0.6:
-                x += 1
-    return img
-
 
 STARDUST = ramp("6a5b8e", "fbf6ff", 6, hue_shift=0.04)
 
@@ -146,7 +132,7 @@ def stardust_block():
     return img
 
 
-def nebula_moss():
+def chorus_moss():
     """Soft violet moss in small cushions, flecked with cyan glow."""
     pal = ramp("2a1a4d", "b69af0", 6, hue_shift=0.03)
     img = chunks(151, 26, pal[1:], base_index=2, light=1, dark=1)
@@ -238,7 +224,7 @@ VOID = {"h": hexc("f0e2ff"), "l": hexc("b98cff"), "m": hexc("7a44e0"), "d": hexc
 
 
 def void_crystal_ore():
-    return ore(umbral_stone(), VOID, count=5, shadow=0.2)
+    return ore(nightstone(), VOID, count=5, shadow=0.2)
 
 
 RAW_METEORIC = ramp("1f1d24", "d7d4de", 7, hue_shift=0.03)
@@ -651,13 +637,12 @@ TEXTURES = [
     ("block/polished_sunscorched_stone.png", sunscorched_polished),
     ("block/sunscorched_stone_bricks.png", lambda: bricks(125, SUNSCORCHED, mortar=1)),
     ("block/charred_end_stone.png", charred_end_stone),
-    ("block/umbral_stone.png", umbral_stone),
-    ("block/umbral_stone_bricks.png", lambda: bricks(3, UMBRAL, mortar=0)),
+    ("block/nightstone.png", nightstone),
+    ("block/nightstone_bricks.png", lambda: bricks(3, UMBRAL, mortar=0)),
     ("block/pale_end_stone.png", pale_end_stone),
     ("block/pale_end_stone_bricks.png", lambda: bricks(102, PALE, mortar=1)),
-    ("block/comet_ice.png", comet_ice),
     ("block/stardust_block.png", stardust_block),
-    ("block/nebula_moss.png", nebula_moss),
+    ("block/chorus_moss.png", chorus_moss),
     ("block/sunscale_lichen.png", sunscale_lichen),
     ("block/lumine_cap.png", lumine_cap),
     ("block/nullwood_leaves.png", nullwood_leaves),
@@ -696,7 +681,7 @@ TEXTURES = [
     ("block/whalelight_scale.png", whalelight_scale),
 ]
 
-# Phase 5: Stellar Flares
+# Phase 5: Sunstorms
 from flare_textures import TEXTURES as _FLARE  # noqa: E402
 TEXTURES += _FLARE
 

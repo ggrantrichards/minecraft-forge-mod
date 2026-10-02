@@ -52,7 +52,7 @@
           {
             "type": "minecraft:matching_blocks",
             "blocks": [
-              "astralend:nebula_moss"
+              "astralend:chorus_moss"
             ],
             "offset": [
               0,

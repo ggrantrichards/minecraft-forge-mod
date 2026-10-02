@@ -7,7 +7,7 @@ import com.ggrantrichards.astralend.block.CometCressBlock;
 import com.ggrantrichards.astralend.block.EndPlantBlock;
 import com.ggrantrichards.astralend.block.EndTallPlantBlock;
 import com.ggrantrichards.astralend.block.FlarebloomBlock;
-import com.ggrantrichards.astralend.block.GravityAnomalyBlock;
+import com.ggrantrichards.astralend.block.UpwellCoreBlock;
 import com.ggrantrichards.astralend.block.LumineshroomBlock;
 import com.ggrantrichards.astralend.block.NebulaTendrilBlock;
 import com.ggrantrichards.astralend.block.NebulaTendrilPlantBlock;
@@ -60,26 +60,26 @@ public final class ModBlocks {
     public static final TagKey<Block> ASTRAL_SOIL = TagKey.create(Registries.BLOCK,
         Identifier.fromNamespaceAndPath(AstralEnd.MODID, "astral_soil"));
 
-    // ---- Umbral Stone: the dark stone of the Dark Matter Belts (deepslate-like) ----
-    public static final RegistryObject<Block> UMBRAL_STONE = register("umbral_stone", Block::new,
+    // ---- Nightstone: the dark stone of the Hollow Isless (deepslate-like) ----
+    public static final RegistryObject<Block> NIGHTSTONE = register("nightstone", Block::new,
         () -> stone(SoundType.DEEPSLATE));
-    public static final RegistryObject<Block> UMBRAL_STONE_STAIRS = stairs("umbral_stone_stairs", UMBRAL_STONE);
-    public static final RegistryObject<Block> UMBRAL_STONE_SLAB = slab("umbral_stone_slab", UMBRAL_STONE);
-    public static final RegistryObject<Block> UMBRAL_STONE_WALL = wall("umbral_stone_wall", UMBRAL_STONE);
+    public static final RegistryObject<Block> NIGHTSTONE_STAIRS = stairs("nightstone_stairs", NIGHTSTONE);
+    public static final RegistryObject<Block> NIGHTSTONE_SLAB = slab("nightstone_slab", NIGHTSTONE);
+    public static final RegistryObject<Block> NIGHTSTONE_WALL = wall("nightstone_wall", NIGHTSTONE);
 
-    public static final RegistryObject<Block> POLISHED_UMBRAL_STONE = register("polished_umbral_stone", Block::new,
+    public static final RegistryObject<Block> POLISHED_NIGHTSTONE = register("polished_nightstone", Block::new,
         () -> stone(SoundType.POLISHED_DEEPSLATE));
-    public static final RegistryObject<Block> POLISHED_UMBRAL_STONE_STAIRS = stairs("polished_umbral_stone_stairs", POLISHED_UMBRAL_STONE);
-    public static final RegistryObject<Block> POLISHED_UMBRAL_STONE_SLAB = slab("polished_umbral_stone_slab", POLISHED_UMBRAL_STONE);
-    public static final RegistryObject<Block> POLISHED_UMBRAL_STONE_WALL = wall("polished_umbral_stone_wall", POLISHED_UMBRAL_STONE);
+    public static final RegistryObject<Block> POLISHED_NIGHTSTONE_STAIRS = stairs("polished_nightstone_stairs", POLISHED_NIGHTSTONE);
+    public static final RegistryObject<Block> POLISHED_NIGHTSTONE_SLAB = slab("polished_nightstone_slab", POLISHED_NIGHTSTONE);
+    public static final RegistryObject<Block> POLISHED_NIGHTSTONE_WALL = wall("polished_nightstone_wall", POLISHED_NIGHTSTONE);
 
-    public static final RegistryObject<Block> UMBRAL_STONE_BRICKS = register("umbral_stone_bricks", Block::new,
+    public static final RegistryObject<Block> NIGHTSTONE_BRICKS = register("nightstone_bricks", Block::new,
         () -> stone(SoundType.DEEPSLATE_BRICKS));
-    public static final RegistryObject<Block> UMBRAL_STONE_BRICK_STAIRS = stairs("umbral_stone_brick_stairs", UMBRAL_STONE_BRICKS);
-    public static final RegistryObject<Block> UMBRAL_STONE_BRICK_SLAB = slab("umbral_stone_brick_slab", UMBRAL_STONE_BRICKS);
-    public static final RegistryObject<Block> UMBRAL_STONE_BRICK_WALL = wall("umbral_stone_brick_wall", UMBRAL_STONE_BRICKS);
+    public static final RegistryObject<Block> NIGHTSTONE_BRICK_STAIRS = stairs("nightstone_brick_stairs", NIGHTSTONE_BRICKS);
+    public static final RegistryObject<Block> NIGHTSTONE_BRICK_SLAB = slab("nightstone_brick_slab", NIGHTSTONE_BRICKS);
+    public static final RegistryObject<Block> NIGHTSTONE_BRICK_WALL = wall("nightstone_brick_wall", NIGHTSTONE_BRICKS);
 
-    public static final RegistryObject<Block> CHISELED_UMBRAL_STONE = register("chiseled_umbral_stone", Block::new,
+    public static final RegistryObject<Block> CHISELED_NIGHTSTONE = register("chiseled_nightstone", Block::new,
         () -> stone(SoundType.DEEPSLATE_BRICKS));
 
     // ---- Ores and material blocks ----
@@ -120,8 +120,8 @@ public final class ModBlocks {
     public static final RegistryObject<Block> LEVIATHAN_BONE_BLOCK = register("leviathan_bone_block", RotatedPillarBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).instrument(NoteBlockInstrument.XYLOPHONE)
             .requiresCorrectToolForDrops().strength(2.0F).sound(SoundType.BONE_BLOCK));
-    // Nebula Moss: the soft ground cover of the Nebula Fields.
-    public static final RegistryObject<Block> NEBULA_MOSS = register("nebula_moss", Block::new,
+    // Chorus Moss: the soft ground cover of the Nebula Fields.
+    public static final RegistryObject<Block> CHORUS_MOSS = register("chorus_moss", Block::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.1F).sound(SoundType.MOSS)
             .pushReaction(PushReaction.POPPED));
 
@@ -145,7 +145,7 @@ public final class ModBlocks {
 
     // ================================================================ Phase 3
 
-    // ---- Aurora Shallows: pale, wide shelf islands ----
+    // ---- Ashen Barrens: pale, wide shelf islands ----
     public static final RegistryObject<Block> PALE_END_STONE = register("pale_end_stone", Block::new,
         () -> endStone(MapColor.TERRACOTTA_WHITE));
     public static final RegistryObject<Block> PALE_END_STONE_STAIRS = stairs("pale_end_stone_stairs", PALE_END_STONE);
@@ -163,15 +163,12 @@ public final class ModBlocks {
         p -> new EndPlantBlock(Block.column(12.0, 0.0, 13.0), ASTRAL_SOIL, p),
         () -> plant(MapColor.COLOR_LIGHT_BLUE, SoundType.GRASS).replaceable().offsetType(BlockBehaviour.OffsetType.XYZ));
 
-    // ---- Comet Wake: scorched islands, stardust and comet ice ----
+    // ---- Comet Wake: scorched islands, stardust and blue ice ----
     public static final RegistryObject<Block> CHARRED_END_STONE = register("charred_end_stone", Block::new,
         () -> endStone(MapColor.COLOR_BLACK));
     public static final RegistryObject<Block> CHARRED_END_STONE_STAIRS = stairs("charred_end_stone_stairs", CHARRED_END_STONE);
     public static final RegistryObject<Block> CHARRED_END_STONE_SLAB = slab("charred_end_stone_slab", CHARRED_END_STONE);
     public static final RegistryObject<Block> CHARRED_END_STONE_WALL = wall("charred_end_stone_wall", CHARRED_END_STONE);
-    // Comet Ice never melts and is as slippery as blue ice (same friction). Silk Touch to collect.
-    public static final RegistryObject<Block> COMET_ICE = register("comet_ice", Block::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.ICE).strength(2.8F).friction(0.989F).sound(SoundType.GLASS));
 
     // ---- The Corona: bleached stone, Solarite, and the life that adapted (or didn't) ----
     public static final RegistryObject<Block> SUNSCORCHED_STONE = register("sunscorched_stone", Block::new,
@@ -209,14 +206,14 @@ public final class ModBlocks {
     public static final RegistryObject<Block> SUNSCALE_LICHEN = register("sunscale_lichen", SunscaleLichenBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(0.1F).sound(SoundType.MOSS_CARPET)
             .lightLevel(state -> state.getValue(SunscaleLichenBlock.CHARGED) ? 12 : 5).noOcclusion().pushReaction(PushReaction.POPPED));
-    // Phase 5 (Stellar Flares): cover you can hang anywhere, and the pedestal that charges crystals and cells.
+    // Phase 5 (Sunstorms): cover you can hang anywhere, and the pedestal that charges crystals and cells.
     public static final RegistryObject<Block> SUNSHADE = register("sunshade", SunshadeBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(0.3F).sound(SoundType.WOOL).noOcclusion());
     public static final RegistryObject<Block> COLLECTOR_PEDESTAL = register("collector_pedestal", CollectorPedestalBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.SAND).requiresCorrectToolForDrops().strength(2.0F, 6.0F)
             .sound(SoundType.STONE).noOcclusion()
             .lightLevel(state -> state.getValue(CollectorPedestalBlock.HOLDING).charged() ? 10 : 0));
-    // Phase 6 (structures): the Wormhole Maw (eye sockets, the dormant throat, and the woken wormhole)
+    // Phase 6 (structures): the Rift Maw (eye sockets, the dormant throat, and the woken wormhole)
     // and the Constellation Maze (star-bridges and telescopes). Built into structures, so the parts
     // that make the puzzles work can't be broken, like an End Portal frame.
     public static final RegistryObject<Block> MAW_EYE = register("maw_eye", com.ggrantrichards.astralend.maw.MawEyeBlock::new,
@@ -237,61 +234,8 @@ public final class ModBlocks {
     public static final RegistryObject<Block> MAZE_TELESCOPE = register("maze_telescope", com.ggrantrichards.astralend.maze.MazeTelescopeBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(-1.0F, 3600000.0F).sound(SoundType.COPPER)
             .noOcclusion().noLootTable());
-    // Phase 6: the Orrery. Orrery Bronze ages through three stages (an axe scrapes it back);
-    // the Orrery Heart, Bronze Shutters and lamps make the Orrery's puzzle.
-    // The whole family, like copper's: (waxed) (tarnished|weathered) orrery bronze, cut orrery bronze
-    // with its stairs and slabs, and grates. See Bronze for how it ages, scrapes and waxes.
-    public static final java.util.Map<String, RegistryObject<Block>> BRONZE = new java.util.LinkedHashMap<>();
-    static {
-        String[] stages = {"", "tarnished_", "weathered_"};
-        MapColor[] colours = {MapColor.COLOR_ORANGE, MapColor.TERRACOTTA_PURPLE, MapColor.COLOR_PURPLE};
-        for (String waxed : new String[] {"", "waxed_"}) {
-            for (int i = 0; i < 3; i++) {
-                final int stage = i;
-                MapColor colour = colours[i];
-                for (String shape : new String[] {"orrery_bronze", "cut_orrery_bronze", "cut_orrery_bronze_stairs", "cut_orrery_bronze_slab",
-                                                  "orrery_bronze_grate"}) {
-                    String name = waxed + stages[i] + shape;
-                    com.ggrantrichards.astralend.orrery.Bronze.Aging aging = new com.ggrantrichards.astralend.orrery.Bronze.Aging(
-                        waxed.isEmpty() && stage < 2 ? () -> BRONZE.get(stages[stage + 1] + shape).get() : null,
-                        waxed.isEmpty() && stage > 0 ? () -> BRONZE.get(stages[stage - 1] + shape).get() : null,
-                        waxed.isEmpty() ? () -> BRONZE.get("waxed_" + stages[stage] + shape).get() : null,
-                        waxed.isEmpty() ? null : () -> BRONZE.get(stages[stage] + shape).get());
-                    RegistryObject<Block> block;
-                    if (shape.endsWith("_stairs")) {
-                        String base = waxed + stages[i] + "cut_orrery_bronze";
-                        block = register(name, p -> new com.ggrantrichards.astralend.orrery.Bronze.Stairs(aging,
-                            BRONZE.get(base).get().defaultBlockState(), p), () -> bronze(colour));
-                    } else if (shape.endsWith("_slab")) {
-                        block = register(name, p -> new com.ggrantrichards.astralend.orrery.Bronze.Slab(aging, p), () -> bronze(colour));
-                    } else if (shape.endsWith("_grate")) {
-                        block = register(name, p -> new com.ggrantrichards.astralend.orrery.Bronze.Grate(aging, p),
-                            () -> bronze(colour).sound(SoundType.COPPER_GRATE).noOcclusion()
-                                .isValidSpawn((st, level, pos, type) -> false).isRedstoneConductor((st, level, pos) -> false)
-                                .isSuffocating((st, level, pos) -> false));
-                    } else {
-                        block = register(name, p -> new com.ggrantrichards.astralend.orrery.Bronze.Full(aging, p), () -> bronze(colour));
-                    }
-                    BRONZE.put(name, block);
-                }
-            }
-        }
-    }
-    public static final RegistryObject<Block> ORRERY_BRONZE = BRONZE.get("orrery_bronze");
-    public static final RegistryObject<Block> TARNISHED_ORRERY_BRONZE = BRONZE.get("tarnished_orrery_bronze");
-    public static final RegistryObject<Block> WEATHERED_ORRERY_BRONZE = BRONZE.get("weathered_orrery_bronze");
-    public static final RegistryObject<Block> ORRERY_HEART = register("orrery_heart", com.ggrantrichards.astralend.orrery.OrreryHeartBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(-1.0F, 3600000.0F).sound(SoundType.COPPER).noLootTable()
-            .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.orrery.OrreryHeartBlock.POWERED) ? 15
-                : 2 + state.getValue(com.ggrantrichards.astralend.orrery.OrreryHeartBlock.FLARES) * 2));
-    public static final RegistryObject<Block> BRONZE_SHUTTER = register("bronze_shutter", com.ggrantrichards.astralend.orrery.BronzeShutterBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(-1.0F, 3600000.0F).sound(SoundType.COPPER)
-            .noOcclusion().noLootTable());
-    public static final RegistryObject<Block> ORRERY_LAMP = register("orrery_lamp", com.ggrantrichards.astralend.orrery.OrreryLampBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(0.8F).sound(SoundType.GLASS)
-            .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.orrery.OrreryLampBlock.LIT) ? 15 : 0));
-    // Phase 9: Nebula Moss carpet, like moss carpet.
-    public static final RegistryObject<Block> NEBULA_MOSS_CARPET = register("nebula_moss_carpet", net.minecraft.world.level.block.CarpetBlock::new,
+    // Phase 9: Chorus Moss carpet, like moss carpet.
+    public static final RegistryObject<Block> CHORUS_MOSS_CARPET = register("chorus_moss_carpet", net.minecraft.world.level.block.CarpetBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.1F).sound(SoundType.MOSS_CARPET)
             .pushReaction(PushReaction.POPPED));
     // Phase 8 (Starforging): the Astral Forge, and the tiles Rift Walker boots lay over a drop.
@@ -323,9 +267,9 @@ public final class ModBlocks {
     public static final RegistryObject<Block> STAR_INLAY_OBSERVATORY_QUARTZ = register("star_inlay_observatory_quartz", Block::new,
         () -> quartz());
 
-    // ---- Dark Matter Belt: the core of a gravity inversion pocket ----
-    // Gravity flips inside a sphere below it (see GravityAnomalyBlockEntity). Silk Touch to collect.
-    public static final RegistryObject<Block> GRAVITY_ANOMALY = register("gravity_anomaly", GravityAnomalyBlock::new,
+    // ---- Hollow Isles: the core of a Upwell ----
+    // Gravity flips inside a sphere below it (see UpwellCoreBlockEntity). Silk Touch to collect.
+    public static final RegistryObject<Block> UPWELL_CORE = register("upwell_core", UpwellCoreBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).instrument(NoteBlockInstrument.BASEDRUM)
             .requiresCorrectToolForDrops().strength(25.0F, 600.0F).sound(SoundType.SCULK_CATALYST).lightLevel(state -> 2));
 
@@ -346,7 +290,7 @@ public final class ModBlocks {
     public static final RegistryObject<Block> NEBULA_TENDRIL_PLANT = registerNoItem("nebula_tendril_plant", NebulaTendrilPlantBlock::new,
         () -> tendril());
 
-    // ---- Dark Matter Belt: twisted Nullwood trees ----
+    // ---- Hollow Isles: twisted Nullwood trees ----
     public static final WoodSet NULLWOOD = woodSet("nullwood", "log", "wood", MapColor.COLOR_BLACK, MapColor.COLOR_PURPLE,
         SoundType.WOOD, BlockSetType.DARK_OAK, WoodType.DARK_OAK);
     public static final RegistryObject<Block> NULLWOOD_LEAVES = register("nullwood_leaves", p -> new TintedParticleLeavesBlock(0.01F, p),
@@ -361,7 +305,7 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(0.3F).noOcclusion()
             .sound(SoundType.SHROOMLIGHT).lightLevel(state -> 13).pushReaction(PushReaction.POPPED));
 
-    // ---- Aurora Shallows and the Corona ----
+    // ---- Ashen Barrens and the Corona ----
     public static final RegistryObject<Block> SHIMMER_REED = register("shimmer_reed", EndTallPlantBlock::new,
         () -> plant(MapColor.COLOR_LIGHT_BLUE, SoundType.GRASS).replaceable().offsetType(BlockBehaviour.OffsetType.XZ));
     // The stone-hard trunk of a giant Astral Vine that died in the Corona long ago.
@@ -430,10 +374,6 @@ public final class ModBlocks {
     private static BlockBehaviour.Properties endStone(MapColor color) {
         return BlockBehaviour.Properties.of().mapColor(color).instrument(NoteBlockInstrument.BASEDRUM)
             .requiresCorrectToolForDrops().strength(3.0F, 9.0F);
-    }
-
-    private static BlockBehaviour.Properties bronze(MapColor color) {
-        return BlockBehaviour.Properties.of().mapColor(color).requiresCorrectToolForDrops().strength(3.0F, 6.0F).sound(SoundType.COPPER);
     }
 
     private static BlockBehaviour.Properties quartz() {

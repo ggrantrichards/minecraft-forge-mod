@@ -575,7 +575,7 @@ def leviathan_bone_top():
     return img
 
 
-def nebula_moss():
+def chorus_moss():
     rnd = random.Random(31)
     img = Image.new("RGBA", (16, 16), MOSS[2])
     px = img.load()
@@ -901,7 +901,7 @@ def pollinator_husk_top():
     return img
 
 
-def gravity_anomaly_frame(phase):
+def upwell_core_frame(phase):
     """A dark core with violet light spiralling into it. phase 0..1 rotates the spiral."""
     import math
     img = Image.new("RGBA", (16, 16), UMBRAL[0])
@@ -1306,12 +1306,12 @@ def save(img, rel):
 
 def main():
     out = []
-    # Umbral Stone family
+    # Nightstone family
     umbral = stone(UMBRAL, 1, glint=UMBRAL_GLINT, glints=3)
-    out.append(save(umbral, "block/umbral_stone.png"))
-    out.append(save(polished(UMBRAL, 2), "block/polished_umbral_stone.png"))
-    out.append(save(bricks(UMBRAL, 3), "block/umbral_stone_bricks.png"))
-    out.append(save(overlay(polished(UMBRAL, 4), ECLIPSE, {"D": UMBRAL[0], "L": hexc("6b58a0"), "d": hexc("0e0b12")}), "block/chiseled_umbral_stone.png"))
+    out.append(save(umbral, "block/nightstone.png"))
+    out.append(save(polished(UMBRAL, 2), "block/polished_nightstone.png"))
+    out.append(save(bricks(UMBRAL, 3), "block/nightstone_bricks.png"))
+    out.append(save(overlay(polished(UMBRAL, 4), ECLIPSE, {"D": UMBRAL[0], "L": hexc("6b58a0"), "d": hexc("0e0b12")}), "block/chiseled_nightstone.png"))
 
     # Ores and material blocks
     out.append(save(overlay(stone(UMBRAL, 5, glint=UMBRAL_GLINT, glints=2), ORE_VOID, VOID), "block/void_crystal_ore.png"))
@@ -1325,7 +1325,7 @@ def main():
     out.append(save(astral_glass(), "block/astral_glass.png"))
     out.append(save(leviathan_bone_side(), "block/leviathan_bone_side.png"))
     out.append(save(leviathan_bone_top(), "block/leviathan_bone_top.png"))
-    out.append(save(nebula_moss(), "block/nebula_moss.png"))
+    out.append(save(chorus_moss(), "block/chorus_moss.png"))
 
     # Plants
     out.append(save(from_map(STARBLOOM, STARBLOOM_PAL), "block/starbloom.png"))
@@ -1352,7 +1352,7 @@ def main():
     out.append(save(from_map(COMET_CRESS, CRESS_PAL), "item/comet_cress.png"))
 
 
-    # ---- Phase 3: Aurora Shallows
+    # ---- Phase 3: Ashen Barrens
     out.append(save(stone(PALE, 101, blotches=20, specks=14), "block/pale_end_stone.png"))
     out.append(save(bricks(PALE, 102), "block/pale_end_stone_bricks.png"))
     out.append(save(tiles(PALE, 103), "block/pale_end_stone_tiles.png"))
@@ -1360,7 +1360,6 @@ def main():
     # ---- Comet Wake
     charred = stone(CHARRED, 111, blotches=24, specks=16, glint=CHARRED_EMBER, glints=3)
     out.append(save(charred, "block/charred_end_stone.png"))
-    out.append(save(cracks(stone(ICE, 112, blotches=16, specks=10), ICE[4], 113, n=5), "block/comet_ice.png"))
     # ---- The Corona
     out.append(save(cracks(stone(SUNSCORCHED, 121, blotches=18, specks=12), SUNSCORCHED[0], 122, n=4), "block/sunscorched_stone.png"))
     out.append(save(polished(SUNSCORCHED, 123), "block/polished_sunscorched_stone.png"))
@@ -1389,20 +1388,20 @@ def main():
     out.append(save(pillar_side(OBS_QUARTZ, 132), "block/observatory_quartz_pillar_side.png"))
     out.append(save(pillar_top(OBS_QUARTZ), "block/observatory_quartz_pillar_top.png"))
     out.append(save(overlay(smooth(OBS_QUARTZ, 133), STAR_INLAY, INLAY_PAL), "block/star_inlay_observatory_quartz.png"))
-    # ---- Dark Matter Belt: the core of a gravity inversion pocket (animated, 8 frames)
+    # ---- Hollow Isles: the core of a Upwell (animated, 8 frames)
     frames = 8
     strip = Image.new("RGBA", (16, 16 * frames), CLEAR)
     for i in range(frames):
-        strip.paste(gravity_anomaly_frame(i / frames), (0, 16 * i))
-    save(strip, "block/gravity_anomaly.png")
-    (TEX / "block/gravity_anomaly.png.mcmeta").write_text(
+        strip.paste(upwell_core_frame(i / frames), (0, 16 * i))
+    save(strip, "block/upwell_core.png")
+    (TEX / "block/upwell_core.png.mcmeta").write_text(
         json.dumps({"animation": {"frametime": 3}}, indent=2) + "\n")
-    out.append(("block/gravity_anomaly.png (frame 1 of 8)", gravity_anomaly_frame(0)))
+    out.append(("block/upwell_core.png (frame 1 of 8)", upwell_core_frame(0)))
     # ---- Phase 3 items
     out.append(save(from_map(RAW_SOLARITE, RAW_SOLAR), "item/raw_solarite.png"))
     out.append(save(from_map(SOLARITE_INGOT, SOLAR), "item/solarite_ingot.png"))
 
-    # ---- Phase 3.5: Lumine wood (from giant Lumineshroom stems) and Nullwood (Dark Matter Belt trees)
+    # ---- Phase 3.5: Lumine wood (from giant Lumineshroom stems) and Nullwood (Hollow Isles trees)
     out.append(save(bark_tex(LUMINE_STEM, 201, LUMINE_GLOW, 5), "block/lumine_stem.png"))
     out.append(save(log_top_tex(LUMINE_STEM, LUMINE_STEM, LUMINE_GLOW[1]), "block/lumine_stem_top.png"))
     out.append(save(bark_tex([hexc("7e7494"), hexc("8f86a6"), hexc("a39ab8"), hexc("b6aecb"), hexc("c8c1da")], 202), "block/stripped_lumine_stem.png"))

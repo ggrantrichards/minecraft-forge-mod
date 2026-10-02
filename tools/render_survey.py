@@ -21,12 +21,12 @@ TAG = "[AstralEnd survey] "
 
 BIOME_COLOURS = {
     "O": (230, 224, 160), "N": (122, 82, 196), "A": (150, 215, 225), "W": (120, 96, 88), "D": (48, 36, 70),
-    "R": (220, 224, 240), "C": (240, 150, 60), "H": (196, 190, 130), "M": (166, 160, 110), "B": (130, 126, 90),
+    "C": (240, 150, 60), "H": (196, 190, 130), "M": (166, 160, 110), "B": (130, 126, 90),
     "s": (100, 98, 76), "?": (255, 0, 255),
 }
 BIOME_NAMES = {
-    "O": "central island", "N": "Nebula Fields", "A": "Aurora Shallows", "W": "Comet Wake", "D": "Dark Matter Belt",
-    "R": "Shattered Observatory", "C": "The Corona", "H": "Highlands", "M": "Midlands", "B": "Barrens", "s": "Small Islands",
+    "O": "central island", "N": "Nebula Fields", "A": "Ashen Barrens", "W": "Comet Wake", "D": "Hollow Isles",
+    "C": "The Corona", "H": "Highlands", "M": "Midlands", "B": "Barrens", "s": "Small Islands",
 }
 # Top-down symbols, as printed by WorldgenSurvey.topSymbol (upper case = inside the surveyed biome).
 BLOCK_COLOURS = {

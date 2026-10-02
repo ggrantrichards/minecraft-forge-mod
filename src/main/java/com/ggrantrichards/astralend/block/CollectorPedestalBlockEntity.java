@@ -3,7 +3,7 @@ package com.ggrantrichards.astralend.block;
 import com.ggrantrichards.astralend.ModBlockEntities;
 import com.ggrantrichards.astralend.ModItems;
 import com.ggrantrichards.astralend.flare.FlarePhase;
-import com.ggrantrichards.astralend.flare.StellarFlares;
+import com.ggrantrichards.astralend.flare.Sunstorms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -63,8 +63,8 @@ public class CollectorPedestalBlockEntity extends BlockEntity {
         if (holding != CollectorPedestalBlock.Holding.VOID_CRYSTAL && holding != CollectorPedestalBlock.Holding.FLARE_BOTTLE) {
             return;
         }
-        if (StellarFlares.phaseIn(level) != FlarePhase.FLARE || !StellarFlares.isCorona(level, pos)
-            || !StellarFlares.underOpenSky(level, pos.above())) {
+        if (Sunstorms.phaseIn(level) != FlarePhase.FLARE || !Sunstorms.isCorona(level, pos)
+            || !Sunstorms.underOpenSky(level, pos.above())) {
             return;
         }
         pedestal.charge++;

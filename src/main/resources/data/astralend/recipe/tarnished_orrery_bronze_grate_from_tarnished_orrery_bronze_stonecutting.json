@@ -1,8 +1,0 @@
-{
-  "type": "minecraft:stonecutting",
-  "ingredient": "astralend:tarnished_orrery_bronze",
-  "result": {
-    "count": 4,
-    "id": "astralend:tarnished_orrery_bronze_grate"
-  }
-}

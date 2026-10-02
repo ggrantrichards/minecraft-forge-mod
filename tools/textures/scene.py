@@ -93,7 +93,7 @@ def ground(size, tex, y=0):
 
 
 def mushroom_scene():
-    moss, stem, cap = texture("nebula_moss"), texture("lumine_stem"), texture("lumine_cap")
+    moss, stem, cap = texture("chorus_moss"), texture("lumine_stem"), texture("lumine_cap")
     stem_top = texture("lumine_stem_top")
     v = ground(14, moss)
     for (cx, cz, r, hgt) in ((6, 6, 4, 7), (11, 2, 2, 4)):

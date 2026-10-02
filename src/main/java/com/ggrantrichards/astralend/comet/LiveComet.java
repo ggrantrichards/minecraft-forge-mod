@@ -29,13 +29,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
+import net.minecraft.world.level.block.Blocks;
 
 // A live comet (Phase 7): a glowing rock with a long tail that crosses the outer End on a slow
 // arc, a minute or two long. Nothing about it is made of blocks while it flies.
 //
 //   - Fly through its tail with an elytra and it carries you along (a speed boost) and you catch
 //     Stardust Motes.
-//   - Hit its head and chunks break off: Stardust, Comet Ice, now and then raw Meteoric Iron. A
+//   - Hit its head and chunks break off: Stardust, blue ice, now and then raw Meteoric Iron. A
 //     comet only has so much to give (HITS hits).
 //   - Some comets end their arc by striking an island. Only then does it touch the world: a small
 //     crater (under 40 blocks, see CometImpact) with a Comet Core in it, and some loot.
@@ -222,7 +223,7 @@ public class LiveComet extends Mob {
         int roll = r.nextInt(20);
         ItemStack chunk = roll < 3 ? new ItemStack(ModItems.RAW_METEORIC_IRON.get())
             : roll < 11 ? new ItemStack(ModBlocks.STARDUST_BLOCK.get(), 1 + r.nextInt(2))
-            : new ItemStack(ModBlocks.COMET_ICE.get(), 1 + r.nextInt(2));
+            : new ItemStack(Blocks.BLUE_ICE, 1 + r.nextInt(2));
         Vec3 c = this.position().add(0, this.getBbHeight() * 0.5, 0);
         ItemEntity item = new ItemEntity(level, c.x, c.y, c.z, chunk);
         item.setDeltaMovement((r.nextDouble() - 0.5) * 0.4, 0.2 + r.nextDouble() * 0.2, (r.nextDouble() - 0.5) * 0.4);

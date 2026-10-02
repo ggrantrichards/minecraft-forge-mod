@@ -3,7 +3,7 @@ package com.ggrantrichards.astralend.starforge;
 import com.ggrantrichards.astralend.ModBlocks;
 import com.ggrantrichards.astralend.ModItems;
 import com.ggrantrichards.astralend.flare.FlarePhase;
-import com.ggrantrichards.astralend.flare.StellarFlares;
+import com.ggrantrichards.astralend.flare.Sunstorms;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -71,10 +71,10 @@ import net.minecraftforge.event.level.BlockEvent;
 //   Singularity  armour: Lensing - 10% per piece that a projectile curves around you.
 //                swords: a full sweep pulls nearby mobs toward your target. tools: Pull (StarforgeLoot).
 //   Radiant      armour: Soak Light - in bright light, a golden heart every 20 s, up to one per
-//                piece; 2+ pieces and Flare Burn can't touch you. weapons: targets glow for 5 s.
+//                piece; 2+ pieces and Sunburn can't touch you. weapons: targets glow for 5 s.
 //
 // Rift Pearls drop from every boss: the Ender Dragon, the Wither, the Warden, Elder Guardians (and
-// the Orrery Sentinel, in its loot table).
+// the Spire Wyrm, in its loot table).
 public final class StarforgeEffects {
     public static void register() {
         TickEvent.PlayerTickEvent.Post.BUS.addListener(StarforgeEffects::onPlayerTick);
@@ -215,7 +215,7 @@ public final class StarforgeEffects {
             s.soak = 0;
             return;
         }
-        boolean flare = StellarFlares.phaseIn(level) == FlarePhase.FLARE && StellarFlares.isCorona(level, player.blockPosition());
+        boolean flare = Sunstorms.phaseIn(level) == FlarePhase.FLARE && Sunstorms.isCorona(level, player.blockPosition());
         boolean bright = flare || level.getMaxLocalRawBrightness(BlockPos.containing(player.getEyePosition())) >= 13;
         if (!bright) {
             return;
@@ -230,7 +230,7 @@ public final class StarforgeEffects {
         }
     }
 
-    // Radiant armour, two pieces or more: Flare Burn can't touch you (StellarFlares asks).
+    // Radiant armour, two pieces or more: Sunburn can't touch you (Sunstorms asks).
     public static boolean flareProof(Player player) {
         return Starforge.pieces(player, StarforgeUpgrade.RADIANT) >= 2;
     }

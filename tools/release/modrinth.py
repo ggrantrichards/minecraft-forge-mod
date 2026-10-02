@@ -21,8 +21,8 @@ API = os.environ.get("MODRINTH_API", "https://api.modrinth.com/v2")   # overrida
 ROOT = Path(__file__).resolve().parents[2]
 SLUG = "the-astral-end"
 TITLE = "The Astral End"
-SUMMARY = ("The End, expanded: six new biomes, new creatures, a living sky with auroras and Stellar "
-           "Flares, live comets, and ruins to explore.")
+SUMMARY = ("The End, expanded: six new biomes, new creatures, a living sky with auroras and "
+           "sunstorms, live comets, and ruins to explore.")
 GAME_VERSIONS = ["26.3"]
 LOADERS = ["forge"]
 USER_AGENT = "ggrantrichards/minecraft-forge-mod (release workflow)"
@@ -131,8 +131,17 @@ def main():
         print(f"Project {project['slug']} ({project['id']}) already exists")
     pid = project["id"]
 
-    # The gallery, then the description with its pictures pointing at the gallery.
-    have = {g.get("title") for g in (project.get("gallery") or [])}
+    # The gallery, then the description with its pictures pointing at the gallery. Pictures are known
+    # by title: one whose description changed is uploaded again, and one no longer listed is removed.
+    have = {g.get("title"): g for g in (project.get("gallery") or [])}
+    wanted = {entry["title"]: entry for entry in gallery}
+    for title, old in list(have.items()):
+        if title not in wanted or (old.get("description") or "") != wanted[title]["description"]:
+            status, err = request("DELETE", f"/project/{pid}/gallery?{urllib.parse.urlencode({'url': old['url']})}", token)
+            if status not in (200, 204):
+                die(f"Couldn't remove the old picture {title} ({status}): {err}")
+            print(f"Gallery: removed {title}")
+            del have[title]
     for order, entry in enumerate(gallery):
         if entry["title"] in have:
             continue

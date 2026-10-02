@@ -10,7 +10,7 @@ import com.ggrantrichards.astralend.AstralEnd;
 import com.ggrantrichards.astralend.ModBlocks;
 import com.ggrantrichards.astralend.entity.UmbralStalker;
 import com.ggrantrichards.astralend.flare.FlarePhase;
-import com.ggrantrichards.astralend.flare.StellarFlares;
+import com.ggrantrichards.astralend.flare.Sunstorms;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -44,7 +44,7 @@ public final class ClientScreenshots {
     // A viewpoint; mob shots also name a mob to summon (with its AI off) at mobX/Y/Z, facing the
     // camera ("display" instead of a mob builds a small display of the Phase 5 flare blocks there).
     // The optional last word lists styles, comma-separated: "lit" puts a Spore Lantern beside it,
-    // "side" turns it side-on, "angled" three-quarters on, "flare=<phase>" sets the Stellar Flare
+    // "side" turns it side-on, "angled" three-quarters on, "flare=<phase>" sets the Sunstorm
     // phase for the shot (calm, warning, flare, afterglow), "clear" removes every mob nearby.
     record Shot(String name, double x, double y, double z, float yaw, float pitch,
                         String mob, double mobX, double mobY, double mobZ, String style) {}
@@ -167,7 +167,7 @@ public final class ClientScreenshots {
             }
             // A fixed flare phase for the shot: the first shot settles it to calm (so a flare can't start
             // in the middle of the biome shots), and the Phase 5 shots ask for the phase they show.
-            StellarFlares flares = StellarFlares.get(end);
+            Sunstorms flares = Sunstorms.get(end);
             for (String style : shot.style().split(",")) {
                 event(end, BlockPos.containing(shot.x(), shot.y(), shot.z()), style);
             }
@@ -177,10 +177,10 @@ public final class ClientScreenshots {
         });
     }
 
-    // One of a shot's styles that changes the world: flare=<phase>, clear, bridges, power or wake (see
+    // One of a shot's styles that changes the world: flare=<phase>, clear, bridges or wake (see
     // the comments in each). `here` is the camera's position.
     static void event(ServerLevel end, BlockPos here, String style) {
-        StellarFlares flares = StellarFlares.get(end);
+        Sunstorms flares = Sunstorms.get(end);
         if (style.startsWith("flare=")) {
             flares.setPhase(end, FlarePhase.valueOf(style.substring(6).toUpperCase(java.util.Locale.ROOT)), end.getRandom());
         }
@@ -197,21 +197,8 @@ public final class ClientScreenshots {
                 com.ggrantrichards.astralend.maze.MazeScoping.lightBridges(end, here.offset(24, -18, 24), id);
             }
         }
-        if (style.equals("power")) {
-            // An Orrery, powered: its vault open and its Sentinel awake (but holding still).
-            for (BlockPos p : BlockPos.betweenClosed(here.offset(-24, -10, -24), here.offset(24, 10, 24))) {
-                if (end.getBlockState(p).is(ModBlocks.ORRERY_HEART.get())) {
-                    com.ggrantrichards.astralend.orrery.OrreryHeartBlock.power(end, p.immutable(), end.getBlockState(p));
-                    break;
-                }
-            }
-            for (var s : end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.OrrerySentinel.class,
-                    new net.minecraft.world.phys.AABB(here).inflate(24))) {
-                s.setNoAi(true);
-            }
-        }
         if (style.equals("wake")) {
-            // A Wormhole Maw, woken: light its eyes and open its throat.
+            // A Rift Maw, woken: light its eyes and open its throat.
             BlockPos throat = null;
             for (BlockPos p : BlockPos.betweenClosed(here.offset(-40, -24, -40), here.offset(40, 16, 40))) {
                 var state = end.getBlockState(p);
@@ -264,9 +251,6 @@ public final class ClientScreenshots {
             }
             if (!end.noCollision(entity)) {
                 entity.snapTo(shot.mobX(), shot.mobY(), shot.mobZ(), yaw, 0.0F);
-            }
-            if (entity instanceof com.ggrantrichards.astralend.entity.OrrerySentinel sentinel && shot.style().contains("awake")) {
-                sentinel.wake();
             }
             if (entity instanceof UmbralStalker stalker) {
                 stalker.showAsHunting();   // otherwise, with no prey, there'd be nothing to see

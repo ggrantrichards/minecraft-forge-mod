@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "astralend:item/corona_skimmer_spawn_egg"
-  }
-}

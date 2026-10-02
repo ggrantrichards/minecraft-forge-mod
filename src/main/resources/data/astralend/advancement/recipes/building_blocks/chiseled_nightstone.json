@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:chiseled_nightstone"
+      }
+    },
+    "has_nightstone_slab": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:nightstone_slab"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_nightstone_slab"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:chiseled_nightstone"
+    ]
+  }
+}

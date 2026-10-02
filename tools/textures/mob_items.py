@@ -66,8 +66,8 @@ CRACKED_LENS = [
 ]
 CRACKED_LENS_PAL = dict(o="231a33", f="5b5470", l="7b3fd0", h="c79bff", w="ffffff", c="1a1026")
 
-# Singularity Shard: a black shard with a bright rim, the remains of a Black Hole Guardian.
-SINGULARITY_SHARD = [
+# Abyss Shard: a black shard with a bright rim, the remains of the Hollow.
+ABYSS_SHARD = [
     "................",
     "........rr......",
     ".......rkkr.....",
@@ -85,7 +85,7 @@ SINGULARITY_SHARD = [
     ".......rr.......",
     "................",
 ]
-SINGULARITY_SHARD_PAL = dict(r="f0a8ff", k="07050c", p="3a1d5c")
+ABYSS_SHARD_PAL = dict(r="f0a8ff", k="07050c", p="3a1d5c")
 
 # Umbral Membrane: a dark, glossy scrap of hide (from Umbral Stalkers).
 UMBRAL_MEMBRANE = [
@@ -108,8 +108,8 @@ UMBRAL_MEMBRANE = [
 ]
 UMBRAL_MEMBRANE_PAL = dict(o="0b0714", d="1f1733", m="332654", h="7d6ab8")
 
-# Skimmer Film: a thin, glowing, heat-proof membrane (sheared from Corona Skimmers).
-SKIMMER_FILM = [
+# Ray Film: a thin, glowing, heat-proof membrane (sheared from Void Rays).
+RAY_FILM = [
     "................",
     "................",
     "..oooooooooo....",
@@ -127,7 +127,7 @@ SKIMMER_FILM = [
     "................",
     "................",
 ]
-SKIMMER_FILM_PAL = dict(o="7a3a12", y="e8913a", a="ffd27a", w="fff6d8")
+RAY_FILM_PAL = dict(o="7a3a12", y="e8913a", a="ffd27a", w="fff6d8")
 
 # Cinder: a glowing ember (from Cinder Mites); a small fuel.
 CINDER = [
@@ -154,9 +154,9 @@ ITEM_MAPS = {
     "glowing_spores": (GLOWING_SPORES, GLOWING_SPORES_PAL),
     "chart_fragment": (CHART_FRAGMENT, CHART_FRAGMENT_PAL),
     "cracked_lens": (CRACKED_LENS, CRACKED_LENS_PAL),
-    "singularity_shard": (SINGULARITY_SHARD, SINGULARITY_SHARD_PAL),
+    "abyss_shard": (ABYSS_SHARD, ABYSS_SHARD_PAL),
     "umbral_membrane": (UMBRAL_MEMBRANE, UMBRAL_MEMBRANE_PAL),
-    "skimmer_film": (SKIMMER_FILM, SKIMMER_FILM_PAL),
+    "ray_film": (RAY_FILM, RAY_FILM_PAL),
     "cinder": (CINDER, CINDER_PAL),
 }
 

@@ -40,8 +40,8 @@ public final class FlareCommand {
         if (end == null) {
             return 0;
         }
-        StellarFlares flares = StellarFlares.get(end);
-        source.sendSuccess(() -> Component.literal("Stellar Flares: " + flares.phase().name().toLowerCase(Locale.ROOT)), false);
+        Sunstorms flares = Sunstorms.get(end);
+        source.sendSuccess(() -> Component.literal("Sunstorms: " + flares.phase().name().toLowerCase(Locale.ROOT)), false);
         return 1;
     }
 
@@ -57,8 +57,8 @@ public final class FlareCommand {
         if (end == null) {
             return 0;
         }
-        StellarFlares.get(end).setPhase(end, phase, end.getRandom());
-        source.sendSuccess(() -> Component.literal("Stellar Flares: now " + name.toLowerCase(Locale.ROOT)), true);
+        Sunstorms.get(end).setPhase(end, phase, end.getRandom());
+        source.sendSuccess(() -> Component.literal("Sunstorms: now " + name.toLowerCase(Locale.ROOT)), true);
         return 1;
     }
 

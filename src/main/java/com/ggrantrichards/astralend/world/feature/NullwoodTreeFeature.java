@@ -19,7 +19,7 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 
 // A Nullwood tree: a black, twisting trunk that wanders as it climbs, a few crooked branches, and
 // clumps of dark violet leaves hung with glowing Null Lanterns. Grown by world generation in the
-// Dark Matter Belt, and by saplings.
+// Hollow Isles, and by saplings.
 public record NullwoodTreeFeature() implements Feature {
     public static final MapCodec<NullwoodTreeFeature> CODEC = MapCodec.unit(NullwoodTreeFeature::new);
 

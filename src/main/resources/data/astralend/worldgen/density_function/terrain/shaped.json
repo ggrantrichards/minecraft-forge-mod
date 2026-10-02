@@ -1,31 +1,26 @@
 {
   "type": "minecraft:lerp",
-  "alpha": "astralend:terrain/weight/shattered_observatory",
+  "alpha": "astralend:terrain/weight/ashen_barrens",
   "first": {
     "type": "minecraft:lerp",
-    "alpha": "astralend:terrain/weight/aurora_shallows",
+    "alpha": "astralend:terrain/weight/comet_wake",
     "first": {
       "type": "minecraft:lerp",
-      "alpha": "astralend:terrain/weight/comet_wake",
+      "alpha": "astralend:terrain/weight/hollow_isles",
       "first": {
         "type": "minecraft:lerp",
-        "alpha": "astralend:terrain/weight/dark_matter_belt",
+        "alpha": "astralend:terrain/weight/corona",
         "first": {
           "type": "minecraft:lerp",
-          "alpha": "astralend:terrain/weight/corona",
-          "first": {
-            "type": "minecraft:lerp",
-            "alpha": "astralend:terrain/weight/nebula_fields",
-            "first": "minecraft:end/sloped_cheese",
-            "second": "astralend:terrain/nebula_fields"
-          },
-          "second": "astralend:terrain/corona"
+          "alpha": "astralend:terrain/weight/nebula_fields",
+          "first": "minecraft:end/sloped_cheese",
+          "second": "astralend:terrain/nebula_fields"
         },
-        "second": "astralend:terrain/dark_matter_belt"
+        "second": "astralend:terrain/corona"
       },
-      "second": "astralend:terrain/comet_wake"
+      "second": "astralend:terrain/hollow_isles"
     },
-    "second": "astralend:terrain/aurora_shallows"
+    "second": "astralend:terrain/comet_wake"
   },
-  "second": "astralend:terrain/shattered_observatory"
+  "second": "astralend:terrain/ashen_barrens"
 }

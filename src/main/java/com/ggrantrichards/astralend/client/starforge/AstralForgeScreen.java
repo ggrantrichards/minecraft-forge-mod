@@ -24,7 +24,7 @@ public class AstralForgeScreen extends ItemCombinerScreen<AstralForgeMenu> {
         vanilla("leggings"), vanilla("axe"), vanilla("boots"), sprite("bow"), vanilla("shovel"), sprite("trident"), vanilla("hoe"));
     private static final List<Identifier> ALLOY_ICONS = List.of(vanilla("ingot"));
     private static final List<Identifier> MATERIAL_ICONS = List.of(sprite("void_crystal"), vanilla("ingot"), sprite("stardust"),
-        sprite("temporal_crystal"), sprite("singularity_shard"), sprite("solarite"));
+        sprite("temporal_crystal"), sprite("abyss_shard"), sprite("solarite"));
     private static final int ERROR_X = 100;
     private static final int ERROR_Y = 46;
 

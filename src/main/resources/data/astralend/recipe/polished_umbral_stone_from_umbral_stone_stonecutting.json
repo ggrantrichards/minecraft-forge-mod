@@ -1,7 +1,0 @@
-{
-  "type": "minecraft:stonecutting",
-  "ingredient": "astralend:umbral_stone",
-  "result": {
-    "id": "astralend:polished_umbral_stone"
-  }
-}

@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 
-// A star-shaped flower. Grows anywhere normal flowers do, plus End Stone and Nebula Moss.
+// A star-shaped flower. Grows anywhere normal flowers do, plus End Stone and Chorus Moss.
 // In suspicious stew it gives Night Vision, like a poppy's cousin from the stars.
 public class StarbloomBlock extends FlowerBlock {
     public StarbloomBlock(BlockBehaviour.Properties properties) {
@@ -19,7 +19,7 @@ public class StarbloomBlock extends FlowerBlock {
 
     @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
-        return super.mayPlaceOn(state, level, pos) || state.is(Blocks.END_STONE) || state.is(ModBlocks.NEBULA_MOSS.get());
+        return super.mayPlaceOn(state, level, pos) || state.is(Blocks.END_STONE) || state.is(ModBlocks.CHORUS_MOSS.get());
     }
 
     @Override

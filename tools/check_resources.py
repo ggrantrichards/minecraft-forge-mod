@@ -86,11 +86,6 @@ WOOD_PARTS = ["{n}_{log}", "{n}_{wood}", "stripped_{n}_{log}", "stripped_{n}_{wo
 wood_sets = re.findall(r'woodSet\("([a-z0-9_]+)", "([a-z]+)", "([a-z]+)"', blocks_src)
 for n, log, wood in wood_sets:
     blocks_with_item |= {part.format(n=n, log=log, wood=wood) for part in WOOD_PARTS}
-# Phase 9: the Orrery Bronze family is registered by a loop (ModBlocks.BRONZE).
-if "BRONZE.put(" in blocks_src:
-    blocks_with_item |= {f"{w}{st}{sh}" for w in ("", "waxed_") for st in ("", "tarnished_", "weathered_")
-                         for sh in ("orrery_bronze", "cut_orrery_bronze", "cut_orrery_bronze_stairs", "cut_orrery_bronze_slab",
-                                    "orrery_bronze_grate")}
 blocks = blocks_with_item | blocks_no_item
 plain_items = set(re.findall(r'\b(?:simple|register|ITEMS\.register)\("([a-z0-9_]+)"', items_src))
 plain_items |= {f"{mob}_spawn_egg" for mob in re.findall(r'\bspawnEgg\("([a-z0-9_]+)"', items_src)}
@@ -326,7 +321,7 @@ for extra in sorted(set(lang) - {f"block.{NS}.{n}" for n in blocks} - {f"item.{N
                     - {f"item.minecraft.{k}.effect.{p}" for p in potion_names
                        for k in ("potion", "splash_potion", "lingering_potion", "tipped_arrow")}
                     - {f"death.attack.{NS}.{d}{suffix}" for d in damage_types for suffix in ("", ".player")}
-                    - {k for k in lang if k.startswith(("flare.astralend.", "maw.astralend.", "maze.astralend.", "orrery.astralend.",
+                    - {k for k in lang if k.startswith(("flare.astralend.", "maw.astralend.", "maze.astralend.",
                                                         "upgrade.astralend.", "container.astralend."))}
                     - {f"structure.{NS}.{st.split(':')[1]}" for st in worldgen_ids.get("structure", set())}):
     err(f"lang/en_us.json: {extra} doesn't match anything registered")

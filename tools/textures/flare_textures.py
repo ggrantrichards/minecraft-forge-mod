@@ -1,4 +1,4 @@
-"""Textures for Phase 5 (Stellar Flares): the Flarebloom shut and open, charged Sunscale Lichen,
+"""Textures for Phase 5 (Sunstorms): the Flarebloom shut and open, charged Sunscale Lichen,
 the Sunshade, the Collector Pedestal, Flare Bottles, Charged Void Crystal, Flare Pollen and the Flare
 Ward effect icon. Imported by hq.py, which adds them to its TEXTURES list."""
 import math
@@ -70,7 +70,7 @@ def lichen(charged):
 
 
 # ------------------------------------------------------------------ Sunshade
-# A square of Skimmer Film stretched on a bronze frame, like a parasol: four translucent amber panels
+# A square of Ray Film stretched on a bronze frame, like a parasol: four translucent amber panels
 # with the wing's veins still in them.
 def sunshade():
     img = new()
@@ -192,7 +192,7 @@ FLASK = [
 
 def flare_bottle(charged):
     """A Flare Bottle: a round glass flask with a Solarite stopper - clear and empty, or, once a
-    Stellar Flare has filled it on a Collector Pedestal, a Bottled Flare swirling with gold light."""
+    Sunstorm has filled it on a Collector Pedestal, a Bottled Flare swirling with gold light."""
     pal = {"o": hexc("2a1a10"), "B": hexc("ffd36a"), "b": hexc("e0a030"), "D": hexc("8a5a18")}
     if charged:
         pal.update(g=hexc("ffb040"), G=hexc("e4621e"), h=hexc("fff4c0"))
@@ -278,8 +278,8 @@ WARD = [
 ]
 
 
-def flare_ward_icon():
-    """The effect icon (18x18): a Skimmer-Film parasol with the flare's rays held off above it."""
+def sun_ward_icon():
+    """The effect icon (18x18): a Ray-Film parasol with the flare's rays held off above it."""
     pal = {"o": hexc("5a2a0c"), "A": hexc("f4ac52"), "a": hexc("d8762a"), "W": hexc("fff0c8"), "d": hexc("9a4a16"),
            "B": hexc("c08a46"), "y": hexc("ffd24a")}
     img = Image.new("RGBA", (18, 18), (0, 0, 0, 0))
@@ -301,7 +301,7 @@ TEXTURES = [
     ("item/bottled_flare.png", lambda: flare_bottle(True)),
     ("item/charged_void_crystal.png", charged_void_crystal),
     ("item/flare_pollen.png", flare_pollen),
-    ("mob_effect/flare_ward.png", flare_ward_icon),
+    ("mob_effect/sun_ward.png", sun_ward_icon),
 ]
 
 # What a Collector Pedestal holds is drawn on top of it with the item's own picture; block models can

@@ -2,7 +2,7 @@ package com.ggrantrichards.astralend.block;
 
 import com.ggrantrichards.astralend.ModItems;
 import com.ggrantrichards.astralend.flare.FlarePhase;
-import com.ggrantrichards.astralend.flare.StellarFlares;
+import com.ggrantrichards.astralend.flare.Sunstorms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -20,8 +20,8 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.phys.BlockHitResult;
 
-// Flarebloom: a tall Corona flower that stays shut tight - until a Stellar Flare. Then it opens and
-// glows (StellarFlares opens the ones near players), and an open bloom can be picked for Flare Pollen
+// Flarebloom: a tall Corona flower that stays shut tight - until a Sunstorm. Then it opens and
+// glows (Sunstorms opens the ones near players), and an open bloom can be picked for Flare Pollen
 // (use it, or break it). After the flare it closes again on its own.
 public class FlarebloomBlock extends EndTallPlantBlock {
     public static final BooleanProperty OPEN = BooleanProperty.create("open");
@@ -58,7 +58,7 @@ public class FlarebloomBlock extends EndTallPlantBlock {
 
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        if (StellarFlares.phaseIn(level) != FlarePhase.FLARE) {
+        if (Sunstorms.phaseIn(level) != FlarePhase.FLARE) {
             setOpen(level, pos, state, false);
         }
     }

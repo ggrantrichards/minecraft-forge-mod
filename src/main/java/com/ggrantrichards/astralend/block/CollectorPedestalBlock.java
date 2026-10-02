@@ -30,7 +30,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jspecify.annotations.Nullable;
 
 // Collector Pedestal: holds one Void Crystal or Flare Bottle. Under open sky in the Corona during a
-// Stellar Flare it charges what it holds (CollectorPedestalBlockEntity). Use it with the item to
+// Sunstorm it charges what it holds (CollectorPedestalBlockEntity). Use it with the item to
 // set it down, with an empty hand to take it back. The state shows what it holds (a model each).
 public class CollectorPedestalBlock extends Block implements EntityBlock {
     public enum Holding implements StringRepresentable {

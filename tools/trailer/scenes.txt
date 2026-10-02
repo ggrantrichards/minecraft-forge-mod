@@ -16,38 +16,34 @@
 #   roll              degrees of camera roll, eased in over the shot
 #   ease              both (default), in, out or none
 #   comet             a live comet crosses the sky and comes down ahead; the camera follows it
-# and things to happen: wake@N, power@N, bridges@N (on frame N), flare=<phase>, clear.
+# and things to happen: wake@N, bridges@N (on frame N), flare=<phase>, clear.
 # The caption after "|" is shown small in the corner; leave it empty for none.
 
 card 4.0 | For ages, the End stood still.
 sky_nebula_fields 150 pitch=-40:16 fwd=6 flare=calm |
 card 3.0 | Now it is waking up.
 nebula_fields 90 fwd=14 up=-3 yaw=8 | Nebula Fields
-aurora_shallows 90 fwd=14 up=-2 yaw=-8 | Aurora Shallows
+ashen_barrens 90 fwd=14 up=-2 yaw=-8 | Ashen Barrens
 corona 90 fwd=12 yaw=10 | The Corona
 comet_wake 90 fwd=14 up=-2 yaw=-6 | Comet Wake
-dark_matter_belt 90 fwd=12 yaw=8 | Dark Matter Belt
-shattered_observatory_aerial 110 fwd=22 up=-10 pitch=38:26 | Shattered Observatory
+hollow_isles 90 fwd=12 yaw=8 | Hollow Isles
 card 2.5 | New life drifts between the islands.
 mob_pollinator 75 orbit=50 | End Pollinator
 mob_drift_whale_side 130 track=0.12 | Drift Whale
 mob_void_wanderer 75 orbit=-45 | Void Wanderer
-mob_corona_skimmer 65 orbit=40 | Corona Skimmer
+mob_void_ray 65 orbit=40 | Void Ray
 mob_watcher 75 fwd=2.5 | The Watcher
 mob_umbral_stalker_lit 65 orbit=30 | Umbral Stalker
-mob_black_hole_guardian 75 orbit=-40 | Black Hole Guardian
+mob_hollow 75 orbit=-40 | The Hollow
 card 2.5 | Keep an eye on the sky.
 comet_wake 190 comet | Live Comets
-sky_corona_flare 110 yaw=25 pitch=-18:-10 flare=flare | Stellar Flares
+sky_corona_flare 110 yaw=25 pitch=-18:-10 flare=flare | Sunstorms
 card 2.5 | Someone was here before you.
-structure_abandoned_orrery 110 orbit=30 focus=hit | The Abandoned Orrery
-structure_orrery_vault 75 fwd=3 | Orrery Sentinel
-structure_wormhole_maw 110 fwd=4 wake@30 | Wormhole Maws
+structure_shattered_observatory 110 orbit=30 focus=hit | The Shattered Observatory
+structure_rift_maw 110 fwd=4 wake@30 | Rift Maws
 structure_constellation_maze 110 orbit=20 focus=hit bridges@30 | Constellation Mazes
-structure_observatory_ruins 75 orbit=-25 focus=hit | Observatory Ruins
 structure_whalefall 75 orbit=25 focus=hit | Whalefalls
 card 2.5 | Bring something back.
 starforge_astral_forge 75 orbit=35 focus=hit | Starforging
-polish_orrery_bronze 65 fwd=2 side=1 | Orrery Bronze
 nebula_fields_aerial 150 fwd=-20 up=14 pitch=38:24 ease=in |
 logo 8.0

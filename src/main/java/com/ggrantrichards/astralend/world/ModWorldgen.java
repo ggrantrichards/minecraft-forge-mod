@@ -7,11 +7,9 @@ import com.ggrantrichards.astralend.world.feature.CraterFeature;
 import com.ggrantrichards.astralend.world.feature.GiantLumineshroomFeature;
 import com.ggrantrichards.astralend.world.feature.LeviathanRibcageFeature;
 import com.ggrantrichards.astralend.world.feature.NullwoodTreeFeature;
-import com.ggrantrichards.astralend.world.feature.ObservatoryRingFeature;
 import com.ggrantrichards.astralend.world.feature.PetrifiedStalkFeature;
 import com.ggrantrichards.astralend.world.feature.TendrilUndersideFeature;
-import com.ggrantrichards.astralend.world.feature.InversionPocketFeature;
-import com.ggrantrichards.astralend.world.feature.ObservatoryRuinFeature;
+import com.ggrantrichards.astralend.world.feature.UpwellFeature;
 import com.ggrantrichards.astralend.world.feature.StardustUnderhangFeature;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
@@ -38,8 +36,7 @@ public final class ModWorldgen {
     static {
         FEATURE_TYPES.register("comet_core", () -> CometCoreFeature.CODEC);
         FEATURE_TYPES.register("stardust_underhang", () -> StardustUnderhangFeature.CODEC);
-        FEATURE_TYPES.register("inversion_pocket", () -> InversionPocketFeature.CODEC);
-        FEATURE_TYPES.register("observatory_ruin", () -> ObservatoryRuinFeature.CODEC);
+        FEATURE_TYPES.register("upwell", () -> UpwellFeature.CODEC);
         FEATURE_TYPES.register("giant_lumineshroom", () -> GiantLumineshroomFeature.CODEC);
         FEATURE_TYPES.register("tendril_underside", () -> TendrilUndersideFeature.CODEC);
         FEATURE_TYPES.register("nullwood_tree", () -> NullwoodTreeFeature.CODEC);
@@ -47,7 +44,6 @@ public final class ModWorldgen {
         FEATURE_TYPES.register("comet_ice_spire", () -> CometIceSpireFeature.CODEC);
         FEATURE_TYPES.register("crater", () -> CraterFeature.CODEC);
         FEATURE_TYPES.register("petrified_stalk", () -> PetrifiedStalkFeature.CODEC);
-        FEATURE_TYPES.register("observatory_ring", () -> ObservatoryRingFeature.CODEC);
     }
 
     // Phase 6: structures that check the ground before they start (see IslandStructure).

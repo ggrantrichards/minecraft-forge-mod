@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "F": "astralend:skimmer_film",
+    "F": "astralend:ray_film",
     "S": "astralend:solarite_ingot"
   },
   "pattern": [

@@ -42,7 +42,7 @@
         },
         {
           "type": "minecraft:item",
-          "name": "astralend:comet_ice",
+          "name": "minecraft:blue_ice",
           "weight": 4,
           "functions": [
             {

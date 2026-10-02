@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:polished_nightstone_stairs_from_nightstone_stonecutting"
+      }
+    },
+    "has_nightstone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:nightstone"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_nightstone"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:polished_nightstone_stairs_from_nightstone_stonecutting"
+    ]
+  }
+}

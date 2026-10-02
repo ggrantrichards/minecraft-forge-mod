@@ -37,7 +37,7 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 
-// The star road: every Wormhole Maw that has been woken, and which of them each player has woken (or
+// The star road: every Rift Maw that has been woken, and which of them each player has woken (or
 // attuned to). Walking into a woken Maw's throat sends you on to the next Maw on your own list, for
 // an ender pearl or four chorus fruit, and you're spat out of that Maw's mouth.
 public class MawNetwork extends SavedData {

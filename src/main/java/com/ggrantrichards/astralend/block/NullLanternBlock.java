@@ -15,7 +15,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 // The glowing fruit of the Nullwood tree. It hangs under the leaves (or a log) and pops off when
-// what it hangs from is gone - the only light in the Dark Matter Belt's forests.
+// what it hangs from is gone - the only light in the Hollow Isles's forests.
 public class NullLanternBlock extends Block {
     private static final VoxelShape SHAPE = Block.column(8.0, 6.0, 16.0);
 

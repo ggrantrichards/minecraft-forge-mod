@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 
-// The fossil ribcage of a Star Leviathan lying on an Aurora Shallows shelf: a spine half-sunk in
+// The fossil ribcage of a Star Leviathan lying on an Ashen Barrens shelf: a spine half-sunk in
 // the ground, with rib arches rising over it, tallest in the middle. Some ribs have broken away.
 public record LeviathanRibcageFeature() implements Feature {
     public static final MapCodec<LeviathanRibcageFeature> CODEC = MapCodec.unit(LeviathanRibcageFeature::new);

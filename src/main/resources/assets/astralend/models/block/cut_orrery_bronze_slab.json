@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/slab",
-  "textures": {
-    "bottom": "astralend:block/cut_orrery_bronze",
-    "side": "astralend:block/cut_orrery_bronze",
-    "top": "astralend:block/cut_orrery_bronze"
-  }
-}

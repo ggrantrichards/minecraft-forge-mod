@@ -50,7 +50,7 @@ public final class CometImpact {
         // What the comet leaves behind, whether or not it could dig a crater.
         List<ItemStack> loot = new ArrayList<>();
         loot.add(new ItemStack(ModBlocks.STARDUST_BLOCK.get(), 2 + random.nextInt(3)));
-        loot.add(new ItemStack(ModBlocks.COMET_ICE.get(), 1 + random.nextInt(2)));
+        loot.add(new ItemStack(Blocks.BLUE_ICE, 1 + random.nextInt(2)));
         loot.add(new ItemStack(ModItems.RAW_METEORIC_IRON.get(), 1 + random.nextInt(2)));
         if (random.nextInt(5) == 0) {
             loot.add(new ItemStack(ModItems.TEMPORAL_CRYSTAL.get()));
@@ -93,7 +93,7 @@ public final class CometImpact {
 
     // A small copy of the Comet Craters the world generates with: a bowl five blocks across, a rim of the
     // ground it threw up around it (some of it charred, with lumps of the comet's ice), the floor glazed
-    // with Comet Ice, and the Comet Core (Meteoric Iron, with Stardust packed under it where it can't fall
+    // with blue ice, and the Comet Core (Meteoric Iron, with Stardust packed under it where it can't fall
     // up) sitting in the middle.
     // The bowl and the Core come first; the rim and the glaze only use what's left of MAX_BLOCKS.
     private static int carve(ServerLevel level, BlockPos top, RandomSource random) {
@@ -119,7 +119,7 @@ public final class CometImpact {
         set(level, top.below(), ModBlocks.STARDUST_BLOCK.get().defaultBlockState(), changed);
         // The rim: what the impact threw out, piled around the edge, with lumps of the comet's ice in it.
         BlockState charred = ModBlocks.CHARRED_END_STONE.get().defaultBlockState();
-        BlockState ice = ModBlocks.COMET_ICE.get().defaultBlockState();
+        BlockState ice = Blocks.BLUE_ICE.defaultBlockState();
         for (int dx = -4; dx <= 4; dx++) {
             for (int dz = -4; dz <= 4; dz++) {
                 double d = Math.sqrt(dx * dx + dz * dz) + (random.nextDouble() - 0.5) * 0.6;

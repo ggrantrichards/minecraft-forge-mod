@@ -11,8 +11,8 @@
     "featured": true
   },
   {
-    "file": "docs/images/screens/aurora_shallows.png",
-    "title": "Aurora Shallows",
+    "file": "docs/images/screens/ashen_barrens.png",
+    "title": "Ashen Barrens",
     "description": "Pale, flat shelves under green and gold auroras."
   },
   {
@@ -26,18 +26,13 @@
     "description": "Scorched islands pocked with impact craters."
   },
   {
-    "file": "docs/images/screens/dark_matter_belt.png",
-    "title": "Dark Matter Belt",
+    "file": "docs/images/screens/hollow_isles.png",
+    "title": "Hollow Isles",
     "description": "Dim forests of twisted Nullwood on ring-shaped islands."
   },
   {
-    "file": "docs/images/screens/shattered_observatory.png",
-    "title": "Shattered Observatory",
-    "description": "Great rings of quartz pillars, overgrown with Starblooms."
-  },
-  {
     "file": "docs/images/sky/corona_flare.png",
-    "title": "A Stellar Flare",
+    "title": "A Sunstorm",
     "description": "The Corona's sky burning gold."
   },
   {
@@ -61,23 +56,13 @@
     "description": "Ride its tail with an elytra, or knock a chunk off its head."
   },
   {
-    "file": "docs/images/structures/game_wormhole_maw.png",
-    "title": "Wormhole Maw",
+    "file": "docs/images/structures/game_rift_maw.png",
+    "title": "Rift Maw",
     "description": "The fossil skull of a Star Leviathan. Its throat is a way across the End."
   },
   {
     "file": "docs/images/structures/game_observatory_ruins.png",
-    "title": "Observatory Ruins",
-    "description": "A broken dome, a telescope, and vaults that open for a Chart Fragment."
-  },
-  {
-    "file": "docs/images/structures/game_abandoned_orrery.png",
-    "title": "Abandoned Orrery",
-    "description": "A wheel of tarnished bronze hanging high over the End, and its guardian."
-  },
-  {
-    "file": "docs/images/polish/game_orrery_bronze.png",
-    "title": "Orrery Bronze",
-    "description": "A whole block family that tarnishes over time; wax it to keep it."
+    "title": "Shattered Observatory",
+    "description": "The Cartographers' domed hall in a great ring of fallen quartz pillars."
   }
 ]

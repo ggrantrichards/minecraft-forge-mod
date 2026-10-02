@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-// A glowing mushroom that grows on Nebula Moss, End Stone and Umbral Stone.
+// A glowing mushroom that grows on Chorus Moss, End Stone and Nightstone.
 public class LumineshroomBlock extends VegetationBlock {
     private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 10.0);
 
@@ -27,7 +27,7 @@ public class LumineshroomBlock extends VegetationBlock {
 
     @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.is(ModBlocks.NEBULA_MOSS.get()) || state.is(Blocks.END_STONE) || state.is(ModBlocks.UMBRAL_STONE.get());
+        return state.is(ModBlocks.CHORUS_MOSS.get()) || state.is(Blocks.END_STONE) || state.is(ModBlocks.NIGHTSTONE.get());
     }
 
     @Override

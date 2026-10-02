@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:nightstone_brick_stairs"
+      }
+    },
+    "has_nightstone_bricks": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:nightstone_bricks"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_nightstone_bricks"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:nightstone_brick_stairs"
+    ]
+  }
+}

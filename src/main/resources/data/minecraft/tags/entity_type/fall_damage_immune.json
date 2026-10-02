@@ -1,11 +1,11 @@
 {
   "replace": false,
   "values": [
-    "astralend:black_hole_guardian",
-    "astralend:corona_skimmer",
     "astralend:drift_whale",
+    "astralend:hollow",
     "astralend:live_comet",
     "astralend:pollinator",
+    "astralend:void_ray",
     "astralend:void_wanderer",
     "astralend:watcher"
   ]

@@ -11,7 +11,7 @@ displayName="The Astral End"
 authors="ggrantrichards"
 displayURL="https://modrinth.com/mod/the-astral-end"
 logoFile="astralend_logo.png"
-description='''The End, expanded: six new biomes on the outer islands, new mobs, a living sky with auroras and Stellar Flares, live comets, ruins and vaults to explore, and new blocks to build with. A beta: expect changes before 1.0.'''
+description='''The End, expanded: six new biomes on the outer islands, new mobs, a living sky with auroras and Sunstorms, live comets, ruins and vaults to explore, and new blocks to build with. A beta: expect changes before 1.0.'''
 
 [[dependencies.astralend]]
     modId="forge"

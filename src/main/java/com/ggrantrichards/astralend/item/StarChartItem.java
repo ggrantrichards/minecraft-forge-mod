@@ -34,9 +34,9 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 public class StarChartItem extends Item {
     // Each destination is a structure tag holding just that structure (data/astralend/tags/worldgen/structure).
     private static final List<String> STRUCTURES = List.of("comet_crater", "wanderer_relay", "whalefall",
-        "observatory_ruins", "solar_array", "wormhole_maw", "constellation_maze", "abandoned_orrery");
-    private static final List<ResourceKey<Biome>> DESTINATIONS = List.of(ModBiomes.NEBULA_FIELDS, ModBiomes.AURORA_SHALLOWS,
-        ModBiomes.COMET_WAKE, ModBiomes.DARK_MATTER_BELT, ModBiomes.CORONA);
+        "shattered_observatory", "solar_array", "rift_maw", "constellation_maze");
+    private static final List<ResourceKey<Biome>> DESTINATIONS = List.of(ModBiomes.NEBULA_FIELDS, ModBiomes.ASHEN_BARRENS,
+        ModBiomes.COMET_WAKE, ModBiomes.HOLLOW_ISLES, ModBiomes.CORONA);
 
     public StarChartItem(Item.Properties properties) {
         super(properties);
@@ -49,7 +49,7 @@ public class StarChartItem extends Item {
     }
 
     // Fills in a chart: a structure if one is in reach, otherwise a biome region. A chart that names a
-    // structure already (the Constellation Maze's, which always marks a Wormhole Maw) marks that one.
+    // structure already (the Constellation Maze's, which always marks a Rift Maw) marks that one.
     private static void mark(ServerLevel level, BlockPos origin, ItemStack chart) {
         CustomData preset = chart.get(DataComponents.CUSTOM_DATA);
         String named = preset == null ? "" : preset.copyTag().getStringOr("Structure", "");

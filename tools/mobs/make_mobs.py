@@ -480,7 +480,7 @@ WANDERER = Mob("void_wanderer", (64, 64), [
 ], egg=(hexc("8e5c32"), hexc("68b89c")))
 
 
-# ---- Umbral Stalker: a hunched brute of the Dark Matter Belts that walks on its knuckles, like a
+# ---- Umbral Stalker: a hunched brute of the Hollow Isless that walks on its knuckles, like a
 # gorilla. Near-black violet fur, a leathery grey-violet face with bone tusks, bone plates over its
 # knuckles; shards of dark-matter crystal grow out of its back and a violet rift glows through a
 # crack in its chest. Crystals, rift and eyes glow only once it is revealed (see the renderer).
@@ -640,7 +640,7 @@ CINDER_MITE = Mob("cinder_mite", (64, 32), [
 ], egg=(hexc("2d211b"), hexc("ff7a1f")))
 
 
-# ---- Corona Skimmer: a flat, manta-shaped flier that rests looking like stone
+# ---- Void Ray: a flat, manta-shaped flier that rests looking like stone
 K_STONE = [hexc("c9a86a"), hexc("b8965a"), hexc("d4b476"), hexc("a8864e")]
 K_MEMBRANE = [hexc("e8913a"), hexc("d97e2c"), hexc("f0a04a")]
 
@@ -649,14 +649,14 @@ K_CRUST = [hexc("6e4521"), hexc("a8783e"), hexc("c49a5a"), hexc("dcb676"), hexc(
 
 
 def crust(px, py):
-    """The Skimmer's camouflage: the same cracked, sun-baked crust as the Corona's ground."""
+    """The Void Ray's camouflage: the same cracked, sun-baked crust as the Corona's ground."""
     t = n()
     if 0.48 < t < 0.53:
         return K_CRUST[0]                      # a crack
     return K_CRUST[1 + min(3, int(t * 4))]
 
 
-def skimmer_body(face, px, py, fw, fh, rnd):
+def ray_body(face, px, py, fw, fh, rnd):
     if face == "up":
         return crust(px, py)
     if face == "down":
@@ -664,7 +664,7 @@ def skimmer_body(face, px, py, fw, fh, rnd):
     return mix(rnd.choice(K_STONE), hexc("6b4e2a"), 0.4)
 
 
-def skimmer_wing(face, px, py, fw, fh, rnd):
+def ray_wing(face, px, py, fw, fh, rnd):
     if face == "up":
         if py in (0, fh - 1) or px == fw - 1:
             return K_CRUST[0]                  # the wing's dark rim
@@ -680,7 +680,7 @@ def skimmer_wing(face, px, py, fw, fh, rnd):
     return hexc("8a6a3a")
 
 
-def skimmer_wing_glow(face, px, py, fw, fh, rnd):
+def ray_wing_glow(face, px, py, fw, fh, rnd):
     if face == "down" and px % 3 != 0:
         return mix(hexc("ffd27a"), hexc("fff6d8"), rnd.random() * 0.5)
     if face == "up" and px % 3 == 1 and rnd.random() < 0.5:
@@ -688,25 +688,25 @@ def skimmer_wing_glow(face, px, py, fw, fh, rnd):
     return None
 
 
-def skimmer_head(face, px, py, fw, fh, rnd):
+def ray_head(face, px, py, fw, fh, rnd):
     if face == "north" and px in (0, 3):
         return hexc("2a1410")
-    return skimmer_body(face, px, py, fw, fh, rnd)
+    return ray_body(face, px, py, fw, fh, rnd)
 
 
-SKIMMER = Mob("corona_skimmer", (64, 32), [
+VOID_RAY = Mob("void_ray", (64, 32), [
     Part("body", (0, 22, 0), [
-        Box(0, 0, -4, -2, -6, 8, 2, 12, paint=skimmer_body),
-        Box(40, 0, -2, -1, -8, 4, 1, 2, paint=skimmer_head),
+        Box(0, 0, -4, -2, -6, 8, 2, 12, paint=ray_body),
+        Box(40, 0, -2, -1, -8, 4, 1, 2, paint=ray_head),
     ], [
-        Part("left_wing", (4, 0, 0), [Box(0, 14, 0, -1, -5, 10, 1, 10, paint=skimmer_wing, glow=skimmer_wing_glow)]),
-        Part("right_wing", (-4, 0, 0), [Box(0, 14, -10, -1, -5, 10, 1, 10, mirror=True, paint=skimmer_wing, glow=skimmer_wing_glow)]),
-        Part("tail", (0, -1, 6), [Box(40, 4, -0.5, 0, 0, 1, 1, 9, paint=skimmer_body)]),
+        Part("left_wing", (4, 0, 0), [Box(0, 14, 0, -1, -5, 10, 1, 10, paint=ray_wing, glow=ray_wing_glow)]),
+        Part("right_wing", (-4, 0, 0), [Box(0, 14, -10, -1, -5, 10, 1, 10, mirror=True, paint=ray_wing, glow=ray_wing_glow)]),
+        Part("tail", (0, -1, 6), [Box(40, 4, -0.5, 0, 0, 1, 1, 9, paint=ray_body)]),
     ]),
 ], egg=(hexc("c9a86a"), hexc("e8913a")))
 
 
-# ---- Black Hole Guardian: a small singularity with a spinning accretion ring
+# ---- The Hollow: a small singularity with a spinning accretion ring
 def guardian_core(face, px, py, fw, fh, rnd):
     """Lightless black: nothing reflects from it. Only faint flecks of light caught falling in."""
     return hexc("170b28") if n() > 0.86 else hexc("040306")
@@ -727,7 +727,7 @@ def guardian_ring(face, px, py, fw, fh, rnd):
     return c
 
 
-GUARDIAN = Mob("black_hole_guardian", (64, 64), [
+GUARDIAN = Mob("hollow", (64, 64), [
     Part("core", (0, 14, 0), [
         Box(0, 0, -4, -4, -4, 8, 8, 8, paint=guardian_core),
         Box(32, 0, -3, -5, -3, 6, 10, 6, paint=guardian_core),
@@ -944,89 +944,6 @@ WATCHER = Mob("watcher", (64, 64), [
 ], egg=(STONE[3], RUNE))
 
 
-# ---- Orrery Sentinel: the Orrery's guardian, a big, slow clockwork construct built like a Void
-# Wanderer: a Wanderer's head with its great lens, on a riveted bronze body with heavy fists, and a
-# gimbal ring on its back. It's tarnished violet with age, like the Orrery's own bronze.
-TARNISH = [hexc("5e4a86"), hexc("75609e"), hexc("9a86c6")]
-
-
-def orrery_bronze(face, px, py, fw, fh, rnd, panels=True):
-    c = bronze(face, px, py, fw, fh, rnd, panels)
-    if c in PATINA:
-        c = TARNISH[PATINA.index(c)]                     # violet tarnish instead of verdigris
-    return c
-
-
-def orrery_bronze_plain(face, px, py, fw, fh, rnd):
-    return orrery_bronze(face, px, py, fw, fh, rnd, panels=False)
-
-
-def big_lens_glass(face, px, py, fw, fh, rnd):
-    if face != "north":
-        return hexc("1d4e62")
-    d = math.hypot(px - (fw - 1) / 2, py - (fh - 1) / 2)
-    if d < 1.0:
-        return hexc("0a1a24")                             # the pupil
-    return hexc("7fe9f5") if (px + py) % 3 else hexc("3fb8d0")
-
-
-def big_lens_glow(face, px, py, fw, fh, rnd):
-    if face == "north":
-        d = math.hypot(px - (fw - 1) / 2, py - (fh - 1) / 2)
-        if d >= 1.0:
-            return hexc("ffffff") if (px, py) == (1, 1) else hexc("aef8ff")
-    return None
-
-
-def chest_lights(face, px, py, fw, fh, rnd):
-    if face == "north" and py == 3 and px % 3 == 2 and 2 <= px <= fw - 3:
-        return hexc("b49cff")                             # a row of void crystals set across the chest
-    if face in ("east", "west") and py == fh // 2 and px % 3 == 1:
-        return hexc("b49cff")
-    return None
-
-
-def fist(face, px, py, fw, fh, rnd):
-    c = orrery_bronze_plain(face, px, py, fw, fh, rnd)
-    if face == "down" or (face == "north" and py >= fh - 2):
-        c = BRONZE[1]                                     # the knuckles, worn dark
-    if face == "north" and py == 1 and px % 2 == 1:
-        c = BRONZE[5]
-    return c
-
-
-SENTINEL = Mob("orrery_sentinel", (128, 64), [
-    Part("right_leg", (-4, 6, 0), [B(-2.5, 0, -2.5, 5, 18, 5, orrery_bronze, key="leg")]),
-    Part("left_leg", (4, 6, 0), [B(-2.5, 0, -2.5, 5, 18, 5, orrery_bronze, key="leg", mirror=True)]),
-    Part("body", (0, 6, 0), [
-        B(-8, -16, -5, 16, 14, 10, orrery_bronze, chest_lights),
-        B(-6, -2, -4, 12, 3, 8, orrery_bronze_plain),                  # the waist
-    ], [
-        Part("head", (0, -16, 0), [
-            B(-5, -10, -5, 10, 10, 10, orrery_bronze, inlay_glow),
-            B(-3.5, -8.5, -6, 7, 7, 1, lens_housing),
-            B(-2.5, -7.5, -6.6, 5, 5, 1, big_lens_glass, big_lens_glow),
-            B(-0.5, -14, -0.5, 1, 4, 1, orrery_bronze_plain),           # the finial
-            B(-1, -15, -1, 2, 1, 2, finial_crystal, finial_crystal),
-        ]),
-        Part("right_arm", (-10, -13, 0), [
-            B(-3, -2, -3, 5, 13, 6, orrery_bronze, key="arm"),
-            B(-3.5, 11, -3.5, 6, 6, 7, fist, key="fist"),
-        ]),
-        Part("left_arm", (10, -13, 0), [
-            B(-2, -2, -3, 5, 13, 6, orrery_bronze, key="arm", mirror=True),
-            B(-2.5, 11, -3.5, 6, 6, 7, fist, key="fist", mirror=True),
-        ]),
-        Part("ring", (0, -10, 7), [
-            B(-9, -9, 0, 18, 1, 1, ring_bar, key="ring_h"),
-            B(-9, 8, 0, 18, 1, 1, ring_bar, key="ring_h"),
-            B(-9, -8, 0, 1, 16, 1, ring_bar, key="ring_v"),
-            B(8, -8, 0, 1, 16, 1, ring_bar, key="ring_v"),
-        ]),
-    ]),
-], egg=(hexc("6e4526"), hexc("8f7bbd")))
-
-
 # ---- Live Comet (Phase 7): a tumbling rock of comet ice with dark lumps of meteoric iron and
 # glowing cracks, trailing three translucent streamers of light behind it (the particle tail goes on
 # much further).
@@ -1081,7 +998,7 @@ COMET = Mob("live_comet", (64, 64), [
 ], egg=(hexc("c3dcec"), hexc("3a3f52")))
 
 
-MOBS = [POLLINATOR, WANDERER, STALKER, CINDER_MITE, SKIMMER, GUARDIAN, WHALE, WATCHER, SENTINEL, COMET]
+MOBS = [POLLINATOR, WANDERER, STALKER, CINDER_MITE, VOID_RAY, GUARDIAN, WHALE, WATCHER, COMET]
 for _mob in MOBS:
     auto_uv(_mob)          # boxes drawn without a texture position get one
 

@@ -1,10 +1,10 @@
 package com.ggrantrichards.astralend.dev;
 
 import com.ggrantrichards.astralend.ModBlocks;
-import com.ggrantrichards.astralend.block.GravityAnomalyBlockEntity;
+import com.ggrantrichards.astralend.block.UpwellCoreBlockEntity;
 import com.ggrantrichards.astralend.entity.ModEntities;
 import com.ggrantrichards.astralend.world.AstralEndBiomeSource;
-import com.ggrantrichards.astralend.world.GravityInversion;
+import com.ggrantrichards.astralend.world.Upwells;
 import com.ggrantrichards.astralend.world.LowGravity;
 import com.ggrantrichards.astralend.world.ModBiomes;
 import com.mojang.logging.LogUtils;
@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 //   2. draws a text map of the End's biomes and measures how much each biome covers,
 //   3. generates an area inside every astral biome and counts every block, checking that each
 //      biome has its stone, ores, plants and features,
-//   4. checks low gravity (Nebula Fields) and gravity inversion (Dark Matter Belt),
+//   4. checks low gravity (Nebula Fields) and the Upwells (Hollow Isles),
 // then prints SURVEY PASSED or SURVEY FAILED and stops the server. CI runs it on every push.
 // tools/render_survey.py turns its maps into the pictures in the README.
 public final class WorldgenSurvey {
@@ -60,10 +60,9 @@ public final class WorldgenSurvey {
 
     private static final List<BiomeInfo> ASTRAL = List.of(
         new BiomeInfo(ModBiomes.NEBULA_FIELDS, 'N', "Nebula Fields", 15, 45, 4),
-        new BiomeInfo(ModBiomes.AURORA_SHALLOWS, 'A', "Aurora Shallows", 3, 25, 3),
+        new BiomeInfo(ModBiomes.ASHEN_BARRENS, 'A', "Ashen Barrens", 3, 25, 3),
         new BiomeInfo(ModBiomes.COMET_WAKE, 'W', "Comet Wake", 3, 25, 3),
-        new BiomeInfo(ModBiomes.DARK_MATTER_BELT, 'D', "Dark Matter Belt", 2, 20, 3),
-        new BiomeInfo(ModBiomes.SHATTERED_OBSERVATORY, 'R', "Shattered Observatory", 0.2, 6, 3),
+        new BiomeInfo(ModBiomes.HOLLOW_ISLES, 'D', "Hollow Isles", 2, 20, 3),
         new BiomeInfo(ModBiomes.CORONA, 'C', "The Corona", 2, 20, 3));
 
     public static void register() {
@@ -176,8 +175,8 @@ public final class WorldgenSurvey {
         // ---- Biome map ----
         log("Biome map of the End, " + (2 * MAP_RADIUS) + " x " + (2 * MAP_RADIUS) + " blocks, north up, one character = "
             + MAP_STEP + " blocks:");
-        log("  O central island   N Nebula Fields   A Aurora Shallows   W Comet Wake   D Dark Matter Belt   "
-            + "R Shattered Observatory   C The Corona   H/M/B/s vanilla Highlands/Midlands/Barrens/Small Islands");
+        log("  O central island   N Nebula Fields   A Ashen Barrens   W Comet Wake   D Hollow Isles   "
+            + "C The Corona   H/M/B/s vanilla Highlands/Midlands/Barrens/Small Islands");
         Map<Character, Integer> outerCounts = new HashMap<>();
         Map<Character, Integer> runs = new HashMap<>();
         Map<Character, Integer> continued = new HashMap<>();
@@ -231,7 +230,7 @@ public final class WorldgenSurvey {
                 failures.add(String.format("%s covers %.1f%% of the outer End (expected %.1f-%.0f%%)", info.name(), share,
                     info.minShare(), info.maxShare()));
             }
-            double minCoherence = info.symbol() == 'R' ? 25 : 50;
+            double minCoherence = 50;
             if (share > 0 && coherence < minCoherence) {
                 failures.add(String.format("%s is scattered, not regions (coherence %.0f%%, expected %.0f%%+)", info.name(),
                     coherence, minCoherence));
@@ -274,14 +273,13 @@ public final class WorldgenSurvey {
         checkComets(areas.get('W'), end, failures);
         if (areas.get('N') != null && areas.get('N').standOn != null) {
             EXTRA_SHOTS.addAll(StarforgeSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log));   // Phase 8
-            EXTRA_SHOTS.add(PolishSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log));         // Phase 9
+            PolishSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log);         // Phase 9
         }
         writeViewpoints(areas, end, structures);
         checkNebula(areas.get('N'), failures);
         checkAurora(areas.get('A'), failures);
         checkCometWake(areas.get('W'), failures);
-        checkDarkMatter(areas.get('D'), end, failures);
-        checkObservatory(areas.get('R'), failures);
+        checkHollowIsles(areas.get('D'), end, failures);
         checkCorona(areas.get('C'), failures);
         checkLowGravity(areas.get('N'), vanillaSpot, end, failures);
         checkMobs(areas, end, failures);
@@ -292,10 +290,10 @@ public final class WorldgenSurvey {
     private static void checkMobs(Map<Character, Area> areas, ServerLevel end, List<String> failures) {
         record Home(net.minecraft.world.entity.EntityType<?> type, char biome) {}
         List<Home> homes = List.of(
-            new Home(ModEntities.POLLINATOR.get(), 'N'), new Home(ModEntities.VOID_WANDERER.get(), 'R'),
+            new Home(ModEntities.POLLINATOR.get(), 'N'), new Home(ModEntities.VOID_WANDERER.get(), 'D'),
             new Home(ModEntities.UMBRAL_STALKER.get(), 'D'), new Home(ModEntities.CINDER_MITE.get(), 'C'),
-            new Home(ModEntities.CORONA_SKIMMER.get(), 'C'), new Home(ModEntities.BLACK_HOLE_GUARDIAN.get(), 'W'),
-            new Home(ModEntities.DRIFT_WHALE.get(), 'A'), new Home(ModEntities.WATCHER.get(), 'R'));
+            new Home(ModEntities.VOID_RAY.get(), 'C'), new Home(ModEntities.HOLLOW.get(), 'W'),
+            new Home(ModEntities.DRIFT_WHALE.get(), 'A'), new Home(ModEntities.WATCHER.get(), 'N'));
         for (Home home : homes) {
             Area area = areas.get(home.biome());
             String name = home.type().getDescription().getString();
@@ -342,7 +340,7 @@ public final class WorldgenSurvey {
         int top = area.surfaceHeightsIn.keySet().stream().max(Integer::compare).orElse(60);
         BlockPos at = new BlockPos(area.centre.getX(), top + 12, area.centre.getZ());
         if (toward != null) {
-            BlockPos corona = com.ggrantrichards.astralend.flare.StellarFlares.nearestCorona(toward, at);
+            BlockPos corona = com.ggrantrichards.astralend.flare.Sunstorms.nearestCorona(toward, at);
             if (corona != null) {
                 double dx = corona.getX() - at.getX();
                 double dz = corona.getZ() - at.getZ();
@@ -365,18 +363,17 @@ public final class WorldgenSurvey {
         }
         // One close-up of each mob, summoned in its home biome (see ClientScreenshots).
         mobShot(lines, areas.get('N'), end, "pollinator", 2.0, 1.0, 1.4);
-        mobShot(lines, areas.get('R'), end, "void_wanderer", 2.6, 1.2, 1.7);
+        mobShot(lines, areas.get('D'), end, "void_wanderer", 2.6, 1.2, 1.7);
         mobShot(lines, areas.get('D'), end, "umbral_stalker angled", 5.5, 0.0, 1.9);
         mobShot(lines, areas.get('D'), end, "umbral_stalker lit,angled", 5.5, 0.0, 1.9);
         mobShot(lines, areas.get('C'), end, "cinder_mite", 1.5, 0.0, 0.7);
-        mobShot(lines, areas.get('C'), end, "corona_skimmer", 3.0, 0.0, 1.6);
-        mobShot(lines, areas.get('W'), end, "black_hole_guardian", 3.0, 1.6, 2.0);
+        mobShot(lines, areas.get('C'), end, "void_ray", 3.0, 0.0, 1.6);
+        mobShot(lines, areas.get('W'), end, "hollow", 3.0, 1.6, 2.0);
         mobShot(lines, areas.get('A'), end, "drift_whale side", 11.0, 7.0, 7.5);
-        mobShot(lines, areas.get('R'), end, "watcher", 6.5, 0.5, 2.6);
-        mobShot(lines, areas.get('N'), end, "orrery_sentinel awake", 7.5, 0.0, 2.6);
+        mobShot(lines, areas.get('N'), end, "watcher", 6.5, 0.5, 2.6);
         mobShot(lines, areas.get('W'), end, "live_comet side", 14.0, 14.0, 4.0);
-        // Phase 5: the sky and Stellar Flares.
-        skyShot(lines, areas.get('A'), "sky_aurora_shallows", -45.0F, -32.0F, null, "flare=calm");
+        // Phase 5: the sky and Sunstorms.
+        skyShot(lines, areas.get('A'), "sky_ashen_barrens", -45.0F, -32.0F, null, "flare=calm");
         skyShot(lines, areas.get('N'), "sky_nebula_fields", -45.0F, -32.0F, null, "flare=calm");
         skyShot(lines, areas.get('W'), "sky_remnant_far", 0.0F, -6.0F, end, "flare=warning");
         skyShot(lines, areas.get('C'), "sky_corona_flare", -45.0F, -18.0F, null, "flare=flare");
@@ -386,7 +383,7 @@ public final class WorldgenSurvey {
         structureShot(lines, structures, "comet_crater_hot", 18.0, 17.0, 2.0);
         structureShot(lines, structures, "wanderer_relay", 30.0, -6.0, -20.0);
         structureShot(lines, structures, "whalefall", 26.0, 15.0, 4.0);
-        structureShot(lines, structures, "observatory_ruins", 30.0, 18.0, 4.0);
+        structureShot(lines, structures, "shattered_observatory", 46.0, 26.0, 4.0);
         structureShot(lines, structures, "solar_array", 34.0, 36.0, 4.0);
         structureShot(lines, structures, "solar_array_room", 3.0, 2.2, 0.0);
         lines.addAll(EXTRA_SHOTS);
@@ -433,7 +430,7 @@ public final class WorldgenSurvey {
             target.getX() + 0.5 - d, target.getY() + 6, target.getZ() + 0.5 - d));
     }
 
-    // Somewhere near `around` with level ground for a crater (and not on a Comet Ice spire).
+    // Somewhere near `around` with level ground for a crater (and not on a blue ice spire).
     private static BlockPos flatSite(ServerLevel end, BlockPos around) {
         BlockPos best = null;
         int bestSpread = Integer.MAX_VALUE;
@@ -453,7 +450,7 @@ public final class WorldgenSurvey {
                         }
                     }
                     BlockPos top = new BlockPos(x, end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, z);
-                    if (max - min < bestSpread && min > end.getMinY() + 1 && !end.getBlockState(top).is(ModBlocks.COMET_ICE.get())) {
+                    if (max - min < bestSpread && min > end.getMinY() + 1 && !end.getBlockState(top).is(Blocks.BLUE_ICE)) {
                         bestSpread = max - min;
                         best = top;
                     }
@@ -467,7 +464,7 @@ public final class WorldgenSurvey {
     // Extra screenshot lines worked out by the structure tests (they need the structure's layout).
     private static final List<String> EXTRA_SHOTS = new ArrayList<>();
 
-    // A Wormhole Maw wakes: light its four eyes, wake it, and check the throat became a wormhole and
+    // A Rift Maw wakes: light its four eyes, wake it, and check the throat became a wormhole and
     // there's somewhere to stand at its mouth. Then a view into its mouth, from in front.
     private static void testMaw(ServerLevel end, BlockPos throat, List<String> failures) {
         int eyes = 0;
@@ -480,48 +477,20 @@ public final class WorldgenSurvey {
         }
         var maw = com.ggrantrichards.astralend.maw.MawNetwork.wake(end, throat, null);
         if (maw == null) {
-            failures.add("wormhole_maw: didn't wake with " + eyes + " eyes lit");
+            failures.add("rift_maw: didn't wake with " + eyes + " eyes lit");
             return;
         }
         boolean wormhole = end.getBlockState(throat).is(ModBlocks.WORMHOLE.get());
-        log(String.format("wormhole_maw: %d eye sockets; woke, throat %s, exit %s facing %s; wormhole %s", eyes,
+        log(String.format("rift_maw: %d eye sockets; woke, throat %s, exit %s facing %s; wormhole %s", eyes,
             maw.throat().toShortString(), maw.exit().toShortString(), net.minecraft.core.Direction.from2DDataValue(maw.facing()),
             wormhole ? "open" : "MISSING"));
         if (eyes != 4 || !wormhole) {
-            failures.add("wormhole_maw: expected 4 eye sockets and an open wormhole, got " + eyes + " and " + wormhole);
+            failures.add("rift_maw: expected 4 eye sockets and an open wormhole, got " + eyes + " and " + wormhole);
         }
         net.minecraft.core.Direction out = net.minecraft.core.Direction.from2DDataValue(maw.facing());
         BlockPos cam = maw.throat().relative(out, 34).above(6);
-        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_wormhole_maw %d.5 %d %d.5 %.1f 8.0 wake",
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_rift_maw %d.5 %d %d.5 %.1f 8.0 wake",
             cam.getX(), cam.getY(), cam.getZ(), out.getOpposite().toYRot()));
-    }
-
-    // An Orrery: its Sentinel sleeps (and can't be hurt) until the Orrery Heart is powered; then
-    // the vault's bronze_shutters open and the Sentinel wakes. Then a view of the Orrery from outside, and one
-    // of the Sentinel in its open vault.
-    private static void testOrrery(ServerLevel end, BlockPos core, List<String> failures) {
-        var sentinels = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.OrrerySentinel.class,
-            new net.minecraft.world.phys.AABB(core).inflate(32, 16, 32));
-        boolean hurtAsleep = !sentinels.isEmpty() && sentinels.get(0).hurtServer(end, end.damageSources().generic(), 5.0F);
-        int opened = com.ggrantrichards.astralend.orrery.OrreryHeartBlock.power(end, core, end.getBlockState(core));
-        boolean awake = !sentinels.isEmpty() && sentinels.get(0).isAwake();
-        log(String.format("abandoned_orrery: %d sentinel(s), hurt while asleep: %s; powering the core opened %d bronze_shutter blocks; sentinel awake: %s",
-            sentinels.size(), hurtAsleep, opened, awake));
-        if (sentinels.isEmpty() || hurtAsleep || opened == 0 || !awake) {
-            failures.add("abandoned_orrery: expected a sleeping, unhurt Sentinel that wakes and bronze_shutters that open when the core is powered");
-        }
-        double d = 44.0 / Math.sqrt(2.0);
-        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_abandoned_orrery %.1f %d %.1f -45 %.1f", core.getX() + 0.5 - d,
-            core.getY() + 16, core.getZ() + 0.5 - d, Math.toDegrees(Math.atan2(16.0, 44.0))));
-        if (!sentinels.isEmpty()) {
-            var s = sentinels.get(0);
-            // From the hub end of the vault, looking down it at the Sentinel.
-            double dx = s.getX() - core.getX();
-            double dz = s.getZ() - core.getZ();
-            float yaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
-            EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_orrery_vault %.1f %.1f %.1f %.1f 8.0 power", core.getX() + 0.5 + dx * 0.35,
-                s.getY() + 0.6, core.getZ() + 0.5 + dz * 0.35, yaw));
-        }
     }
 
     // A Constellation Maze: its four telescopes are there and each lights some bridges. Then a view of
@@ -580,11 +549,10 @@ public final class WorldgenSurvey {
         Map<String, BlockPos> found = new LinkedHashMap<>();
         record Wanted(String name, char biome, Block marker) {}
         for (Wanted w : List.of(new Wanted("comet_crater", 'W', Blocks.CHEST), new Wanted("wanderer_relay", 'D', ModBlocks.VOID_CRYSTAL_BLOCK.get()),
-                                new Wanted("whalefall", 'A', Blocks.CHEST), new Wanted("observatory_ruins", 'R', Blocks.VAULT),
+                                new Wanted("whalefall", 'A', Blocks.CHEST), new Wanted("shattered_observatory", 'N', Blocks.VAULT),
                                 new Wanted("solar_array", 'C', ModBlocks.COLLECTOR_PEDESTAL.get()),
-                                new Wanted("wormhole_maw", 'R', ModBlocks.MAW_THROAT.get()),
-                                new Wanted("constellation_maze", 'R', ModBlocks.MAZE_TELESCOPE.get()),
-                                new Wanted("abandoned_orrery", 'N', ModBlocks.ORRERY_HEART.get()))) {
+                                new Wanted("rift_maw", 'N', ModBlocks.MAW_THROAT.get()),
+                                new Wanted("constellation_maze", 'N', ModBlocks.MAZE_TELESCOPE.get()))) {
             Area area = areas.get(w.biome());
             BlockPos from = area != null ? area.centre : BlockPos.ZERO;
             net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tag = net.minecraft.tags.TagKey.create(
@@ -677,17 +645,13 @@ public final class WorldgenSurvey {
                 log(String.format("%s: built at %s (start %s)%s%s", w.name(), marker.toShortString(), start.toShortString(),
                     hot ? ", still hot" : "", loot));
                 found.putIfAbsent(key, marker);
-                if (w.name().equals("wormhole_maw") && !found.containsKey("maw_tested")) {
+                if (w.name().equals("rift_maw") && !found.containsKey("maw_tested")) {
                     found.put("maw_tested", marker);
                     testMaw(end, marker, failures);
                 }
                 if (w.name().equals("constellation_maze") && !found.containsKey("maze_tested")) {
                     found.put("maze_tested", marker);
                     testMaze(end, marker, failures);
-                }
-                if (w.name().equals("abandoned_orrery") && !found.containsKey("orrery_tested")) {
-                    found.put("orrery_tested", marker);
-                    testOrrery(end, marker, failures);
                 }
                 if (w.name().equals("solar_array")) {
                     // Inside the control room too: the console, seen from a corner of the room.
@@ -853,7 +817,7 @@ public final class WorldgenSurvey {
                             if (firstSeen == null) {
                                 firstSeen = block;
                             }
-                            if (block == ModBlocks.GRAVITY_ANOMALY.get()) {
+                            if (block == ModBlocks.UPWELL_CORE.get()) {
                                 area.anomalies.add(pos);
                             }
                             if (block == ModBlocks.NULLWOOD_LEAVES.get()
@@ -943,17 +907,17 @@ public final class WorldgenSurvey {
         atLeast(area, ModBlocks.NEBULA_TUFTS.get(), 20, failures);
         atLeast(area, ModBlocks.NEBULA_TENDRIL.get(), 1, failures);
         // Where the ground itself is the top block (not a giant mushroom's cap), it should be moss.
-        int mossTops = area.tops(ModBlocks.NEBULA_MOSS.get());
+        int mossTops = area.tops(ModBlocks.CHORUS_MOSS.get());
         int groundTops = mossTops + area.tops(Blocks.END_STONE);
         if (mossTops < 0.9 * groundTops) {
-            failures.add("Nebula Fields: only " + mossTops + " of " + groundTops + " bare-ground columns are topped with Nebula Moss");
+            failures.add("Nebula Fields: only " + mossTops + " of " + groundTops + " bare-ground columns are topped with Chorus Moss");
         }
         int chorus = area.in(Blocks.CHORUS_PLANT) + area.in(Blocks.CHORUS_FLOWER);
         if (chorus > 0) {
             failures.add("Nebula Fields: " + chorus + " chorus blocks grew (they need bare End Stone)");
         }
-        if (area.out(ModBlocks.NEBULA_MOSS.get()) > 0.01 * Math.max(1, area.in(ModBlocks.NEBULA_MOSS.get()))) {
-            failures.add("Nebula Moss generated outside Nebula Fields (more than border blending explains)");
+        if (area.out(ModBlocks.CHORUS_MOSS.get()) > 0.01 * Math.max(1, area.in(ModBlocks.CHORUS_MOSS.get()))) {
+            failures.add("Chorus Moss generated outside Nebula Fields (more than border blending explains)");
         }
         atLeast(area, ModBlocks.LUMINESHROOM.get(), 2, failures);
         atLeast(area, ModBlocks.STARBLOOM.get(), 1, failures);
@@ -975,10 +939,10 @@ public final class WorldgenSurvey {
             flat += area.surfaceHeightsIn.getOrDefault(y, 0);
         }
         double flatShare = 100.0 * flat / Math.max(1, area.landColumnsIn);
-        log(String.format("Aurora Shallows: %.0f%% of the land is a flat shelf topped at y=52-55; Leviathan Bone ribs: %d blocks",
+        log(String.format("Ashen Barrens: %.0f%% of the land is a flat shelf topped at y=52-55; Leviathan Bone ribs: %d blocks",
             flatShare, area.in(ModBlocks.LEVIATHAN_BONE_BLOCK.get())));
         if (flatShare < 60) {
-            failures.add(String.format("Aurora Shallows aren't flat shelves: only %.0f%% of the land is topped at y=52-55", flatShare));
+            failures.add(String.format("Ashen Barrens aren't flat shelves: only %.0f%% of the land is topped at y=52-55", flatShare));
         }
     }
 
@@ -988,56 +952,45 @@ public final class WorldgenSurvey {
         }
         replacesEndStone(area, ModBlocks.CHARRED_END_STONE.get(), failures);
         atLeast(area, ModBlocks.STARDUST_BLOCK.get(), 1, failures);
-        atLeast(area, ModBlocks.COMET_ICE.get(), 0.5, failures);
+        atLeast(area, Blocks.BLUE_ICE, 0.5, failures);
         atLeast(area, ModBlocks.METEORIC_IRON_ORE.get(), 0.02, failures);   // comet cores
         atLeast(area, ModBlocks.COMET_CRESS.get(), 0.2, failures);
     }
 
-    private static void checkDarkMatter(Area area, ServerLevel end, List<String> failures) {
+    private static void checkHollowIsles(Area area, ServerLevel end, List<String> failures) {
         if (!enoughLand(area, failures)) {
             return;
         }
-        replacesEndStone(area, ModBlocks.UMBRAL_STONE.get(), failures);
+        replacesEndStone(area, ModBlocks.NIGHTSTONE.get(), failures);
         atLeast(area, ModBlocks.VOID_CRYSTAL_ORE.get(), 0.5, failures);
         atLeast(area, ModBlocks.NULLWOOD.log().get(), 15, failures);
         atLeast(area, ModBlocks.NULLWOOD_LEAVES.get(), 40, failures);
         atLeast(area, ModBlocks.NULL_LANTERN.get(), 2, failures);
         int leaves = area.in(ModBlocks.NULLWOOD_LEAVES.get());
-        log(String.format("Dark Matter Belt: %d of %d Nullwood leaves are too far from a log and would decay", area.decayingLeaves, leaves));
+        log(String.format("Hollow Isles: %d of %d Nullwood leaves are too far from a log and would decay", area.decayingLeaves, leaves));
         if (area.decayingLeaves > 0.05 * Math.max(1, leaves)) {
-            failures.add("Dark Matter Belt: " + area.decayingLeaves + " Nullwood leaves would decay (trees would lose their leaves)");
+            failures.add("Hollow Isles: " + area.decayingLeaves + " Nullwood leaves would decay (trees would lose their leaves)");
         }
-        log("Dark Matter Belt: " + area.anomalies.size() + " gravity inversion pockets");
+        log("Hollow Isles: " + area.anomalies.size() + " Upwells");
         if (area.anomalies.isEmpty()) {
-            failures.add("Dark Matter Belt: no gravity inversion pockets generated");
+            failures.add("Hollow Isles: no Upwells generated");
             return;
         }
-        // Put a test mob in the middle of a pocket and let the Gravity Anomaly do its work.
+        // Put a test mob in the middle of a pocket and let the Upwell Core do its work.
         BlockPos core = area.anomalies.get(0);
-        if (!(end.getBlockEntity(core) instanceof GravityAnomalyBlockEntity)) {
-            failures.add("the Gravity Anomaly at " + core.toShortString() + " has no block entity");
+        if (!(end.getBlockEntity(core) instanceof UpwellCoreBlockEntity)) {
+            failures.add("the Upwell Core at " + core.toShortString() + " has no block entity");
         }
-        var centre = GravityAnomalyBlockEntity.centre(core);
+        var centre = UpwellCoreBlockEntity.centre(core);
         ArmorStand probe = new ArmorStand(end, centre.x, centre.y - 0.5, centre.z);
         end.addFreshEntity(probe);
-        GravityAnomalyBlockEntity.invertInside(end, core);
+        UpwellCoreBlockEntity.invertInside(end, core);
         double inside = probe.getAttributeValue(Attributes.GRAVITY);
         log(String.format("Gravity in the pocket under %s: %.4f (vanilla 0.0800; inverted is negative)", core.toShortString(), inside));
-        if (!GravityInversion.isInverted(probe) || Math.abs(inside - 0.08 * (1 + GravityInversion.GRAVITY_CHANGE)) > 0.001) {
+        if (!Upwells.isInverted(probe) || Math.abs(inside - 0.08 * (1 + Upwells.GRAVITY_CHANGE)) > 0.001) {
             failures.add("gravity wasn't inverted inside a pocket (" + inside + ")");
         }
         probe.discard();
-    }
-
-    private static void checkObservatory(Area area, List<String> failures) {
-        if (!enoughLand(area, failures)) {
-            return;
-        }
-        landCoverage(area, 40, failures);
-        atLeast(area, ModBlocks.OBSERVATORY_QUARTZ.get(), 1, failures);
-        atLeast(area, ModBlocks.OBSERVATORY_QUARTZ_PILLAR.get(), 0.3, failures);
-        atLeast(area, ModBlocks.STAR_INLAY_OBSERVATORY_QUARTZ.get(), 0.05, failures);
-        atLeast(area, ModBlocks.STARBLOOM.get(), 0.5, failures);
     }
 
     private static void checkCorona(Area area, List<String> failures) {
@@ -1098,7 +1051,7 @@ public final class WorldgenSurvey {
             TOP_SYMBOLS.put(Blocks.END_STONE, 'E');
             TOP_SYMBOLS.put(Blocks.CHORUS_PLANT, 'Y');
             TOP_SYMBOLS.put(Blocks.CHORUS_FLOWER, 'Y');
-            TOP_SYMBOLS.put(ModBlocks.NEBULA_MOSS.get(), 'M');
+            TOP_SYMBOLS.put(ModBlocks.CHORUS_MOSS.get(), 'M');
             TOP_SYMBOLS.put(ModBlocks.LUMINESHROOM.get(), 'L');
             TOP_SYMBOLS.put(ModBlocks.STARBLOOM.get(), 'S');
             TOP_SYMBOLS.put(ModBlocks.ASTRAL_VINE.get(), 'V');
@@ -1109,12 +1062,12 @@ public final class WorldgenSurvey {
             TOP_SYMBOLS.put(ModBlocks.PALE_END_STONE_TILES.get(), 'B');
             TOP_SYMBOLS.put(ModBlocks.LEVIATHAN_BONE_BLOCK.get(), 'J');
             TOP_SYMBOLS.put(ModBlocks.CHARRED_END_STONE.get(), 'H');
-            TOP_SYMBOLS.put(ModBlocks.COMET_ICE.get(), 'I');
+            TOP_SYMBOLS.put(Blocks.BLUE_ICE, 'I');
             TOP_SYMBOLS.put(ModBlocks.STARDUST_BLOCK.get(), 'T');
             TOP_SYMBOLS.put(ModBlocks.METEORIC_IRON_ORE.get(), 'O');
-            TOP_SYMBOLS.put(ModBlocks.UMBRAL_STONE.get(), 'U');
+            TOP_SYMBOLS.put(ModBlocks.NIGHTSTONE.get(), 'U');
             TOP_SYMBOLS.put(ModBlocks.VOID_CRYSTAL_ORE.get(), 'X');
-            TOP_SYMBOLS.put(ModBlocks.GRAVITY_ANOMALY.get(), 'Z');
+            TOP_SYMBOLS.put(ModBlocks.UPWELL_CORE.get(), 'Z');
             TOP_SYMBOLS.put(ModBlocks.OBSERVATORY_QUARTZ.get(), 'Q');
             TOP_SYMBOLS.put(ModBlocks.STAR_INLAY_OBSERVATORY_QUARTZ.get(), 'Q');
             TOP_SYMBOLS.put(ModBlocks.OBSERVATORY_QUARTZ_PILLAR.get(), 'K');
@@ -1137,10 +1090,9 @@ public final class WorldgenSurvey {
 
     private static char symbol(Holder<Biome> biome) {
         if (biome.is(ModBiomes.NEBULA_FIELDS)) return 'N';
-        if (biome.is(ModBiomes.AURORA_SHALLOWS)) return 'A';
+        if (biome.is(ModBiomes.ASHEN_BARRENS)) return 'A';
         if (biome.is(ModBiomes.COMET_WAKE)) return 'W';
-        if (biome.is(ModBiomes.DARK_MATTER_BELT)) return 'D';
-        if (biome.is(ModBiomes.SHATTERED_OBSERVATORY)) return 'R';
+        if (biome.is(ModBiomes.HOLLOW_ISLES)) return 'D';
         if (biome.is(ModBiomes.CORONA)) return 'C';
         if (biome.is(Biomes.THE_END)) return 'O';
         if (biome.is(Biomes.END_HIGHLANDS)) return 'H';

@@ -47,10 +47,10 @@ import org.joml.Vector4f;
 //
 //   - a starfield in two layers: one fixed, one turning so slowly (once in 40 minutes) you only notice
 //     after a while;
-//   - auroras: slow curtains of light, strongest over the Aurora Shallows (green and gold), faint violet
-//     over the Nebula Fields, icy over the Comet Wake; none in the Dark Matter Belt;
+//   - auroras: slow curtains of light, strongest over the Ashen Barrens (green and gold), faint violet
+//     over the Nebula Fields, icy over the Comet Wake; none in the Hollow Isles;
 //   - the Remnant, the dim ember of the collapsed star, low over the nearest Corona (the server tells us
-//     where). It brightens before a Stellar Flare and blazes during one;
+//     where). It brightens before a Sunstorm and blazes during one;
 //   - in the Corona during a flare: the sky turns gold and sheets of light roll across it on the wind;
 //   - now and then a far-off comet streaks past, and very rarely something huge - a whale, a ring - drifts
 //     across the far sky.
@@ -121,15 +121,13 @@ public class AstralSkyRenderer extends SkyRenderer {
         this.inCorona = biome.is(ModBiomes.CORONA);
         // Aurora strength and colours for this biome; eased toward, so crossing a border fades them.
         float[] t = this.auroraTarget;
-        if (biome.is(ModBiomes.AURORA_SHALLOWS)) {
+        if (biome.is(ModBiomes.ASHEN_BARRENS)) {
             set(t, 1.0F, 0.35F, 1.0F, 0.6F, 1.0F, 0.82F, 0.35F);
         } else if (biome.is(ModBiomes.NEBULA_FIELDS)) {
             set(t, 0.55F, 0.7F, 0.45F, 1.0F, 1.0F, 0.5F, 0.85F);
         } else if (biome.is(ModBiomes.COMET_WAKE)) {
             set(t, 0.4F, 0.55F, 0.9F, 1.0F, 0.8F, 0.95F, 1.0F);
-        } else if (biome.is(ModBiomes.SHATTERED_OBSERVATORY)) {
-            set(t, 0.25F, 0.6F, 0.7F, 1.0F, 0.75F, 0.6F, 1.0F);
-        } else if (biome.is(ModBiomes.DARK_MATTER_BELT) || this.inCorona) {
+        } else if (biome.is(ModBiomes.HOLLOW_ISLES) || this.inCorona) {
             t[0] = 0.0F;
         } else {
             set(t, 0.12F, 0.65F, 0.5F, 1.0F, 0.5F, 0.8F, 1.0F);

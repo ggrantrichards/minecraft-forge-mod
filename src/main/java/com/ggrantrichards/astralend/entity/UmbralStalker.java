@@ -32,7 +32,7 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-// Umbral Stalker: a hunched, almost invisible brute of the Dark Matter Belts that walks on its knuckles.
+// Umbral Stalker: a hunched, almost invisible brute of the Hollow Isless that walks on its knuckles.
 //
 // While it has no prey it is completely invisible in the dark - not even a shimmer. Once it picks a
 // target it activates: a faint shimmer shows where it moves, and it becomes fully visible when it

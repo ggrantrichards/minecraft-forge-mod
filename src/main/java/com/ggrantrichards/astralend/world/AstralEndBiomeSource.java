@@ -18,7 +18,7 @@ import net.minecraft.world.level.biome.Climate;
 // Inside 1,024 blocks of the centre, and everywhere outside the astral regions, this is exactly
 // vanilla's TheEndBiomeSource: the central island, then Highlands, Midlands, Barrens and Small
 // Islands chosen by the End's island noise. Beyond 1,024 blocks, slow region noises (see
-// AstralRegions) mark out the six astral biomes, each several hundred blocks across.
+// AstralRegions) mark out the astral biomes, each several hundred blocks across.
 public class AstralEndBiomeSource extends BiomeSource {
     public static final MapCodec<AstralEndBiomeSource> CODEC = RecordCodecBuilder.mapCodec(
         i -> i.group(
@@ -28,10 +28,9 @@ public class AstralEndBiomeSource extends BiomeSource {
                 RegistryOps.retrieveElement(Biomes.SMALL_END_ISLANDS),
                 RegistryOps.retrieveElement(Biomes.END_BARRENS),
                 RegistryOps.retrieveElement(ModBiomes.NEBULA_FIELDS),
-                RegistryOps.retrieveElement(ModBiomes.AURORA_SHALLOWS),
+                RegistryOps.retrieveElement(ModBiomes.ASHEN_BARRENS),
                 RegistryOps.retrieveElement(ModBiomes.COMET_WAKE),
-                RegistryOps.retrieveElement(ModBiomes.DARK_MATTER_BELT),
-                RegistryOps.retrieveElement(ModBiomes.SHATTERED_OBSERVATORY),
+                RegistryOps.retrieveElement(ModBiomes.HOLLOW_ISLES),
                 RegistryOps.retrieveElement(ModBiomes.CORONA)
             )
             .apply(i, i.stable(AstralEndBiomeSource::new))
@@ -46,33 +45,31 @@ public class AstralEndBiomeSource extends BiomeSource {
     private final Holder<Biome> islands;
     private final Holder<Biome> barrens;
     private final Holder<Biome> nebulaFields;
-    private final Holder<Biome> auroraShallows;
+    private final Holder<Biome> ashenBarrens;
     private final Holder<Biome> cometWake;
-    private final Holder<Biome> darkMatterBelt;
-    private final Holder<Biome> shatteredObservatory;
+    private final Holder<Biome> hollowIsles;
     private final Holder<Biome> corona;
 
     private AstralEndBiomeSource(Holder<Biome> end, Holder<Biome> highlands, Holder<Biome> midlands,
                                  Holder<Biome> islands, Holder<Biome> barrens, Holder<Biome> nebulaFields,
-                                 Holder<Biome> auroraShallows, Holder<Biome> cometWake, Holder<Biome> darkMatterBelt,
-                                 Holder<Biome> shatteredObservatory, Holder<Biome> corona) {
+                                 Holder<Biome> ashenBarrens, Holder<Biome> cometWake, Holder<Biome> hollowIsles,
+                                 Holder<Biome> corona) {
         this.end = end;
         this.highlands = highlands;
         this.midlands = midlands;
         this.islands = islands;
         this.barrens = barrens;
         this.nebulaFields = nebulaFields;
-        this.auroraShallows = auroraShallows;
+        this.ashenBarrens = ashenBarrens;
         this.cometWake = cometWake;
-        this.darkMatterBelt = darkMatterBelt;
-        this.shatteredObservatory = shatteredObservatory;
+        this.hollowIsles = hollowIsles;
         this.corona = corona;
     }
 
     @Override
     protected Stream<Holder<Biome>> collectPossibleBiomes() {
         return Stream.of(this.end, this.highlands, this.midlands, this.islands, this.barrens, this.nebulaFields,
-            this.auroraShallows, this.cometWake, this.darkMatterBelt, this.shatteredObservatory, this.corona);
+            this.ashenBarrens, this.cometWake, this.hollowIsles, this.corona);
     }
 
     @Override
@@ -96,10 +93,9 @@ public class AstralEndBiomeSource extends BiomeSource {
         }
         switch (region(sampler, blockX, blockZ)) {
             case NEBULA_FIELDS: return this.nebulaFields;
-            case AURORA_SHALLOWS: return this.auroraShallows;
+            case ASHEN_BARRENS: return this.ashenBarrens;
             case COMET_WAKE: return this.cometWake;
-            case DARK_MATTER_BELT: return this.darkMatterBelt;
-            case SHATTERED_OBSERVATORY: return this.shatteredObservatory;
+            case HOLLOW_ISLES: return this.hollowIsles;
             case CORONA: return this.corona;
             case VANILLA: break;
         }

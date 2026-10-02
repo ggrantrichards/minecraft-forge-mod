@@ -1,12 +1,16 @@
 package com.ggrantrichards.astralend.world;
 
+import com.ggrantrichards.astralend.AstralEnd;
 import com.ggrantrichards.astralend.ModItems;
-import com.ggrantrichards.astralend.entity.BlackHoleGuardian;
+import com.ggrantrichards.astralend.entity.Hollow;
 import com.ggrantrichards.astralend.entity.DriftWhale;
 import com.ggrantrichards.astralend.entity.ModEntities;
 import com.ggrantrichards.astralend.entity.Watcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -17,18 +21,21 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.minecraftforge.fml.LogicalSide;
 
 // Places the three mobs that must never crowd a player: the Drift Whale, the Watcher and the
-// Black Hole Guardian. Biome spawn lists can't promise "at most one near you", so these are placed
+// Hollow. Biome spawn lists can't promise "at most one near you", so these are placed
 // here instead, checked for each player in the End a few times a minute.
 //
 // Also: Cinder (from Cinder Mites) burns in a furnace for as long as it takes to smelt 4 items.
 public final class MobSpawning {
     private static final int CHECK_EVERY = 200;  // ticks
+    public static final ResourceKey<Structure> OBSERVATORY = ResourceKey.create(Registries.STRUCTURE,
+        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "shattered_observatory"));
 
     public static void register() {
         TickEvent.LevelTickEvent.Post.BUS.addListener(MobSpawning::onLevelTick);
@@ -50,19 +57,19 @@ public final class MobSpawning {
                 continue;
             }
             Holder<Biome> biome = level.getBiome(player.blockPosition());
-            // Drift Whales: most common over the Aurora Shallows, rare elsewhere in the outer End.
-            int whaleChance = biome.is(ModBiomes.AURORA_SHALLOWS) ? 6 : 30;
+            // Drift Whales: most common over the Ashen Barrens, rare elsewhere in the outer End.
+            int whaleChance = biome.is(ModBiomes.ASHEN_BARRENS) ? 6 : 30;
             if (isOuterEnd(player) && random.nextInt(whaleChance) == 0 && none(level, player, DriftWhale.class, 192)) {
                 spawnWhale(level, player, random);
             }
-            // The Watcher: only in the Shattered Observatory, and only when you're alone.
-            if (biome.is(ModBiomes.SHATTERED_OBSERVATORY) && random.nextInt(12) == 0 && none(level, player, Watcher.class, 256)
+            // The Watcher: only around the Shattered Observatory, and only when you're alone.
+            if (random.nextInt(12) == 0 && isOuterEnd(player) && none(level, player, Watcher.class, 256)
                 && level.players().stream().noneMatch(other -> other != player && other.distanceToSqr(player) < 96.0 * 96.0)) {
                 spawnWatcher(level, player, random);
             }
-            // Black Hole Guardians: in the Dark Matter Belt and Comet Wake, one at a time.
-            if ((biome.is(ModBiomes.DARK_MATTER_BELT) || biome.is(ModBiomes.COMET_WAKE)) && random.nextInt(9) == 0
-                && none(level, player, BlackHoleGuardian.class, 96)) {
+            // the Hollow: in the Hollow Isles and Comet Wake, one at a time.
+            if ((biome.is(ModBiomes.HOLLOW_ISLES) || biome.is(ModBiomes.COMET_WAKE)) && random.nextInt(9) == 0
+                && none(level, player, Hollow.class, 96)) {
                 spawnGuardian(level, player, random);
             }
         }
@@ -90,14 +97,15 @@ public final class MobSpawning {
     }
 
     private static void spawnWatcher(ServerLevel level, ServerPlayer player, RandomSource random) {
-        for (int attempt = 0; attempt < 8; attempt++) {
-            // Somewhere ahead of the player, near the edge of sight.
+        for (int attempt = 0; attempt < 16; attempt++) {
+            // Somewhere ahead of the player, near the edge of sight, in the observatory's ruins.
             double angle = Math.toRadians(player.getYRot() + 90.0 + (random.nextDouble() - 0.5) * 120.0);
-            double distance = 56.0 + random.nextDouble() * 20.0;
+            double distance = 40.0 + random.nextDouble() * 32.0;
             int x = Mth.floor(player.getX() + Math.cos(angle) * distance);
             int z = Mth.floor(player.getZ() + Math.sin(angle) * distance);
             int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
-            if (y <= level.getMinY() + 1 || !level.getBiome(new BlockPos(x, y, z)).is(ModBiomes.SHATTERED_OBSERVATORY)) {
+            if (y <= level.getMinY() + 1
+                || !level.structureManager().getStructureWithPieceAt(new BlockPos(x, y - 1, z), holder -> holder.is(OBSERVATORY)).isValid()) {
                 continue;
             }
             if (trySpawn(level, ModEntities.WATCHER.get(), x + 0.5, y, z + 0.5)) {
@@ -113,7 +121,7 @@ public final class MobSpawning {
             double x = player.getX() + Math.cos(angle) * distance;
             double z = player.getZ() + Math.sin(angle) * distance;
             double y = player.getY() + 2.0 + random.nextDouble() * 4.0;
-            if (trySpawn(level, ModEntities.BLACK_HOLE_GUARDIAN.get(), x, y, z)) {
+            if (trySpawn(level, ModEntities.HOLLOW.get(), x, y, z)) {
                 return;
             }
         }

@@ -13,28 +13,27 @@ light and its own secrets.
 
 {{Nebula Fields}}
 
-## Six new biomes
+## Five new biomes
 
 - **Nebula Fields:** rolling violet moss under forests of giant glowing Lumineshrooms. Low gravity: you
   fall slower and jump higher.
-- **Aurora Shallows:** vast pale shelves under slow green and gold auroras, ribs of ancient bone in the
+- **Ashen Barrens:** vast pale shelves under slow green and gold auroras, ribs of ancient bone in the
   ground.
 - **The Corona:** sunscorched mesas, Flarebloom fields, and the End's best ore, Solarite.
 - **Comet Wake:** scorched islands pocked with craters, Stardust that falls *upward*, and Meteoric Iron.
-- **Dark Matter Belt:** dim Nullwood forests on ring-shaped islands, and Void Crystal.
-- **Shattered Observatory:** great rings of quartz pillars, overgrown and half-fallen.
+- **Hollow Isles:** dim Nullwood forests on ring-shaped islands, and Void Crystal.
 
 Two new wood sets (Lumine and Nullwood), several stone families, glowing plants and lights.
 
-{{Aurora Shallows}}
+{{Ashen Barrens}}
 
 ## A living sky
 
 Stars that turn, auroras, and the Remnant, the dying ember of a collapsed star, low on the horizon. In
-the Corona, **Stellar Flares** turn the sky gold: Flareblooms open, Skimmers take to the air, and the
+the Corona, **Sunstorms** turn the sky gold: Flareblooms open, Void Rays take to the air, and the
 solar wind pushes your elytra along.
 
-{{A Stellar Flare}}
+{{A Sunstorm}}
 
 ## New creatures
 
@@ -43,7 +42,7 @@ solar wind pushes your elytra along.
 - **Void Wanderer:** a clockwork construct that floats over and studies you. Hold still and it leaves
   you a piece of its star map.
 - **End Pollinator:** a little drifter that spreads glowing plants and leaves Glowing Spores.
-- **Corona Skimmer:** a flat manta that rides the flares. Shear it for Skimmer Film.
+- **Void Ray:** a flat manta that rides the flares. Shear it for Ray Film.
 - **Umbral Stalker:** a shadow you can't see in the dark until it hunts you. Light reveals it.
 - And a few more, for you to find.
 
@@ -52,24 +51,24 @@ solar wind pushes your elytra along.
 ## Live comets
 
 Now and then a comet streaks past. Glide through its tail with an elytra and it sweeps you along; hit
-its head to knock off Stardust, Comet Ice or Meteoric Iron.
+its head to knock off Stardust, blue ice or Meteoric Iron.
 
 {{A live comet}}
 
 ## Ruins of the Cartographers
 
-Someone mapped the End before you. Find their **Observatory Ruins** and open the vaults with a Chart
-Fragment; ride a **Wormhole Maw** across the End; light the star-bridges of a **Constellation Maze**;
-and wake the guardian of an **Abandoned Orrery**, a great bronze wheel hung high in the sky.
+Someone mapped the End before you. Find the **Shattered Observatory**, a domed hall in a great ring
+of fallen pillars, and open its vaults with a Chart Fragment; ride a **Rift Maw** across the End; and
+light the star-bridges of a **Constellation Maze**.
 
-{{Wormhole Maw}}
+{{Rift Maw}}
+
+{{Shattered Observatory}}
 
 ## Building blocks
 
-Lumine and Nullwood wood sets, Umbral Stone, Sunscorched Stone, Pale End Stone, Observatory Quartz,
-Astral Glass with stars caught in it, and **Orrery Bronze**, which tarnishes over time like copper.
-
-{{Orrery Bronze}}
+Lumine and Nullwood wood sets, Nightstone, Sunscorched Stone, Pale End Stone, Observatory Quartz
+and Astral Glass with stars caught in it.
 
 ## Requirements
 

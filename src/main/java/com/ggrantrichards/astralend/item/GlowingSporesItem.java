@@ -13,7 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
 // Glowing Spores, left behind by End Pollinators. Used on End Stone, they grow it over with
-// Nebula Moss (so you can spread the Nebula Fields' ground by hand). They also make Spore Lanterns
+// Chorus Moss (so you can spread the Nebula Fields' ground by hand). They also make Spore Lanterns
 // and Glow Ink Sacs.
 public class GlowingSporesItem extends Item {
     public GlowingSporesItem(Item.Properties properties) {
@@ -28,7 +28,7 @@ public class GlowingSporesItem extends Item {
             return InteractionResult.PASS;
         }
         if (level instanceof ServerLevel server) {
-            server.setBlock(pos, ModBlocks.NEBULA_MOSS.get().defaultBlockState(), 3);
+            server.setBlock(pos, ModBlocks.CHORUS_MOSS.get().defaultBlockState(), 3);
             server.sendParticles(ParticleTypes.GLOW, pos.getX() + 0.5, pos.getY() + 1.05, pos.getZ() + 0.5, 8, 0.3, 0.05, 0.3, 0.0);
             server.playSound(null, pos, SoundEvents.MOSS_PLACE, SoundSource.BLOCKS, 1.0F, 1.2F);
             if (context.getPlayer() == null || !context.getPlayer().isCreative()) {

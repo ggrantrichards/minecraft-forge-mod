@@ -7,12 +7,12 @@
         "recipes": "astralend:sunshade"
       }
     },
-    "has_skimmer_film": {
+    "has_ray_film": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": "astralend:skimmer_film"
+            "items": "astralend:ray_film"
           }
         ]
       }
@@ -31,7 +31,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_skimmer_film",
+      "has_ray_film",
       "has_solarite_ingot"
     ]
   ],

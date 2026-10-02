@@ -35,11 +35,11 @@ public final class ModItems {
     public static final RegistryObject<Item> GLOWING_SPORES = register("glowing_spores", GlowingSporesItem::new, new Item.Properties());
     public static final RegistryObject<Item> CHART_FRAGMENT = simple("chart_fragment");
     public static final RegistryObject<Item> CRACKED_LENS = simple("cracked_lens");
-    public static final RegistryObject<Item> SINGULARITY_SHARD = simple("singularity_shard");
+    public static final RegistryObject<Item> ABYSS_SHARD = simple("abyss_shard");
     public static final RegistryObject<Item> UMBRAL_MEMBRANE = simple("umbral_membrane");
-    public static final RegistryObject<Item> SKIMMER_FILM = simple("skimmer_film");
+    public static final RegistryObject<Item> RAY_FILM = simple("ray_film");
     public static final RegistryObject<Item> CINDER = simple("cinder");
-    // Phase 5: Stellar Flares
+    // Phase 5: Sunstorms
     public static final RegistryObject<Item> FLARE_POLLEN = simple("flare_pollen");
     public static final RegistryObject<Item> CHARGED_VOID_CRYSTAL = register("charged_void_crystal", Item::new,
         new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON));
@@ -48,7 +48,7 @@ public final class ModItems {
         new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.UNCOMMON));
     public static final RegistryObject<Item> STAR_CHART = register("star_chart", StarChartItem::new, new Item.Properties().stacksTo(1));
     // Phase 6: structures. Temporal Crystals are loot only: they can't be mined or farmed.
-    // The key to the Wormhole Maws: wakes a Maw (with its eyes lit), or attunes you to a woken one.
+    // The key to the Rift Maws: wakes a Maw (with its eyes lit), or attunes you to a woken one.
     public static final RegistryObject<Item> PORTAL_LENS = register("portal_lens", Item::new,
         new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON));
     // Phase 7: caught from a live comet's tail.
@@ -82,12 +82,11 @@ public final class ModItems {
     public static final RegistryObject<Item> VOID_WANDERER_SPAWN_EGG = spawnEgg("void_wanderer", ModEntities.VOID_WANDERER);
     public static final RegistryObject<Item> UMBRAL_STALKER_SPAWN_EGG = spawnEgg("umbral_stalker", ModEntities.UMBRAL_STALKER);
     public static final RegistryObject<Item> CINDER_MITE_SPAWN_EGG = spawnEgg("cinder_mite", ModEntities.CINDER_MITE);
-    public static final RegistryObject<Item> CORONA_SKIMMER_SPAWN_EGG = spawnEgg("corona_skimmer", ModEntities.CORONA_SKIMMER);
-    public static final RegistryObject<Item> BLACK_HOLE_GUARDIAN_SPAWN_EGG = spawnEgg("black_hole_guardian", ModEntities.BLACK_HOLE_GUARDIAN);
+    public static final RegistryObject<Item> VOID_RAY_SPAWN_EGG = spawnEgg("void_ray", ModEntities.VOID_RAY);
+    public static final RegistryObject<Item> HOLLOW_SPAWN_EGG = spawnEgg("hollow", ModEntities.HOLLOW);
     public static final RegistryObject<Item> DRIFT_WHALE_SPAWN_EGG = spawnEgg("drift_whale", ModEntities.DRIFT_WHALE);
     public static final RegistryObject<Item> WATCHER_SPAWN_EGG = spawnEgg("watcher", ModEntities.WATCHER);
     public static final RegistryObject<Item> LIVE_COMET_SPAWN_EGG = spawnEgg("live_comet", ModEntities.LIVE_COMET);
-    public static final RegistryObject<Item> ORRERY_SENTINEL_SPAWN_EGG = spawnEgg("orrery_sentinel", ModEntities.ORRERY_SENTINEL);
 
     private static RegistryObject<Item> register(String name, Function<Item.Properties, Item> factory, Item.Properties properties) {
         return ITEMS.register(name, () -> factory.apply(properties.setId(ITEMS.key(name))));

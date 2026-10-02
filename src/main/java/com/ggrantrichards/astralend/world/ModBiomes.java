@@ -11,16 +11,15 @@ import net.minecraft.world.level.biome.Biome;
 // data/astralend/worldgen/biome/.
 public final class ModBiomes {
     public static final ResourceKey<Biome> NEBULA_FIELDS = key("nebula_fields");
-    public static final ResourceKey<Biome> AURORA_SHALLOWS = key("aurora_shallows");
+    public static final ResourceKey<Biome> ASHEN_BARRENS = key("ashen_barrens");
     public static final ResourceKey<Biome> COMET_WAKE = key("comet_wake");
-    public static final ResourceKey<Biome> DARK_MATTER_BELT = key("dark_matter_belt");
-    public static final ResourceKey<Biome> SHATTERED_OBSERVATORY = key("shattered_observatory");
+    public static final ResourceKey<Biome> HOLLOW_ISLES = key("hollow_isles");
     public static final ResourceKey<Biome> CORONA = key("corona");
 
     // Biomes with low gravity. Datapacks can empty this tag to turn low gravity off.
     public static final TagKey<Biome> LOW_GRAVITY = TagKey.create(Registries.BIOME, id("low_gravity"));
-    // Biomes where Gravity Anomalies flip gravity. Datapacks can empty this tag to turn inversion off.
-    public static final TagKey<Biome> GRAVITY_INVERSION = TagKey.create(Registries.BIOME, id("gravity_inversion"));
+    // Biomes where Upwell Cores flip gravity. Datapacks can empty this tag to turn Upwells off.
+    public static final TagKey<Biome> UPWELLS = TagKey.create(Registries.BIOME, id("upwells"));
 
     private static ResourceKey<Biome> key(String path) {
         return ResourceKey.create(Registries.BIOME, id(path));

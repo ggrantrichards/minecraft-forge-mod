@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "astralend:nightstone",
+  "result": {
+    "id": "astralend:nightstone_bricks"
+  }
+}

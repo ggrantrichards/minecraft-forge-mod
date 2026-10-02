@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "astralend:block/polished_nightstone_slab"
+    },
+    "type=double": {
+      "model": "astralend:block/polished_nightstone"
+    },
+    "type=top": {
+      "model": "astralend:block/polished_nightstone_slab_top"
+    }
+  }
+}

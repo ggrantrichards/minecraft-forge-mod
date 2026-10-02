@@ -8,8 +8,9 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.block.Blocks;
 
-// A spire of Comet Ice: a shard of the comet driven into the island, tapering to a point.
+// A spire of blue ice: a shard of the comet driven into the island, tapering to a point.
 public record CometIceSpireFeature() implements Feature {
     public static final MapCodec<CometIceSpireFeature> CODEC = MapCodec.unit(CometIceSpireFeature::new);
 
@@ -28,7 +29,7 @@ public record CometIceSpireFeature() implements Feature {
         // A slight lean: the shard came in at an angle.
         double leanX = (random.nextDouble() - 0.5) * 0.35;
         double leanZ = (random.nextDouble() - 0.5) * 0.35;
-        BlockState ice = ModBlocks.COMET_ICE.get().defaultBlockState();
+        BlockState ice = Blocks.BLUE_ICE.defaultBlockState();
         for (int y = -2; y < height; y++) {
             double r = baseRadius * (1 - Math.max(0, y) / (double) height);
             int cx = (int) Math.round(leanX * y);

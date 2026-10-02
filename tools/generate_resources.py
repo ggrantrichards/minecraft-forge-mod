@@ -26,9 +26,9 @@ MC_DATA = RES / "data" / "minecraft"
 # Stone-type families: base block + optional stairs/slab/wall, all sharing one texture.
 STONE_FAMILIES = [
     # (block id, English name, has stairs/slab/wall)
-    ("umbral_stone", "Umbral Stone", True),
-    ("polished_umbral_stone", "Polished Umbral Stone", True),
-    ("umbral_stone_bricks", "Umbral Stone Bricks", True),
+    ("nightstone", "Nightstone", True),
+    ("polished_nightstone", "Polished Nightstone", True),
+    ("nightstone_bricks", "Nightstone Bricks", True),
     # Phase 3
     ("pale_end_stone", "Pale End Stone", True),
     ("pale_end_stone_bricks", "Pale End Stone Bricks", True),
@@ -39,7 +39,7 @@ STONE_FAMILIES = [
     ("observatory_quartz", "Observatory Quartz", True),
 ]
 SIMPLE_CUBES = [
-    ("chiseled_umbral_stone", "Chiseled Umbral Stone"),
+    ("chiseled_nightstone", "Chiseled Nightstone"),
     ("void_crystal_ore", "Void Crystal Ore"),
     ("void_crystal_block", "Block of Void Crystal"),
     ("meteoric_iron_ore", "Meteoric Iron Ore"),
@@ -47,15 +47,14 @@ SIMPLE_CUBES = [
     ("raw_meteoric_iron_block", "Block of Raw Meteoric Iron"),
     ("stardust_block", "Stardust"),
     ("astral_glass", "Astral Glass"),
-    ("nebula_moss", "Nebula Moss"),
+    ("chorus_moss", "Chorus Moss"),
     # Phase 3
     ("pale_end_stone_tiles", "Pale End Stone Tiles"),
-    ("comet_ice", "Comet Ice"),
     ("solarite_ore", "Solarite Ore"),
     ("solarite_block", "Block of Solarite"),
     ("raw_solarite_block", "Block of Raw Solarite"),
     ("star_inlay_observatory_quartz", "Star Inlay Observatory Quartz"),
-    ("gravity_anomaly", "Gravity Anomaly"),
+    ("upwell_core", "Upwell Core"),
     ("lumine_cap", "Lumine Cap"),
     # Phase 4
     ("spore_lantern", "Spore Lantern"),
@@ -85,14 +84,14 @@ ITEMS = [
     ("glowing_spores", "Glowing Spores"),
     ("chart_fragment", "Chart Fragment"),
     ("cracked_lens", "Cracked Lens"),
-    ("singularity_shard", "Singularity Shard"),
+    ("abyss_shard", "Abyss Shard"),
     ("umbral_membrane", "Umbral Membrane"),
-    ("skimmer_film", "Skimmer Film"),
+    ("ray_film", "Ray Film"),
     ("cinder", "Cinder"),
     ("star_chart", "Star Chart"),
 ]
 
-PLURAL = {"umbral_stone_bricks": "umbral_stone_brick", "pale_end_stone_bricks": "pale_end_stone_brick",
+PLURAL = {"nightstone_bricks": "nightstone_brick", "pale_end_stone_bricks": "pale_end_stone_brick",
           "sunscorched_stone_bricks": "sunscorched_stone_brick"}  # "bricks" -> "brick_stairs", like vanilla
 
 
@@ -503,7 +502,7 @@ def cross_plant(name, item_texture=None):
 #    (astralend:astral_end, see AstralEndBiomeSource.java) and its noise settings for ours.
 #  - Our noise settings are vanilla's End terrain unchanged, plus a "temperature" noise that the
 #    biome source reads to decide where Nebula Fields go, and a material rule that tops islands
-#    in Nebula Fields with Nebula Moss.
+#    in Nebula Fields with Chorus Moss.
 #  - The Nebula Fields biome lists the features (plants) that decorate it.
 
 WG = DATA / "worldgen"
@@ -597,10 +596,9 @@ def big_feature(name, feature_name, count=1, rarity=1, heightmap="MOTION_BLOCKIN
 # Region noises (also read by the biome source through the noise router; the thresholds here
 # must match AstralRegions.java):
 REGION_NEBULA = 0.18      # nebula > this: Nebula Fields
-REGION_COLD = -0.2        # nebula < this: the "cold" band (Aurora Shallows / Comet Wake)
+REGION_COLD = -0.2        # nebula < this: the "cold" band (Ashen Barrens / Comet Wake)
 REGION_COLD_BELT = 0.2    # |belt| beyond this in the cold band
-REGION_MID_BELT = 0.3     # |belt| beyond this in the middle band (Dark Matter Belt / Corona)
-REGION_RUIN = 0.55        # ruin > this, in what would be vanilla: Shattered Observatory
+REGION_MID_BELT = 0.3     # |belt| beyond this in the middle band (Hollow Isles / Corona)
 BLEND = 0.03              # terrain blends between shapes over +-this much noise at a border
 
 
@@ -663,13 +661,12 @@ def terrain():
     cold = mul(ramp(mul(nebula, -1.0), -REGION_COLD), not_nebula)
     middle = mul(ramp(nebula, REGION_COLD), not_nebula)
     raw = {
-        "aurora_shallows": mul(cold, ramp(belt, REGION_COLD_BELT)),
+        "ashen_barrens": mul(cold, ramp(belt, REGION_COLD_BELT)),
         "comet_wake": mul(cold, ramp(mul(belt, -1.0), REGION_COLD_BELT)),
-        "dark_matter_belt": mul(middle, ramp(belt, REGION_MID_BELT)),
+        "hollow_isles": mul(middle, ramp(belt, REGION_MID_BELT)),
         "corona": mul(middle, ramp(mul(belt, -1.0), REGION_MID_BELT)),
     }
-    vanilla_share = sub(sub(sub(sub(not_nebula, raw["aurora_shallows"]), raw["comet_wake"]), raw["dark_matter_belt"]), raw["corona"])
-    raw["shattered_observatory"] = mul(vanilla_share, ramp(ruin, REGION_RUIN))
+    vanilla_share = sub(sub(sub(sub(not_nebula, raw["ashen_barrens"]), raw["comet_wake"]), raw["hollow_isles"]), raw["corona"])
     raw["nebula_fields"] = ramp(nebula, REGION_NEBULA)
     for biome, weight in raw.items():
         df(f"terrain/weight/{biome}", mul(rid("terrain/outer"), weight))
@@ -691,11 +688,11 @@ def terrain():
     # Nebula Fields: rolling hills of moss on wide islands.
     df("terrain/nebula_fields", dmax(vanilla, landmass(add(60.0, mul(hills, 7.0)), depth_from(add(mask, -0.02), 120.0, 40.0))))
 
-    # Aurora Shallows: wide, thin, flat-topped shelves (level at y=54) that thin to a see-through edge.
+    # Ashen Barrens: wide, thin, flat-topped shelves (level at y=54) that thin to a see-through edge.
     shelf_islands = mul(add(add(islands, 0.12), mul(noise, 0.2)), 14.0)
     shelves = dmin(y_line(0, 54.5 * 0.25, 128, (54.5 - 128) * 0.25),
                    add(y_line(0, -54.5 * 0.25, 128, (128 - 54.5) * 0.25), mul(shelf_islands, 0.25)))
-    df("terrain/aurora_shallows", dmax(shelves, landmass(54.5, depth_from(add(mask, 0.05), 40.0, 10.0))))
+    df("terrain/ashen_barrens", dmax(shelves, landmass(54.5, depth_from(add(mask, 0.05), 40.0, 10.0))))
 
     # Comet Wake: broad scorched islands, plus a river of small floating debris between y=30 and 70.
     band = dmin(y_line(30, 0.0, 45, 1.0), y_line(55, 1.0, 70, 0.0))
@@ -703,20 +700,17 @@ def terrain():
                  mul(sub(1.0, band), 5.0))
     df("terrain/comet_wake", dmax(dmax(vanilla, debris), landmass(add(58.0, mul(hills, 3.0)), depth_from(add(mask, -0.02), 100.0, 36.0))))
 
-    # Dark Matter Belt: ring archipelagos. Land follows a band along the mask's contour, which traces
+    # Hollow Isles: ring archipelagos. Land follows a band along the mask's contour, which traces
     # broken rings and arcs around empty centres; vanilla islands are hollowed out the same way.
     ring = clamp(mul(sub(0.1, {"type": "minecraft:abs", "input": add(mask, -0.18)}), 200.0), 0.0, 30.0)
     hollowed = sub(add(vanilla, mul(noise, 0.5)), mul(dmax(add(islands, -0.2), 0.0), 6.0))
-    df("terrain/dark_matter_belt", dmax(hollowed, landmass(add(58.0, mul(hills, 4.0)), ring)))
+    df("terrain/hollow_isles", dmax(hollowed, landmass(add(58.0, mul(hills, 4.0)), ring)))
 
     # The Corona: flat-topped mesas with sheer cliffs, so there's little natural shelter.
     df("terrain/corona", dmax(vanilla, landmass(add(62.0, mul(hills, 1.5)), depth_from(add(mask, -0.02), 400.0, 30.0))))
 
-    # Shattered Observatory: one large island for the ruins.
-    df("terrain/shattered_observatory", dmax(vanilla, landmass(add(60.0, mul(hills, 3.0)), depth_from(mask, 120.0, 36.0))))
-
     shaped = vanilla
-    for biome in ("nebula_fields", "corona", "dark_matter_belt", "comet_wake", "aurora_shallows", "shattered_observatory"):
+    for biome in ("nebula_fields", "corona", "hollow_isles", "comet_wake", "ashen_barrens"):
         shaped = lerp(rid(f"terrain/weight/{biome}"), shaped, rid(f"terrain/{biome}"))
     df("terrain/shaped", shaped)
 
@@ -749,7 +743,7 @@ def worldgen():
         "spawn_target": [],
     })
 
-    # Surface: the top block of every island floor in Nebula Fields becomes Nebula Moss;
+    # Surface: the top block of every island floor in Nebula Fields becomes Chorus Moss;
     # everything else is End Stone, exactly like vanilla.
     def in_biome(biome, rule):
         return {"type": "minecraft:condition", "if_true": {"type": "minecraft:biome", "biome_is": [rid(biome)]},
@@ -760,11 +754,11 @@ def worldgen():
 
     write(WG / "material_rule" / "end.json", {"type": "minecraft:sequence", "sequence": [
         in_biome("nebula_fields", {"type": "minecraft:condition", "if_true": "minecraft:on_floor",
-                                   "then_run": block("nebula_moss")}),
+                                   "then_run": block("chorus_moss")}),
         # Whole islands of a different stone:
-        in_biome("aurora_shallows", block("pale_end_stone")),
+        in_biome("ashen_barrens", block("pale_end_stone")),
         in_biome("comet_wake", block("charred_end_stone")),
-        in_biome("dark_matter_belt", block("umbral_stone")),
+        in_biome("hollow_isles", block("nightstone")),
         # The Corona: a bleached crust of Sunscorched Stone over Charred End Stone.
         in_biome("corona", {"type": "minecraft:sequence", "sequence": [
             {"type": "minecraft:condition", "if_true": "minecraft:under_floor", "then_run": block("sunscorched_stone")},
@@ -804,7 +798,7 @@ def worldgen():
         {"type": "minecraft:offset", "x": trapezoid(5), "y": trapezoid(1), "z": trapezoid(5)},
         {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
             {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
-            {"type": "minecraft:matching_blocks", "blocks": [rid("nebula_moss")], "offset": [0, -1, 0]},
+            {"type": "minecraft:matching_blocks", "blocks": [rid("chorus_moss")], "offset": [0, -1, 0]},
         ]}},
     ]})
 
@@ -833,12 +827,12 @@ def worldgen():
     # empty list in a datapack.
     tag("worldgen/biome", f"{NS}:low_gravity", rid("nebula_fields"))
     # Phase 9: data-pack switches for the two events (empty a tag to turn its event off).
-    tag("worldgen/biome", f"{NS}:stellar_flares", rid("corona"))
-    for comet_biome in ("nebula_fields", "aurora_shallows", "comet_wake", "dark_matter_belt", "shattered_observatory", "corona",
+    tag("worldgen/biome", f"{NS}:sunstorms", rid("corona"))
+    for comet_biome in ("nebula_fields", "ashen_barrens", "comet_wake", "hollow_isles", "corona",
                         "minecraft:end_highlands", "minecraft:end_midlands", "minecraft:end_barrens", "minecraft:small_end_islands"):
         tag("worldgen/biome", f"{NS}:live_comets", comet_biome if ":" in comet_biome else rid(comet_biome))
-    # Biomes where Gravity Anomalies flip gravity. Empty this tag in a datapack to turn it off.
-    tag("worldgen/biome", f"{NS}:gravity_inversion", rid("dark_matter_belt"))
+    # Biomes where Upwell Cores flip gravity. Empty this tag in a datapack to turn it off.
+    tag("worldgen/biome", f"{NS}:upwells", rid("hollow_isles"))
     lang[f"biome.{NS}.nebula_fields"] = "Nebula Fields"
 
 
@@ -887,13 +881,12 @@ def java_feature(name):
 
 
 # Phase 4 mobs, by biome and spawn category (on top of the End's Endermen). The Drift Whale, the
-# Watcher and the Black Hole Guardian aren't here: MobSpawning.java places them one at a time.
+# Watcher and the Hollow aren't here: MobSpawning.java places them one at a time.
 MOB_SPAWNS = {
     "nebula_fields": {"creature": [("pollinator", 12, 3)]},
-    "aurora_shallows": {"creature": [("pollinator", 8, 2)]},
-    "dark_matter_belt": {"monster": [("umbral_stalker", 4, 1)], "creature": [("void_wanderer", 4, 1)]},
-    "shattered_observatory": {"creature": [("void_wanderer", 6, 1)]},
-    "corona": {"monster": [("cinder_mite", 8, 4)], "creature": [("corona_skimmer", 10, 3)]},
+    "ashen_barrens": {"creature": [("pollinator", 8, 2)]},
+    "hollow_isles": {"monster": [("umbral_stalker", 4, 1)], "creature": [("void_wanderer", 4, 1)]},
+    "corona": {"monster": [("cinder_mite", 8, 4)], "creature": [("void_ray", 10, 3)]},
 }
 
 
@@ -929,7 +922,7 @@ def end_biome(name, english, fog, water, features_step4=(), features_step7=(), f
 def worldgen_phase3():
     air = {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"}
 
-    # ---- Aurora Shallows: Pale End Stone shelves, Shimmer Grass, standing stones, bone ribs
+    # ---- Ashen Barrens: Pale End Stone shelves, Shimmer Grass, standing stones, bone ribs
     ground_cover("aurora_shimmer_grass", "shimmer_grass", 150)
     plant_patch("aurora_shimmer_reeds", "shimmer_reed", rarity=1, count=48, spread=6)
     big_feature("aurora_ribcages", "leviathan_ribcage", rarity=7, heightmap="WORLD_SURFACE_WG")
@@ -955,17 +948,17 @@ def worldgen_phase3():
             air, {"type": "minecraft:matching_blocks", "blocks": [rid("pale_end_stone")], "offset": [0, -1, 0]}]}},
         {"type": "minecraft:biome"},
     ]})
-    end_biome("aurora_shallows", "Aurora Shallows", fog="#1f3b4d", water="#5fc8c2",
+    end_biome("ashen_barrens", "Ashen Barrens", fog="#1f3b4d", water="#5fc8c2",
               features_step4=[rid("aurora_ribcages"), rid("aurora_standing_stones"), rid("aurora_leviathan_ribs")],
               features_step9=[rid("aurora_shimmer_reeds"), rid("aurora_shimmer_grass")],
               particle="minecraft:end_rod", particle_chance=0.002)
 
-    # ---- Comet Wake: Charred End Stone, Stardust veins, Comet Ice, Comet Cores, Comet Cress
+    # ---- Comet Wake: Charred End Stone, Stardust veins, blue ice, Comet Cores, Comet Cress
     ore("stardust_vein", "stardust_block", rid("charred_end_stone"), size=14)
     placed_ore("comet_wake_stardust_veins", "stardust_vein", count=7, min_y=20, max_y=80)
     feature("comet_ice_shard", {"type": "minecraft:block_blob",
                                 "can_place_on": {"type": "minecraft:matching_blocks", "blocks": [rid("charred_end_stone")]},
-                                "state": rid("comet_ice")})
+                                "state": "minecraft:blue_ice"})
     surface_feature("comet_wake_ice_shards", "comet_ice_shard", rarity=5)
     java_feature("comet_core")
     surface_feature("comet_wake_comet_cores", "comet_core", rarity=6)
@@ -980,38 +973,18 @@ def worldgen_phase3():
               features_step7=[rid("comet_wake_stardust_veins")],
               features_step9=[rid("comet_wake_stardust_underhangs")], particle="minecraft:ash", particle_chance=0.01)
 
-    # ---- Dark Matter Belt: Umbral Stone rings, Void Crystal Ore, gravity inversion pockets
-    ore("void_crystal_vein", "void_crystal_ore", rid("umbral_stone"), size=5, discard=0.5)
-    placed_ore("dark_matter_void_crystal", "void_crystal_vein", count=9, min_y=10, max_y=90)
-    java_feature("inversion_pocket")
-    placed("dark_matter_inversion_pockets", {"feature": rid("inversion_pocket"), "placement": [
+    # ---- Hollow Isles: Nightstone rings, Void Crystal Ore, Upwells
+    ore("void_crystal_vein", "void_crystal_ore", rid("nightstone"), size=5, discard=0.5)
+    placed_ore("hollow_isles_void_crystal", "void_crystal_vein", count=9, min_y=10, max_y=90)
+    java_feature("upwell")
+    placed("hollow_isles_upwells", {"feature": rid("upwell"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 3}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
-    big_feature("dark_matter_nullwood_trees", "nullwood_tree", count=3)
-    end_biome("dark_matter_belt", "Dark Matter Belt", fog="#2c2150", water="#3a2a66",
-              features_step4=[rid("dark_matter_inversion_pockets")],
-              features_step7=[rid("dark_matter_void_crystal")],
-              features_step9=[rid("dark_matter_nullwood_trees")],
+    big_feature("hollow_isles_nullwood_trees", "nullwood_tree", count=3)
+    end_biome("hollow_isles", "Hollow Isles", fog="#2c2150", water="#3a2a66",
+              features_step4=[rid("hollow_isles_upwells")],
+              features_step7=[rid("hollow_isles_void_crystal")],
+              features_step9=[rid("hollow_isles_nullwood_trees")],
               particle="minecraft:reverse_portal", particle_chance=0.002)
-
-    # ---- Shattered Observatory: quartz ruins, overgrown with vines and Starblooms
-    java_feature("observatory_ruin")
-    surface_feature("observatory_ruins", "observatory_ruin", rarity=9)
-    big_feature("observatory_great_rings", "observatory_ring", rarity=12, heightmap="WORLD_SURFACE_WG")
-    plant_patch("observatory_starblooms", "starbloom", rarity=1, count=40, spread=7)
-    placed("observatory_astral_vines", {"feature": rid("astral_vine"), "placement": [
-        {"type": "minecraft:in_square"},
-        {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"},
-        {"type": "minecraft:biome"},
-        {"type": "minecraft:count", "count": 12},
-        {"type": "minecraft:offset", "x": trapezoid(6), "y": trapezoid(2), "z": trapezoid(6)},
-        {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
-            air, {"type": "minecraft:matching_blocks", "blocks": ["minecraft:end_stone", rid("observatory_quartz")],
-                  "offset": [0, -1, 0]}]}},
-    ]})
-    end_biome("shattered_observatory", "Shattered Observatory", fog="#262a47", water="#6b7fd6",
-              features_step4=[rid("observatory_great_rings"), rid("observatory_ruins")],
-              features_step9=[rid("observatory_starblooms"), rid("observatory_astral_vines")],
-              particle="minecraft:enchant", particle_chance=0.006)
 
     # ---- The Corona: Sunscorched Stone over Charred End Stone; Solarite; adapted and dead life
     ore("solarite_surface_vein", "solarite_ore", rid("sunscorched_stone"), size=8)
@@ -1040,11 +1013,10 @@ MOBS = [
     ("void_wanderer", "Void Wanderer"),
     ("umbral_stalker", "Umbral Stalker"),
     ("cinder_mite", "Cinder Mite"),
-    ("corona_skimmer", "Corona Skimmer"),
-    ("black_hole_guardian", "Black Hole Guardian"),
+    ("void_ray", "Void Ray"),
+    ("hollow", "The Hollow"),
     ("drift_whale", "Drift Whale"),
     ("watcher", "The Watcher"),
-    ("orrery_sentinel", "Orrery Sentinel"),
     ("live_comet", "Live Comet"),
 ]
 
@@ -1089,33 +1061,23 @@ def mobs_phase4():
         item_def(egg, rid(f"item/{egg}"))
         lang[f"item.{NS}.{egg}"] = f"{english.replace('The ', '')} Spawn Egg"
 
-    # Drops. Killing a Pollinator or a Skimmer gives nothing useful - there's no reason to.
+    # Drops. Killing a Pollinator or a Void Ray gives nothing useful - there's no reason to.
     entity_loot("pollinator", [])
-    entity_loot("corona_skimmer", [])
+    entity_loot("void_ray", [])
     entity_loot("drift_whale", [])
     entity_loot("watcher", [])
     entity_loot("live_comet", [])   # what it gives, it gives while it flies (see LiveComet)
-    # The Orrery Sentinel guards the Cartographers' craft: it always drops a Starforge Template and a
-    # Rift Pearl (every boss drops one).
-    entity_loot("orrery_sentinel", [
-        {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("starforge_template")}]},
-        {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("rift_pearl")}]},
-        {"rolls": 1, "conditions": [{"condition": "minecraft:random_chance", "chance": 0.5}],
-         "entries": [{"type": "minecraft:item", "name": rid("temporal_crystal")}]},
-        {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("orrery_bronze"), "functions": [
-            {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 2, "max": 5}}]}]},
-    ])
     entity_loot("void_wanderer", [player_kill_drop("cracked_lens", 1, looting=False)])
     entity_loot("umbral_stalker", [player_kill_drop("umbral_membrane", 1)])
-    entity_loot("black_hole_guardian", [{"condition": {"type": "minecraft:killed_by_player"}, "rolls": 1,
-                                         "entries": [{"type": "minecraft:item", "name": rid("singularity_shard")}]}])
+    entity_loot("hollow", [{"condition": {"type": "minecraft:killed_by_player"}, "rolls": 1,
+                                         "entries": [{"type": "minecraft:item", "name": rid("abyss_shard")}]}])
     entity_loot("cinder_mite", [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("cinder"), "modifier": [
         {"type": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 0, "max": 2}},
         {"type": "minecraft:enchanted_count_increase", "count": {"type": "minecraft:uniform", "min": 0.0, "max": 1.0},
          "enchantment": "minecraft:looting"}]}]}])
 
     # Flying and floating mobs don't take fall damage.
-    for mob in ("pollinator", "void_wanderer", "corona_skimmer", "black_hole_guardian", "drift_whale", "watcher", "live_comet"):
+    for mob in ("pollinator", "void_wanderer", "void_ray", "hollow", "drift_whale", "watcher", "live_comet"):
         tag("entity_type", "minecraft:fall_damage_immune", rid(mob))
 
     # What End Pollinators visit (and spread when they pollinate it).
@@ -1150,8 +1112,8 @@ def mobs_phase4():
 
 
 def flares_phase5():
-    """Phase 5: Stellar Flares - the Flarebloom's and lichen's flare states, the Sunshade, the Collector
-    Pedestal, the flare items, Flare Ward, and the Flare Burn damage type."""
+    """Phase 5: Sunstorms - the Flarebloom's and lichen's flare states, the Sunshade, the Collector
+    Pedestal, the flare items, Sun Ward, and the Sunburn damage type."""
     # Flarebloom: shut between flares (a bud), open and glowing during one; an open one gives pollen.
     blockstate("flarebloom", {"variants": {
         "half=lower,open=false": {"model": rid("block/flarebloom_bottom")},
@@ -1188,7 +1150,7 @@ def flares_phase5():
     item_def("sunshade", rid("block/sunshade"))
     lang[f"block.{NS}.sunshade"] = "Sunshade"
     drop_self("sunshade")
-    shaped("sunshade", "sunshade", ["FFF", "S S"], {"F": rid("skimmer_film"), "S": rid("solarite_ingot")}, count=4)
+    shaped("sunshade", "sunshade", ["FFF", "S S"], {"F": rid("ray_film"), "S": rid("solarite_ingot")}, count=4)
 
     # Collector Pedestal: a stone base, a column with a sun emblem, a solarite-banded top; what it holds
     # sits on top (a cross of two planes, like a plant).
@@ -1232,14 +1194,14 @@ def flares_phase5():
         lang[f"item.{NS}.{name}"] = english
     shaped("flare_bottle", "flare_bottle", ["S", "G", "S"], {"S": rid("solarite_ingot"), "G": rid("astral_glass")})
 
-    # Flare Ward, the potion and its effect
-    lang[f"effect.{NS}.flare_ward"] = "Flare Ward"
-    for kind, english in (("potion", "Potion of Flare Ward"), ("splash_potion", "Splash Potion of Flare Ward"),
-                          ("lingering_potion", "Lingering Potion of Flare Ward"), ("tipped_arrow", "Arrow of Flare Ward")):
-        lang[f"item.minecraft.{kind}.effect.flare_ward"] = english
+    # Sun Ward, the potion and its effect
+    lang[f"effect.{NS}.sun_ward"] = "Sun Ward"
+    for kind, english in (("potion", "Potion of Sun Ward"), ("splash_potion", "Splash Potion of Sun Ward"),
+                          ("lingering_potion", "Lingering Potion of Sun Ward"), ("tipped_arrow", "Arrow of Sun Ward")):
+        lang[f"item.minecraft.{kind}.effect.sun_ward"] = english
 
-    # Brewing (26.3 brews from data, like crafting): Awkward + Skimmer Film -> Flare Ward;
-    # Flare Ward + Flare Pollen -> the long one; gunpowder and dragon's breath as for any potion.
+    # Brewing (26.3 brews from data, like crafting): Awkward + Ray Film -> Sun Ward;
+    # Sun Ward + Flare Pollen -> the long one; gunpowder and dragon's breath as for any potion.
     def brew(name, container, potion, reagent, out_container, out_potion):
         recipe(f"brewing/{name}", {"type": "minecraft:brewing",
             "input": {"item": container, "potion_contents": {"potions": potion}},
@@ -1247,25 +1209,25 @@ def flares_phase5():
             "output": {"id": out_container, "components": {"minecraft:potion_contents": {"potion": out_potion}}}})
     for kind in ("potion", "splash_potion", "lingering_potion"):
         c = f"minecraft:{kind}"
-        brew(f"{kind}_awkward_skimmer_film", c, "minecraft:awkward", rid("skimmer_film"), c, rid("flare_ward"))
-        brew(f"{kind}_flare_ward_flare_pollen", c, rid("flare_ward"), rid("flare_pollen"), c, rid("long_flare_ward"))
-    for potion in ("flare_ward", "long_flare_ward"):
+        brew(f"{kind}_awkward_ray_film", c, "minecraft:awkward", rid("ray_film"), c, rid("sun_ward"))
+        brew(f"{kind}_sun_ward_flare_pollen", c, rid("sun_ward"), rid("flare_pollen"), c, rid("long_sun_ward"))
+    for potion in ("sun_ward", "long_sun_ward"):
         brew(f"potion_{potion}_gunpowder", "minecraft:potion", rid(potion), "minecraft:gunpowder",
              "minecraft:splash_potion", rid(potion))
         brew(f"splash_potion_{potion}_dragon_breath", "minecraft:splash_potion", rid(potion), "minecraft:dragon_breath",
              "minecraft:lingering_potion", rid(potion))
 
-    # Flare Burn: armour doesn't help (only cover, a Sunshade, Flare Ward)
-    write(DATA / "damage_type" / "flare_burn.json",
-          {"message_id": f"{NS}.flare_burn", "exhaustion": 0.0, "scaling": "never", "effects": "burning"})
-    tag("damage_type", "minecraft:bypasses_armor", rid("flare_burn"))
-    tag("damage_type", "minecraft:no_knockback", rid("flare_burn"))
-    lang[f"death.attack.{NS}.flare_burn"] = "%1$s was burned by a Stellar Flare"
-    lang[f"death.attack.{NS}.flare_burn.player"] = "%1$s was burned by a Stellar Flare while fighting %2$s"
+    # Sunburn: armour doesn't help (only cover, a Sunshade, Sun Ward)
+    write(DATA / "damage_type" / "sunburn.json",
+          {"message_id": f"{NS}.sunburn", "exhaustion": 0.0, "scaling": "never", "effects": "burning"})
+    tag("damage_type", "minecraft:bypasses_armor", rid("sunburn"))
+    tag("damage_type", "minecraft:no_knockback", rid("sunburn"))
+    lang[f"death.attack.{NS}.sunburn"] = "%1$s was burned by a Sunstorm"
+    lang[f"death.attack.{NS}.sunburn.player"] = "%1$s was burned by a Sunstorm while fighting %2$s"
 
     # What the Corona's players are told
     lang["flare.astralend.warning"] = "The Remnant is brightening - get under cover!"
-    lang["flare.astralend.flare"] = "Stellar Flare! Open sky burns."
+    lang["flare.astralend.flare"] = "Sunstorm! Open sky burns."
     lang["flare.astralend.afterglow"] = "The flare is passing. The Corona glows."
 
 
@@ -1288,71 +1250,6 @@ def chance(item, p, count=None):
             "entries": [entry(item, 1, count)]}
 
 
-# The Orrery Bronze family (Phase 9), like copper's. Must match the BRONZE loop in ModBlocks.java.
-BRONZE_STAGES = (("", ""), ("tarnished_", "Tarnished "), ("weathered_", "Weathered "))
-BRONZE_SHAPES = (("orrery_bronze", "Orrery Bronze"), ("cut_orrery_bronze", "Cut Orrery Bronze"),
-                 ("cut_orrery_bronze_stairs", "Cut Orrery Bronze Stairs"), ("cut_orrery_bronze_slab", "Cut Orrery Bronze Slab"),
-                 ("orrery_bronze_grate", "Orrery Bronze Grate"))
-
-
-def bronze_family():
-    for stage, stage_en in BRONZE_STAGES:
-        full, cut, grate = f"{stage}orrery_bronze", f"{stage}cut_orrery_bronze", f"{stage}orrery_bronze_grate"
-        cut_tex = rid(f"block/{cut}")
-        block_model(full, {"parent": "minecraft:block/cube_all", "textures": {"all": rid(f"block/{full}")}})
-        block_model(cut, {"parent": "minecraft:block/cube_all", "textures": {"all": cut_tex}})
-        block_model(grate, {"parent": "minecraft:block/cube_all", "render_type": "minecraft:cutout",
-                            "textures": {"all": rid(f"block/{grate}")}})
-        for suffix, parent in (("", "stairs"), ("_inner", "inner_stairs"), ("_outer", "outer_stairs")):
-            block_model(f"{cut}_stairs{suffix}", {"parent": f"minecraft:block/{parent}",
-                                                  "textures": {"bottom": cut_tex, "side": cut_tex, "top": cut_tex}})
-        block_model(f"{cut}_slab", {"parent": "minecraft:block/slab", "textures": {"bottom": cut_tex, "side": cut_tex, "top": cut_tex}})
-        block_model(f"{cut}_slab_top", {"parent": "minecraft:block/slab_top",
-                                        "textures": {"bottom": cut_tex, "side": cut_tex, "top": cut_tex}})
-        for waxed, waxed_en in (("", ""), ("waxed_", "Waxed ")):
-            for shape, shape_en in BRONZE_SHAPES:
-                name = f"{waxed}{stage}{shape}"
-                model_base = f"{stage}{shape}"           # waxed bronze looks just the same
-                lang[f"block.{NS}.{name}"] = f"{waxed_en}{stage_en}{shape_en}"
-                tag("block", "minecraft:mineable/pickaxe", rid(name))
-                tag("block", "minecraft:needs_stone_tool", rid(name))
-                if shape.endswith("_stairs"):
-                    blockstate(name, stairs_variants_for(name, model_base))
-                    tag("block", "minecraft:stairs", rid(name))
-                    tag("item", "minecraft:stairs", rid(name))
-                    drop_self(name)
-                elif shape.endswith("_slab"):
-                    blockstate(name, {"variants": {
-                        "type=bottom": {"model": rid(f"block/{model_base}")},
-                        "type=double": {"model": rid(f"block/{stage}cut_orrery_bronze")},
-                        "type=top": {"model": rid(f"block/{model_base}_top")}}})
-                    tag("block", "minecraft:slabs", rid(name))
-                    tag("item", "minecraft:slabs", rid(name))
-                    loot(name, [{"entries": [{"type": "minecraft:item", "name": rid(name), "modifier": [
-                        {"type": "minecraft:set_count", "condition": {"type": "minecraft:match_block", "blocks": rid(name),
-                                                                      "state": {"type": "double"}}, "count": 2},
-                        {"type": "minecraft:explosion_decay"}]}], "rolls": 1}])
-                else:
-                    blockstate(name, {"variants": {"" if not shape.endswith("_grate") else "waterlogged=false": {"model": rid(f"block/{model_base}")},
-                                                   **({"waterlogged=true": {"model": rid(f"block/{model_base}")}} if shape.endswith("_grate") else {})}})
-                    drop_self(name)
-                item_def(name, rid(f"block/{model_base}"))
-                if waxed:
-                    shapeless(f"{name}_from_honeycomb", name, [rid(f"{stage}{shape}"), "minecraft:honeycomb"], category="building")
-            # Cutting, like copper: four blocks make four cut blocks, which make stairs and slabs; a diamond
-            # of four blocks makes four grates. The stonecutter does the same.
-            pre = f"{waxed}{stage}"
-            shaped(f"{pre}cut_orrery_bronze", f"{pre}cut_orrery_bronze", ["##", "##"], {"#": rid(f"{pre}orrery_bronze")}, count=4)
-            shaped(f"{pre}cut_orrery_bronze_stairs", f"{pre}cut_orrery_bronze_stairs", ["#  ", "## ", "###"],
-                   {"#": rid(f"{pre}cut_orrery_bronze")}, count=4)
-            shaped(f"{pre}cut_orrery_bronze_slab", f"{pre}cut_orrery_bronze_slab", ["###"], {"#": rid(f"{pre}cut_orrery_bronze")}, count=6)
-            shaped(f"{pre}orrery_bronze_grate", f"{pre}orrery_bronze_grate", [" # ", "# #", " # "], {"#": rid(f"{pre}orrery_bronze")}, count=4)
-            stonecutting(f"{pre}orrery_bronze", f"{pre}cut_orrery_bronze", 4)
-            stonecutting(f"{pre}orrery_bronze", f"{pre}orrery_bronze_grate", 4)
-            stonecutting(f"{pre}cut_orrery_bronze", f"{pre}cut_orrery_bronze_stairs", 1)
-            stonecutting(f"{pre}cut_orrery_bronze", f"{pre}cut_orrery_bronze_slab", 2)
-
-
 def stairs_variants_for(name, model_base):
     variants = stairs_variants(model_base)
     return variants
@@ -1370,13 +1267,12 @@ def structures_phase6():
     lang[f"item.{NS}.temporal_crystal"] = "Temporal Crystal"
     lang[f"item.{NS}.star_chart.marks_structure"] = "Marks a site: %s"
     for name, english in (("comet_crater", "Comet Crater"), ("wanderer_relay", "Wanderer Relay"), ("whalefall", "Whalefall"),
-                          ("observatory_ruins", "Observatory Ruins"), ("solar_array", "Solar Array Ruins"),
-                          ("wormhole_maw", "Wormhole Maw"), ("constellation_maze", "Constellation Maze"),
-                          ("abandoned_orrery", "Abandoned Orrery")):
+                          ("shattered_observatory", "Shattered Observatory"), ("solar_array", "Solar Array Ruins"),
+                          ("rift_maw", "Rift Maw"), ("constellation_maze", "Constellation Maze")):
         lang[f"structure.{NS}.{name}"] = english
         tag("worldgen/structure", rid(name), rid(name))      # a Star Chart looks each one up by its own tag
 
-    # ---- Batch C: the Wormhole Maw and the Constellation Maze
+    # ---- Batch C: the Rift Maw and the Constellation Maze
     facings = {"north": 0, "east": 90, "south": 180, "west": 270}
     for lit, front in ((False, "maw_eye"), (True, "maw_eye_lit")):
         block_model(front, {"parent": "minecraft:block/orientable", "textures": {
@@ -1389,7 +1285,7 @@ def structures_phase6():
     block_model("wormhole", {"parent": "minecraft:block/cube_all", "textures": {"all": rid("block/wormhole")}})
     lang[f"block.{NS}.maw_eye"] = "Maw Eye Socket"
     lang[f"block.{NS}.maw_throat"] = "Dormant Maw Throat"
-    lang[f"block.{NS}.wormhole"] = "Wormhole"
+    lang[f"block.{NS}.wormhole"] = "Rift"
     # Star-bridges: nothing at all while dark (a model with no faces), a pane of starlight while lit.
     block_model("star_bridge_dark", {"textures": {"particle": rid("block/star_bridge")}, "elements": []})
     block_model("star_bridge", {"parent": "minecraft:block/cube_all", "textures": {"all": rid("block/star_bridge")}})
@@ -1397,11 +1293,11 @@ def structures_phase6():
         {"when": {"lit": "false"}, "apply": {"model": rid("block/star_bridge_dark")}},
         {"when": {"lit": "true"}, "apply": {"model": rid("block/star_bridge")}}]})
     lang[f"block.{NS}.star_bridge"] = "Star-Bridge"
-    # The Maze Telescope: a squat stone mount, a bronze post, and the tube tilted up toward the sky.
+    # The Maze Telescope: a squat stone mount, a stone post, and the tube tilted up toward the sky.
     tube = rid("block/telescope_tube")
     block_model("maze_telescope", {
         "parent": "minecraft:block/block", "ambientocclusion": False,
-        "textures": {"particle": tube, "tube": tube, "base": rid("block/polished_umbral_stone"), "lens": rid("block/astral_glass")},
+        "textures": {"particle": tube, "tube": tube, "base": rid("block/polished_nightstone"), "lens": rid("block/astral_glass")},
         "elements": [
             {"from": [3, 0, 3], "to": [13, 2, 13], "faces": {d: {"texture": "#base"} for d in ("north", "south", "east", "west", "up", "down")}},
             {"from": [7, 2, 7], "to": [9, 9, 9], "faces": {d: {"uv": [0, 0, 2, 7], "texture": "#tube"} for d in ("north", "south", "east", "west")}},
@@ -1449,49 +1345,6 @@ def structures_phase6():
         "maze.astralend.dir.west": "high in the west", "maze.astralend.dir.north_west": "high in the north-west",
     })
 
-    # ---- Batch D: the Orrery
-    bronze_family()
-    shapeless("orrery_bronze", "orrery_bronze", [rid("meteoric_iron_ingot"), rid("meteoric_iron_ingot"),
-                                                 rid("solarite_ingot"), rid("solarite_ingot")], count=4, category="building")
-    # The Orrery Heart: its sides show how many flares it holds; the top glows once it's rekindled.
-    variants = {}
-    for cells in range(4):
-        for powered in (False, True):
-            model = "orrery_heart_on" if powered else f"orrery_heart_{cells}"
-            variants[f"flares={cells},powered={str(powered).lower()}"] = {"model": rid(f"block/{model}")}
-    for cells in range(4):
-        block_model(f"orrery_heart_{cells}", {"parent": "minecraft:block/cube_bottom_top", "textures": {
-            "side": rid(f"block/orrery_heart_side_{cells}"), "top": rid("block/orrery_heart_top"),
-            "bottom": rid("block/weathered_orrery_bronze")}})
-    block_model("orrery_heart_on", {"parent": "minecraft:block/cube_bottom_top", "textures": {
-        "side": rid("block/orrery_heart_side_on"), "top": rid("block/orrery_heart_top_on"), "bottom": rid("block/weathered_orrery_bronze")}})
-    blockstate("orrery_heart", {"variants": variants})
-    item_def("orrery_heart", rid("block/orrery_heart_0"))
-    lang[f"block.{NS}.orrery_heart"] = "Orrery Heart"
-    # Bronze Shutters: a solid slab of bronze shut, nothing at all open (it has slid into the walls).
-    block_model("bronze_shutter", {"parent": "minecraft:block/cube_all", "textures": {"all": rid("block/bronze_shutter")}})
-    block_model("bronze_shutter_open", {"textures": {"particle": rid("block/bronze_shutter")}, "elements": []})
-    blockstate("bronze_shutter", {"multipart": [
-        {"when": {"open": "false"}, "apply": {"model": rid("block/bronze_shutter")}},
-        {"when": {"open": "true"}, "apply": {"model": rid("block/bronze_shutter_open")}}]})
-    item_def("bronze_shutter", rid("block/bronze_shutter"))
-    lang[f"block.{NS}.bronze_shutter"] = "Bronze Shutter"
-    # Orrery Lamps.
-    block_model("orrery_lamp", {"parent": "minecraft:block/cube_all", "textures": {"all": rid("block/orrery_lamp")}})
-    block_model("orrery_lamp_on", {"parent": "minecraft:block/cube_all", "textures": {"all": rid("block/orrery_lamp_on")}})
-    blockstate("orrery_lamp", {"variants": {"lit=false": {"model": rid("block/orrery_lamp")},
-                                             "lit=true": {"model": rid("block/orrery_lamp_on")}}})
-    item_def("orrery_lamp", rid("block/orrery_lamp"))
-    drop_self("orrery_lamp")
-    lang[f"block.{NS}.orrery_lamp"] = "Orrery Lamp"
-    shaped("orrery_lamp", "orrery_lamp", [" B ", "BGB", " B "], {"B": rid("orrery_bronze"), "G": "minecraft:glowstone"})
-    lang.update({
-        "orrery.astralend.flare": "The Orrery Heart drinks the flare (%s of 3).",
-        "orrery.astralend.powered": "The Orrery Heart blazes up. The rings shudder and turn, lamps kindle along the gallery, and somewhere a shutter grinds open...",
-        "orrery.astralend.running": "The Orrery Heart is burning.",
-        "orrery.astralend.dead": "The Orrery Heart is cold (%s of 3 flares). It wants Bottled Flares.",
-    })
-
     # ---- Phase 7: live comets
     item_model("stardust_mote", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("item/stardust_mote")}})
     item_def("stardust_mote", rid("item/stardust_mote"))
@@ -1504,7 +1357,7 @@ def structures_phase6():
     chest_loot("comet_crater", [
         {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
             entry("raw_meteoric_iron", 6, (1, 4)), entry("meteoric_iron_nugget", 5, (2, 7)),
-            entry("comet_ice", 4, (2, 6)), entry("stardust_block", 3, (1, 4)), entry("comet_cress", 3, (1, 3)),
+            entry("minecraft:blue_ice", 4, (2, 6)), entry("stardust_block", 3, (1, 4)), entry("comet_cress", 3, (1, 3)),
             entry("void_crystal", 2, (1, 2)), entry("meteoric_iron_ingot", 1, (1, 2))]},
         chance("temporal_crystal", 0.25),
         chance("star_chart", 0.3),
@@ -1518,34 +1371,16 @@ def structures_phase6():
             entry("minecraft:nautilus_shell", 1, (1, 1))]},
         chance("temporal_crystal", 0.15),
     ])
-    # The Constellation Maze's reward: a Temporal Crystal, and a Star Chart that marks a Wormhole Maw.
+    # The Constellation Maze's reward: a Temporal Crystal, and a Star Chart that marks a Rift Maw.
     chest_loot("constellation_maze", [
         {"rolls": 1, "entries": [entry("temporal_crystal")]},
         {"rolls": 1, "entries": [entry("starforge_template")]},
         {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("star_chart"), "functions": [
-            {"function": "minecraft:set_components", "components": {"minecraft:custom_data": {"Structure": "wormhole_maw"}}}]}]},
+            {"function": "minecraft:set_components", "components": {"minecraft:custom_data": {"Structure": "rift_maw"}}}]}]},
         {"rolls": {"type": "minecraft:uniform", "min": 2, "max": 4}, "entries": [
             entry("charged_void_crystal", 3, (1, 2)), entry("chart_fragment", 3, (1, 3)), entry("void_crystal", 4, (2, 5)),
             entry("star_inlay_observatory_quartz", 2, (2, 6)), entry("minecraft:ender_pearl", 3, (2, 4)),
             entry("minecraft:experience_bottle", 2, (2, 5))]},
-    ])
-    # The Orrery: the vault (behind the shutters) and the keepers' quarters.
-    chest_loot("orrery_vault", [
-        {"rolls": 1, "entries": [entry("temporal_crystal")]},
-        {"rolls": 1, "entries": [entry("starforge_template")]},
-        chance("rift_pearl", 0.15),
-        {"rolls": 1, "entries": [entry("charged_void_crystal", 1, (1, 2))]},
-        {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 5}, "entries": [
-            entry("orrery_bronze", 4, (4, 12)), entry("solarite_ingot", 3, (2, 5)), entry("meteoric_iron_ingot", 3, (2, 5)),
-            entry("chart_fragment", 3, (1, 3)), entry("bottled_flare", 1), entry("minecraft:diamond", 2, (1, 3)),
-            entry("minecraft:enchanted_golden_apple", 1)]},
-    ])
-    chest_loot("orrery_quarters", [
-        {"rolls": 1, "entries": [entry("star_chart")]},
-        {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
-            entry("comet_cress", 4, (2, 6)), entry("glowing_spores", 3, (2, 5)), entry("lumineshroom", 2, (1, 3)),
-            entry("minecraft:paper", 3, (1, 5)), entry("minecraft:book", 2), entry("flare_bottle", 1),
-            entry("orrery_bronze", 3, (2, 6))]},
     ])
     # Observatory Ruins: the vaults (opened with a Chart Fragment) hold the Cartographers' best finds; the
     # chest holds what was left lying about.
@@ -1723,7 +1558,7 @@ def starforging_phase8():
         f"container.{NS}.astral_forge.slot.1": "Add diamond or netherite armor, weapon or tool, or a bow, crossbow, trident or mace",
         f"container.{NS}.astral_forge.slot.2": "Add Starforge Alloy",
         f"container.{NS}.astral_forge.slot.3": "Add the upgrade's material: Void Crystal and Umbral Membrane, Meteoric Iron, "
-                                                 "Stardust, a Temporal Crystal, a Singularity Shard, or Solarite and a Charged Void Crystal",
+                                                 "Stardust, a Temporal Crystal, a Abyss Shard, or Solarite and a Charged Void Crystal",
         f"container.{NS}.astral_forge.slot.4": "Voidwalker and Radiant take a second material here",
         f"upgrade.{NS}.header": "Starforged:",
         f"upgrade.{NS}.line": "%s: %s",
@@ -1745,16 +1580,16 @@ def starforging_phase8():
 
 
 def round_out_phase9():
-    """Phase 9: what Mojang would ship with the rest - moss carpet for Nebula Moss, a stew for the
+    """Phase 9: what Mojang would ship with the rest - moss carpet for Chorus Moss, a stew for the
     End's food plants, a compass that works in the End, and a second use for Cinder."""
-    # Nebula Moss Carpet, like moss carpet: two moss make three.
-    blockstate("nebula_moss_carpet", {"variants": {"": {"model": rid("block/nebula_moss_carpet")}}})
-    block_model("nebula_moss_carpet", {"parent": "minecraft:block/carpet", "textures": {"wool": rid("block/nebula_moss")}})
-    item_def("nebula_moss_carpet", rid("block/nebula_moss_carpet"))
-    drop_self("nebula_moss_carpet")
-    tag("block", "minecraft:mineable/hoe", rid("nebula_moss_carpet"))
-    lang[f"block.{NS}.nebula_moss_carpet"] = "Nebula Moss Carpet"
-    shaped("nebula_moss_carpet", "nebula_moss_carpet", ["##"], {"#": rid("nebula_moss")}, count=3, category="building")
+    # Chorus Moss Carpet, like moss carpet: two moss make three.
+    blockstate("chorus_moss_carpet", {"variants": {"": {"model": rid("block/chorus_moss_carpet")}}})
+    block_model("chorus_moss_carpet", {"parent": "minecraft:block/carpet", "textures": {"wool": rid("block/chorus_moss")}})
+    item_def("chorus_moss_carpet", rid("block/chorus_moss_carpet"))
+    drop_self("chorus_moss_carpet")
+    tag("block", "minecraft:mineable/hoe", rid("chorus_moss_carpet"))
+    lang[f"block.{NS}.chorus_moss_carpet"] = "Chorus Moss Carpet"
+    shaped("chorus_moss_carpet", "chorus_moss_carpet", ["##"], {"#": rid("chorus_moss")}, count=3, category="building")
 
     # Glowing Stew: Lumineshroom, Comet Cress and a bowl. Food, and 30 seconds of Night Vision.
     item_model("glowing_stew", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("item/glowing_stew")}})
@@ -1783,7 +1618,7 @@ def round_out_phase9():
         "ingredients": [rid("cinder"), "minecraft:gunpowder"], "result": {"count": 2, "id": "minecraft:fire_charge"}})
 
 
-ASTRAL_BIOMES = ("nebula_fields", "aurora_shallows", "comet_wake", "dark_matter_belt", "shattered_observatory", "corona")
+ASTRAL_BIOMES = ("nebula_fields", "ashen_barrens", "comet_wake", "hollow_isles", "corona")
 
 
 def has_item(item):
@@ -1830,23 +1665,18 @@ def advancements_phase9():
                 "Cross a Constellation Maze and open the chest on its dais", parent=rid("end/hold_still"),
                 criteria={"maze": {"trigger": "minecraft:player_generates_container_loot",
                                    "conditions": {"loot_tables": [rid("chests/constellation_maze")]}}})
-    advancement("say_ahh", rid("portal_lens"), "Say Ahh", "Wake a Wormhole Maw", parent=rid("end/hold_still"), frame="goal")
+    advancement("say_ahh", rid("portal_lens"), "Say Ahh", "Wake a Rift Maw", parent=rid("end/hold_still"), frame="goal")
     advancement("something_looks_back", rid("star_chart"), "Something Looks Back",
                 "Catch a glimpse of the Watcher through a spyglass", parent=rid("end/hold_still"), hidden=True)
     # The Corona
-    advancement("weather_the_storm", rid("sunshade"), "Weather the Storm", "Be in the Corona when a Stellar Flare dies down",
+    advancement("weather_the_storm", rid("sunshade"), "Weather the Storm", "Be in the Corona when a Sunstorm dies down",
                 parent=root)
-    advancement("harvest_moon", "minecraft:shears", "Harvest Moon", "Shear the film from a Corona Skimmer's wings",
+    advancement("harvest_moon", "minecraft:shears", "Harvest Moon", "Shear the film from a Void Ray's wings",
                 parent=rid("end/weather_the_storm"))
-    advancement("bottled_sunlight", rid("bottled_flare"), "Bottled Sunlight", "Fill a Flare Bottle with a Stellar Flare",
+    advancement("bottled_sunlight", rid("bottled_flare"), "Bottled Sunlight", "Fill a Flare Bottle with a Sunstorm",
                 parent=rid("end/weather_the_storm"), criteria={"bottle": has_item(rid("bottled_flare"))})
-    advancement("wind_it_up", rid("orrery_heart"), "Wind It Up", "Rekindle the heart of an Abandoned Orrery",
-                parent=rid("end/bottled_sunlight"), frame="goal")
-    advancement("clockwork_undone", rid("orrery_lamp"), "Clockwork Undone", "Defeat an Orrery Sentinel",
-                parent=rid("end/wind_it_up"), frame="challenge", criteria={"sentinel": killed(rid("orrery_sentinel"))})
-    # The Dark Matter Belt
-    advancement("event_horizon", rid("singularity_shard"), "Event Horizon", "Defeat a Black Hole Guardian",
-                parent=root, frame="goal", criteria={"guardian": killed(rid("black_hole_guardian"))})
+    advancement("into_the_hollow", rid("abyss_shard"), "Into the Hollow", "Defeat the Hollow",
+                parent=root, frame="goal", criteria={"guardian": killed(rid("hollow"))})
     # The Drift Whales
     advancement("something_big_out_there", rid("whalelight_scale"), "Something Big Out There", "See a Drift Whale", parent=root)
     advancement("whale_song", rid("whalelight_scale"), "Whale Song", "Be close to a Drift Whale while it hums",
@@ -2071,13 +1901,13 @@ def main():
         lang[f"item.{NS}.{name}"] = english
 
     # ---------------------------------------------------------------- loot for the rest
-    for name in ("chiseled_umbral_stone", "void_crystal_block", "meteoric_iron_block",
-                 "raw_meteoric_iron_block", "stardust_block", "nebula_moss", "lumineshroom", "starbloom",
+    for name in ("chiseled_nightstone", "void_crystal_block", "meteoric_iron_block",
+                 "raw_meteoric_iron_block", "stardust_block", "chorus_moss", "lumineshroom", "starbloom",
                  "pale_end_stone_tiles", "solarite_block", "raw_solarite_block", "star_inlay_observatory_quartz",
                  "ashen_lumineshroom", "petrified_astral_vine", "lumine_cap", "nullwood_sapling"):
         drop_self(name)
-    # Like blue ice and vanilla grass: nothing without Silk Touch / shears.
-    for name, tool in (("comet_ice", "minecraft:tool/can_silk_touch"), ("gravity_anomaly", "minecraft:tool/can_silk_touch"),
+    # Like vanilla grass: nothing without Silk Touch / shears.
+    for name, tool in (("upwell_core", "minecraft:tool/can_silk_touch"),
                        ("shimmer_grass", "minecraft:tool/can_shear"), ("nebula_tufts", "minecraft:tool/can_shear")):
         loot(name, [{"condition": tool, "entries": [{"type": "minecraft:item", "name": rid(name)}], "rolls": 1}])
     for ore, drop in (("void_crystal_ore", "void_crystal"), ("meteoric_iron_ore", "raw_meteoric_iron"),
@@ -2099,16 +1929,16 @@ def main():
     }])
 
     # ---------------------------------------------------------------- tags
-    for name in ("chiseled_umbral_stone", "void_crystal_ore", "void_crystal_block", "meteoric_iron_ore",
+    for name in ("chiseled_nightstone", "void_crystal_ore", "void_crystal_block", "meteoric_iron_ore",
                  "meteoric_iron_block", "raw_meteoric_iron_block"):
         tag("block", "minecraft:mineable/pickaxe", rid(name))
     for name in ("void_crystal_ore", "void_crystal_block", "meteoric_iron_block", "raw_meteoric_iron_block"):
         tag("block", "minecraft:needs_iron_tool", rid(name))
     tag("block", "minecraft:needs_diamond_tool", rid("meteoric_iron_ore"))
-    for name in ("pale_end_stone_tiles", "comet_ice", "solarite_ore", "solarite_block", "raw_solarite_block",
-                 "star_inlay_observatory_quartz", "gravity_anomaly"):
+    for name in ("pale_end_stone_tiles", "solarite_ore", "solarite_block", "raw_solarite_block",
+                 "star_inlay_observatory_quartz", "upwell_core"):
         tag("block", "minecraft:mineable/pickaxe", rid(name))
-    for name in ("solarite_ore", "gravity_anomaly"):
+    for name in ("solarite_ore", "upwell_core"):
         tag("block", "minecraft:needs_diamond_tool", rid(name))
     for name in ("solarite_block", "raw_solarite_block"):
         tag("block", "minecraft:needs_iron_tool", rid(name))
@@ -2136,32 +1966,32 @@ def main():
         tag("block", "minecraft:blocks_motion_no_leaves", rid(name))
 
     # What the End's plants grow on.
-    for name in ("minecraft:end_stone", rid("nebula_moss"), rid("umbral_stone"), rid("pale_end_stone"),
+    for name in ("minecraft:end_stone", rid("chorus_moss"), rid("nightstone"), rid("pale_end_stone"),
                  rid("charred_end_stone"), rid("sunscorched_stone")):
         tag("block", f"{NS}:astral_soil", name)
     tag("block", "minecraft:mineable/shovel", rid("stardust_block"))
-    tag("block", "minecraft:mineable/hoe", rid("nebula_moss"))
+    tag("block", "minecraft:mineable/hoe", rid("chorus_moss"))
     tag("block", "minecraft:small_flowers", rid("starbloom"))
     tag("item", "minecraft:small_flowers", rid("starbloom"))
     tag("block", "minecraft:crops", rid("comet_cress"))
 
     # ---------------------------------------------------------------- recipes
-    shaped("polished_umbral_stone", "polished_umbral_stone", ["SS", "SS"], {"S": rid("umbral_stone")}, count=4)
-    shaped("umbral_stone_bricks", "umbral_stone_bricks", ["##", "##"], {"#": rid("polished_umbral_stone")}, count=4)
-    shaped("chiseled_umbral_stone", "chiseled_umbral_stone", ["#", "#"], {"#": rid("umbral_stone_slab")})
+    shaped("polished_nightstone", "polished_nightstone", ["SS", "SS"], {"S": rid("nightstone")}, count=4)
+    shaped("nightstone_bricks", "nightstone_bricks", ["##", "##"], {"#": rid("polished_nightstone")}, count=4)
+    shaped("chiseled_nightstone", "chiseled_nightstone", ["#", "#"], {"#": rid("nightstone_slab")})
     for base, (stairs, slab, wall) in family_variants.items():
         stonecutting(base, stairs)
         stonecutting(base, slab, 2)
         stonecutting(base, wall)
-    for result in ("polished_umbral_stone", "umbral_stone_bricks", "chiseled_umbral_stone"):
-        stonecutting("umbral_stone", result)
-    for result, count in (("polished_umbral_stone_stairs", 1), ("polished_umbral_stone_slab", 2),
-                          ("polished_umbral_stone_wall", 1), ("umbral_stone_brick_stairs", 1),
-                          ("umbral_stone_brick_slab", 2), ("umbral_stone_brick_wall", 1)):
-        stonecutting("umbral_stone", result, count)
-    stonecutting("polished_umbral_stone", "umbral_stone_bricks")
-    for result, count in (("umbral_stone_brick_stairs", 1), ("umbral_stone_brick_slab", 2), ("umbral_stone_brick_wall", 1)):
-        stonecutting("polished_umbral_stone", result, count)
+    for result in ("polished_nightstone", "nightstone_bricks", "chiseled_nightstone"):
+        stonecutting("nightstone", result)
+    for result, count in (("polished_nightstone_stairs", 1), ("polished_nightstone_slab", 2),
+                          ("polished_nightstone_wall", 1), ("nightstone_brick_stairs", 1),
+                          ("nightstone_brick_slab", 2), ("nightstone_brick_wall", 1)):
+        stonecutting("nightstone", result, count)
+    stonecutting("polished_nightstone", "nightstone_bricks")
+    for result, count in (("nightstone_brick_stairs", 1), ("nightstone_brick_slab", 2), ("nightstone_brick_wall", 1)):
+        stonecutting("polished_nightstone", result, count)
 
     # Phase 3 building blocks
     shaped("pale_end_stone_bricks", "pale_end_stone_bricks", ["##", "##"], {"#": rid("pale_end_stone")}, count=4)

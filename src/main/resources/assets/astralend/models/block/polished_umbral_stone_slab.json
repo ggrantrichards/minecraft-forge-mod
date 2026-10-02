@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/slab",
-  "textures": {
-    "bottom": "astralend:block/polished_umbral_stone",
-    "side": "astralend:block/polished_umbral_stone",
-    "top": "astralend:block/polished_umbral_stone"
-  }
-}

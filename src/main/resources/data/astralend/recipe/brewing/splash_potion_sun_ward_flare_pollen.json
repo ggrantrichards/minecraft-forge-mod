@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:brewing",
+  "input": {
+    "item": "minecraft:splash_potion",
+    "potion_contents": {
+      "potions": "astralend:sun_ward"
+    }
+  },
+  "reagent": {
+    "item": "astralend:flare_pollen"
+  },
+  "output": {
+    "id": "minecraft:splash_potion",
+    "components": {
+      "minecraft:potion_contents": {
+        "potion": "astralend:long_sun_ward"
+      }
+    }
+  }
+}

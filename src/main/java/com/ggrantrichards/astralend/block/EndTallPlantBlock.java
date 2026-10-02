@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 
 // A two-block-tall End plant, like a sunflower, that grows on the End's ground (#astralend:astral_soil):
-// the Corona's Flarebloom and the Aurora Shallows' Shimmer Reed.
+// the Corona's Flarebloom and the Ashen Barrens' Shimmer Reed.
 public class EndTallPlantBlock extends DoublePlantBlock {
     public EndTallPlantBlock(BlockBehaviour.Properties properties) {
         super(properties);
