@@ -58,7 +58,8 @@
       "astralend:nebula_starblooms",
       "astralend:nebula_astral_vines",
       "astralend:nebula_tufts",
-      "astralend:nebula_tendrils"
+      "astralend:nebula_tendrils",
+      "minecraft:chorus_plant"
     ]
   ],
   "has_precipitation": false,

@@ -46,6 +46,9 @@ public final class ModItems {
     public static final RegistryObject<Item> FLARE_BOTTLE = register("flare_bottle", Item::new, new Item.Properties().stacksTo(16));
     public static final RegistryObject<Item> BOTTLED_FLARE = register("bottled_flare", Item::new,
         new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.UNCOMMON));
+    // Phase 10: steers a Drift Whale.
+    public static final RegistryObject<Item> CHORUS_FLOWER_ON_A_STICK = register("chorus_flower_on_a_stick",
+        com.ggrantrichards.astralend.item.ChorusFlowerOnAStickItem::new, new Item.Properties().durability(30));
     public static final RegistryObject<Item> STAR_CHART = register("star_chart", StarChartItem::new, new Item.Properties().stacksTo(1));
     // Phase 6: structures. Temporal Crystals are loot only: they can't be mined or farmed.
     // The key to the Rift Maws: wakes a Maw (with its eyes lit), or attunes you to a woken one.

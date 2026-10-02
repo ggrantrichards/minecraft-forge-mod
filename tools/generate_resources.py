@@ -817,7 +817,7 @@ def worldgen():
         # same as in the End Highlands; step 9 (vegetal decoration) has the plants.
         "features": [[], [], [], [], ["minecraft:end_gateway_return"], [], [], [], [],
                      [rid("nebula_giant_lumineshrooms"), rid("nebula_lumineshrooms"), rid("nebula_starblooms"),
-                      rid("nebula_astral_vines"), rid("nebula_tufts"), rid("nebula_tendrils")]],
+                      rid("nebula_astral_vines"), rid("nebula_tufts"), rid("nebula_tendrils"), "minecraft:chorus_plant"]],
         "has_precipitation": False,
         "temperature": 0.5,
     })
@@ -833,6 +833,16 @@ def worldgen():
         tag("worldgen/biome", f"{NS}:live_comets", comet_biome if ":" in comet_biome else rid(comet_biome))
     # Biomes where Upwell Cores flip gravity. Empty this tag in a datapack to turn it off.
     tag("worldgen/biome", f"{NS}:upwells", rid("hollow_isles"))
+    # Chorus grows in the living astral biomes too: on Chorus Moss and Nightstone as on End Stone.
+    for support in ("supports_chorus_plant", "supports_chorus_flower"):
+        for ground in ("chorus_moss", "nightstone"):
+            tag("block", f"minecraft:{support}", rid(ground))
+    # Lights an Umbral Stalker puts out while it hunts (lit ones go dark, the rest drop). A data
+    # pack can add to it or empty it.
+    for light in ("minecraft:torch", "minecraft:wall_torch", "minecraft:soul_torch", "minecraft:soul_wall_torch",
+                  "minecraft:copper_torch", "minecraft:copper_wall_torch", "minecraft:lantern", "minecraft:soul_lantern",
+                  "#minecraft:candles", "#minecraft:campfires", rid("null_lantern"), rid("spore_lantern")):
+        tag("block", f"{NS}:snuffed_by_stalkers", light)
     lang[f"biome.{NS}.nebula_fields"] = "Nebula Fields"
 
 
@@ -890,8 +900,12 @@ MOB_SPAWNS = {
 }
 
 
+# Endermen live where the End is alive; the dead Ashen Barrens and the sun-scorched Corona have none.
+NO_ENDERMEN = ("ashen_barrens", "corona")
+
+
 def mob_spawns(biome):
-    spawns = {"monster": [{"type": "minecraft:enderman", "count": 4, "weight": 10}]}
+    spawns = {"monster": [] if biome in NO_ENDERMEN else [{"type": "minecraft:enderman", "count": 4, "weight": 10}]}
     for category, entries in MOB_SPAWNS.get(biome, {}).items():
         spawns.setdefault(category, [])
         spawns[category] += [{"type": rid(mob), "count": count, "weight": weight} for mob, weight, count in entries]
@@ -983,7 +997,7 @@ def worldgen_phase3():
     end_biome("hollow_isles", "Hollow Isles", fog="#2c2150", water="#3a2a66",
               features_step4=[rid("hollow_isles_upwells")],
               features_step7=[rid("hollow_isles_void_crystal")],
-              features_step9=[rid("hollow_isles_nullwood_trees")],
+              features_step9=[rid("hollow_isles_nullwood_trees"), "minecraft:chorus_plant"],
               particle="minecraft:reverse_portal", particle_chance=0.002)
 
     # ---- The Corona: Sunscorched Stone over Charred End Stone; Solarite; adapted and dead life
@@ -1064,7 +1078,8 @@ def mobs_phase4():
     # Drops. Killing a Pollinator or a Void Ray gives nothing useful - there's no reason to.
     entity_loot("pollinator", [])
     entity_loot("void_ray", [])
-    entity_loot("drift_whale", [])
+    # A Drift Whale never fights back; killing one gets you a few scales, and nothing else.
+    entity_loot("drift_whale", [player_kill_drop("whalelight_scale", 3, looting=False)])
     entity_loot("watcher", [])
     entity_loot("live_comet", [])   # what it gives, it gives while it flies (see LiveComet)
     entity_loot("void_wanderer", [player_kill_drop("cracked_lens", 1, looting=False)])
@@ -1508,8 +1523,9 @@ def starforging_phase8():
         f"item.{NS}.starforge_template.ingredients": "Starforge Alloy and an Upgrade Material",
     })
     # Alloy like a Netherite Ingot: crafted, not forged.
-    shapeless("starforge_alloy", "starforge_alloy", [rid("void_crystal"), rid("void_crystal"), rid("meteoric_iron_ingot"),
-                                                     rid("meteoric_iron_ingot"), rid("glowing_spores")])
+    # Dragon's Breath binds it: the alloy needs the dragon beaten (and its breath bottled) first.
+    shapeless("starforge_alloy", "starforge_alloy", [rid("void_crystal"), rid("meteoric_iron_ingot"), rid("meteoric_iron_ingot"),
+                                                     "minecraft:dragon_breath", rid("glowing_spores")])
     # Templates copy like smithing templates.
     shaped("starforge_template", "starforge_template", ["DTD", "DQD", "DDD"],
            {"D": "minecraft:diamond", "T": rid("starforge_template"), "Q": rid("observatory_quartz")}, count=2, category="misc")
@@ -1547,8 +1563,7 @@ def starforging_phase8():
 
     # ---- Smelting and Pull: one global loot modifier
     write(DATA / "loot_modifiers" / "starforge_tools.json", {"type": rid("starforge_tools"), "conditions": []})
-    write(RES / "data" / "forge" / "loot_modifiers" / "global_loot_modifiers.json",
-          {"replace": False, "entries": [rid("starforge_tools")]})
+    # (listed in global_loot_modifiers.json by mechanics_phase10)
 
     # ---- words
     lang.update({
@@ -1683,6 +1698,39 @@ def advancements_phase9():
                 parent=rid("end/something_big_out_there"))
     advancement("tagalong", "minecraft:elytra", "Tagalong", "Fly alongside a Drift Whale for a whole minute",
                 parent=rid("end/whale_song"), frame="challenge")
+
+
+
+def mechanics_phase10():
+    """Phase 10, batch B: the Lodestar, the Chorus Flower on a Stick, and Starforge Templates in End
+    City treasure."""
+    # The Lodestar: Lodestone ringed with Meteoric Iron. Comets don't land within 48 blocks of one.
+    blockstate("lodestar", {"variants": {"": {"model": rid("block/lodestar")}}})
+    block_model("lodestar", {"parent": "minecraft:block/cube_column",
+                             "textures": {"end": rid("block/lodestar_top"), "side": rid("block/lodestar_side")}})
+    item_def("lodestar", rid("block/lodestar"))
+    lang[f"block.{NS}.lodestar"] = "Lodestar"
+    drop_self("lodestar")
+    tag("block", "minecraft:mineable/pickaxe", rid("lodestar"))
+    shaped("lodestar", "lodestar", [" M ", "MLM", " M "], {"M": rid("meteoric_iron_ingot"), "L": "minecraft:lodestone"},
+           category="misc")
+
+    # The Chorus Flower on a Stick: steers a Drift Whale, like a carrot on a stick steers a pig.
+    item_model("chorus_flower_on_a_stick", {"parent": "minecraft:item/handheld_rod",
+                                            "textures": {"layer0": rid("item/chorus_flower_on_a_stick")}})
+    item_def("chorus_flower_on_a_stick", rid("item/chorus_flower_on_a_stick"))
+    lang[f"item.{NS}.chorus_flower_on_a_stick"] = "Chorus Flower on a Stick"
+    shaped("chorus_flower_on_a_stick", "chorus_flower_on_a_stick", ["R ", " C"],
+           {"R": "minecraft:fishing_rod", "C": "minecraft:chorus_flower"}, category="equipment")
+    advancement("whale_rider", rid("chorus_flower_on_a_stick"), "Whale Rider", "Ride a Drift Whale",
+                parent=rid("end/whale_song"), frame="goal")
+
+    # Starforge Templates turn up in End City treasure (a global loot modifier: StarforgeLoot.Add).
+    write(DATA / "loot_modifiers" / "end_city_templates.json", {
+        "type": rid("add_item"), "item": rid("starforge_template"), "chance": 0.2,
+        "conditions": [{"condition": "forge:loot_table_id", "loot_table_id": "minecraft:chests/end_city_treasure"}]})
+    write(RES / "data" / "forge" / "loot_modifiers" / "global_loot_modifiers.json",
+          {"replace": False, "entries": [rid("starforge_tools"), rid("end_city_templates")]})
 
 
 def recipe_unlocks():
@@ -2052,6 +2100,7 @@ def main():
     starforging_phase8()
     round_out_phase9()
     advancements_phase9()
+    mechanics_phase10()
     recipe_unlocks()      # last: it reads every recipe written above
 
     # ---------------------------------------------------------------- write tags + lang

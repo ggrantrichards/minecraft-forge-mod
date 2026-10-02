@@ -27,12 +27,12 @@
         ]
       }
     },
-    "has_glowing_spores": {
+    "has_dragon_breath": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": "astralend:glowing_spores"
+            "items": "minecraft:dragon_breath"
           }
         ]
       }
@@ -43,7 +43,7 @@
       "has_the_recipe",
       "has_void_crystal",
       "has_meteoric_iron_ingot",
-      "has_glowing_spores"
+      "has_dragon_breath"
     ]
   ],
   "rewards": {

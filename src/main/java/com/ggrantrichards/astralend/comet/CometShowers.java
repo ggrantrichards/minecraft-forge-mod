@@ -90,7 +90,7 @@ public final class CometShowers {
     }
 
     // Island ground 25-80 blocks from `near`, toward the side the comet comes from (so it falls in front
-    // of the player rather than behind them).
+    // of the player rather than behind them), and not where a Lodestar guards.
     private static @Nullable Vec3 landingSpot(ServerLevel level, Vec3 near, Vec3 from, RandomSource random) {
         for (int attempt = 0; attempt < 24; attempt++) {
             double a = Math.atan2(from.z, from.x) + (random.nextDouble() - 0.5) * 1.6;
@@ -98,8 +98,10 @@ public final class CometShowers {
             int x = Mth.floor(near.x + Math.cos(a) * d);
             int z = Mth.floor(near.z + Math.sin(a) * d);
             int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
-            if (y > level.getMinY() + 8 && level.getBlockState(new BlockPos(x, y - 1, z)).isSolid()) {
-                return new Vec3(x + 0.5, y - 1, z + 0.5);
+            Vec3 spot = new Vec3(x + 0.5, y - 1, z + 0.5);
+            if (y > level.getMinY() + 8 && level.getBlockState(new BlockPos(x, y - 1, z)).isSolid()
+                && !com.ggrantrichards.astralend.block.LodestarBlockEntity.guards(level, spot)) {
+                return spot;
             }
         }
         return null;

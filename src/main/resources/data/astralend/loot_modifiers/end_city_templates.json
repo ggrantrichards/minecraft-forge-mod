@@ -1,0 +1,11 @@
+{
+  "type": "astralend:add_item",
+  "item": "astralend:starforge_template",
+  "chance": 0.2,
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/end_city_treasure"
+    }
+  ]
+}

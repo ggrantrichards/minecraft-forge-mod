@@ -61,7 +61,8 @@
     ],
     [],
     [
-      "astralend:hollow_isles_nullwood_trees"
+      "astralend:hollow_isles_nullwood_trees",
+      "minecraft:chorus_plant"
     ]
   ],
   "has_precipitation": false,

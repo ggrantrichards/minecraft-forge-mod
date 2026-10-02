@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "R": "minecraft:fishing_rod",
+    "C": "minecraft:chorus_flower"
+  },
+  "pattern": [
+    "R ",
+    " C"
+  ],
+  "result": {
+    "id": "astralend:chorus_flower_on_a_stick"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:lodestar"
+      }
+    },
+    "has_meteoric_iron_ingot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:meteoric_iron_ingot"
+          }
+        ]
+      }
+    },
+    "has_lodestone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:lodestone"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_meteoric_iron_ingot",
+      "has_lodestone"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:lodestar"
+    ]
+  }
+}

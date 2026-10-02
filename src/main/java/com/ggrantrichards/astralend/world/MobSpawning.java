@@ -31,7 +31,8 @@ import net.minecraftforge.fml.LogicalSide;
 // Hollow. Biome spawn lists can't promise "at most one near you", so these are placed
 // here instead, checked for each player in the End a few times a minute.
 //
-// Also: Cinder (from Cinder Mites) burns in a furnace for as long as it takes to smelt 4 items.
+// Also: Cinder (from Cinder Mites) burns in a furnace for as long as it takes to smelt 4 items, and
+// a Bottled Flare for 120.
 public final class MobSpawning {
     private static final int CHECK_EVERY = 200;  // ticks
     public static final ResourceKey<Structure> OBSERVATORY = ResourceKey.create(Registries.STRUCTURE,
@@ -42,6 +43,8 @@ public final class MobSpawning {
         FurnaceFuelBurnTimeEvent.BUS.addListener(event -> {
             if (event.getItemStack().is(ModItems.CINDER.get())) {
                 event.setBurnTime(800);
+            } else if (event.getItemStack().is(ModItems.BOTTLED_FLARE.get())) {
+                event.setBurnTime(24000);   // a captured Sunstorm: 120 items, more than a lava bucket
             }
         });
     }

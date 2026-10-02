@@ -1,5 +1,28 @@
 {
   "type": "minecraft:entity",
-  "pools": [],
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:killed_by_player"
+      },
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "astralend:whalelight_scale",
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 0,
+                "max": 3
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "random_sequence": "astralend:entities/drift_whale"
 }

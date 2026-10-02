@@ -1,15 +1,23 @@
 package com.ggrantrichards.astralend.entity;
 
+import com.ggrantrichards.astralend.AstralEnd;
 import java.util.EnumSet;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -23,22 +31,35 @@ import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-// Umbral Stalker: a hunched, almost invisible brute of the Hollow Isless that walks on its knuckles.
+// Umbral Stalker: a hunched, almost invisible brute of the Hollow Isles that walks on its knuckles.
 //
 // While it has no prey it is completely invisible in the dark - not even a shimmer. Once it picks a
 // target it activates: a faint shimmer shows where it moves, and it becomes fully visible when it
-// attacks, is hurt, or stands in light (block light 7 or more: Null Lanterns, Spore Lanterns, torches). It creeps up on a player from behind and backs off when
-// the player turns to face it - the reverse of an Enderman. Its blows hit hard and throw you away
-// from it, which near an edge means toward the void.
+// attacks, is hurt, or stands in light (block light 7 or more). It knows where you are through any
+// wall, creeps up from behind and backs off when you turn to face it - the reverse of an Enderman.
+//
+// It hates light. While it hunts it snuffs out the lights around it for good - torches and lanterns
+// go out and drop, candles and campfires are put out (the blocks in #astralend:snuffed_by_stalkers;
+// only when mobGriefing is on). And it fears fire: set it alight, hit it with a burning weapon or a
+// torch, or strike flint and steel at it, and it flees for a few seconds before it comes back.
 //
 // It hunts like a lion. Hidden, it creeps in low and slow, lumbering on its knuckles; once it is a
 // few blocks behind you and unseen, it pounces - a sudden leap that reveals it and lands a heavy
@@ -49,9 +70,15 @@ public class UmbralStalker extends Monster {
     public static final int REVEALING_LIGHT = 7;
     public static final byte POUNCE_EVENT = 70;
     public static final int POUNCE_TICKS = 14;    // the leap, arms reaching out
+    public static final int FEAR_TICKS = 160;     // how long fire keeps it away
+    public static final int SNUFF_RANGE = 5;
+    public static final TagKey<Block> SNUFFED = TagKey.create(Registries.BLOCK,
+        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "snuffed_by_stalkers"));
+    private static final TargetingConditions SENSES = TargetingConditions.forCombat().range(32.0).ignoreLineOfSight();
     private int revealTicks;
     private boolean displayHunting;
     private int pounceCooldown = 60;
+    private int fearTicks;
     private int attackAnimationTicks;  // client side: counts down while the arms lash out
     private int pounceAnimationTicks;  // client side: counts down through a pounce
 
@@ -80,14 +107,28 @@ public class UmbralStalker extends Monster {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new BackOffWhenWatchedGoal());
-        this.goalSelector.addGoal(2, new PounceGoal());
-        this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0, true));
+        this.goalSelector.addGoal(1, new FleeFireGoal());
+        this.goalSelector.addGoal(2, new BackOffWhenWatchedGoal());
+        this.goalSelector.addGoal(3, new PounceGoal());
+        this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0, true));
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 0.8));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 12.0F));
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, false));
+        this.targetSelector.addGoal(2, new SenseTargetGoal());
+    }
+
+    public boolean isAfraid() {
+        return this.fearTicks > 0;
+    }
+
+    // Fire drives it off for a while (it keeps its target, and comes back when the fear wears off).
+    public void scare() {
+        if (this.fearTicks <= 0) {
+            this.playSound(SoundEvents.ENDERMAN_SCREAM, 0.8F, 0.6F);
+        }
+        this.fearTicks = FEAR_TICKS;
+        this.revealTicks = Math.max(this.revealTicks, 40);
     }
 
     public boolean isRevealed() {
@@ -154,6 +195,15 @@ public class UmbralStalker extends Monster {
         if (this.pounceCooldown > 0) {
             this.pounceCooldown--;
         }
+        if (this.fearTicks > 0) {
+            this.fearTicks--;
+        }
+        if (this.isOnFire()) {
+            this.scare();
+        }
+        if (this.getTarget() != null && this.tickCount % 10 == 0 && this.level() instanceof ServerLevel level) {
+            this.snuffLight(level);
+        }
         boolean lit = this.level().getBrightness(LightLayer.BLOCK, this.blockPosition().above()) >= REVEALING_LIGHT;
         this.entityData.set(DATA_REVEALED, this.revealTicks > 0 || this.hurtTime > 0 || lit);
         this.entityData.set(DATA_HUNTING, this.displayHunting || this.getTarget() != null);
@@ -163,16 +213,7 @@ public class UmbralStalker extends Monster {
     public boolean doHurtTarget(ServerLevel level, Entity target) {
         this.revealTicks = 40;
         level.broadcastEntityEvent(this, (byte) 4);
-        boolean hit = super.doHurtTarget(level, target);
-        if (hit && target instanceof LivingEntity living) {
-            // Thrown away from the stalker - toward the void, if that's what's behind you.
-            Vec3 away = living.position().subtract(this.position()).multiply(1.0, 0.0, 1.0).normalize();
-            living.push(away.x * 1.1, 0.35, away.z * 1.1);
-            if (living instanceof ServerPlayer player) {
-                player.connection.send(new ClientboundSetEntityMotionPacket(player));
-            }
-        }
-        return hit;
+        return super.doHurtTarget(level, target);
     }
 
     @Override
@@ -180,8 +221,78 @@ public class UmbralStalker extends Monster {
         boolean hurt = super.hurtServer(level, source, damage);
         if (hurt) {
             this.revealTicks = 60;
+            if (source.is(DamageTypeTags.IS_FIRE) || burning(level, source.getEntity())) {
+                this.scare();
+            }
         }
         return hurt;
+    }
+
+    // A hit with fire in it: a Fire Aspect weapon, or a torch in the hand.
+    private static boolean burning(ServerLevel level, @Nullable Entity attacker) {
+        if (!(attacker instanceof LivingEntity living)) {
+            return false;
+        }
+        ItemStack held = living.getMainHandItem();
+        if (held.is(Items.TORCH) || held.is(Items.SOUL_TORCH) || held.is(Items.REDSTONE_TORCH) || held.is(Items.COPPER_TORCH)) {
+            return true;
+        }
+        var fireAspect = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FIRE_ASPECT);
+        return EnchantmentHelper.getItemEnchantmentLevel(fireAspect, held) > 0;
+    }
+
+    // Flint and steel struck at it: it catches, and flees.
+    @Override
+    protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (stack.is(ItemTags.CREEPER_IGNITERS)) {
+            this.playSound(stack.is(Items.FIRE_CHARGE) ? SoundEvents.FIRECHARGE_USE : SoundEvents.FLINTANDSTEEL_USE, 1.0F, 1.0F);
+            if (!this.level().isClientSide()) {
+                this.igniteForSeconds(3.0F);
+                this.scare();
+                if (stack.isDamageableItem()) {
+                    stack.hurtAndBreak(1, player, hand.asEquipmentSlot());
+                } else {
+                    stack.consume(1, player);
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+        return super.mobInteract(player, hand);
+    }
+
+    // Puts out one light near it: torches and lanterns go out and drop, candles and campfires are
+    // put out. Only with mobGriefing on, like an Enderman's block-taking.
+    private void snuffLight(ServerLevel level) {
+        if (!level.getGameRules().get(GameRules.MOB_GRIEFING)) {
+            return;
+        }
+        BlockPos centre = this.blockPosition();
+        BlockPos nearest = null;
+        double best = Double.MAX_VALUE;
+        for (BlockPos p : BlockPos.betweenClosed(centre.offset(-SNUFF_RANGE, -2, -SNUFF_RANGE), centre.offset(SNUFF_RANGE, 3, SNUFF_RANGE))) {
+            BlockState s = level.getBlockState(p);
+            if (s.is(SNUFFED) && (!s.hasProperty(BlockStateProperties.LIT) || s.getValue(BlockStateProperties.LIT))) {
+                double d = p.distSqr(centre);
+                if (d < best) {
+                    best = d;
+                    nearest = p.immutable();
+                }
+            }
+        }
+        if (nearest == null) {
+            return;
+        }
+        BlockState s = level.getBlockState(nearest);
+        if (s.hasProperty(BlockStateProperties.LIT)) {
+            level.setBlock(nearest, s.setValue(BlockStateProperties.LIT, false), Block.UPDATE_ALL);
+        } else {
+            level.destroyBlock(nearest, true, this);
+        }
+        level.playSound(null, nearest, SoundEvents.CANDLE_EXTINGUISH, SoundSource.HOSTILE, 1.0F, 0.6F);
+        level.sendParticles(net.minecraft.core.particles.ParticleTypes.LARGE_SMOKE, nearest.getX() + 0.5, nearest.getY() + 0.6,
+            nearest.getZ() + 0.5, 6, 0.15, 0.15, 0.15, 0.01);
+        level.gameEvent(this, GameEvent.BLOCK_CHANGE, nearest);
     }
 
     @Override
@@ -210,7 +321,7 @@ public class UmbralStalker extends Monster {
     }
 
     // The ambush: from a few blocks behind an unsuspecting player, it leaps. If the leap carries it
-    // into reach, the blow lands hard (12) and throws the player. Then it fights in the open until
+    // into reach, the blow lands hard (12). Then it fights in the open until
     // it is watched again, and slinks off.
     private class PounceGoal extends Goal {
         private int ticks;
@@ -223,7 +334,8 @@ public class UmbralStalker extends Monster {
         @Override
         public boolean canUse() {
             UmbralStalker self = UmbralStalker.this;
-            if (!(self.getTarget() instanceof Player player) || self.pounceCooldown > 0 || self.isRevealed() || !self.onGround()) {
+            if (!(self.getTarget() instanceof Player player) || self.pounceCooldown > 0 || self.isRevealed() || !self.onGround()
+                || self.isAfraid()) {
                 return false;
             }
             double distance = self.distanceToSqr(player);
@@ -269,13 +381,7 @@ public class UmbralStalker extends Monster {
             if (self.distanceToSqr(target) < 2.6 * 2.6) {
                 this.struck = true;
                 level.broadcastEntityEvent(self, (byte) 4);
-                if (target.hurtServer(level, self.damageSources().mobAttack(self), 12.0F)) {
-                    Vec3 away = target.position().subtract(self.position()).multiply(1.0, 0.0, 1.0).normalize();
-                    target.push(away.x * 1.3, 0.4, away.z * 1.3);
-                    if (target instanceof ServerPlayer player) {
-                        player.connection.send(new ClientboundSetEntityMotionPacket(player));
-                    }
-                }
+                target.hurtServer(level, self.damageSources().mobAttack(self), 12.0F);
             }
         }
 
@@ -296,7 +402,7 @@ public class UmbralStalker extends Monster {
         @Override
         public boolean canUse() {
             UmbralStalker self = UmbralStalker.this;
-            return self.getTarget() instanceof Player player && self.revealTicks <= 0
+            return self.getTarget() instanceof Player player && self.revealTicks <= 0 && !self.isAfraid()
                 && self.distanceToSqr(player) > 6.0 && self.isWatchedBy(player);
         }
 
@@ -320,6 +426,65 @@ public class UmbralStalker extends Monster {
         @Override
         public void tick() {
             this.ticks++;
+        }
+    }
+
+    // It always knows where the nearest player is, walls or not (it doesn't need to see you).
+    private class SenseTargetGoal extends Goal {
+        SenseTargetGoal() {
+            this.setFlags(EnumSet.of(Goal.Flag.TARGET));
+        }
+
+        @Override
+        public boolean canUse() {
+            UmbralStalker self = UmbralStalker.this;
+            if (self.getTarget() != null || self.tickCount % 10 != 0 || !(self.level() instanceof ServerLevel level)) {
+                return false;
+            }
+            Player player = level.getNearestPlayer(SENSES, self);
+            if (player == null) {
+                return false;
+            }
+            self.setTarget(player);
+            return false;
+        }
+    }
+
+    // Afraid of fire: runs from its target until the fear wears off.
+    private class FleeFireGoal extends Goal {
+        FleeFireGoal() {
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP));
+        }
+
+        @Override
+        public boolean canUse() {
+            return UmbralStalker.this.isAfraid();
+        }
+
+        @Override
+        public void start() {
+            this.run();
+        }
+
+        @Override
+        public void tick() {
+            if (UmbralStalker.this.getNavigation().isDone()) {
+                this.run();
+            }
+        }
+
+        private void run() {
+            UmbralStalker self = UmbralStalker.this;
+            Vec3 from = self.getTarget() != null ? self.getTarget().position() : self.position().add(self.getLookAngle());
+            Vec3 away = DefaultRandomPos.getPosAway(self, 16, 6, from);
+            if (away != null) {
+                self.getNavigation().moveTo(away.x, away.y, away.z, 1.5);
+            }
+        }
+
+        @Override
+        public void stop() {
+            UmbralStalker.this.getNavigation().stop();
         }
     }
 }

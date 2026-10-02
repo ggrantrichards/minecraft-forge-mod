@@ -89,7 +89,7 @@ final class StarforgeSurvey {
         float roomForHearts = zombie.getMaxAbsorption();
         log.accept(String.format("starforge: Stardust x2 - gravity %.4f -> %.4f, step height %.2f; Radiant x2 - room for %.0f absorption",
             gravity, lighter, step, roomForHearts));
-        if (lighter >= gravity * 0.95 || step < 1.0 || roomForHearts < 4.0F) {
+        if (lighter >= gravity * 0.95 || step < 1.0 || roomForHearts < 2.0F) {
             failures.add("starforge: Stardust armour should lower gravity and raise step height, Radiant should make room for golden hearts");
         }
         zombie.setItemSlot(EquipmentSlot.FEET, Starforge.apply(new ItemStack(Items.DIAMOND_BOOTS), StarforgeUpgrade.METEORIC));

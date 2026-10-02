@@ -35,6 +35,7 @@ public class StarforgeLoot extends LootModifier {
         DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, AstralEnd.MODID);
     public static final MapCodec<StarforgeLoot> CODEC = RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, StarforgeLoot::new));
     public static final RegistryObject<MapCodec<StarforgeLoot>> STARFORGE_TOOLS = SERIALIZERS.register("starforge_tools", () -> CODEC);
+    public static final RegistryObject<MapCodec<AddItemLoot>> ADD_ITEM = SERIALIZERS.register("add_item", () -> AddItemLoot.CODEC);
 
     public StarforgeLoot(LootItemCondition[] conditions) {
         super(conditions);

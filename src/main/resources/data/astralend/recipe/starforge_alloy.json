@@ -3,9 +3,9 @@
   "category": "misc",
   "ingredients": [
     "astralend:void_crystal",
-    "astralend:void_crystal",
     "astralend:meteoric_iron_ingot",
     "astralend:meteoric_iron_ingot",
+    "minecraft:dragon_breath",
     "astralend:glowing_spores"
   ],
   "result": {

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "M": "astralend:meteoric_iron_ingot",
+    "L": "minecraft:lodestone"
+  },
+  "pattern": [
+    " M ",
+    "MLM",
+    " M "
+  ],
+  "result": {
+    "id": "astralend:lodestar"
+  }
+}

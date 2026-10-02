@@ -111,9 +111,9 @@ public final class Starforge {
                         new AttributeModifier(id, 0.5, AttributeModifier.Operation.ADD_VALUE), group);
                 }
             } else if (upgrade == StarforgeUpgrade.RADIANT) {
-                // Room for the golden heart Soak Light gives.
+                // Room for the half heart Soak Light gives.
                 modifiers = modifiers.withModifierAdded(Attributes.MAX_ABSORPTION,
-                    new AttributeModifier(id, 2.0, AttributeModifier.Operation.ADD_VALUE), group);
+                    new AttributeModifier(id, 1.0, AttributeModifier.Operation.ADD_VALUE), group);
             }
         }
         result.set(DataComponents.ATTRIBUTE_MODIFIERS, modifiers);

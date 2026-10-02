@@ -120,6 +120,23 @@ jobs:
             && git -c user.name="CI" -c user.email="ci@users.noreply.github.com" commit -qm "Trailer from ${GITHUB_SHA::7}" \
             && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-trailer
 
+      # When something fails, the logs that say why, on the ci-logs branch (readable without the job log).
+      - name: Publish the logs of a failure
+        if: failure()
+        run: |
+          mkdir -p /tmp/logs
+          { grep -E "error:" -A4 build.log | head -200; echo "---"; tail -40 build.log; } > /tmp/logs/build.txt 2>/dev/null || true
+          grep -E "Errors in element|Failed to parse|No key|Unknown|not a valid|Exception|Caused by|Missing|ERROR" gametest.log 2>/dev/null \
+            | cut -c1-800 | head -120 > /tmp/logs/gametest.txt || true
+          { grep -nE "/(WARN|ERROR)\]|Exception|Caused by" survey.log | grep -v "Cache miss" | head -80; echo "---"; \
+            grep "AstralEnd survey" survey.log | sed 's/.*\[AstralEnd survey\] //'; echo "---"; tail -60 survey-console.log; } > /tmp/logs/survey.txt 2>/dev/null || true
+          grep -E "ERROR|Exception|Missing|astralend" client.log 2>/dev/null | head -120 > /tmp/logs/client.txt || true
+          cd /tmp/logs
+          printf "# CI logs\n\nFrom commit ${GITHUB_SHA::7} on ${GITHUB_REF_NAME}.\n" > README.md
+          git init -q && git checkout -q -b ci-logs && git add . \
+            && git -c user.name="CI" -c user.email="ci@users.noreply.github.com" commit -qm "Logs from ${GITHUB_SHA::7}" \
+            && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-logs
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:

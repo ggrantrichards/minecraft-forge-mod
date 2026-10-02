@@ -274,6 +274,7 @@ public final class WorldgenSurvey {
         if (areas.get('N') != null && areas.get('N').standOn != null) {
             EXTRA_SHOTS.addAll(StarforgeSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log));   // Phase 8
             PolishSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log);         // Phase 9
+            MechanicsSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log);      // Phase 10
         }
         writeViewpoints(areas, end, structures);
         checkNebula(areas.get('N'), failures);

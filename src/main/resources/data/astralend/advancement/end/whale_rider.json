@@ -1,0 +1,28 @@
+{
+  "parent": "astralend:end/whale_song",
+  "display": {
+    "icon": {
+      "id": "astralend:chorus_flower_on_a_stick"
+    },
+    "title": {
+      "translate": "advancements.astralend.whale_rider.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.whale_rider.description"
+    },
+    "frame": "goal",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

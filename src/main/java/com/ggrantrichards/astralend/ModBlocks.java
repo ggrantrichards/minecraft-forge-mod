@@ -273,6 +273,11 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).instrument(NoteBlockInstrument.BASEDRUM)
             .requiresCorrectToolForDrops().strength(25.0F, 600.0F).sound(SoundType.SCULK_CATALYST).lightLevel(state -> 2));
 
+    // ---- Phase 10: the Lodestar keeps comets from landing near it (LodestarBlockEntity) ----
+    public static final RegistryObject<Block> LODESTAR = register("lodestar", com.ggrantrichards.astralend.block.LodestarBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).instrument(NoteBlockInstrument.BASEDRUM)
+            .requiresCorrectToolForDrops().strength(3.5F).sound(SoundType.LODESTONE).lightLevel(state -> 4));
+
     // ================================================================ Phase 3.5: the biome worlds
 
     // ---- Nebula Fields: giant Lumineshrooms and their wood (like the Nether's huge fungi) ----

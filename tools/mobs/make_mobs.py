@@ -383,15 +383,15 @@ POLLINATOR = Mob("pollinator", (32, 32), [
 ], egg=(hexc("7fd9d0"), hexc("b48cf0")))
 
 
-# ---- Void Wanderer: a clockwork construct of the Cartographers, still drifting the dark charting the
-# stars. A rounded bronze body gone green with verdigris in patches (like vanilla's weathering copper),
-# riveted panels with Void Crystal inlaid along the seam, one big glass lens, a finial tipped with a
-# void crystal (like a copper golem's rod), two small fins and a gimbal ring that spins around it.
-BRONZE = [hexc("4a2e18"), hexc("6e4526"), hexc("8e5c32"), hexc("b07a44"), hexc("d19c5e"), hexc("f0c888")]
-PATINA = [hexc("2f6b5c"), hexc("45907a"), hexc("68b89c")]
+# ---- Void Wanderer: a drifting sentinel of the End's builders, carved from the same purpur as the End
+# Cities, still charting the stars. A rounded purpur body worn pale in patches like old End Stone,
+# panels with Void Crystal inlaid along the seam, one big glass lens, an End Rod finial tipped with a
+# void crystal, two small fins and a ring of purpur that spins around it.
+PURPUR = [hexc("3a2240"), hexc("5c3a63"), hexc("7d5486"), hexc("a079a8"), hexc("bf9cc4"), hexc("e0c8e2")]
+WORN = [hexc("b8b38a"), hexc("d4cf9e"), hexc("e8e4b8")]
 
 
-def bronze(face, px, py, fw, fh, rnd, panels=True):
+def purpur(face, px, py, fw, fh, rnd, panels=True):
     t = n()
     i = 1 + int(t * 3.0)
     if face == "up":
@@ -402,18 +402,18 @@ def bronze(face, px, py, fw, fh, rnd, panels=True):
         i += 1
     if py == fh - 1 or px == fw - 1:
         i -= 1
-    c = BRONZE[max(0, min(5, i))]
-    if t > 0.7:
-        c = PATINA[min(2, int((t - 0.7) * 10))]          # verdigris patches
+    c = PURPUR[max(0, min(5, i))]
+    if t > 0.75:
+        c = WORN[min(2, int((t - 0.75) * 12))]           # worn pale, like old End Stone
     if panels and face in ("north", "south", "east", "west") and fh >= 6 and py == fh // 2:
-        c = BRONZE[0]                                     # the panel seam round its middle
+        c = PURPUR[0]                                     # the panel seam round its middle
     if panels and fw >= 6 and fh >= 6 and (px, py) in ((1, 1), (fw - 2, 1), (1, fh - 2), (fw - 2, fh - 2)):
-        c = BRONZE[5]                                     # rivets
+        c = PURPUR[5]                                     # studs
     return c
 
 
-def bronze_plain(face, px, py, fw, fh, rnd):
-    return bronze(face, px, py, fw, fh, rnd, panels=False)
+def purpur_plain(face, px, py, fw, fh, rnd):
+    return purpur(face, px, py, fw, fh, rnd, panels=False)
 
 
 def inlay_glow(face, px, py, fw, fh, rnd):
@@ -423,7 +423,7 @@ def inlay_glow(face, px, py, fw, fh, rnd):
 
 
 def lens_housing(face, px, py, fw, fh, rnd):
-    return BRONZE[1] if face != "north" or edge_dist(px, py, fw, fh) == 0 else BRONZE[0]
+    return PURPUR[1] if face != "north" or edge_dist(px, py, fw, fh) == 0 else PURPUR[0]
 
 
 def lens_glass(face, px, py, fw, fh, rnd):
@@ -443,33 +443,37 @@ def lens_glow(face, px, py, fw, fh, rnd):
     return None
 
 
+def end_rod(face, px, py, fw, fh, rnd):
+    return hexc("f4f0e8") if py % 2 == 0 else hexc("dcd4c8")
+
+
 def finial_crystal(face, px, py, fw, fh, rnd):
     return hexc("c8b0ff") if (px + py) % 2 else hexc("8a64f0")
 
 
 def ring_bar(face, px, py, fw, fh, rnd):
     t = n()
-    c = BRONZE[2 + int(t * 2.9)]
+    c = PURPUR[2 + int(t * 2.9)]
     if (px + py) % 4 == 0:
-        c = BRONZE[5]
+        c = PURPUR[5]
     return c
 
 
 WANDERER = Mob("void_wanderer", (64, 64), [
     Part("body", (0, 14, 0), [
-        Box(0, 0, -4, -4, -4, 8, 8, 8, paint=bronze, glow=inlay_glow),
-        Box(32, 0, -3, -5, -3, 6, 1, 6, paint=bronze_plain),       # rounded top
-        Box(32, 0, -3, 4, -3, 6, 1, 6, paint=bronze_plain),        # and bottom
-        Box(0, 16, -5, -3, -3, 1, 6, 6, paint=bronze_plain),       # rounded sides
-        Box(0, 16, 4, -3, -3, 1, 6, 6, mirror=True, paint=bronze_plain),
-        Box(14, 16, -3, -3, 4, 6, 6, 1, paint=bronze_plain),       # rounded back
+        Box(0, 0, -4, -4, -4, 8, 8, 8, paint=purpur, glow=inlay_glow),
+        Box(32, 0, -3, -5, -3, 6, 1, 6, paint=purpur_plain),       # rounded top
+        Box(32, 0, -3, 4, -3, 6, 1, 6, paint=purpur_plain),        # and bottom
+        Box(0, 16, -5, -3, -3, 1, 6, 6, paint=purpur_plain),       # rounded sides
+        Box(0, 16, 4, -3, -3, 1, 6, 6, mirror=True, paint=purpur_plain),
+        Box(14, 16, -3, -3, 4, 6, 6, 1, paint=purpur_plain),       # rounded back
         Box(28, 16, -2.5, -2.5, -5, 5, 5, 1, paint=lens_housing),  # the lens housing
         Box(40, 16, -2, -2, -5.6, 4, 4, 1, paint=lens_glass, glow=lens_glow),
-        Box(56, 0, -0.5, -8, -0.5, 1, 3, 1, paint=bronze_plain),   # the finial
+        Box(56, 0, -0.5, -8, -0.5, 1, 3, 1, paint=end_rod),        # the finial: an End Rod
         Box(50, 16, -1, -9, -1, 2, 1, 2, paint=finial_crystal, glow=finial_crystal),
     ], [
-        Part("left_fin", (5, 1, 1), [Box(0, 28, 0, -1, -2, 3, 2, 5, paint=bronze_plain)]),
-        Part("right_fin", (-5, 1, 1), [Box(0, 28, -3, -1, -2, 3, 2, 5, mirror=True, paint=bronze_plain)]),
+        Part("left_fin", (5, 1, 1), [Box(0, 28, 0, -1, -2, 3, 2, 5, paint=purpur_plain)]),
+        Part("right_fin", (-5, 1, 1), [Box(0, 28, -3, -1, -2, 3, 2, 5, mirror=True, paint=purpur_plain)]),
     ]),
     Part("ring", (0, 14, 0), [
         Box(16, 28, -7, -0.5, -7, 14, 1, 1, paint=ring_bar),
@@ -477,7 +481,7 @@ WANDERER = Mob("void_wanderer", (64, 64), [
         Box(16, 30, -7, -0.5, -6, 1, 1, 12, paint=ring_bar),
         Box(16, 30, 6, -0.5, -6, 1, 1, 12, paint=ring_bar),
     ]),
-], egg=(hexc("8e5c32"), hexc("68b89c")))
+], egg=(hexc("a079a8"), hexc("e8e4b8")))
 
 
 # ---- Umbral Stalker: a hunched brute of the Hollow Isless that walks on its knuckles, like a

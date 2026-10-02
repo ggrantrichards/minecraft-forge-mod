@@ -324,6 +324,15 @@ def shattered_observatory(seed):
         if heights[k] == tall and heights[j] == tall:
             (x0, z0), (x1, z1) = bases[k], bases[j]
             t.line((x0, floor + tall + 1, z0), (x1, floor + tall + 1, z1), q)
+    # Shulkers keep watch from the tops of the pillars still standing (up to three of them).
+    watch = [k for k in range(count) if heights[k] == tall][:3]
+    for k in watch:
+        x, z = bases[k]
+        top = floor + tall + 1
+        if t.get(x, top, z) is None:
+            t.set(x, top, z, q)            # a capstone to perch on
+        t.entity(x + 0.5, top + 1, z + 0.5, {"id": "minecraft:shulker", "AttachFace": Byte(0),
+                                             "PersistenceRequired": Byte(1)})
     # A path of quartz from the ring to the hall's broken east side.
     for x in range(c + 14, c + R):
         for z in (c - 1, c, c + 1):

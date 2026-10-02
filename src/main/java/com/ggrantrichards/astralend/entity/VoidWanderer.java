@@ -38,7 +38,7 @@ import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-// Void Wanderer: a clockwork construct of the Cartographers, still drifting the dark and charting
+// Void Wanderer: a purpur sentinel left by the End's builders, still drifting the dark and charting
 // whatever it finds.
 //
 // When it notices a player it floats over and studies them, a ring of light sweeping up and down them.

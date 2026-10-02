@@ -692,3 +692,7 @@ TEXTURES += _STRUCTURES
 # Phase 8: Starforging
 from starforge_textures import TEXTURES as _STARFORGE  # noqa: E402
 TEXTURES += _STARFORGE
+
+# Phase 10: the Chorus Flower on a Stick, the Lodestar.
+from phase10_textures import TEXTURES as _PHASE10  # noqa: E402
+TEXTURES += _PHASE10

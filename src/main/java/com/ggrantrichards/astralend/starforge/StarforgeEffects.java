@@ -62,16 +62,18 @@ import net.minecraftforge.event.level.BlockEvent;
 //
 //   Voidwalker   boots: Rift Walker - tiles of rift under your feet over a drop, gone in a second.
 //                chestplate: Void Recall - a Rift Pearl brings you back from the void, once.
-//   Meteoric     armour: Heat Shield - 2 s per piece of no fire damage; resets after 10 s out of fire.
+//   Meteoric     armour: Heat Shield - 1 s per piece of no fire damage; resets after 10 s out of fire.
 //                tools: Smelting (StarforgeLoot).
+// These stack per piece, but stay small: a full set is a nudge, not a new tier of armour.
+//
 //   Stardust     armour: lower gravity, boots step up (attribute modifiers, see Starforge.apply).
 //                bows, crossbows, tridents: projectiles fall 20% slower, so they fly ~25% further.
-//   Temporal     armour: Time Stretch - good effects last 10% longer per piece, bad ones 10% shorter.
-//                melee weapons: Echo Strike - a quarter of every hit lands again a second later.
-//   Singularity  armour: Lensing - 10% per piece that a projectile curves around you.
+//   Temporal     armour: Time Stretch - good effects last 5% longer per piece, bad ones 5% shorter.
+//                melee weapons: Echo Strike - a tenth of every hit lands again a second later.
+//   Singularity  armour: Lensing - 5% per piece that a projectile curves around you.
 //                swords: a full sweep pulls nearby mobs toward your target. tools: Pull (StarforgeLoot).
-//   Radiant      armour: Soak Light - in bright light, a golden heart every 20 s, up to one per
-//                piece; 2+ pieces and Sunburn can't touch you. weapons: targets glow for 5 s.
+//   Radiant      armour: Soak Light - in bright light, half a golden heart every 30 s, up to half a
+//                heart per piece; 2+ pieces and Sunburn can't touch you. weapons: targets glow for 5 s.
 //
 // Rift Pearls drop from every boss: the Ender Dragon, the Wither, the Warden, Elder Guardians (and
 // the Spire Wyrm, in its loot table).
@@ -204,7 +206,7 @@ public final class StarforgeEffects {
             t[0] = now;       // 10 seconds out of the fire: the shield is whole again
         }
         t[1] = now;
-        return now - t[0] < 40L * pieces;
+        return now - t[0] < 20L * pieces;
     }
 
     // ------------------------------------------------------------------ Radiant: Soak Light
@@ -221,10 +223,10 @@ public final class StarforgeEffects {
             return;
         }
         s.soak += flare ? 5 : 1;              // seconds of light soaked up
-        float cap = Math.min(2.0F * pieces, player.getMaxAbsorption());
-        if (s.soak >= 20 && player.getAbsorptionAmount() < cap) {
+        float cap = Math.min(1.0F * pieces, player.getMaxAbsorption());
+        if (s.soak >= 30 && player.getAbsorptionAmount() < cap) {
             s.soak = 0;
-            player.setAbsorptionAmount(Math.min(cap, player.getAbsorptionAmount() + 2.0F));
+            player.setAbsorptionAmount(Math.min(cap, player.getAbsorptionAmount() + 1.0F));
             level.sendParticles(ParticleTypes.WAX_ON, player.getX(), player.getY() + 1.2, player.getZ(), 6, 0.3, 0.5, 0.3, 0.0);
             level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 0.6F, 1.8F);
         }
@@ -267,7 +269,7 @@ public final class StarforgeEffects {
             : direct instanceof AbstractArrow arrow && arrow.getWeaponItem() != null ? arrow.getWeaponItem() : ItemStack.EMPTY;
         StarforgeUpgrade upgrade = Starforge.get(weapon);
         if (upgrade == StarforgeUpgrade.TEMPORAL && direct == player && weapon.is(Starforge.MELEE) && event.getAmount() > 0.0F) {
-            ECHOES.add(new Echo(level, target, player, event.getAmount() * 0.25F, level.getGameTime() + 20));
+            ECHOES.add(new Echo(level, target, player, event.getAmount() * 0.1F, level.getGameTime() + 20));
         }
         if (upgrade == StarforgeUpgrade.RADIANT && (weapon.is(Starforge.MELEE) || weapon.is(Starforge.RANGED))) {
             target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100), player);
@@ -317,7 +319,7 @@ public final class StarforgeEffects {
             return;
         }
         boolean good = type.value().isBeneficial();
-        float scale = good ? 1.0F + 0.1F * pieces : 1.0F - 0.1F * pieces;
+        float scale = good ? 1.0F + 0.05F * pieces : 1.0F - 0.05F * pieces;
         stretching = true;
         try {
             entity.removeEffect(type);
@@ -337,7 +339,7 @@ public final class StarforgeEffects {
             return;
         }
         int pieces = Starforge.pieces(target, StarforgeUpgrade.SINGULARITY);
-        if (pieces == 0 || level.getRandom().nextFloat() >= 0.1F * pieces) {
+        if (pieces == 0 || level.getRandom().nextFloat() >= 0.05F * pieces) {
             return;
         }
         event.setImpactResult(ProjectileImpactEvent.ImpactResult.SKIP_ENTITY);
