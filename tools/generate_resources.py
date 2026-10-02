@@ -1728,7 +1728,7 @@ def mechanics_phase10():
     # Starforge Templates turn up in End City treasure (a global loot modifier: StarforgeLoot.Add).
     write(DATA / "loot_modifiers" / "end_city_templates.json", {
         "type": rid("add_item"), "item": rid("starforge_template"), "chance": 0.2,
-        "conditions": [{"condition": "forge:loot_table_id", "loot_table_id": "minecraft:chests/end_city_treasure"}]})
+        "conditions": [{"type": "forge:loot_table_id", "loot_table_id": "minecraft:chests/end_city_treasure"}]})
     write(RES / "data" / "forge" / "loot_modifiers" / "global_loot_modifiers.json",
           {"replace": False, "entries": [rid("starforge_tools"), rid("end_city_templates")]})
 
