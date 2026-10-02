@@ -35,6 +35,18 @@ power creep) and keeping the End alien and stagnant, not lush:
 
 The full spec is in [the plan, section 14.2](docs/END_UPDATE.md#142-phase-11-new-additions).
 
+## Get it
+
+The first public build, **1.0.0-beta.1**, is published to Modrinth as
+[**The Astral End**](https://modrinth.com/mod/the-astral-end) (a beta: blocks and items may still be
+renamed or removed before 1.0, so back up worlds you care about). It needs **Minecraft 26.3** and
+**Forge 66** or newer, on both the client and the server. MIT licensed (see [LICENSE](LICENSE)).
+
+Releases go out with the **Release to Modrinth** workflow (Actions > Release to Modrinth > Run
+workflow), which builds the mod and runs [tools/release/modrinth.py](tools/release/modrinth.py). The
+project page lives in [docs/modrinth/](docs/modrinth/): the icon, the gallery, the description and a
+changelog for each version.
+
 ## What's in the mod so far
 
 ### Phase 9: polish
@@ -717,7 +729,7 @@ its maps into the pictures above.
 
 ## 7. Build a jar and play it in real Minecraft
 
-1. `./gradlew build` → your mod is `build/libs/astralend-1.0.0.jar`.
+1. `./gradlew build` → your mod is `build/libs/astralend-1.0.0-beta.1.jar`.
 2. Install Forge for 26.3 in your normal launcher: download the **Installer** from
    files.minecraftforge.net, run it, and choose *Install client*.
 3. Put the jar in your `.minecraft/mods/` folder.

@@ -2,14 +2,16 @@
 
 modLoader="javafml"
 loaderVersion="[66,)"
-license="All Rights Reserved"
+license="MIT"
 
 [[mods]]
 modId="astralend"             # must match AstralEnd.MODID; lowercase letters, numbers, underscores
-version="1.0.0"
+version="1.0.0-beta.1"
 displayName="The Astral End"
 authors="ggrantrichards"
-description='''Expands the End into a sparse, mysterious network of astral islands. Phase 1: new stone, ores, Stardust, Astral Glass and cosmic plants.'''
+displayURL="https://modrinth.com/mod/the-astral-end"
+logoFile="astralend_logo.png"
+description='''The End, expanded: six new biomes on the outer islands, new mobs, a living sky with auroras and Stellar Flares, live comets, ruins and vaults to explore, and new blocks to build with. A beta: expect changes before 1.0.'''
 
 [[dependencies.astralend]]
     modId="forge"

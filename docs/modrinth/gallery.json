@@ -1,0 +1,17 @@
+[
+  {"file": "docs/images/screens/nebula_fields.png", "title": "Nebula Fields", "description": "Rolling moss islands under forests of giant glowing Lumineshrooms.", "featured": true},
+  {"file": "docs/images/screens/aurora_shallows.png", "title": "Aurora Shallows", "description": "Pale, flat shelves under green and gold auroras."},
+  {"file": "docs/images/screens/corona.png", "title": "The Corona", "description": "Sunscorched mesas, Flarebloom fields and glowing lichen."},
+  {"file": "docs/images/screens/comet_wake.png", "title": "Comet Wake", "description": "Scorched islands pocked with impact craters."},
+  {"file": "docs/images/screens/dark_matter_belt.png", "title": "Dark Matter Belt", "description": "Dim forests of twisted Nullwood on ring-shaped islands."},
+  {"file": "docs/images/screens/shattered_observatory.png", "title": "Shattered Observatory", "description": "Great rings of quartz pillars, overgrown with Starblooms."},
+  {"file": "docs/images/sky/corona_flare.png", "title": "A Stellar Flare", "description": "The Corona's sky burning gold."},
+  {"file": "docs/images/mobs/drift_whale.png", "title": "Drift Whale", "description": "A huge, gentle whale that swims through the void."},
+  {"file": "docs/images/mobs/void_wanderer.png", "title": "Void Wanderer", "description": "A clockwork construct that studies you, if you hold still."},
+  {"file": "docs/images/mobs/pollinator.png", "title": "End Pollinator", "description": "A little drifter that spreads glowing plants."},
+  {"file": "docs/images/comets/game_live_comet.png", "title": "A live comet", "description": "Ride its tail with an elytra, or knock a chunk off its head."},
+  {"file": "docs/images/structures/game_wormhole_maw.png", "title": "Wormhole Maw", "description": "The fossil skull of a Star Leviathan. Its throat is a way across the End."},
+  {"file": "docs/images/structures/game_observatory_ruins.png", "title": "Observatory Ruins", "description": "A broken dome, a telescope, and vaults that open for a Chart Fragment."},
+  {"file": "docs/images/structures/game_abandoned_orrery.png", "title": "Abandoned Orrery", "description": "A wheel of tarnished bronze hanging high over the End, and its guardian."},
+  {"file": "docs/images/polish/game_orrery_bronze.png", "title": "Orrery Bronze", "description": "A whole block family that tarnishes over time; wax it to keep it."}
+]
