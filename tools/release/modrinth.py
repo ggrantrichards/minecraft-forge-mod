@@ -69,7 +69,10 @@ def main():
     parser.add_argument("jar")
     parser.add_argument("--type", default="beta", choices=["alpha", "beta", "release"])
     args = parser.parse_args()
-    token = os.environ.get("MODRINTH_TOKEN", "").strip()
+    # Forgive the usual paste mistakes: quotes, a "Bearer " prefix, stray whitespace or line breaks.
+    token = "".join(os.environ.get("MODRINTH_TOKEN", "").split()).strip("\"'")
+    if token.lower().startswith("bearer"):
+        token = token[6:]
     if not token:
         die("No MODRINTH_TOKEN secret. Create a personal access token on modrinth.com (Settings > "
             "Personal access tokens) and add it to the repository as an Actions secret named MODRINTH_TOKEN.")
@@ -86,9 +89,14 @@ def main():
     if missing:
         die(f"Modrinth doesn't list Minecraft {', '.join(missing)} yet, so a version can't target it.")
 
+    if not token.startswith("mrp_"):
+        print("::warning::The token doesn't start with 'mrp_', so it may not be a Modrinth personal access token.")
     status, me = request("GET", "/user", token)
     if status != 200:
-        die(f"The token was refused ({status}): {me}")
+        die(f"Modrinth refused the token ({status}): {me}. Check that the MODRINTH_TOKEN secret holds "
+            f"the whole personal access token (it starts with 'mrp_'), that it hasn't expired or been revoked, "
+            f"and that it has the Read user data, Create projects, Read projects, Write projects and Create "
+            f"versions scopes.")
     print(f"Publishing as {me['username']}")
 
     body_text = (ROOT / "docs/modrinth/description.md").read_text()
