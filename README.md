@@ -35,7 +35,9 @@ power creep) and keeping the End alien and stagnant, not lush:
 
 The full spec is in [the plan, section 14.2](docs/END_UPDATE.md#142-phase-11-new-additions).
 
-![Fifteen seconds of the trailer, filmed in the game](docs/modrinth/teaser.webp)
+[![Fifteen seconds of the trailer, filmed in the game. Click for the full trailer on YouTube.](docs/modrinth/teaser.webp)](https://youtu.be/ZUQVTpnqRTQ)
+
+**[Watch the trailer](https://youtu.be/ZUQVTpnqRTQ)**
 
 ## Get it
 
