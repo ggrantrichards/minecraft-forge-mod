@@ -27,6 +27,13 @@ jobs:
       - name: API probe (temporary)
         if: hashFiles('.github/probe/probe.sh') != ''
         run: ./gradlew -q javaToolchains > /dev/null && .github/probe/probe.sh
+      - name: Publish probe output
+        if: always() && hashFiles('.github/probe/probe.sh') != ''
+        run: |
+          cp /tmp/probe.txt /tmp/probe-out.txt || echo none > /tmp/probe-out.txt
+          git config user.name ci && git config user.email ci@example.com
+          git checkout -q --orphan probe-out && git rm -rqf . && cp /tmp/probe-out.txt probe.txt && git add probe.txt
+          git commit -qm "probe output" && git push -qf origin probe-out
 
       - name: Build
         run: ./gradlew build --stacktrace

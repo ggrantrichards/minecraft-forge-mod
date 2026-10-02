@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set +e
+ROOT=$PWD
+exec > >(tee /tmp/probe.txt) 2>&1
 SRC=$(find .gradle/mavenizer/repo -name '*-sources.jar' -size +1M | head -1)
 echo "SRC=$SRC"
 mkdir -p /tmp/src && unzip -qo "$SRC" -d /tmp/src
@@ -47,4 +49,12 @@ echo "== mob effect / potions"
 grep -n "SLOW_FALLING\|LEVITATION" net/minecraft/world/effect/MobEffects.java
 grep -n "getGravity\|GRAVITY" net/minecraft/world/entity/LivingEntity.java | head
 grep -n "SAFE_FALL_DISTANCE\|FALL_DAMAGE_MULTIPLIER" net/minecraft/world/entity/ai/attributes/Attributes.java
-exit 1
+echo "== loot ids / poi / target goal"
+grep -n "getLootTableId\|getQueriedLootTableId" net/minecraft/world/level/storage/loot/LootTable.java net/minecraft/world/level/storage/loot/LootContext.java
+find . -path "*minecraftforge*" -name "LootTableIdCondition.java" | xargs grep -n "MapCodec\|loot_table_id\|class" | head
+F=$(find . -name PoiType.java); sed -n 1,40p $F | grep -n "record\|public"
+grep -n "LODESTONE" net/minecraft/world/entity/ai/village/poi/PoiTypes.java | head
+grep -n "targetConditions\|protected\|public NearestAttackableTargetGoal" net/minecraft/world/entity/ai/goal/target/NearestAttackableTargetGoal.java | head
+grep -n "public.*interactAt\|mobInteract" net/minecraft/world/entity/Mob.java | head -3
+grep -n "FLINT_AND_STEEL\|isOnFire\|igniteForSeconds" net/minecraft/world/entity/Entity.java | head -5
+exit 0
