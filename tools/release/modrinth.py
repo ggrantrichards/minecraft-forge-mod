@@ -136,10 +136,11 @@ def main():
     for order, entry in enumerate(gallery):
         if entry["title"] in have:
             continue
-        query = urllib.parse.urlencode({"ext": "png", "featured": str(entry.get("featured", False)).lower(),
+        ext = Path(entry["file"]).suffix.lstrip(".").lower()
+        query = urllib.parse.urlencode({"ext": ext, "featured": str(entry.get("featured", False)).lower(),
                                         "title": entry["title"], "description": entry["description"], "ordering": order})
         status, err = request("POST", f"/project/{pid}/gallery?{query}", token,
-                              (ROOT / entry["file"]).read_bytes(), "image/png")
+                              (ROOT / entry["file"]).read_bytes(), f"image/{'jpeg' if ext == 'jpg' else ext}")
         if status not in (200, 201, 204):
             die(f"Couldn't upload the picture {entry['title']} ({status}): {err}")
         print(f"Gallery: {entry['title']}")

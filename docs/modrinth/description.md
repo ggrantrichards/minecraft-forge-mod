@@ -4,6 +4,8 @@
 pale biome and becomes a sparse, mysterious sky of astral islands, each kind with its own life, its own
 light and its own secrets.
 
+{{Trailer teaser}}
+
 > **Beta.** This is the first public build. Expect changes before 1.0, including blocks and items that
 > are renamed, reworked or removed. Keep backups of worlds you care about.
 

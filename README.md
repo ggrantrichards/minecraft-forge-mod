@@ -35,6 +35,8 @@ power creep) and keeping the End alien and stagnant, not lush:
 
 The full spec is in [the plan, section 14.2](docs/END_UPDATE.md#142-phase-11-new-additions).
 
+![Fifteen seconds of the trailer, filmed in the game](docs/modrinth/teaser.webp)
+
 ## Get it
 
 The first public build, **1.0.0-beta.1**, is published to Modrinth as
