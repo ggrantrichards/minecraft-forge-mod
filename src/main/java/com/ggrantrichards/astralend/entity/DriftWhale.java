@@ -132,7 +132,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
                 this.heal(20.0F);
                 stack.consume(1, player);
                 this.playSound(SoundEvents.GENERIC_EAT.value(), 1.5F, 0.5F);
-                level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.CHORUS_FRUIT)),
+                level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, Items.CHORUS_FRUIT),
                     this.getX(), this.getY() + 1.0, this.getZ(), 12, 0.6, 0.4, 0.6, 0.05);
                 this.humCooldown = 0;
                 this.hum(level);
@@ -297,7 +297,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
         }
         if (this.tickCount % 30 == 0) {
             this.playSound(SoundEvents.GENERIC_EAT.value(), 1.2F, 0.5F);
-            level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.CHORUS_FRUIT)),
+            level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, Items.CHORUS_FRUIT),
                 at.getX() + 0.5, at.getY() + 1.0, at.getZ() + 0.5, 8, 0.4, 0.3, 0.4, 0.04);
             this.heal(2.0F);
         }

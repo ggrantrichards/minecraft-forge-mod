@@ -139,7 +139,7 @@ public class LiveComet extends Mob {
                     // A Lodestar was set down while it fell: it breaks up overhead instead.
                     level.sendParticles(net.minecraft.core.particles.ParticleTypes.END_ROD, this.getX(), this.getY(), this.getZ(),
                         60, 1.5, 1.5, 1.5, 0.2);
-                    level.playSound(null, this.getX(), this.getY(), this.getZ(), net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_SHATTER,
+                    level.playSound(null, this.getX(), this.getY(), this.getZ(), net.minecraft.sounds.SoundEvents.AMETHYST_CLUSTER_BREAK,
                         net.minecraft.sounds.SoundSource.AMBIENT, 4.0F, 0.6F);
                 }
                 this.discard();
