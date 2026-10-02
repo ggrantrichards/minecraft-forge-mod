@@ -90,6 +90,7 @@ ITEMS = [
     ("cinder", "Cinder"),
     ("star_chart", "Star Chart"),
     ("upwell_mote", "Upwell Mote"),
+    ("resonant_key", "Resonant Key"),
 ]
 
 PLURAL = {"nightstone_bricks": "nightstone_brick", "pale_end_stone_bricks": "pale_end_stone_brick",
@@ -1086,6 +1087,7 @@ MOBS = [
     ("drift_whale", "Drift Whale"),
     ("watcher", "The Watcher"),
     ("live_comet", "Live Comet"),
+    ("spire_wyrm", "Spire Wyrm"),
 ]
 
 
@@ -1336,7 +1338,7 @@ def structures_phase6():
     lang[f"item.{NS}.temporal_crystal"] = "Temporal Crystal"
     lang[f"item.{NS}.star_chart.marks_structure"] = "Marks a site: %s"
     for name, english in (("comet_crater", "Comet Crater"), ("wanderer_relay", "Wanderer Relay"), ("whalefall", "Whalefall"),
-                          ("shattered_observatory", "Shattered Observatory"), ("solar_array", "Solar Array Ruins"),
+                          ("shattered_observatory", "Shattered Observatory"), ("resonant_spire", "Resonant Spire"), ("solar_array", "Solar Array Ruins"),
                           ("rift_maw", "Rift Maw"), ("constellation_maze", "Constellation Maze")):
         lang[f"structure.{NS}.{name}"] = english
         tag("worldgen/structure", rid(name), rid(name))      # a Star Chart looks each one up by its own tag
@@ -1875,6 +1877,72 @@ def content_phase10():
              "minecraft:lingering_potion", rid(potion))
     advancement("what_goes_up", rid("upwell_mote"), "What Goes Up", "Catch an Upwell Mote",
                 parent=rid("end/astral_horizons"), criteria={"mote": has_item(rid("upwell_mote"))})
+    # ---- the Resonant Spires and the Spire Wyrm
+    entity_loot("spire_wyrm", [
+        {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("resonant_key")}]},
+        {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("rift_pearl")}]},
+        {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("glimmer_cluster"), "functions": [
+            {"function": "minecraft:set_count", "add": False, "count": {"type": "minecraft:uniform", "min": 2, "max": 5}}]}]},
+    ])
+
+    def potion(name, weight=1):
+        return {"type": "minecraft:item", "name": "minecraft:potion", "weight": weight,
+                "functions": [{"function": "minecraft:set_potion", "id": rid(name)}]}
+    # At the foot of the spire: the means to climb it.
+    chest_loot("resonant_spire_foot", [
+        {"rolls": 2, "entries": [potion("upwelling", 3), potion("long_upwelling", 1)]},
+        {"rolls": {"type": "minecraft:uniform", "min": 2, "max": 4}, "entries": [
+            entry("glimmer_cluster", 3, (1, 3)), entry("minecraft:arrow", 3, (4, 12)), entry("upwell_mote", 1, (1, 2)),
+            entry("minecraft:golden_carrot", 2, (2, 5)), entry("minecraft:shulker_shell", 1)]},
+    ])
+    chest_loot("resonant_spire", [
+        {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
+            entry("glimmer_crystal", 3, (2, 6)), entry("void_crystal", 2, (1, 2)), entry("meteoric_iron_ingot", 3, (1, 3)),
+            entry("minecraft:ender_pearl", 3, (1, 3)), entry("minecraft:diamond", 1, (1, 2)), entry("upwell_mote", 2, (1, 3)),
+            entry("minecraft:experience_bottle", 2, (2, 5)), entry("end_chimes", 1)]},
+        {"rolls": 1, "entries": [potion("upwelling", 2), potion("long_upwelling", 1)]},
+        chance("starforge_template", 0.15),
+    ])
+    # The Resonance Vault, opened with the Resonant Key: one roll of treasure per player.
+    chest_loot("resonance_vault", [
+        {"rolls": 1, "entries": [entry("wyrm_banner_pattern", 1), entry("spire_banner_pattern", 1)]},
+        {"rolls": 1, "entries": [entry("eclipse_armor_trim_smithing_template", 1)]},
+        {"rolls": 1, "entries": [entry("starforge_template", 1)]},
+        chance("rift_pearl", 0.5),
+        {"rolls": {"type": "minecraft:uniform", "min": 2, "max": 4}, "entries": [
+            entry("void_crystal", 3, (1, 3)), entry("charged_void_crystal", 2, (1, 2)), entry("minecraft:diamond", 2, (2, 4)),
+            entry("minecraft:netherite_scrap", 1, (1, 2)), entry("temporal_crystal", 1)]},
+    ])
+    # Banner patterns (the Wyrm coiled, and the Spire) and the Eclipse armour trim.
+    colours = ("white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan",
+               "purple", "blue", "brown", "green", "red", "black")
+    for pattern, english in (("wyrm", "Wyrm"), ("spire", "Spire")):
+        write(DATA / "banner_pattern" / f"{pattern}.json", {"asset_id": rid(pattern), "translation_key": f"block.{NS}.banner.{pattern}"})
+        tag("banner_pattern", f"{NS}:pattern_item/{pattern}", rid(pattern))
+        item = f"{pattern}_banner_pattern"
+        item_model(item, {"parent": "minecraft:item/generated", "textures": {"layer0": rid(f"item/{item}")}})
+        item_def(item, rid(f"item/{item}"))
+        lang[f"item.{NS}.{item}"] = f"{english} Banner Pattern"
+        lang[f"item.{NS}.{item}.desc"] = english
+        for c in colours:
+            lang[f"block.{NS}.banner.{pattern}.{c}"] = f"{c.replace('_', ' ').title()} {english}"
+    write(DATA / "trim_pattern" / "eclipse.json", {"asset_id": rid("eclipse"),
+                                                    "description": {"translate": f"trim_pattern.{NS}.eclipse"}, "decal": False})
+    lang[f"trim_pattern.{NS}.eclipse"] = "Eclipse Armor Trim"
+    template = "eclipse_armor_trim_smithing_template"
+    item_model(template, {"parent": "minecraft:item/generated", "textures": {"layer0": rid(f"item/{template}")}})
+    item_def(template, rid(f"item/{template}"))
+    lang[f"item.{NS}.{template}"] = "Smithing Template"
+    tag("item", "minecraft:trim_templates", rid(template))
+    recipe(f"{template}_smithing_trim", {"type": "minecraft:smithing_trim", "template": rid(template),
+                                         "base": "#minecraft:trimmable_armor", "addition": "#minecraft:trim_materials",
+                                         "pattern": rid("eclipse")})
+    shaped(template, template, ["DTD", "DND", "DDD"], {"D": "minecraft:diamond", "T": rid(template), "N": rid("nightstone")},
+           count=2, category="misc")
+    advancement("wyrmslayer", rid("resonant_key"), "Wyrmslayer", "Defeat a Spire Wyrm atop its Resonant Spire",
+                parent=rid("end/astral_horizons"), frame="challenge", criteria={"wyrm": killed(rid("spire_wyrm"))})
+    advancement("ring_out", "minecraft:bell", "Ring Out", "Stun a Spire Wyrm with the ringing of a bell",
+                parent=rid("end/wyrmslayer"))
     advancement("still_air", rid("end_chimes"), "Still the Air", "Hang End Chimes, and stop an Enderman's teleport with them",
                 parent=rid("end/astral_horizons"))
 

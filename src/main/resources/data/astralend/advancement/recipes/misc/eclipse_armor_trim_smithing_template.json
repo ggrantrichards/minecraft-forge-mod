@@ -1,0 +1,54 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:eclipse_armor_trim_smithing_template"
+      }
+    },
+    "has_diamond": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:diamond"
+          }
+        ]
+      }
+    },
+    "has_eclipse_armor_trim_smithing_template": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:eclipse_armor_trim_smithing_template"
+          }
+        ]
+      }
+    },
+    "has_nightstone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:nightstone"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_diamond",
+      "has_eclipse_armor_trim_smithing_template",
+      "has_nightstone"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:eclipse_armor_trim_smithing_template"
+    ]
+  }
+}

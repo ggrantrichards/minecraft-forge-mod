@@ -733,6 +733,125 @@ def nbt_list_float(*values):
     return _nbt.List([_nbt.Float(v) for v in values], _nbt.FLOAT)
 
 
+# ------------------------------------------------------------------ Phase 10: the Resonant Spire
+
+def resonant_spire(seed):
+    """A Resonant Spire of the Glimmering Crags: a hollow tower of Nightstone banded with Glimmer
+    Crystal, ninety blocks tall, open to the sky inside. There are no stairs: you climb it on shulker
+    bullets (the shulkers on its ledges shoot them) or a Potion of Upwelling (two lie in the chest at
+    its foot). Ledges ring the shaft at four heights, each hung with a bell; arched openings pierce
+    the walls, through which the Spire Wyrm coils in and out. At the top: the Wyrm's nest, and the
+    Resonance Vault, which only the Wyrm's Resonant Key opens."""
+    size, c = 37, 18
+    height = 100
+    t = Template(size, height, size, seed)
+    rnd = t.rnd
+    stone, bricks = a("nightstone"), a("nightstone_bricks")
+    polished, chiseled = a("polished_nightstone"), a("chiseled_nightstone")
+    crystal = a("glimmer_crystal")
+    R_OUT, R_IN = 13.5, 11.5
+    levels = [18, 36, 54, 72]           # ledge floors
+    nest = 86                           # nest floor
+
+    def opening(ang, y, base_y, width=0.22, tall=7):
+        # Arched openings: four per ledge level, turned 45 degrees from one level to the next.
+        for k, ly in enumerate([4] + levels):
+            off = (math.pi / 4) * (k % 2)
+            for q in range(4):
+                a0 = off + q * math.pi / 2
+                gap = abs((ang - a0 + math.pi) % math.tau - math.pi)
+                top = ly + 2 + tall - int(gap / width * 2)
+                if gap < width and ly + 1 <= y <= top:
+                    return True
+        return False
+
+    # Foundation: a broad footing of Nightstone, ragged at the edge.
+    for x in range(size):
+        for z in range(size):
+            d = math.hypot(x - c, z - c)
+            if d < 18 - rnd.random() * 2:
+                for y in range(0, 4):
+                    t.set(x, y, z, stone)
+            if d < R_IN:
+                t.set(x, 3, z, polished if (x + z) % 2 else chiseled if d < 3 else polished)
+    # The tower: walls tapering slightly, crystal bands every 9 blocks, openings.
+    for y in range(4, nest + 1):
+        taper = (y / nest) * 1.5
+        ro, ri = R_OUT - taper, R_IN - taper
+        for x in range(size):
+            for z in range(size):
+                d = math.hypot(x - c, z - c)
+                if ri <= d <= ro:
+                    ang = math.atan2(z - c, x - c)
+                    if opening(ang, y, 4):
+                        t.set(x, y, z, "minecraft:air")
+                        continue
+                    band = y % 9 == 0
+                    t.set(x, y, z, crystal if band else (bricks if rnd.random() < 0.85 else stone))
+                elif d < ri:
+                    t.set(x, y, z, "minecraft:air")
+    # The ledges: three arcs at each level (so you can't walk up), a bell, a shulker or two, a chest.
+    for k, ly in enumerate(levels):
+        taper = (ly / nest) * 1.5
+        ri = R_IN - taper
+        start = rnd.uniform(0, math.tau)
+        for arc in range(3):
+            a0 = start + arc * math.tau / 3
+            for x in range(size):
+                for z in range(size):
+                    d = math.hypot(x - c, z - c)
+                    ang = math.atan2(z - c, x - c)
+                    gap = abs((ang - a0 + math.pi) % math.tau - math.pi)
+                    if ri - 3.2 <= d < ri and gap < 0.55:
+                        t.set(x, ly, z, polished)
+                        if d < ri - 2.6 and rnd.random() < 0.5:
+                            t.set(x, ly + 1, z, a("polished_nightstone_slab") + "[type=bottom]")
+            # Bell in the middle of the arc, at its inner edge; a shulker on the far end.
+            bx, bz = round(c + math.cos(a0) * (ri - 2.2)), round(c + math.sin(a0) * (ri - 2.2))
+            t.set(bx, ly, bz, polished)
+            t.set(bx, ly + 1, bz, "minecraft:bell[attachment=floor,facing=north,powered=false]")
+            # End Chimes hang under the ledge (they keep the shulkers from teleporting off it).
+            hx, hz = round(c + math.cos(a0 - 0.25) * (ri - 2.0)), round(c + math.sin(a0 - 0.25) * (ri - 2.0))
+            if t.get(hx, ly, hz) is not None and t.get(hx, ly, hz) != "minecraft:air":
+                t.set(hx, ly - 1, hz, a("end_chimes"))
+            ex, ez = round(c + math.cos(a0 + 0.45) * (ri - 1.5)), round(c + math.sin(a0 + 0.45) * (ri - 1.5))
+            if arc != 1 or k % 2 == 0:
+                t.entity(ex + 0.5, ly + 1, ez + 0.5, {"id": "minecraft:shulker", "AttachFace": Byte(0),
+                                                      "PersistenceRequired": Byte(1), "Color": Byte(9)})
+            if arc == 2 and k in (1, 3):
+                cx, cz = round(c + math.cos(a0 - 0.4) * (ri - 1.5)), round(c + math.sin(a0 - 0.4) * (ri - 1.5))
+                chest(t, cx, ly + 1, cz, "resonant_spire")
+    # At the foot: a chest with what you need to start climbing, and two shulkers to shoot you up.
+    chest(t, c + 6, 4, c, "resonant_spire_foot", facing="west")
+    for (dx, dz) in ((-5, 4), (4, -5)):
+        t.entity(c + dx + 0.5, 4, c + dz + 0.5, {"id": "minecraft:shulker", "AttachFace": Byte(0),
+                                                 "PersistenceRequired": Byte(1), "Color": Byte(9)})
+    # The nest: a floor across the top of the shaft with a hole in the middle, a ring of crystal
+    # spikes around it, and the Resonance Vault on a dais.
+    taper = 1.5
+    for x in range(size):
+        for z in range(size):
+            d = math.hypot(x - c, z - c)
+            if 3.5 <= d <= R_OUT - taper:
+                t.set(x, nest, z, bricks if d > R_IN - taper - 0.5 else polished)
+            for y in range(nest + 1, height):
+                if d <= R_OUT - taper:
+                    t.set(x, y, z, "minecraft:air")
+    for q in range(8):
+        ang = q * math.tau / 8 + 0.2
+        sx, sz = round(c + math.cos(ang) * (R_OUT - taper - 0.5)), round(c + math.sin(ang) * (R_OUT - taper - 0.5))
+        tall = rnd.randint(5, 11)
+        for y in range(nest + 1, nest + 1 + tall):
+            t.set(sx, y, sz, crystal if y > nest + 2 else bricks)
+    vx, vz = c, c - 7
+    t.fill(vx - 1, nest + 1, vz - 1, vx + 1, nest + 1, vz + 1, chiseled)
+    t.set(vx, nest + 2, vz, f"minecraft:vault[facing=south,ominous=false,vault_state=inactive]",
+          nbt={"config": {"loot_table": a("chests/resonance_vault"), "key_item": {"id": a("resonant_key"), "count": Int(1)}}})
+    # The Wyrm itself, curled above its nest.
+    t.entity(c + 0.5, nest + 6, c + 0.5, {"id": a("spire_wyrm"), "PersistenceRequired": Byte(1)})
+    return t
+
+
 # ------------------------------------------------------------------ worldgen data
 
 def structure_json(name, height, heightmap, spawn_overrides, adaptation, ground):
@@ -795,6 +914,10 @@ STRUCTURES = [
          biomes=["minecraft:small_end_islands", a("nebula_fields"), a("hollow_isles")], spread=(26, 9, 48129573),
          height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 48}, "max_inclusive": {"absolute": 70}},
          heightmap=None, spawns=None, adaptation=None, ground=(-4096, 36, 22)),
+    # Phase 10: one tower per Glimmering Crags, roughly.
+    dict(name="resonant_spire", variants=[lambda: resonant_spire(81)],
+         biomes=[a("glimmering_crags")], spread=(28, 10, 51772093), height={"absolute": -3},
+         heightmap="WORLD_SURFACE_WG", spawns=None, adaptation="beard_thin", ground=(16, 4096, 16)),
     dict(name="constellation_maze", variants=[lambda: constellation_maze(71)],
          biomes=["minecraft:small_end_islands", a("nebula_fields")], spread=(24, 8, 77162391),
          height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 56}, "max_inclusive": {"absolute": 76}},

@@ -1006,7 +1006,79 @@ COMET = Mob("live_comet", (64, 64), [
 ], egg=(hexc("c3dcec"), hexc("3a3f52")))
 
 
-MOBS = [POLLINATOR, WANDERER, STALKER, CINDER_MITE, VOID_RAY, GUARDIAN, WHALE, WATCHER, COMET]
+
+# ---- Spire Wyrm (Phase 10): a serpent kin of the Ender Dragon that nests atop the Resonant Spires.
+# Near-black scales like the dragon's, a pale belly, a ridge of teal Glimmer Crystal down its spine,
+# glowing teal eyes. A long head with a hinged jaw and swept-back horns; a chain of body segments
+# (each its own part, placed by SpireWyrmRenderer along the path the head has flown).
+WYRM = [hexc("0c0a10"), hexc("17141e"), hexc("221e2c"), hexc("2e2a3a"), hexc("3c3850")]
+WYRM_BELLY = [hexc("4a4458"), hexc("5e5870"), hexc("746c88")]
+WYRM_CRYSTAL = [hexc("1e6a68"), hexc("3fb8b0"), hexc("8ff0e4")]
+
+
+def wyrm_scale(face, px, py, fw, fh, rnd):
+    if face == "down":
+        return WYRM_BELLY[(px + py) % 3 // 2 + (1 if n() > 0.6 else 0)]
+    i = 1 + shade_flat(face) + (1 if n() > 0.62 else 0)
+    if (px + 2 * (py // 2)) % 4 == 0 and py % 2 == 0:
+        i += 1                                   # the edge of each scale catches the light
+    return clamp(i, WYRM)
+
+
+def wyrm_crystal(face, px, py, fw, fh, rnd):
+    return WYRM_CRYSTAL[1 + (1 if (px + py) % 3 == 0 else 0) - (1 if face == "down" else 0)]
+
+
+def wyrm_crystal_glow(face, px, py, fw, fh, rnd):
+    return WYRM_CRYSTAL[2] if (px + py) % 2 == 0 else WYRM_CRYSTAL[1]
+
+
+def wyrm_horn(face, px, py, fw, fh, rnd):
+    return hexc("b8b0a0") if py < 2 else hexc("8a8274")
+
+
+def wyrm_skull(face, px, py, fw, fh, rnd):
+    if face == "north" and py == 3 and px in (1, 2, fw - 3, fw - 2):
+        return hexc("8ff0e4")                    # the eyes
+    return wyrm_scale(face, px, py, fw, fh, rnd)
+
+
+def wyrm_skull_glow(face, px, py, fw, fh, rnd):
+    if face == "north" and py == 3 and px in (1, 2, fw - 3, fw - 2):
+        return hexc("c8fff6")
+    return None
+
+
+def wyrm_mouth(face, px, py, fw, fh, rnd):
+    if face == "down" or (face == "north" and py == fh - 1):
+        return hexc("4a1830")                    # inside of the mouth
+    if face in ("east", "west") and py == fh - 1 and px % 2 == 0:
+        return hexc("d8d0c0")                    # teeth
+    return wyrm_scale(face, px, py, fw, fh, rnd)
+
+
+def wyrm_segment(i, small=False):
+    s = 4 if small else 5
+    boxes = [B(-s, -s, -s, 2 * s, 2 * s, 2 * s, wyrm_scale, key="tail" if small else "seg"),
+             B(-1, -s - 3, -2, 2, 3, 4, wyrm_crystal, wyrm_crystal_glow, key="spine")]
+    if not small:
+        boxes += [B(-s - 2, -1, -2, 2, 1, 4, wyrm_scale, key="fin"), B(s, -1, -2, 2, 1, 4, wyrm_scale, key="fin", mirror=True)]
+    return Part(f"seg{i}", (0, 8, 0), boxes)
+
+
+SPIRE_WYRM = Mob("spire_wyrm", (128, 64), [
+    Part("head", (0, 8, 0), [
+        B(-5, -4, -6, 10, 8, 10, wyrm_skull, wyrm_skull_glow),
+        B(-3, -3, -14, 6, 4, 8, wyrm_scale),
+        B(-1, -7, -5, 2, 3, 8, wyrm_crystal, wyrm_crystal_glow),
+    ], [
+        Part("jaw", (0, 1, -6), [B(-3, 0, -8, 6, 2, 8, wyrm_mouth)]),
+        Part("left_horn", (3, -4, 2, 0.6, 0, 0), [B(-1, -6, -1, 2, 6, 2, wyrm_horn, key="horn")]),
+        Part("right_horn", (-3, -4, 2, 0.6, 0, 0), [B(-1, -6, -1, 2, 6, 2, wyrm_horn, key="horn", mirror=True)]),
+    ]),
+] + [wyrm_segment(i, small=i >= 10) for i in range(12)], egg=(WYRM[2], WYRM_CRYSTAL[1]))
+
+MOBS = [POLLINATOR, WANDERER, STALKER, CINDER_MITE, VOID_RAY, GUARDIAN, WHALE, WATCHER, COMET, SPIRE_WYRM]
 for _mob in MOBS:
     auto_uv(_mob)          # boxes drawn without a texture position get one
 

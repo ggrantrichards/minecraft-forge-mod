@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "astralend:item/wyrm_banner_pattern"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "parent": "astralend:end/wyrmslayer",
+  "display": {
+    "icon": {
+      "id": "minecraft:bell"
+    },
+    "title": {
+      "translate": "advancements.astralend.ring_out.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.ring_out.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

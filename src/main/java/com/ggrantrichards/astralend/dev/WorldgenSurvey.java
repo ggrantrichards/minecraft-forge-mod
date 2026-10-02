@@ -299,7 +299,8 @@ public final class WorldgenSurvey {
             new Home(ModEntities.POLLINATOR.get(), 'N'), new Home(ModEntities.VOID_WANDERER.get(), 'D'),
             new Home(ModEntities.UMBRAL_STALKER.get(), 'D'), new Home(ModEntities.CINDER_MITE.get(), 'C'),
             new Home(ModEntities.VOID_RAY.get(), 'C'), new Home(ModEntities.HOLLOW.get(), 'W'),
-            new Home(ModEntities.DRIFT_WHALE.get(), 'A'), new Home(ModEntities.WATCHER.get(), 'N'));
+            new Home(ModEntities.DRIFT_WHALE.get(), 'A'), new Home(ModEntities.WATCHER.get(), 'N'),
+            new Home(ModEntities.SPIRE_WYRM.get(), 'G'));
         for (Home home : homes) {
             Area area = areas.get(home.biome());
             String name = home.type().getDescription().getString();
@@ -391,6 +392,7 @@ public final class WorldgenSurvey {
         structureShot(lines, structures, "whalefall", 26.0, 15.0, 4.0);
         structureShot(lines, structures, "shattered_observatory", 46.0, 26.0, 4.0);
         structureShot(lines, structures, "solar_array", 34.0, 36.0, 4.0);
+        structureShot(lines, structures, "resonant_spire", 60.0, 40.0, 30.0);
         structureShot(lines, structures, "solar_array_room", 3.0, 2.2, 0.0);
         lines.addAll(EXTRA_SHOTS);
         try {
@@ -558,7 +560,8 @@ public final class WorldgenSurvey {
                                 new Wanted("whalefall", 'A', Blocks.CHEST), new Wanted("shattered_observatory", 'N', Blocks.VAULT),
                                 new Wanted("solar_array", 'C', ModBlocks.COLLECTOR_PEDESTAL.get()),
                                 new Wanted("rift_maw", 'N', ModBlocks.MAW_THROAT.get()),
-                                new Wanted("constellation_maze", 'N', ModBlocks.MAZE_TELESCOPE.get()))) {
+                                new Wanted("constellation_maze", 'N', ModBlocks.MAZE_TELESCOPE.get()),
+                                new Wanted("resonant_spire", 'G', Blocks.BELL))) {
             Area area = areas.get(w.biome());
             BlockPos from = area != null ? area.centre : BlockPos.ZERO;
             net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tag = net.minecraft.tags.TagKey.create(

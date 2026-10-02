@@ -320,8 +320,196 @@ TEXTURES += [
 ]
 
 
+# ------------------------------------------------------------------ Batch C: the Resonance Vault's treasures
+# Armour trim textures are greyscale in the trim palette's key (224, 192, 160, 128...) and get
+# recoloured per material by the game (the .mcmeta names the palette).
+from PIL import Image  # noqa: E402
+
+TRIM_KEY = [224, 192, 160, 128, 96]
+
+
+def _grey(img, x, y, i):
+    v = TRIM_KEY[i]
+    img.putpixel((x, y), (v, v, v, 255))
+
+
+def eclipse_trim():
+    """The Eclipse trim (humanoid layer): a ring with its dark disc across the chest, a crescent on the
+    brow, bands round the arms and boots."""
+    img = Image.new("RGBA", (64, 32), (0, 0, 0, 0))
+    # Chest: the eclipse - a ring, brighter on the upper left, at the middle of the body's front (20..27, 20..31).
+    cx, cy = 23.5, 24.5
+    for x in range(20, 28):
+        for y in range(20, 30):
+            d = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5
+            if 2.2 <= d <= 3.3:
+                _grey(img, x, y, 0 if (x < cx and y < cy) else 1 if x < cx or y < cy else 2)
+    for x in range(20, 28):        # the hem
+        _grey(img, x, 31, 2)
+    for x in (16, 17, 18, 19, 28, 29, 30, 31):   # the sides of the hem
+        _grey(img, x, 31, 3)
+    # Brow: a crescent across the helmet's front (8..15, 8..15).
+    for x, y, i in ((9, 9, 1), (10, 10, 0), (11, 10, 0), (12, 10, 0), (13, 10, 0), (14, 9, 1), (10, 9, 2), (13, 9, 2)):
+        _grey(img, x, y, i)
+    # Arms: a band round each arm near the shoulder (front 44..47, sides 40..43 and 48..51, back 52..55).
+    for x in range(40, 56):
+        _grey(img, x, 22, 1 if 44 <= x < 48 else 2)
+    # Boots: a band near the bottom of the legs (front 4..7, sides 0..3 and 8..11, back 12..15).
+    for x in range(0, 16):
+        _grey(img, x, 29, 1 if 4 <= x < 8 else 2)
+        if 4 <= x < 8:
+            _grey(img, x, 30, 3)
+    return img
+
+
+def eclipse_trim_leggings():
+    """The Eclipse trim (leggings layer): a belt with a small ring at the buckle, and rings at the knees."""
+    img = Image.new("RGBA", (64, 32), (0, 0, 0, 0))
+    for x in range(16, 40):
+        _grey(img, x, 27, 1 if 20 <= x < 28 else 2)
+    for (x, y, i) in ((23, 26, 0), (24, 26, 0), (22, 27, 0), (25, 27, 0), (23, 28, 1), (24, 28, 1)):
+        _grey(img, x, y, i)
+    for x in range(0, 16):
+        _grey(img, x, 25, 1 if 4 <= x < 8 else 3)
+    return img
+
+
+def eclipse_template():
+    """The Eclipse armour trim template: a tablet of Nightstone with a teal eclipse cut into it."""
+    rows = [
+        "................",
+        "......oooo......",
+        "....oossssoo....",
+        "...ossmmmmsso...",
+        "..osmmddddmmso..",
+        "..osmdTTTTdmso..",
+        ".osmdTtkktTdmso.",
+        ".osmdTkkkkTdmso.",
+        ".osmdTkkkkTdmso.",
+        ".osmdTtkktTdmso.",
+        "..osmdTTTTdmso..",
+        "..osmmddddmmso..",
+        "...ossmmmmsso...",
+        "....oossssoo....",
+        "......oooo......",
+        "................",
+    ]
+    return from_map(rows, {"o": hexc("120e1a"), "s": hexc("3a3450"), "m": hexc("2a2440"), "d": hexc("1c1830"),
+                           "T": hexc("5fe0d0"), "t": hexc("bffff4"), "k": hexc("0a0810")})
+
+
+def _scroll(glyph):
+    """A banner pattern item: a rolled parchment with the pattern's glyph on it, like vanilla's."""
+    base = [
+        "................",
+        "..hhhhhhhhhhhh..",
+        ".hrrrrrrrrrrrrh.",
+        "..pppppppppppp..",
+        "..pPPPPPPPPPPp..",
+        "..pPPPPPPPPPPp..",
+        "..pPPPPPPPPPPp..",
+        "..pPPPPPPPPPPp..",
+        "..pPPPPPPPPPPp..",
+        "..pPPPPPPPPPPp..",
+        "..pPPPPPPPPPPp..",
+        "..pPPPPPPPPPPp..",
+        "..pPPPPPPPPPPp..",
+        "..pppppppppppp..",
+        ".hrrrrrrrrrrrrh.",
+        "..hhhhhhhhhhhh..",
+    ]
+    img = from_map(base, {"h": hexc("5a3a24"), "r": hexc("8a5a34"), "p": hexc("c8bca0"), "P": hexc("ece4cc")})
+    for y, row in enumerate(glyph):
+        for x, ch in enumerate(row):
+            if ch == "#":
+                put(img, 4 + x, 4 + y, hexc("3a2a50"))
+    return img
+
+
+WYRM_GLYPH = ["..####..", ".#....#.", ".#.##...", ".#..#...", "..##.#..", ".....#..", "...##..."]
+SPIRE_GLYPH = ["...##...", "...##...", "..####..", "..#..#..", "..####..", ".##..##.", "########"]
+
+
+def _banner(mask, shield=False):
+    """A banner (64x64) or shield (64x64) pattern: white where the pattern is, on the flag's front and
+    back faces. `mask` is drawn scaled to the face."""
+    img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    fw, fh = (12, 22) if shield else (20, 40)
+    faces = [(1, 1)] if shield else [(1, 1), (22, 1)]
+    mh, mw = len(mask), len(mask[0])
+    for ox, oy in faces:
+        for y in range(fh):
+            for x in range(fw):
+                if mask[y * mh // fh][x * mw // fw] == "#":
+                    img.putpixel((ox + x, oy + y), (255, 255, 255, 255))
+    return img
+
+
+# Banner masks, 10 wide x 20 tall: a serpent coiled down the banner; a tower with a bell in it.
+WYRM_MASK = [
+    "...####...", "..#....#..", "..#.##....", "...#..#...", "....#..#..", ".....#.#..", "...##..#..",
+    "..#...#...", "..#..#....", "...##.....", "....#.....", "...#..##..", "..#..#..#.", "..#.#...#.",
+    "...#...#..", "....###...", "..........", "..........", "..........", "..........",
+]
+SPIRE_MASK = [
+    "....##....", "....##....", "...####...", "...#..#...", "...####...", "...#..#...", "...#..#...",
+    "...#.##...", "..##..##..", "..#....#..", "..#.##.#..", "..#.##.#..", "..#....#..", ".##....##.",
+    ".#..##..#.", ".#..##..#.", ".#......#.", "##########", "##########", "..........",
+]
+
+
+TEXTURES += [
+    ("trims/entity/humanoid/eclipse.png", eclipse_trim),
+    ("trims/entity/humanoid_leggings/eclipse.png", eclipse_trim_leggings),
+    ("item/eclipse_armor_trim_smithing_template.png", eclipse_template),
+    ("item/wyrm_banner_pattern.png", lambda: _scroll(WYRM_GLYPH)),
+    ("item/spire_banner_pattern.png", lambda: _scroll(SPIRE_GLYPH)),
+    ("entity/banner/wyrm.png", lambda: _banner(WYRM_MASK)),
+    ("entity/banner/spire.png", lambda: _banner(SPIRE_MASK)),
+    ("entity/shield/wyrm.png", lambda: _banner(WYRM_MASK, shield=True)),
+    ("entity/shield/spire.png", lambda: _banner(SPIRE_MASK, shield=True)),
+]
+# Trim textures name the palette they're recoloured with.
+MCMETA = {
+    "trims/entity/humanoid/eclipse.png": {"palette": {"base_palette": "trim_base"}},
+    "trims/entity/humanoid_leggings/eclipse.png": {"palette": {"base_palette": "trim_base"}},
+}
+
+
+# The Resonant Key: a key of Glimmer Crystal with a bell-shaped bow.
+KEY = [
+    "................",
+    "....hHHh........",
+    "...hTttTh.......",
+    "..hTt..tTh......",
+    "..hT....Th......",
+    "..hTt..tTh......",
+    "...hTttTh.......",
+    "....hTTh........",
+    ".....hTh........",
+    ".....hTThhh.....",
+    ".....hTTTTTh....",
+    ".....hTh.hTh....",
+    ".....hTThhh.....",
+    ".....hTTTh......",
+    "......hhh.......",
+    "................",
+]
+
+
+def resonant_key():
+    return from_map(KEY, {"h": hexc("0e3a3c"), "H": hexc("1e6a68"), "T": hexc("3fb8b0"), "t": hexc("c8fff6")})
+
+
+TEXTURES += [("item/resonant_key.png", resonant_key)]
+
+
 if __name__ == "__main__":
     out = Path(__file__).resolve().parents[2] / "src/main/resources/assets/astralend/textures"
+    import json
     for rel, make in TEXTURES:
+        (out / rel).parent.mkdir(parents=True, exist_ok=True)
         make().save(out / rel)
         print("wrote", rel)
+    for rel, meta in MCMETA.items():
+        (out / (rel + ".mcmeta")).write_text(json.dumps(meta, indent=2) + "\n")

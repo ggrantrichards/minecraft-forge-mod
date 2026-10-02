@@ -49,6 +49,20 @@ public final class ModItems {
     // Phase 10: steers a Drift Whale.
     // Phase 10: caught drifting up through an Upwell; brews the Potion of Upwelling.
     public static final RegistryObject<Item> UPWELL_MOTE = simple("upwell_mote");
+    // Dropped by the Spire Wyrm; opens the Resonance Vault at the top of its spire.
+    public static final RegistryObject<Item> RESONANT_KEY = register("resonant_key", Item::new,
+        new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.RARE));
+    // Phase 10: the Resonance Vault's treasures - two banner patterns and an armour trim.
+    public static final net.minecraft.tags.TagKey<net.minecraft.world.level.block.entity.BannerPattern> WYRM_PATTERN = patternTag("wyrm");
+    public static final net.minecraft.tags.TagKey<net.minecraft.world.level.block.entity.BannerPattern> SPIRE_PATTERN = patternTag("spire");
+    public static final RegistryObject<Item> WYRM_BANNER_PATTERN = register("wyrm_banner_pattern", Item::new,
+        new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE)
+            .delayedComponent(net.minecraft.core.component.DataComponents.PROVIDES_BANNER_PATTERNS, context -> context.getOrThrow(WYRM_PATTERN)));
+    public static final RegistryObject<Item> SPIRE_BANNER_PATTERN = register("spire_banner_pattern", Item::new,
+        new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE)
+            .delayedComponent(net.minecraft.core.component.DataComponents.PROVIDES_BANNER_PATTERNS, context -> context.getOrThrow(SPIRE_PATTERN)));
+    public static final RegistryObject<Item> ECLIPSE_ARMOR_TRIM_SMITHING_TEMPLATE = register("eclipse_armor_trim_smithing_template",
+        net.minecraft.world.item.SmithingTemplateItem::createArmorTrimTemplate, new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON));
     public static final RegistryObject<Item> CHORUS_FLOWER_ON_A_STICK = register("chorus_flower_on_a_stick",
         com.ggrantrichards.astralend.item.ChorusFlowerOnAStickItem::new, new Item.Properties().durability(30));
     public static final RegistryObject<Item> STAR_CHART = register("star_chart", StarChartItem::new, new Item.Properties().stacksTo(1));
@@ -92,6 +106,12 @@ public final class ModItems {
     public static final RegistryObject<Item> DRIFT_WHALE_SPAWN_EGG = spawnEgg("drift_whale", ModEntities.DRIFT_WHALE);
     public static final RegistryObject<Item> WATCHER_SPAWN_EGG = spawnEgg("watcher", ModEntities.WATCHER);
     public static final RegistryObject<Item> LIVE_COMET_SPAWN_EGG = spawnEgg("live_comet", ModEntities.LIVE_COMET);
+    public static final RegistryObject<Item> SPIRE_WYRM_SPAWN_EGG = spawnEgg("spire_wyrm", ModEntities.SPIRE_WYRM);
+
+    private static net.minecraft.tags.TagKey<net.minecraft.world.level.block.entity.BannerPattern> patternTag(String name) {
+        return net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.BANNER_PATTERN,
+            net.minecraft.resources.Identifier.fromNamespaceAndPath(AstralEnd.MODID, "pattern_item/" + name));
+    }
 
     private static RegistryObject<Item> register(String name, Function<Item.Properties, Item> factory, Item.Properties properties) {
         return ITEMS.register(name, () -> factory.apply(properties.setId(ITEMS.key(name))));

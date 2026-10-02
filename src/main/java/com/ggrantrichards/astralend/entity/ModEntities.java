@@ -53,6 +53,11 @@ public final class ModEntities {
         () -> EntityType.Builder.of(com.ggrantrichards.astralend.comet.LiveComet::new, MobCategory.MISC).sized(2.2F, 2.2F).eyeHeight(1.1F)
             .fireImmune().clientTrackingRange(16).updateInterval(1).build(ENTITY_TYPES.key("live_comet")));
 
+    // Phase 10: the Spire Wyrm, mini-boss of the Resonant Spires. A long body, seen from far off.
+    public static final RegistryObject<EntityType<SpireWyrm>> SPIRE_WYRM = ENTITY_TYPES.register("spire_wyrm",
+        () -> EntityType.Builder.of(SpireWyrm::new, MobCategory.MONSTER).sized(2.0F, 2.0F).eyeHeight(1.2F).fireImmune()
+            .clientTrackingRange(16).updateInterval(1).build(ENTITY_TYPES.key("spire_wyrm")));
+
     public static void register() {
         EntityAttributeCreationEvent.BUS.addListener(event -> {
             event.put(POLLINATOR.get(), EndPollinator.createAttributes().build());
@@ -64,6 +69,7 @@ public final class ModEntities {
             event.put(DRIFT_WHALE.get(), DriftWhale.createAttributes().build());
             event.put(WATCHER.get(), Watcher.createAttributes().build());
             event.put(LIVE_COMET.get(), com.ggrantrichards.astralend.comet.LiveComet.createAttributes().build());
+            event.put(SPIRE_WYRM.get(), SpireWyrm.createAttributes().build());
         });
         SpawnPlacementRegisterEvent.BUS.addListener(event -> {
             var replace = SpawnPlacementRegisterEvent.Operation.REPLACE;
