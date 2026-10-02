@@ -4,13 +4,16 @@ exec > >(tee /tmp/probe.txt) 2>&1
 SRC=$(find .gradle/mavenizer/repo -name '*-sources.jar' -size +1M | head -1)
 mkdir -p /tmp/src && unzip -qo "$SRC" -d /tmp/src
 cd /tmp/src
-F=$(grep -rl "class EnderMan " --include=*.java . | head -1); echo "== $F"
+find . -iname "*enderman*.java" | head
+F=$(find . -iname "EnderMan.java" -o -iname "Enderman.java" | head -1); echo "== $F"
 grep -n "teleport\|EntityTeleportEvent\|ForgeEventFactory" $F | head -20
-grep -n "onEnderTeleport\|EntityTeleportEvent" net/minecraftforge/event/ForgeEventFactory.java | head
-F=$(find . -name LivingEntity.java | head -1); grep -n "public boolean randomTeleport" -A12 $F | head -30
-F=$(find . -name ThrownEnderpearl.java | head -1); grep -n "EntityTeleportEvent\|teleport" $F | head
-echo "== bell game event / jukebox song sound json"
-F=$(find . -name LanternBlock.java | head -1); grep -n "HANGING\|public static\|canSurvive" $F | head
-F=$(find . -name AmethystClusterBlock.java | head -1); grep -n "public AmethystClusterBlock\|FACING\|WATERLOGGED" $F | head -5
-F=$(find . -name MobEffect.java | head -1); grep -n "public void onEffectAdded\|onMobRemoved\|onEffectStarted\|applyEffectTick\|shouldApplyEffectTickThisTick\|onMobHurt" $F | head
+F=$(find . -name LivingEntity.java | head -1); sed -n 3803,3840p $F | grep -n "Event\|post" 
+echo "== slime bounce"
+grep -rn "isSuppressingBounce\|bounceUp\|updateEntityMovementAfterFallOn" net/minecraft/world/level/block/Block.java net/minecraft/world/level/block/BedBlock.java net/minecraft/world/entity/Entity.java | head
+grep -rn "SLIME_BLOCK\|BlockTags.BOUNCE\|bounce" net/minecraft/world/entity/Entity.java | head
+grep -rn "class .*Block.*bounce\|BOUNCY\|bounciness" net/minecraft/tags/BlockTags.java net/minecraft/world/level/block/state/BlockBehaviour.java | head
+echo "== speedFactor / jumpFactor"
+grep -n "speedFactor\|jumpFactor" net/minecraft/world/level/block/state/BlockBehaviour.java | head -4
+echo "== effect apply / getGravity override"
+grep -rn "LEVITATION" net/minecraft/world/entity/LivingEntity.java | head
 exit 0
