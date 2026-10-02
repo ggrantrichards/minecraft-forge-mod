@@ -66,7 +66,7 @@ public class SpireWyrm extends Monster {
 
     private final SpireWyrmPart[] parts = new SpireWyrmPart[SEGMENTS];
     private final ArrayDeque<Vec3> trail = new ArrayDeque<>();
-    private final ServerBossEvent bossEvent = (ServerBossEvent) new ServerBossEvent(this.getDisplayName(),
+    private final ServerBossEvent bossEvent = (ServerBossEvent) new ServerBossEvent(java.util.UUID.randomUUID(), this.getDisplayName(),
         BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.NOTCHED_10).setDarkenScreen(false);
     private @Nullable Vec3 home;
     private double angle;
@@ -133,11 +133,6 @@ public class SpireWyrm extends Monster {
         for (int i = 0; i < SEGMENTS; i++) {
             this.parts[i].setId(id + i + 1);
         }
-    }
-
-    @Override
-    public AABB getBoundingBoxForCulling() {
-        return this.getBoundingBox().inflate(SEGMENTS * SEGMENT_LENGTH);
     }
 
     // ---- movement
@@ -356,7 +351,9 @@ public class SpireWyrm extends Monster {
                 if (player.hurtServer(level, this.damageSources().mobAttack(this), i == 0 ? 8.0F : tail ? 7.0F : 5.0F)) {
                     Vec3 away = player.position().subtract(boxes.get(i).getCenter()).multiply(1.0, 0.0, 1.0).normalize();
                     player.push(away.x * (tail ? 1.4 : 0.8), 0.4, away.z * (tail ? 1.4 : 0.8));
-                    player.hurtMarked = true;
+                    if (player instanceof ServerPlayer sp) {
+                        sp.connection.send(new net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket(sp));
+                    }
                 }
             }
         }
