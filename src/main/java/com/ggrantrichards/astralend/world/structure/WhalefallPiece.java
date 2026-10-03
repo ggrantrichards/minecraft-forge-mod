@@ -146,7 +146,7 @@ public class WhalefallPiece extends StructurePiece {
     @Override
     public void postProcess(WorldGenLevel level, StructureManager structures, ChunkGenerator generator, RandomSource random,
                             BoundingBox chunk, ChunkPos chunkPos, BlockPos reference) {
-        RandomSource rnd = RandomSource.create(this.seed ^ chunkPos.toLong());
+        RandomSource rnd = RandomSource.create(this.seed ^ (chunkPos.getMiddleBlockX() * 341873128712L + chunkPos.getMiddleBlockZ() * 132897987541L));
         BlockState bone = ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState();
         // The bones.
         for (Capsule c : this.bones) {

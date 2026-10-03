@@ -41,7 +41,7 @@ public class WhalefallStructure extends Structure {
         }
         int y0 = minY + 42 + context.random().nextInt(24);   // at the height of the islands around it
         BlockPos origin = new BlockPos(cx, y0, cz);
-        long seed = context.seed() ^ context.chunkPos().toLong();
+        long seed = context.seed() ^ (context.chunkPos().getMiddleBlockX() * 341873128712L + context.chunkPos().getMiddleBlockZ() * 132897987541L);
         return Optional.of(new GenerationStub(origin, builder -> builder.addPiece(new WhalefallPiece(origin, alongZ, seed))));
     }
 
