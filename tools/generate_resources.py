@@ -1961,7 +1961,16 @@ def content_phase10():
     tracks = {"music.nebula_fields": "music/ambient_relaxing_loop", "music.chorus_thicket": "music/heavenly_loop",
               "music.glimmering_crags": "music/space_music", "music.outer_end": "music/out_there",
               "music_disc.observing_the_star": "records/observing_the_star"}
-    write(ASSETS / "sounds.json", {event: {"sounds": [{"name": rid(path), "stream": True}]} for event, path in tracks.items()})
+    sounds = {event: {"sounds": [{"name": rid(path), "stream": True}]} for event, path in tracks.items()}
+    # The Spire Wyrm's voice (tools/sounds/wyrm_sounds.py): each sound and how many variants it has.
+    for name, count in {"roar": 2, "ambient": 3, "hurt": 3, "death": 1, "charge": 2, "breath": 2, "slam": 2, "snore": 2}.items():
+        sounds[f"entity.spire_wyrm.{name}"] = {"subtitle": f"subtitles.{NS}.entity.spire_wyrm.{name}",
+                                                "sounds": [rid(f"mob/spire_wyrm/{name}{i}") for i in range(1, count + 1)]}
+    lang.update({f"subtitles.{NS}.entity.spire_wyrm.roar": "Spire Wyrm roars", f"subtitles.{NS}.entity.spire_wyrm.ambient": "Spire Wyrm growls",
+                 f"subtitles.{NS}.entity.spire_wyrm.hurt": "Spire Wyrm hurts", f"subtitles.{NS}.entity.spire_wyrm.death": "Spire Wyrm dies",
+                 f"subtitles.{NS}.entity.spire_wyrm.charge": "Spire Wyrm rears up", f"subtitles.{NS}.entity.spire_wyrm.breath": "Spire Wyrm breathes",
+                 f"subtitles.{NS}.entity.spire_wyrm.slam": "Spire Wyrm crashes down", f"subtitles.{NS}.entity.spire_wyrm.snore": "Spire Wyrm snores"})
+    write(ASSETS / "sounds.json", sounds)
     write(DATA / "jukebox_song" / "observing_the_star.json", {
         "sound_event": rid("music_disc.observing_the_star"),
         "description": {"translate": f"jukebox_song.{NS}.observing_the_star"},

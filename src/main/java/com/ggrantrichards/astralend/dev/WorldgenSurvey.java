@@ -295,6 +295,7 @@ public final class WorldgenSurvey {
             MechanicsSurvey.checkContent(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkSpawnEggs(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkHandBuiltPortal(end, failures, WorldgenSurvey::log);
+            MechanicsSurvey.checkWyrmFight(end, failures, WorldgenSurvey::log);
         }
         writeViewpoints(areas, end, structures);
         checkNebula(areas.get('N'), failures);

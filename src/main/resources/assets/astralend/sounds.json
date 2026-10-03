@@ -38,5 +38,62 @@
         "stream": true
       }
     ]
+  },
+  "entity.spire_wyrm.roar": {
+    "subtitle": "subtitles.astralend.entity.spire_wyrm.roar",
+    "sounds": [
+      "astralend:mob/spire_wyrm/roar1",
+      "astralend:mob/spire_wyrm/roar2"
+    ]
+  },
+  "entity.spire_wyrm.ambient": {
+    "subtitle": "subtitles.astralend.entity.spire_wyrm.ambient",
+    "sounds": [
+      "astralend:mob/spire_wyrm/ambient1",
+      "astralend:mob/spire_wyrm/ambient2",
+      "astralend:mob/spire_wyrm/ambient3"
+    ]
+  },
+  "entity.spire_wyrm.hurt": {
+    "subtitle": "subtitles.astralend.entity.spire_wyrm.hurt",
+    "sounds": [
+      "astralend:mob/spire_wyrm/hurt1",
+      "astralend:mob/spire_wyrm/hurt2",
+      "astralend:mob/spire_wyrm/hurt3"
+    ]
+  },
+  "entity.spire_wyrm.death": {
+    "subtitle": "subtitles.astralend.entity.spire_wyrm.death",
+    "sounds": [
+      "astralend:mob/spire_wyrm/death1"
+    ]
+  },
+  "entity.spire_wyrm.charge": {
+    "subtitle": "subtitles.astralend.entity.spire_wyrm.charge",
+    "sounds": [
+      "astralend:mob/spire_wyrm/charge1",
+      "astralend:mob/spire_wyrm/charge2"
+    ]
+  },
+  "entity.spire_wyrm.breath": {
+    "subtitle": "subtitles.astralend.entity.spire_wyrm.breath",
+    "sounds": [
+      "astralend:mob/spire_wyrm/breath1",
+      "astralend:mob/spire_wyrm/breath2"
+    ]
+  },
+  "entity.spire_wyrm.slam": {
+    "subtitle": "subtitles.astralend.entity.spire_wyrm.slam",
+    "sounds": [
+      "astralend:mob/spire_wyrm/slam1",
+      "astralend:mob/spire_wyrm/slam2"
+    ]
+  },
+  "entity.spire_wyrm.snore": {
+    "subtitle": "subtitles.astralend.entity.spire_wyrm.snore",
+    "sounds": [
+      "astralend:mob/spire_wyrm/snore1",
+      "astralend:mob/spire_wyrm/snore2"
+    ]
   }
 }

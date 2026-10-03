@@ -763,29 +763,44 @@ def resonant_spire(seed):
     for (dx, dz) in ((-5, 4), (4, -5)):
         t.entity(c + dx + 0.5, 4, c + dz + 0.5, {"id": "minecraft:shulker", "AttachFace": Byte(0),
                                                  "PersistenceRequired": Byte(1), "Color": Byte(9)})
-    # The nest: a floor across the top of the shaft with a hole in the middle, a ring of crystal
-    # spikes around it, and the Resonance Vault on a dais.
+    # The top: a floor across the shaft (the arena), the Wyrm's nest in the middle - a low rim of
+    # bricks and old bones round a hollow it lies coiled in - four bells on posts round the edge
+    # (ring one as the Wyrm passes and it crashes down, stunned), crystal spikes, and the Resonance
+    # Vault on a dais.
     taper = 1.5
+    top_r = R_OUT - taper
     for x in range(size):
         for z in range(size):
             d = math.hypot(x - c, z - c)
-            if 3.5 <= d <= R_OUT - taper:
-                t.set(x, nest, z, bricks if d > R_IN - taper - 0.5 else polished)
+            if d <= top_r:
+                t.set(x, nest, z, bricks if d > R_IN - taper - 0.5 else (polished if (x + z) % 3 else chiseled))
             for y in range(nest + 1, height):
-                if d <= R_OUT - taper:
+                if d <= top_r:
                     t.set(x, y, z, "minecraft:air")
+    for x in range(size):
+        for z in range(size):
+            d = math.hypot(x - c, z - c)
+            if 5.0 <= d < 6.0:
+                t.set(x, nest + 1, z, a("leviathan_bone_block") + "[axis=y]" if rnd.random() < 0.3 else bricks)
+            elif d < 5.0:
+                t.set(x, nest, z, stone if rnd.random() < 0.6 else polished)    # the worn hollow
     for q in range(8):
         ang = q * math.tau / 8 + 0.2
-        sx, sz = round(c + math.cos(ang) * (R_OUT - taper - 0.5)), round(c + math.sin(ang) * (R_OUT - taper - 0.5))
+        sx, sz = round(c + math.cos(ang) * (top_r - 0.5)), round(c + math.sin(ang) * (top_r - 0.5))
         tall = rnd.randint(5, 11)
         for y in range(nest + 1, nest + 1 + tall):
             t.set(sx, y, sz, crystal if y > nest + 2 else bricks)
-    vx, vz = c, c - 7
+    for q in range(4):
+        ang = math.pi / 4 + q * math.pi / 2
+        bx, bz = round(c + math.cos(ang) * 9.5), round(c + math.sin(ang) * 9.5)
+        t.set(bx, nest + 1, bz, chiseled)
+        t.set(bx, nest + 2, bz, "minecraft:bell[attachment=floor,facing=north,powered=false]")
+    vx, vz = c, c - 9
     t.fill(vx - 1, nest + 1, vz - 1, vx + 1, nest + 1, vz + 1, chiseled)
     t.set(vx, nest + 2, vz, f"minecraft:vault[facing=south,ominous=false,vault_state=inactive]",
           nbt={"config": {"loot_table": a("chests/resonance_vault"), "key_item": {"id": a("resonant_key"), "count": Int(1)}}})
-    # The Wyrm itself, curled above its nest.
-    t.entity(c + 0.5, nest + 6, c + 0.5, {"id": a("spire_wyrm"), "PersistenceRequired": Byte(1)})
+    # The Wyrm itself, asleep in its nest.
+    t.entity(c + 0.5, nest + 1, c + 0.5, {"id": a("spire_wyrm"), "PersistenceRequired": Byte(1)})
     return t
 
 

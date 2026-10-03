@@ -72,6 +72,54 @@ final class MechanicsSurvey {
         }
     }
 
+    // The Spire Wyrm's fight, a minute of it against a stand-in player on the platform beside its
+    // nest (in the open sky, so nothing is in the way): it must wake, circle, wind up and dive, lie
+    // grounded, wind up and breathe - and never stray more than 26 blocks from its nest nor sink below
+    // the platform.
+    static void checkWyrmFight(ServerLevel end, List<String> failures, Consumer<String> log) {
+        BlockPos nest = new BlockPos(0, 180, 400);
+        end.getChunk(nest.getX() >> 4, nest.getZ() >> 4);
+        com.ggrantrichards.astralend.entity.SpireWyrm wyrm = ModEntities.SPIRE_WYRM.get().create(end, EntitySpawnReason.COMMAND);
+        if (wyrm == null) {
+            failures.add("Spire Wyrm fight: couldn't create one");
+            return;
+        }
+        wyrm.snapTo(nest.getX() + 0.5, nest.getY(), nest.getZ() + 0.5, 0.0F, 0.0F);
+        end.addFreshEntity(wyrm);
+        net.minecraft.server.level.ServerPlayer stand = net.minecraftforge.common.util.FakePlayerFactory.getMinecraft(end);
+        stand.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        stand.snapTo(nest.getX() + 6.5, nest.getY(), nest.getZ() + 0.5, 0.0F, 0.0F);
+        wyrm.fightForTest(stand);
+        java.util.Map<String, Integer> seen = new java.util.LinkedHashMap<>();
+        double far = 0, low = 0;
+        String last = "";
+        try {
+            for (int i = 0; i < 1200; i++) {
+                stand.setHealth(stand.getMaxHealth());
+                wyrm.tick();
+                String phase = wyrm.phase().name();
+                if (!phase.equals(last)) {
+                    seen.merge(phase, 1, Integer::sum);
+                    last = phase;
+                }
+                far = Math.max(far, Math.sqrt(Math.pow(wyrm.getX() - nest.getX() - 0.5, 2) + Math.pow(wyrm.getZ() - nest.getZ() - 0.5, 2)));
+                low = Math.max(low, nest.getY() - wyrm.getY());
+            }
+        } catch (RuntimeException e) {
+            failures.add("Spire Wyrm fight: crashed: " + e);
+        }
+        log.accept(String.format("Spire Wyrm fight: phases %s; furthest from the nest %.1f blocks, lowest %.1f below it", seen, far, low));
+        for (String must : List.of("WAKING", "CIRCLE", "WIND_DIVE", "DIVE", "GROUNDED", "WIND_BREATH", "BREATH")) {
+            if (!seen.containsKey(must)) {
+                failures.add("Spire Wyrm fight: never went through " + must);
+            }
+        }
+        if (far > 28.0 || low > 0.6) {
+            failures.add(String.format("Spire Wyrm fight: strayed %.1f blocks from its nest or %.1f below it", far, low));
+        }
+        wyrm.discard();
+    }
+
     // Every spawn egg, used on the ground the way a player uses it: does the mob appear, and is it
     // still there (and, for the Umbral Stalker, visible) a couple of seconds later?
     static void checkSpawnEggs(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {

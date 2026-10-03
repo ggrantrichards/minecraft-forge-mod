@@ -47,8 +47,17 @@ public class SpireWyrmRenderer extends MobRenderer<SpireWyrm, SpireWyrmRenderer.
             state.pitches[i] = part.getXRot();
         }
         state.headHeight = entity.getBbHeight() / 2.0F;
-        state.stunned = entity.phase() == SpireWyrm.Phase.STUNNED;
-        state.breathing = entity.phase() == SpireWyrm.Phase.BREATH;
+        SpireWyrm.Phase phase = entity.phase();
+        state.stunned = phase == SpireWyrm.Phase.STUNNED || phase == SpireWyrm.Phase.GROUNDED;
+        state.breathing = phase == SpireWyrm.Phase.WIND_BREATH || phase == SpireWyrm.Phase.BREATH || phase == SpireWyrm.Phase.WIND_DIVE;
+        state.asleep = phase == SpireWyrm.Phase.ASLEEP;
+    }
+
+    // Its body trails up to 20 blocks behind its head, so it's drawn whenever any of it could be in
+    // view - not just when the head is (which made the body blink out as the head left the screen).
+    @Override
+    public boolean shouldRender(SpireWyrm entity, net.minecraft.client.renderer.culling.Frustum frustum, double x, double y, double z) {
+        return frustum.isVisible(entity.getBoundingBox().inflate(24.0)) && entity.distanceToSqr(x, y, z) < 256.0 * 256.0;
     }
 
     @Override
@@ -68,6 +77,7 @@ public class SpireWyrmRenderer extends MobRenderer<SpireWyrm, SpireWyrmRenderer.
         public float headHeight;
         public boolean stunned;
         public boolean breathing;
+        public boolean asleep;
     }
 
     public static class Model extends EntityModel<State> {
@@ -102,7 +112,7 @@ public class SpireWyrmRenderer extends MobRenderer<SpireWyrm, SpireWyrmRenderer.
             super.setupAnim(state);
             place(this.head, state, new Vec3(0.0, state.headHeight, 0.0));
             this.head.xRot = state.xRot * Mth.DEG_TO_RAD;
-            float open = state.breathing ? 0.5F + Mth.sin(state.ageInTicks * 0.4F) * 0.1F
+            float open = state.asleep ? 0.0F : state.breathing ? 0.5F + Mth.sin(state.ageInTicks * 0.4F) * 0.1F
                 : state.stunned ? 0.25F : 0.08F + Mth.sin(state.ageInTicks * 0.1F) * 0.06F;
             this.jaw.xRot = open;
             for (int i = 0; i < SpireWyrm.SEGMENTS; i++) {
