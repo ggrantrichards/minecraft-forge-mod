@@ -28,6 +28,34 @@ changelog for each version.
 The sections below run newest first. Older ones describe things as they were at the time; Phase 10
 renamed or removed some of them.
 
+### Phase 11: polish
+
+From playing it, and a full set of automated tests (see [docs/POLISH.md](docs/POLISH.md)):
+
+- **The Remnant is a real place.** It was only a glow in the sky that slid away as you flew toward it.
+  Now a cracked, glowing cinder 40 blocks across hangs high over every Corona, ringed by broken rock
+  and loops of fire. Two rifts lead in to a chamber at its heart, with the star's last ember and a
+  chest. Far off, the sky still shows it, larger than life; fly close and the real thing takes over.
+- **The Corona's ground** has shape now: glazed **Solarite spires**, and **scorch fissures** with charred
+  lips and magma glowing at the bottom.
+- **Rift Maws are colossal.** The skull is 60 blocks across, and its snout and fallen jaw run 80 blocks
+  on, with teeth as long as trees. Inside the cranium is a **hall**: two galleries joined by ladders, a
+  colonnade of bone, light hanging from the vault and an explorers' camp. You get in through the hole
+  at the back where the spine was, or by the eye sockets.
+- **The Spire Wyrm fight is rebuilt.** It has its own voice (no more borrowed dragon roar), sleeps on
+  its nest on the tower top, and stays at its spire. Its slam staggers you rather than throwing you off.
+- **Upwelling turns you upside down.** You fall up onto the underside of whatever is over you and stand
+  there, head down. The view turns over, the mouse and keys follow the screen, and a jump drops you off.
+- **Biomes blend.** The sky and auroras shift over 10-15 blocks as you cross a border, and borders
+  interlock in lobes and patches (vanilla biomes too) instead of running as straight lines.
+- **Each astral biome has its own ambience**: a quiet loop and the odd sound of the place.
+- **Nebula Fields oases**: still ponds with reeds and Lumineshrooms on the banks, and sea pickles glowing
+  on the bed. **The Chorus Thicket** grows in dense groves with clearings between.
+- **Constellation Mazes** are played with a vanilla **spyglass** (one waits in a barrel on the first
+  platform); the Maze Telescope block is gone.
+- **Drift Whales**: you sit on the whale's back, it turns smoothly, and in third person the camera
+  stands clear of its body.
+
 ### Phase 10: the rework
 
 **Cut:** the clockwork Orrery cluster (the Abandoned Orrery, Orrery Bronze and its family, the Orrery
@@ -72,7 +100,8 @@ Heart, Shutters and Lamp, the Orrery Sentinel), and Comet Ice (comets bring vani
 - **The Whalefall** is a landmark now: the skeleton of a Star Leviathan adrift in the void, about 100
   blocks high and 300 long, its skull hollowed into floors and a village built on decks in its ribcage.
 - **Potion of Upwelling**, brewed from **Upwell Motes** that drift up through Upwells: gravity reversed,
-  up to 20 blocks (hit a ceiling and it hurts like a fall), then Slow Falling as it wears off.
+  up to 20 blocks (hit a ceiling and it hurts like a fall), then Slow Falling as it wears off. (Since
+  Phase 11 it turns you upside down, and you can walk on the ceiling.)
 - **Voidgel**: bouncy jelly from island undersides that also gives Slow Falling.
 - **End Chimes** (End Rods and amethyst): light and a low hum; a teleport within 16 blocks rings them,
   and nothing else teleports there for 10 seconds.
@@ -300,9 +329,9 @@ The End has a sky of its own now. These are in-game screenshots taken on every b
 - **Auroras**: slow curtains of light. Green and gold over the Aurora Shallows, a faint violet over
   the Nebula Fields, icy blue over the Comet Wake, pale over the Shattered Observatory, faintest
   in the vanilla End, none at all in the Dark Matter Belt.
-- **The Remnant**, the dim, dying ember of the collapsed star, always hangs over the nearest
-  Corona - low on the horizon from far away, high overhead inside it - so you can always find the
-  Corona (or keep away from it). It brightens before a flare.
+- **The Remnant**, the cinder of the collapsed star, always hangs over the nearest Corona - low on
+  the horizon from far away, high overhead inside it - so you can always find the Corona (or keep
+  away from it). It brightens before a flare. Since Phase 11 it's a real structure you can fly to.
 - Now and then a **far-off comet** streaks across the sky, and very rarely something vast - a
   whale, a ring - drifts across the far distance.
 
