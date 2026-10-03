@@ -755,7 +755,14 @@ public final class WorldgenSurvey {
                     }
                     net.minecraft.world.phys.Vec3 mob = new net.minecraft.world.phys.Vec3(x + 0.5, ground + lift + 0.5, z + 0.5);
                     net.minecraft.world.phys.Vec3 cam = new net.minecraft.world.phys.Vec3(x + 0.5 - d, ground + eye, z + 0.5 - d);
-                    if (clearBetween(end, cam, mob)) {
+                    // the centre of the picture and a fan round it: a pillar beside the line still fills the frame
+                    net.minecraft.world.phys.Vec3 across = new net.minecraft.world.phys.Vec3(0.7071, 0, -0.7071);
+                    boolean clear = true;
+                    for (net.minecraft.world.phys.Vec3 aim : List.of(mob, mob.add(across.scale(2.5)), mob.add(across.scale(-2.5)),
+                            mob.add(0, 1.8, 0), mob.add(0, -0.3, 0))) {
+                        clear &= clearBetween(end, cam, aim);
+                    }
+                    if (clear) {
                         return new BlockPos(x, ground, z);
                     }
                 }
