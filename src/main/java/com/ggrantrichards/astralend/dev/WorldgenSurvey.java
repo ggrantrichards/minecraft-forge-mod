@@ -530,9 +530,10 @@ public final class WorldgenSurvey {
     // The Remnant: its heart (light in Solarite) where the structure starts, high over the Corona, a
     // chamber round it and a way in. Then views: from out in the air beside it, and in the chamber.
     private static void testRemnant(ServerLevel end, BlockPos start, List<String> failures) {
+        // The start is reported at its chunk's corner; the Remnant hangs over the chunk's middle.
         BlockPos heart = null;
         for (int y = end.getMinY() + 120; y < end.getMinY() + 230 && heart == null; y++) {
-            BlockPos p = new BlockPos(start.getX(), y, start.getZ());
+            BlockPos p = new BlockPos(start.getX() + 8, y, start.getZ() + 8);
             if (end.getBlockState(p).is(Blocks.SHROOMLIGHT) && end.getBlockState(p.above(2)).is(ModBlocks.SOLARITE_BLOCK.get())) {
                 heart = p;
             }
@@ -1227,9 +1228,11 @@ public final class WorldgenSurvey {
         if (!enoughLand(area, failures)) {
             return;
         }
-        int scorchedTops = area.tops(ModBlocks.SUNSCORCHED_STONE.get()) + area.tops(ModBlocks.SOLARITE_ORE.get());
+        // Its ground: Sunscorched Stone, its Solarite, and the charred lips and magma of its fissures.
+        int scorchedTops = area.tops(ModBlocks.SUNSCORCHED_STONE.get()) + area.tops(ModBlocks.SOLARITE_ORE.get())
+            + area.tops(ModBlocks.CHARRED_END_STONE.get()) + area.tops(Blocks.MAGMA_BLOCK) + area.tops(ModBlocks.RAW_SOLARITE_BLOCK.get());
         if (scorchedTops < 0.8 * area.landColumnsIn) {
-            failures.add("The Corona: only " + scorchedTops + " of " + area.landColumnsIn + " land columns are topped with Sunscorched Stone");
+            failures.add("The Corona: only " + scorchedTops + " of " + area.landColumnsIn + " land columns are topped with its scorched ground");
         }
         replacesEndStone(area, ModBlocks.CHARRED_END_STONE.get(), failures);
         landCoverage(area, 45, failures);

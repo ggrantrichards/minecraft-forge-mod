@@ -1070,7 +1070,7 @@ def worldgen_phase3():
                 on=[rid("sunscorched_stone"), rid("charred_end_stone")])
     # Phase 11: the Corona's ground has shape - glazed spires and cracks glowing with magma.
     big_feature("corona_solarite_spires", "solarite_spire", rarity=2, heightmap="WORLD_SURFACE_WG")
-    big_feature("corona_scorch_fissures", "scorch_fissure", count=2, heightmap="WORLD_SURFACE_WG")
+    big_feature("corona_scorch_fissures", "scorch_fissure", rarity=2, heightmap="WORLD_SURFACE_WG")
     end_biome("corona", "The Corona", fog="#4a2616", water="#d9823b",
               features_step7=[rid("corona_solarite_deep")],
               features_step4=[rid("corona_solarite_surface")],

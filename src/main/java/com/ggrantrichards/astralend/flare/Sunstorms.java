@@ -370,7 +370,8 @@ public class Sunstorms extends SavedData {
         }
         int y = level.getMinY() + com.ggrantrichards.astralend.world.structure.RemnantStructure.HEIGHT + 5;
         BlockPos remnant = level.findNearestMapStructure(REMNANT, corona, 4, false);
-        return remnant != null ? new BlockPos(remnant.getX(), y, remnant.getZ()) : new BlockPos(corona.getX(), y, corona.getZ());
+        // (A structure is located by its chunk's corner; the Remnant hangs over the chunk's middle.)
+        return remnant != null ? new BlockPos(remnant.getX() + 8, y, remnant.getZ() + 8) : new BlockPos(corona.getX(), y, corona.getZ());
     }
 
     // Also used by the worldgen survey, to aim its screenshot of the Remnant.
