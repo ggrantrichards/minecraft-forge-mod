@@ -254,6 +254,19 @@ known |= {f"{NS}:{f.stem}" for f in (RES / "data" / NS / "recipe").glob("*.json"
 known |= {f"{NS}:{n}" for n in re.findall(r'SERIALIZERS\.register\("([a-z0-9_]+)"', (JAVA / "starforge/StarforgeLoot.java").read_text())}
 known |= {f"{NS}:{f.stem}" for f in (RES / "data" / NS / "loot_modifiers").glob("*.json")}
 # Data-driven registries: banner patterns and trim patterns (their asset ids name their textures).
+# sounds.json: every sound file it names exists, and its subtitles are in the lang file.
+SUBTITLES = set()
+_sounds_file = ASSETS / "sounds.json"
+if _sounds_file.exists():
+    for event, entry in json.loads(_sounds_file.read_text()).items():
+        if "subtitle" in entry:
+            SUBTITLES.add(entry["subtitle"])
+        for sound in entry.get("sounds", []):
+            name = sound["name"] if isinstance(sound, dict) else sound
+            ns, _, path = name.partition(":")
+            if not (ROOT / "src/main/resources/assets" / ns / "sounds" / f"{path}.ogg").exists():
+                err(f"sounds.json: {event} names {name}, but there's no {path}.ogg")
+
 for kind in ("banner_pattern", "trim_pattern", "jukebox_song"):
     known |= {f"{NS}:{f.stem}" for f in (RES / "data" / NS / kind).glob("*.json")}
 # Phase 6: structure templates (data/astralend/structure/*.nbt) and chest loot tables are registered by
@@ -327,7 +340,8 @@ for extra in sorted(set(lang) - {f"block.{NS}.{n}" for n in blocks} - {f"item.{N
                     - {k for k in lang if k.startswith(("flare.astralend.", "maw.astralend.", "maze.astralend.",
                                                         "upgrade.astralend.", "container.astralend.",
                                                         f"block.{NS}.banner.", f"trim_pattern.{NS}.", f"jukebox_song.{NS}."))}
-                    - {f"structure.{NS}.{st.split(':')[1]}" for st in worldgen_ids.get("structure", set())}):
+                    - {f"structure.{NS}.{st.split(':')[1]}" for st in worldgen_ids.get("structure", set())}
+                    - SUBTITLES):
     err(f"lang/en_us.json: {extra} doesn't match anything registered")
 
 if errors:
