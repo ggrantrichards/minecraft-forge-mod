@@ -284,11 +284,27 @@ public class RiftMawPiece extends StructurePiece {
                 result = bone.setValue(RotatedPillarBlock.AXIS, this.coneAxis(c));
             }
         }
-        // The eye sockets: tunnels through the wall, floored, open to the sky.
+        // The eye sockets: great holes through the wall, floored, rimmed in dark stone so they read as
+        // sockets from far off.
         for (int ew : EYE_W) {
-            double d = Math.pow(v - EYE_V, 2) + Math.pow(w - ew, 2);
-            if (Math.abs(u) >= 20 && Math.abs(u) <= 32 && d < 4.2 * 4.2) {
-                result = v <= HIGH_GALLERY ? bone : air;
+            double d = Math.sqrt(Math.pow(v - EYE_V, 2) + Math.pow(w - ew, 2));
+            if (Math.abs(u) >= 20 && Math.abs(u) <= 32) {
+                if (d < 5.2) {
+                    result = v <= HIGH_GALLERY ? bone : air;
+                } else if (d < 6.4 && e >= SHELL && e <= 1.0) {
+                    result = Blocks.POLISHED_BLACKSTONE.defaultBlockState();
+                }
+            }
+        }
+        // Two nostrils on top of the snout, near its tip.
+        for (int s = -1; s <= 1; s += 2) {
+            double d = Math.sqrt(Math.pow(u - s * 5, 2) + Math.pow(w - 70, 2) * 0.6);
+            if (w > 60 && w < 80 && v > snoutTop(w) - 6 && v <= snoutTop(w) + 1) {
+                if (d < 2.3) {
+                    result = air;
+                } else if (d < 3.2 && result != null && result.is(ModBlocks.LEVIATHAN_BONE_BLOCK.get())) {
+                    result = Blocks.POLISHED_BLACKSTONE.defaultBlockState();
+                }
             }
         }
         // The way in at the back, where the spine left the skull.

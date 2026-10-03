@@ -522,6 +522,9 @@ public final class WorldgenSurvey {
         double yaw = Math.toDegrees(Math.atan2(-(maw.throat().getX() - cam.getX()), maw.throat().getZ() - cam.getZ()));
         EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_rift_maw %d.5 %d %d.5 %.1f 12.0 wake",
             cam.getX(), cam.getY(), cam.getZ(), yaw));
+        BlockPos front = maw.throat().relative(out, 150).above(20);
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_rift_maw_front %d.5 %d %d.5 %.1f 6.0",
+            front.getX(), front.getY(), front.getZ(), out.getOpposite().toYRot()));
         BlockPos hall = maw.throat().relative(out.getOpposite(), 52).below(9);
         EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_rift_maw_hall %d.5 %d %d.5 %.1f -12.0",
             hall.getX(), hall.getY(), hall.getZ(), out.toYRot()));
@@ -554,7 +557,9 @@ public final class WorldgenSurvey {
                 rock++;
             }
         }
-        int ground = end.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, heart.getX(), heart.getZ());
+        // The land under it (from the terrain alone: the heightmap would count the Remnant itself).
+        int ground = end.getChunkSource().getGenerator().getBaseHeight(heart.getX() - 30, heart.getZ() - 30,
+            net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG, end, end.getChunkSource().randomState());
         log(String.format("remnant: heart at %s, %d blocks above the ground under it; chamber %d air, %d glowing and %d rock blocks",
             heart.toShortString(), heart.getY() - ground, air, glow, rock));
         if (air < 300 || glow < 500 || rock < 8000) {

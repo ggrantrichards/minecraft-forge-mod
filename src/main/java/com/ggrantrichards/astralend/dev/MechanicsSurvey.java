@@ -114,7 +114,7 @@ final class MechanicsSurvey {
                 failures.add("Spire Wyrm fight: never went through " + must);
             }
         }
-        if (far > 28.0 || low > 0.6) {
+        if (far > 28.0 || low > 1.0) {      // (it lies on the floor, a little below where it nests)
             failures.add(String.format("Spire Wyrm fight: strayed %.1f blocks from its nest or %.1f below it", far, low));
         }
         wyrm.discard();

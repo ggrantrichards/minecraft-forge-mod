@@ -149,6 +149,9 @@ public final class ClientPlaytests {
             player.setHealth(player.getMaxHealth());
             player.getFoodData().setFoodLevel(20);
             player.removeAllEffects();
+            // Nothing but the Wyrm fight is about getting hurt: the rest can't kill the player (a death
+            // screen would stop every scene after it).
+            player.setInvulnerable(!test.name().equals("wyrm_fight"));
             switch (test.name()) {
                 case "whale_ride" -> {
                     ClientScreenshots.Shot s = shot("mob_drift_whale_side");
@@ -219,6 +222,7 @@ public final class ClientPlaytests {
                     ClientScreenshots.Shot s = shot("corona");
                     Vec3 at = s != null ? new Vec3(s.x() + 26, 140, s.z() + 26) : new Vec3(-2750, 140, -1000);
                     put(player, end, at, 0, 20);
+                    player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 600, 0, false, false));
                 }
                 default -> { }
             }
@@ -293,10 +297,9 @@ public final class ClientPlaytests {
             }
             case "upwelling" -> {
                 if (t == 5) {
-                    keys.keyUse.setDown(true);                       // drink it
-                }
-                if (t == 50) {
-                    keys.keyUse.setDown(false);
+                    // As if drunk: the effect, as the potion gives it.
+                    server.execute(() -> server.getPlayerList().getPlayers().get(0).addEffect(
+                        new MobEffectInstance(com.ggrantrichards.astralend.ModEffects.upwelling(), 400)));
                 }
                 keys.keyUp.setDown(t > 120 && t < 220);              // walk along the ceiling
                 if (t >= 160 && t < 200) {
