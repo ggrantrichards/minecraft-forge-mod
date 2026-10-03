@@ -934,6 +934,7 @@ public final class WorldgenSurvey {
         final Map<Block, Integer> in = new HashMap<>();
         final Map<Block, Integer> out = new HashMap<>();
         final Map<Block, Integer> topsIn = new HashMap<>();
+        final Map<Block, Integer> firstIn = new HashMap<>();      // the first block of any kind from the sky down
         final Map<Integer, Integer> surfaceHeightsIn = new HashMap<>();
         final List<BlockPos> anomalies = new ArrayList<>();
         final List<String> profiles = new ArrayList<>();
@@ -958,6 +959,10 @@ public final class WorldgenSurvey {
 
         int tops(Block block) {
             return this.topsIn.getOrDefault(block, 0);
+        }
+
+        int firsts(Block block) {
+            return this.firstIn.getOrDefault(block, 0);
         }
 
         double landChunks() {
@@ -1058,6 +1063,9 @@ public final class WorldgenSurvey {
                             area.landColumnsIn++;
                             area.topsIn.merge(top, 1, Integer::sum);
                         }
+                        if (inside && firstSeen != null) {
+                            area.firstIn.merge(firstSeen, 1, Integer::sum);
+                        }
                     }
                 }
             }
@@ -1116,6 +1124,12 @@ public final class WorldgenSurvey {
         atLeast(area, ModBlocks.LUMINE_CAP.get(), 8, failures);
         atLeast(area, ModBlocks.NEBULA_TUFTS.get(), 20, failures);
         atLeast(area, ModBlocks.NEBULA_TENDRIL.get(), 1, failures);
+        // Oases: water standing on the surface.
+        int water = area.firsts(Blocks.WATER) + area.firsts(Blocks.LILY_PAD);
+        log(String.format("Nebula Fields: %d columns of oasis water (%.1f per chunk)", water, water / Math.max(1.0, area.landChunks())));
+        if (water < area.landChunks()) {
+            failures.add("Nebula Fields: hardly any oases (" + water + " columns of water)");
+        }
         // Where the ground itself is the top block (not a giant mushroom's cap), it should be moss.
         int mossTops = area.tops(ModBlocks.CHORUS_MOSS.get());
         int groundTops = mossTops + area.tops(Blocks.END_STONE);
@@ -1175,6 +1189,13 @@ public final class WorldgenSurvey {
         atLeast(area, ModBlocks.CHORUS_BLOOM.get(), 20, failures);
         atLeast(area, Blocks.CHORUS_PLANT, 1, failures);
         atLeast(area, ModBlocks.CHORUS_MOSS.get(), 40, failures);
+        // Groves, not a carpet: between a quarter and two thirds of the ground under a canopy.
+        int canopy = area.firsts(ModBlocks.CHORUS_BLOOM.get()) + area.firsts(ModBlocks.CHORUS.log().get());
+        double share = 100.0 * canopy / Math.max(1, area.landColumnsIn);
+        log(String.format("Chorus Thicket: %.0f%% of its land under trees", share));
+        if (share < 20 || share > 66) {
+            failures.add(String.format("Chorus Thicket: %.0f%% of its land is under trees (expected groves and clearings, 20-66%%)", share));
+        }
     }
 
     // Phase 10: Nightstone peaks grown through with Glimmer Crystal; Void Crystal under the islands.
