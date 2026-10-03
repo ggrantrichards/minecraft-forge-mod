@@ -34,6 +34,7 @@ import net.minecraft.client.resources.model.sprite.AtlasManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.biome.Biome;
@@ -49,8 +50,9 @@ import org.joml.Vector4f;
 //     after a while;
 //   - auroras: slow curtains of light, strongest over the Ashen Barrens (green and gold), faint violet
 //     over the Nebula Fields, icy over the Comet Wake; none in the Hollow Isles;
-//   - the Remnant, the dim ember of the collapsed star, low over the nearest Corona (the server tells us
-//     where). It brightens before a Sunstorm and blazes during one;
+//   - the Remnant, the cinder of the collapsed star, hanging over the nearest Corona (the server tells us
+//     where; it's a real structure, and close up the real one takes over). It brightens before a
+//     Sunstorm and blazes during one;
 //   - in the Corona during a flare: the sky turns gold and sheets of light roll across it on the wind;
 //   - now and then a far-off comet streaks past, and very rarely something huge - a whale, a ring - drifts
 //     across the far sky.
@@ -365,25 +367,32 @@ public class AstralSkyRenderer extends SkyRenderer {
         }
     }
 
-    // The Remnant, over the nearest Corona: low on the horizon far away, high overhead inside it.
+    // The Remnant, where it really hangs over the nearest Corona: low on the horizon from far away,
+    // high overhead beneath it. Far off it's drawn larger than it is (as the moon is); close enough for
+    // the real thing to be in view, the picture of it fades away and leaves the real one.
     private void remnant(Quads quads, FlareState flare, float intensity) {
-        double dx = flare.remnantX() - this.camera.x;
-        double dz = flare.remnantZ() - this.camera.z;
-        double distance = Math.sqrt(dx * dx + dz * dz);
+        double dx = flare.remnantX() + 0.5 - this.camera.x;
+        double dy = flare.remnantY() + 0.5 - this.camera.y;
+        double dz = flare.remnantZ() + 0.5 - this.camera.z;
+        double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        float view = Minecraft.getInstance().options.getEffectiveRenderDistance() * 16.0F;
+        float fade = (float) Mth.clamp((distance - view * 0.75) / (view * 0.45), 0.0, 1.0);
+        if (fade <= 0.0F || distance < 1.0) {
+            return;
+        }
+        Vector3f dir = new Vector3f((float) (dx / distance), (float) (dy / distance), (float) (dz / distance));
         float closeness = (float) Mth.clamp(1.0 - (distance - 300.0) / 3000.0, 0.0, 1.0);
-        float elevation = (float) Math.toRadians(Mth.lerp(this.corona, 7.0F + 33.0F * closeness, 52.0F));
-        float yaw = distance < 1.0 ? 0.0F : (float) Math.atan2(dz, dx);
-        Vector3f dir = new Vector3f(Mth.cos(yaw) * Mth.cos(elevation), Mth.sin(elevation), Mth.sin(yaw) * Mth.cos(elevation));
         float pulse = 1.0F + 0.05F * Mth.sin((float) this.time * 0.02F);
-        float size = (7.0F + 9.0F * closeness + 6.0F * this.corona) * pulse * (1.0F + 0.25F * intensity);
-        float glow = 0.3F + 0.7F * intensity;
+        float real = (float) (DISTANCE * 22.0 / distance);
+        float size = Math.max(real, 7.0F + 9.0F * closeness) * pulse * (1.0F + 0.25F * intensity);
+        float glow = (0.3F + 0.7F * intensity) * fade;
         quads.group(REMNANT_FLARE);
         float haloSize = size * (1.7F + 1.1F * intensity);
         quads.sprite(dir, haloSize, haloSize, 0.0F, 0, 0, 1, 1,
             argb(Math.min(1.0F, glow), 1.0F, 0.75F, 0.45F));
         float bright = 0.75F + 0.25F * intensity;
         quads.group(REMNANT);
-        quads.sprite(dir, size, size, 0.0F, 0, 0, 1, 1, argb(1.0F, bright, 0.55F + 0.45F * intensity, 0.5F + 0.5F * intensity));
+        quads.sprite(dir, size, size, 0.0F, 0, 0, 1, 1, argb(fade, bright, 0.55F + 0.45F * intensity, 0.5F + 0.5F * intensity));
     }
 
     // Sheets of flare light rolling across the Corona's sky with the wind.

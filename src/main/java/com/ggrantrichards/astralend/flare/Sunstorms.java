@@ -237,7 +237,7 @@ public class Sunstorms extends SavedData {
         for (ServerPlayer player : level.players()) {
             BlockPos remnant = this.remnantFor(level, player, force);
             FlareNetwork.send(player, new FlareState(this.phase, this.ticksLeft, this.phaseLength, this.windYaw,
-                remnant != null, remnant != null ? remnant.getX() : 0, remnant != null ? remnant.getZ() : 0));
+                remnant != null, remnant != null ? remnant.getX() : 0, remnant != null ? remnant.getY() : 0, remnant != null ? remnant.getZ() : 0));
         }
     }
 
@@ -337,8 +337,10 @@ public class Sunstorms extends SavedData {
 
     // ------------------------------------------------------------------ where the Remnant hangs
 
-    // The Remnant hangs over the nearest Corona. Found from the biome layout itself (no chunks are
-    // generated), searching outward in rings; looked up again only when the player has moved far.
+    // The Remnant hangs over the nearest Corona: the nearest Corona is found from the biome layout
+    // itself (no chunks are generated), searching outward in rings, then the Remnant structure nearest
+    // to it - a real place, so the sky shows it where it truly is. Looked up again only when the player
+    // has moved far.
     private BlockPos remnantFor(ServerLevel level, ServerPlayer player, boolean force) {
         UUID id = player.getUUID();
         BlockPos here = player.blockPosition();
@@ -346,7 +348,7 @@ public class Sunstorms extends SavedData {
         if (!force && from != null && from.distSqr(here) < 256.0 * 256.0) {
             return this.remnants.get(id);
         }
-        BlockPos found = nearestCorona(level, here);
+        BlockPos found = nearestRemnant(level, here);
         this.remnantSearchedFrom.put(id, here);
         if (found != null) {
             this.remnants.put(id, found);
@@ -354,6 +356,21 @@ public class Sunstorms extends SavedData {
             this.remnants.remove(id);
         }
         return found;
+    }
+
+    public static final net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> REMNANT =
+        net.minecraft.tags.TagKey.create(Registries.STRUCTURE, net.minecraft.resources.Identifier.fromNamespaceAndPath(AstralEnd.MODID, "remnant"));
+
+    // The Remnant over the Corona nearest `from` (its middle), or the middle of that Corona's sky if
+    // there's no Remnant built for it.
+    public static BlockPos nearestRemnant(ServerLevel level, BlockPos from) {
+        BlockPos corona = nearestCorona(level, from);
+        if (corona == null) {
+            return null;
+        }
+        int y = level.getMinY() + com.ggrantrichards.astralend.world.structure.RemnantStructure.HEIGHT + 5;
+        BlockPos remnant = level.findNearestMapStructure(REMNANT, corona, 4, false);
+        return remnant != null ? new BlockPos(remnant.getX(), y, remnant.getZ()) : new BlockPos(corona.getX(), y, corona.getZ());
     }
 
     // Also used by the worldgen survey, to aim its screenshot of the Remnant.

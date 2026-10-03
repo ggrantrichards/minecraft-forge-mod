@@ -840,6 +840,14 @@ def write_data():
         "structures": [{"structure": a("rift_maw"), "weight": 1}]})
     write_json(DATA / "tags/worldgen/biome/has_structure/rift_maw.json", {"values": [
         "minecraft:small_end_islands", a("nebula_fields"), a("hollow_isles")]})
+    # The Remnant hangs high over the Corona, one to each stretch of it (RemnantStructure / RemnantPiece).
+    write_json(DATA / "worldgen/structure/remnant.json", {
+        "type": a("remnant"), "biomes": f"#{NS}:has_structure/remnant", "step": "surface_structures",
+        "spawn_overrides": {}, "terrain_adaptation": "none"})
+    write_json(DATA / "worldgen/structure_set/remnant.json", {
+        "placement": {"type": "minecraft:random_spread", "salt": 31337117, "separation": 16, "spacing": 36},
+        "structures": [{"structure": a("remnant"), "weight": 1}]})
+    write_json(DATA / "tags/worldgen/biome/has_structure/remnant.json", {"values": [a("corona")]})
     write_json(DATA / "tags/worldgen/biome/has_structure/whalefall.json", {"values": [
         "minecraft:small_end_islands", "minecraft:end_barrens", "minecraft:end_midlands", "minecraft:end_highlands",
         a("nebula_fields"), a("chorus_thicket"), a("ashen_barrens"), a("comet_wake"), a("hollow_isles"), a("corona"),

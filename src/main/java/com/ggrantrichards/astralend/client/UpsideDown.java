@@ -19,7 +19,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.MovementInputUpdateEvent;
-import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.RenderAvatarEvent;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 //   - the mouse and the strafe keys turn the way the screen shows, not the way the world is;
 //   - on a ceiling you have your footing (walking speed, and you can jump - down, away from it);
 //   - you aim from your eyes, so what's under the crosshair is what you mine or use;
-//   - everyone, you included in third person, is drawn upside down while it lasts.
+//   - every player, you included in third person, is drawn upside down while it lasts.
 public final class UpsideDown {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final float DROP = 1.62F - 0.18F;    // standing eye height, mirrored about the middle of the body
@@ -48,7 +48,7 @@ public final class UpsideDown {
         TickEvent.ClientTickEvent.Post.BUS.addListener(UpsideDown::onClientTick);
         ViewportEvent.ComputeCameraAngles.BUS.addListener(UpsideDown::onCamera);
         MovementInputUpdateEvent.BUS.addListener(UpsideDown::onInput);
-        RenderLivingEvent.Pre.BUS.addListener((Consumer<RenderLivingEvent.Pre<?, ?, ?>>) UpsideDown::onRenderLiving);
+        RenderAvatarEvent.Pre.BUS.addListener((Consumer<RenderAvatarEvent.Pre>) UpsideDown::onRenderPlayer);
     }
 
     // Upside down: gravity reversed (the Upwelling effect, or anything else that turns it round).
@@ -149,7 +149,7 @@ public final class UpsideDown {
         }
     }
 
-    private static void onRenderLiving(RenderLivingEvent.Pre<?, ?, ?> event) {
+    private static void onRenderPlayer(RenderAvatarEvent.Pre event) {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.level == null) {
             return;

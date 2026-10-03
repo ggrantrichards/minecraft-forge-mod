@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 31337117,
+    "separation": 16,
+    "spacing": 36
+  },
+  "structures": [
+    {
+      "structure": "astralend:remnant",
+      "weight": 1
+    }
+  ]
+}

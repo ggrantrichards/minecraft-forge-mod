@@ -1,0 +1,63 @@
+package com.ggrantrichards.astralend.world.feature;
+
+import com.ggrantrichards.astralend.ModBlocks;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.feature.Feature;
+
+// A scorch fissure of the Corona: a crack wandering across the ground, a few blocks deep, its lips
+// charred black and magma glowing at the bottom - where a flare split the stone. (Within 7 blocks.)
+public record ScorchFissureFeature() implements Feature {
+    public static final MapCodec<ScorchFissureFeature> CODEC = MapCodec.unit(ScorchFissureFeature::new);
+
+    @Override
+    public MapCodec<ScorchFissureFeature> codec() {
+        return CODEC;
+    }
+
+    @Override
+    public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
+        BlockPos start = Build.surface(level, origin.getX(), origin.getZ());
+        if (start == null || !level.getBlockState(start).is(ModBlocks.SUNSCORCHED_STONE.get())) {
+            return false;
+        }
+        BlockState magma = Blocks.MAGMA_BLOCK.defaultBlockState();
+        BlockState charred = ModBlocks.CHARRED_END_STONE.get().defaultBlockState();
+        double angle = random.nextDouble() * Math.PI * 2;
+        int length = 9 + random.nextInt(5);
+        for (int i = -length / 2; i <= length / 2; i++) {
+            angle += (random.nextDouble() - 0.5) * 0.6;
+            int bx = (int) Math.round(Math.cos(angle) * i), bz = (int) Math.round(Math.sin(angle) * i);
+            if (Math.abs(bx) > 6 || Math.abs(bz) > 6) {
+                continue;
+            }
+            BlockPos top = Build.surface(level, start.getX() + bx, start.getZ() + bz);
+            if (top == null || Math.abs(top.getY() - start.getY()) > 3) {
+                continue;
+            }
+            double taper = 1.0 - Math.abs(i) / (length / 2.0 + 1.0);
+            int depth = 1 + (int) Math.round(taper * 3.5);
+            int width = taper > 0.5 ? 1 : 0;
+            for (int w = -width; w <= width; w++) {
+                BlockPos col = top.offset((int) Math.round(-Math.sin(angle) * w), 0, (int) Math.round(Math.cos(angle) * w));
+                for (int k = 0; k < depth; k++) {
+                    Build.force(level, col.below(k), Blocks.AIR.defaultBlockState());
+                }
+                Build.force(level, col.below(depth), magma);
+                // The lips, charred.
+                for (int s = -1; s <= 1; s += 2) {
+                    BlockPos lip = col.offset((int) Math.round(-Math.sin(angle) * s * (width + 1)), 0, (int) Math.round(Math.cos(angle) * s * (width + 1)));
+                    if (level.getBlockState(lip).is(ModBlocks.SUNSCORCHED_STONE.get()) && random.nextInt(3) != 0) {
+                        Build.force(level, lip, charred);
+                    }
+                }
+            }
+        }
+        return true;
+    }
+}

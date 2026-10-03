@@ -47,6 +47,9 @@ public final class ModWorldgen {
         // Phase 10
         FEATURE_TYPES.register("chorus_tree", () -> com.ggrantrichards.astralend.world.feature.ChorusTreeFeature.CODEC);
         FEATURE_TYPES.register("glimmer_spire", () -> com.ggrantrichards.astralend.world.feature.GlimmerSpireFeature.CODEC);
+        // Phase 11
+        FEATURE_TYPES.register("solarite_spire", () -> com.ggrantrichards.astralend.world.feature.SolariteSpireFeature.CODEC);
+        FEATURE_TYPES.register("scorch_fissure", () -> com.ggrantrichards.astralend.world.feature.ScorchFissureFeature.CODEC);
         FEATURE_TYPES.register("oasis", () -> com.ggrantrichards.astralend.world.feature.OasisFeature.CODEC);
         FEATURE_TYPES.register("underside", () -> com.ggrantrichards.astralend.world.feature.UndersideFeature.CODEC);
     }
@@ -71,6 +74,12 @@ public final class ModWorldgen {
         STRUCTURE_TYPES.register("rift_maw", () -> () -> com.ggrantrichards.astralend.world.structure.RiftMawStructure.CODEC);
     public static final RegistryObject<net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType> RIFT_MAW_PIECE =
         STRUCTURE_PIECES.register("rift_maw", () -> com.ggrantrichards.astralend.world.structure.RiftMawPiece::new);
+
+    // Phase 11: the Remnant, a dead star's cinder hanging over each Corona.
+    public static final RegistryObject<StructureType<com.ggrantrichards.astralend.world.structure.RemnantStructure>> REMNANT =
+        STRUCTURE_TYPES.register("remnant", () -> () -> com.ggrantrichards.astralend.world.structure.RemnantStructure.CODEC);
+    public static final RegistryObject<net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType> REMNANT_PIECE =
+        STRUCTURE_PIECES.register("remnant", () -> com.ggrantrichards.astralend.world.structure.RemnantPiece::new);
 
     private ModWorldgen() {}
 }

@@ -526,6 +526,46 @@ public final class WorldgenSurvey {
             hall.getX(), hall.getY(), hall.getZ(), out.toYRot()));
     }
 
+    // The Remnant: its heart (light in Solarite) where the structure starts, high over the Corona, a
+    // chamber round it and a way in. Then views: from out in the air beside it, and in the chamber.
+    private static void testRemnant(ServerLevel end, BlockPos start, List<String> failures) {
+        BlockPos heart = null;
+        for (int y = end.getMinY() + 120; y < end.getMinY() + 230 && heart == null; y++) {
+            BlockPos p = new BlockPos(start.getX(), y, start.getZ());
+            if (end.getBlockState(p).is(Blocks.SHROOMLIGHT) && end.getBlockState(p.above(2)).is(ModBlocks.SOLARITE_BLOCK.get())) {
+                heart = p;
+            }
+        }
+        if (heart == null) {
+            failures.add("remnant: no heart at " + start.toShortString());
+            return;
+        }
+        int air = 0, glow = 0, rock = 0;
+        for (BlockPos p : BlockPos.betweenClosed(heart.offset(-24, -24, -24), heart.offset(24, 24, 24))) {
+            BlockState state = end.getBlockState(p);
+            double d = Math.sqrt(p.distSqr(heart));
+            if (d > 3.5 && d < 6.5 && state.isAir()) {
+                air++;
+            } else if (state.is(Blocks.MAGMA_BLOCK) || state.is(Blocks.SHROOMLIGHT)) {
+                glow++;
+            } else if (!state.isAir()) {
+                rock++;
+            }
+        }
+        int ground = end.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, heart.getX(), heart.getZ());
+        log(String.format("remnant: heart at %s, %d blocks above the ground under it; chamber %d air, %d glowing and %d rock blocks",
+            heart.toShortString(), heart.getY() - ground, air, glow, rock));
+        if (air < 300 || glow < 500 || rock < 8000) {
+            failures.add("remnant: expected a hollow chamber, glowing fissures and a crust of rock round " + heart.toShortString());
+        }
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_remnant %d.5 %d %d.5 -45.0 -8.0 clear",
+            heart.getX() - 48, heart.getY() + 4, heart.getZ() - 48));
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_remnant_chamber %d.5 %d %d.5 -90.0 10.0",
+            heart.getX() - 5, heart.getY() - 1, heart.getZ()));
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_remnant_below %d.5 %d %d.5 -45.0 -55.0",
+            heart.getX() - 30, Math.max(ground + 2, heart.getY() - 80), heart.getZ() - 30));
+    }
+
     // A Constellation Maze: four platforms (the stars in their floors, where you stand to sight a
     // constellation through a spyglass), bridges for all four constellations - each lighting when its
     // constellation is sighted from its platform - and the spyglass in the barrel on the first. Then a
@@ -647,6 +687,7 @@ public final class WorldgenSurvey {
                                 new Wanted("whalefall", 'A', Blocks.CHEST), new Wanted("shattered_observatory", 'N', Blocks.VAULT),
                                 new Wanted("solar_array", 'C', ModBlocks.COLLECTOR_PEDESTAL.get()),
                                 new Wanted("rift_maw", 'N', ModBlocks.MAW_THROAT.get()),
+                                new Wanted("remnant", 'C', Blocks.SHROOMLIGHT),
                                 new Wanted("constellation_maze", 'N', ModBlocks.STAR_BRIDGE.get()),
                                 new Wanted("resonant_spire", 'G', Blocks.BELL))) {
             Area area = areas.get(w.biome());
@@ -744,6 +785,10 @@ public final class WorldgenSurvey {
                 if (w.name().equals("rift_maw") && !found.containsKey("maw_tested")) {
                     found.put("maw_tested", marker);
                     testMaw(end, marker, failures);
+                }
+                if (w.name().equals("remnant") && !found.containsKey("remnant_tested")) {
+                    found.put("remnant_tested", marker);
+                    testRemnant(end, start, failures);
                 }
                 if (w.name().equals("constellation_maze") && !found.containsKey("maze_tested")) {
                     found.put("maze_tested", marker);

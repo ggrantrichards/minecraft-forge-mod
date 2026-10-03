@@ -1062,10 +1062,13 @@ def worldgen_phase3():
     plant_patch("corona_petrified_vines", "petrified_astral_vine", rarity=3, count=6, spread=5)
     plant_patch("corona_pollinator_husks", "pollinator_husk", rarity=12, count=2, spread=3, vertical=1,
                 on=[rid("sunscorched_stone"), rid("charred_end_stone")])
+    # Phase 11: the Corona's ground has shape - glazed spires and cracks glowing with magma.
+    big_feature("corona_solarite_spires", "solarite_spire", rarity=2, heightmap="WORLD_SURFACE_WG")
+    big_feature("corona_scorch_fissures", "scorch_fissure", count=2, heightmap="WORLD_SURFACE_WG")
     end_biome("corona", "The Corona", fog="#4a2616", water="#d9823b",
               features_step7=[rid("corona_solarite_deep")],
               features_step4=[rid("corona_solarite_surface")],
-              features_step9=[rid("corona_petrified_stalks"), rid("corona_sunscale_lichen"), rid("corona_flareblooms"), rid("corona_ashen_lumineshrooms"),
+              features_step9=[rid("corona_scorch_fissures"), rid("corona_solarite_spires"), rid("corona_petrified_stalks"), rid("corona_sunscale_lichen"), rid("corona_flareblooms"), rid("corona_ashen_lumineshrooms"),
                               rid("corona_petrified_vines"), rid("corona_pollinator_husks")],
               particle="minecraft:white_ash", particle_chance=0.03)
 
@@ -1366,7 +1369,8 @@ def structures_phase6():
     lang[f"item.{NS}.star_chart.marks_structure"] = "Marks a site: %s"
     for name, english in (("comet_crater", "Comet Crater"), ("wanderer_relay", "Wanderer Relay"), ("whalefall", "Whalefall"),
                           ("shattered_observatory", "Shattered Observatory"), ("resonant_spire", "Resonant Spire"), ("solar_array", "Solar Array Ruins"),
-                          ("rift_maw", "Rift Maw"), ("constellation_maze", "Constellation Maze")):
+                          ("rift_maw", "Rift Maw"), ("constellation_maze", "Constellation Maze"),
+                          ("remnant", "The Remnant")):
         lang[f"structure.{NS}.{name}"] = english
         tag("worldgen/structure", rid(name), rid(name))      # a Star Chart looks each one up by its own tag
 
@@ -1448,6 +1452,15 @@ def structures_phase6():
             entry("glowing_spores", 3, (2, 5)), entry("void_crystal", 2, (1, 3)),
             entry("minecraft:nautilus_shell", 1, (1, 1))]},
         chance("temporal_crystal", 0.15),
+    ])
+    # The chamber at the heart of the Remnant: the star's own metal, and what it burned into.
+    chest_loot("remnant", [
+        {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 5}, "entries": [
+            entry("raw_solarite", 5, (2, 6)), entry("solarite_ingot", 3, (1, 3)), entry("void_crystal", 3, (2, 4)),
+            entry("charged_void_crystal", 2, (1, 1)), entry("minecraft:blaze_powder", 2, (2, 5)),
+            entry("minecraft:magma_cream", 2, (1, 4)), entry("minecraft:shroomlight", 2, (1, 3))]},
+        {"rolls": 1, "entries": [entry("temporal_crystal")]},
+        chance("starforge_template", 0.5),
     ])
     # The camp in a Rift Maw's cranium: what the first explorers left - and the crystals that light its eyes.
     chest_loot("rift_maw", [
