@@ -254,7 +254,7 @@ known |= {f"{NS}:{f.stem}" for f in (RES / "data" / NS / "recipe").glob("*.json"
 known |= {f"{NS}:{n}" for n in re.findall(r'SERIALIZERS\.register\("([a-z0-9_]+)"', (JAVA / "starforge/StarforgeLoot.java").read_text())}
 known |= {f"{NS}:{f.stem}" for f in (RES / "data" / NS / "loot_modifiers").glob("*.json")}
 # Data-driven registries: banner patterns and trim patterns (their asset ids name their textures).
-for kind in ("banner_pattern", "trim_pattern"):
+for kind in ("banner_pattern", "trim_pattern", "jukebox_song"):
     known |= {f"{NS}:{f.stem}" for f in (RES / "data" / NS / kind).glob("*.json")}
 # Phase 6: structure templates (data/astralend/structure/*.nbt) and chest loot tables are registered by
 # their files. Every id written inside a template (block names, chest loot tables) must be real too.
@@ -326,7 +326,7 @@ for extra in sorted(set(lang) - {f"block.{NS}.{n}" for n in blocks} - {f"item.{N
                     - {f"death.attack.{NS}.{d}{suffix}" for d in damage_types for suffix in ("", ".player")}
                     - {k for k in lang if k.startswith(("flare.astralend.", "maw.astralend.", "maze.astralend.",
                                                         "upgrade.astralend.", "container.astralend.",
-                                                        f"block.{NS}.banner.", f"trim_pattern.{NS}."))}
+                                                        f"block.{NS}.banner.", f"trim_pattern.{NS}.", f"jukebox_song.{NS}."))}
                     - {f"structure.{NS}.{st.split(':')[1]}" for st in worldgen_ids.get("structure", set())}):
     err(f"lang/en_us.json: {extra} doesn't match anything registered")
 

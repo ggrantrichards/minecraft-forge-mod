@@ -1,0 +1,15 @@
+Music in The Astral End
+
+All tracks are from OpenGameArt.org, re-encoded (and the short loops repeated) for the mod.
+
+  music/out_there.ogg              "Space Music: Out There" by yd - CC0
+                                   https://opengameart.org/content/space-music-out-there
+  music/ambient_relaxing_loop.ogg  "Ambient Relaxing Loop" by isaiah658 - CC0
+                                   https://opengameart.org/content/ambient-relaxing-loop
+  music/heavenly_loop.ogg          "Heavenly Loop" by isaiah658 - CC0
+                                   https://opengameart.org/content/heavenly-loop
+  music/space_music.ogg            "Space Music" by HitCtrl - CC-BY 3.0
+                                   (https://creativecommons.org/licenses/by/3.0/)
+                                   https://opengameart.org/content/space-music-2
+  records/observing_the_star.ogg   "Observing the Star" by madeso - CC0
+                                   https://opengameart.org/content/cc0-space-music

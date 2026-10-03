@@ -36,6 +36,7 @@ public final class AstralEnd {
         // Register everything the mod adds. The order doesn't matter; Forge handles it.
         ModBlocks.BLOCKS.register(modBusGroup);
         ModItems.ITEMS.register(modBusGroup);
+        ModSounds.SOUNDS.register(modBusGroup);
         ModCreativeTabs.TABS.register(modBusGroup);
         ModBlockEntities.BLOCK_ENTITIES.register(modBusGroup);
         ModEntities.ENTITY_TYPES.register(modBusGroup);

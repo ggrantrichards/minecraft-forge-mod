@@ -827,6 +827,7 @@ def worldgen():
     write(WG / "biome" / "nebula_fields.json", {
         "attributes": {
             "minecraft:gameplay/natural_mob_spawns": mob_spawns("nebula_fields"),
+            **background_music("nebula_fields"),
             "minecraft:visual/ambient_particles": {"argument": [
                 {"particle": {"type": "minecraft:reverse_portal"}, "probability": 0.012}], "modifier": "append"},
             "minecraft:visual/fog_color": "#2b1d45",
@@ -933,11 +934,27 @@ def mob_spawns(biome):
     return {"argument": {"spawn_costs": {}, "spawns_by_category": spawns}, "modifier": "overlay"}
 
 
+# Which music each astral biome plays (sounds in ModSounds.java; who made it in sounds/CREDITS.txt).
+# The Ashen Barrens keep the End's own music: the dead country gets nothing new.
+BIOME_MUSIC = {"nebula_fields": "music.nebula_fields", "chorus_thicket": "music.chorus_thicket",
+               "glimmering_crags": "music.glimmering_crags", "hollow_isles": "music.outer_end",
+               "comet_wake": "music.outer_end", "corona": "music.outer_end"}
+
+
+def background_music(biome):
+    sound = BIOME_MUSIC.get(biome)
+    if not sound:
+        return {}
+    music = {"sound": rid(sound), "min_delay": 3000, "max_delay": 12000, "replace_current_music": False}
+    return {"minecraft:audio/background_music": {"default": music}}
+
+
 def end_biome(name, english, fog, water, features_step4=(), features_step7=(), features_step9=(),
               particle=None, particle_chance=0.0):
     attributes = {
         "minecraft:gameplay/natural_mob_spawns": mob_spawns(name),
         "minecraft:visual/fog_color": fog,
+        **background_music(name),
     }
     if particle:
         attributes["minecraft:visual/ambient_particles"] = {"argument": [
@@ -1907,6 +1924,7 @@ def content_phase10():
     chest_loot("resonance_vault", [
         {"rolls": 1, "entries": [entry("wyrm_banner_pattern", 1), entry("spire_banner_pattern", 1)]},
         {"rolls": 1, "entries": [entry("eclipse_armor_trim_smithing_template", 1)]},
+        {"rolls": 1, "entries": [entry("music_disc_observing_the_star", 1)]},
         {"rolls": 1, "entries": [entry("starforge_template", 1)]},
         chance("rift_pearl", 0.5),
         {"rolls": {"type": "minecraft:uniform", "min": 2, "max": 4}, "entries": [
@@ -1939,6 +1957,20 @@ def content_phase10():
                                          "pattern": rid("eclipse")})
     shaped(template, template, ["DTD", "DND", "DDD"], {"D": "minecraft:diamond", "T": rid(template), "N": rid("nightstone")},
            count=2, category="misc")
+    # Music: sounds.json for the biome tracks and the disc; the disc's jukebox song.
+    tracks = {"music.nebula_fields": "music/ambient_relaxing_loop", "music.chorus_thicket": "music/heavenly_loop",
+              "music.glimmering_crags": "music/space_music", "music.outer_end": "music/out_there",
+              "music_disc.observing_the_star": "records/observing_the_star"}
+    write(ASSETS / "sounds.json", {event: {"sounds": [{"name": rid(path), "stream": True}]} for event, path in tracks.items()})
+    write(DATA / "jukebox_song" / "observing_the_star.json", {
+        "sound_event": rid("music_disc.observing_the_star"),
+        "description": {"translate": f"jukebox_song.{NS}.observing_the_star"},
+        "length_in_seconds": 134.4, "comparator_output": 7})
+    lang[f"jukebox_song.{NS}.observing_the_star"] = "madeso - Observing the Star"
+    disc = "music_disc_observing_the_star"
+    item_model(disc, {"parent": "minecraft:item/generated", "textures": {"layer0": rid(f"item/{disc}")}})
+    item_def(disc, rid(f"item/{disc}"))
+    lang[f"item.{NS}.{disc}"] = "Music Disc"
     advancement("wyrmslayer", rid("resonant_key"), "Wyrmslayer", "Defeat a Spire Wyrm atop its Resonant Spire",
                 parent=rid("end/astral_horizons"), frame="challenge", criteria={"wyrm": killed(rid("spire_wyrm"))})
     advancement("ring_out", "minecraft:bell", "Ring Out", "Stun a Spire Wyrm with the ringing of a bell",

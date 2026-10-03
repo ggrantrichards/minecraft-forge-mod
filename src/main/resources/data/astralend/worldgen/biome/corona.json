@@ -23,6 +23,14 @@
       "modifier": "overlay"
     },
     "minecraft:visual/fog_color": "#4a2616",
+    "minecraft:audio/background_music": {
+      "default": {
+        "sound": "astralend:music.outer_end",
+        "min_delay": 3000,
+        "max_delay": 12000,
+        "replace_current_music": false
+      }
+    },
     "minecraft:visual/ambient_particles": {
       "argument": [
         {

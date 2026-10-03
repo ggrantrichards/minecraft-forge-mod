@@ -504,6 +504,35 @@ def resonant_key():
 TEXTURES += [("item/resonant_key.png", resonant_key)]
 
 
+# The music disc: a black disc with a teal label and a star on it.
+DISC = [
+    "................",
+    ".....kkkkkk.....",
+    "...kkgkkkkgkk...",
+    "..kgkkkkkkkkgk..",
+    "..kkkkTTTTkkkk..",
+    ".kkkkTTwwTTkkkk.",
+    ".kgkTTwWWwTTkgk.",
+    ".kkkTwWkkWwTkkk.",
+    ".kkkTwWkkWwTkkk.",
+    ".kgkTTwWWwTTkgk.",
+    ".kkkkTTwwTTkkkk.",
+    "..kkkkTTTTkkkk..",
+    "..kgkkkkkkkkgk..",
+    "...kkgkkkkgkk...",
+    ".....kkkkkk.....",
+    "................",
+]
+
+
+def music_disc():
+    return from_map(DISC, {"k": hexc("15131c"), "g": hexc("3a3648"), "T": hexc("2fa89e"), "w": hexc("8ff0e4"),
+                           "W": hexc("e8fffb")})
+
+
+TEXTURES += [("item/music_disc_observing_the_star.png", music_disc)]
+
+
 if __name__ == "__main__":
     out = Path(__file__).resolve().parents[2] / "src/main/resources/assets/astralend/textures"
     import json

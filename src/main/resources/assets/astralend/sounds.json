@@ -1,0 +1,42 @@
+{
+  "music.nebula_fields": {
+    "sounds": [
+      {
+        "name": "astralend:music/ambient_relaxing_loop",
+        "stream": true
+      }
+    ]
+  },
+  "music.chorus_thicket": {
+    "sounds": [
+      {
+        "name": "astralend:music/heavenly_loop",
+        "stream": true
+      }
+    ]
+  },
+  "music.glimmering_crags": {
+    "sounds": [
+      {
+        "name": "astralend:music/space_music",
+        "stream": true
+      }
+    ]
+  },
+  "music.outer_end": {
+    "sounds": [
+      {
+        "name": "astralend:music/out_there",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc.observing_the_star": {
+    "sounds": [
+      {
+        "name": "astralend:records/observing_the_star",
+        "stream": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "sound_event": "astralend:music_disc.observing_the_star",
+  "description": {
+    "translate": "jukebox_song.astralend.observing_the_star"
+  },
+  "length_in_seconds": 134.4,
+  "comparator_output": 7
+}

@@ -63,6 +63,11 @@ public final class ModItems {
             .delayedComponent(net.minecraft.core.component.DataComponents.PROVIDES_BANNER_PATTERNS, context -> context.getOrThrow(SPIRE_PATTERN)));
     public static final RegistryObject<Item> ECLIPSE_ARMOR_TRIM_SMITHING_TEMPLATE = register("eclipse_armor_trim_smithing_template",
         net.minecraft.world.item.SmithingTemplateItem::createArmorTrimTemplate, new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON));
+    // The Resonance Vault's music disc: "Observing the Star" by madeso (CC0).
+    public static final RegistryObject<Item> MUSIC_DISC_OBSERVING_THE_STAR = register("music_disc_observing_the_star", Item::new,
+        new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE)
+            .jukeboxPlayable(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.JUKEBOX_SONG,
+                net.minecraft.resources.Identifier.fromNamespaceAndPath(AstralEnd.MODID, "observing_the_star"))));
     public static final RegistryObject<Item> CHORUS_FLOWER_ON_A_STICK = register("chorus_flower_on_a_stick",
         com.ggrantrichards.astralend.item.ChorusFlowerOnAStickItem::new, new Item.Properties().durability(30));
     public static final RegistryObject<Item> STAR_CHART = register("star_chart", StarChartItem::new, new Item.Properties().stacksTo(1));
