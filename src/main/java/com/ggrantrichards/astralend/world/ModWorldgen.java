@@ -66,5 +66,11 @@ public final class ModWorldgen {
     public static final RegistryObject<net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType> WHALEFALL_PIECE =
         STRUCTURE_PIECES.register("whalefall", () -> com.ggrantrichards.astralend.world.structure.WhalefallPiece::new);
 
+    // Phase 11: the Rift Maw, a colossal skull with a hall inside, built by its own piece too.
+    public static final RegistryObject<StructureType<com.ggrantrichards.astralend.world.structure.RiftMawStructure>> RIFT_MAW =
+        STRUCTURE_TYPES.register("rift_maw", () -> () -> com.ggrantrichards.astralend.world.structure.RiftMawStructure.CODEC);
+    public static final RegistryObject<net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType> RIFT_MAW_PIECE =
+        STRUCTURE_PIECES.register("rift_maw", () -> com.ggrantrichards.astralend.world.structure.RiftMawPiece::new);
+
     private ModWorldgen() {}
 }

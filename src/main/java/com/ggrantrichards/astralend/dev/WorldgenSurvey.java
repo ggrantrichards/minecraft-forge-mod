@@ -496,7 +496,7 @@ public final class WorldgenSurvey {
     // there's somewhere to stand at its mouth. Then a view into its mouth, from in front.
     private static void testMaw(ServerLevel end, BlockPos throat, List<String> failures) {
         int eyes = 0;
-        for (BlockPos p : BlockPos.betweenClosed(throat.offset(-24, -16, -24), throat.offset(24, 20, 24))) {
+        for (BlockPos p : BlockPos.betweenClosed(throat.offset(-44, -24, -44), throat.offset(44, 32, 44))) {
             BlockState state = end.getBlockState(p);
             if (state.is(ModBlocks.MAW_EYE.get())) {
                 end.setBlock(p, state.setValue(com.ggrantrichards.astralend.maw.MawEyeBlock.LIT, true), 2);
@@ -515,10 +515,15 @@ public final class WorldgenSurvey {
         if (eyes != 4 || !wormhole) {
             failures.add("rift_maw: expected 4 eye sockets and an open wormhole, got " + eyes + " and " + wormhole);
         }
+        // The whole skull from in front and off to one side, then the hall inside its cranium.
         net.minecraft.core.Direction out = net.minecraft.core.Direction.from2DDataValue(maw.facing());
-        BlockPos cam = maw.throat().relative(out, 34).above(6);
-        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_rift_maw %d.5 %d %d.5 %.1f 8.0 wake",
-            cam.getX(), cam.getY(), cam.getZ(), out.getOpposite().toYRot()));
+        BlockPos cam = maw.throat().relative(out, 120).relative(out.getClockWise(), 60).above(30);
+        double yaw = Math.toDegrees(Math.atan2(-(maw.throat().getX() - cam.getX()), maw.throat().getZ() - cam.getZ()));
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_rift_maw %d.5 %d %d.5 %.1f 12.0 wake",
+            cam.getX(), cam.getY(), cam.getZ(), yaw));
+        BlockPos hall = maw.throat().relative(out.getOpposite(), 52).below(9);
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_rift_maw_hall %d.5 %d %d.5 %.1f -12.0",
+            hall.getX(), hall.getY(), hall.getZ(), out.toYRot()));
     }
 
     // A Constellation Maze: four platforms (the stars in their floors, where you stand to sight a

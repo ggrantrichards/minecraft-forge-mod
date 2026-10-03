@@ -16,7 +16,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 
 // Upwelling (the Potion of Upwelling, brewed from Upwell Motes): gravity points up, exactly as hard
-// as it normally points down. You fall upward - at most MAX_RISE blocks above where it took hold,
+// as it normally points down, and you're turned upside down (client.UpsideDown): you fall up onto
+// the underside of whatever is over you and walk about on it, head down. You fall upward - at most MAX_RISE blocks above where it took hold,
 // and if you hit a ceiling on the way you take fall damage as if you had hit the ground. When it ends
 // (or you reach the top), Slow Falling lets you back down.
 public final class UpwellingEffect extends MobEffect {
@@ -34,6 +35,14 @@ public final class UpwellingEffect extends MobEffect {
     public static void register() {
         MobEffectEvent.Expired.BUS.addListener((java.util.function.Consumer<MobEffectEvent.Expired>) event -> wearOff(event.getEntity(), event.getEffectInstance()));
         MobEffectEvent.Remove.BUS.addListener((java.util.function.Consumer<MobEffectEvent.Remove>) event -> wearOff(event.getEntity(), event.getEffectInstance()));
+        // Standing on a ceiling, a jump pushes you off it: down.
+        net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent.BUS.addListener(event -> {
+            LivingEntity entity = event.getEntity();
+            if (entity.getAttributeValue(Attributes.GRAVITY) < 0.0 && entity.getDeltaMovement().y > 0.0) {
+                net.minecraft.world.phys.Vec3 v = entity.getDeltaMovement();
+                entity.setDeltaMovement(v.x, -v.y, v.z);
+            }
+        });
     }
 
     @Override

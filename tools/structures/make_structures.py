@@ -482,110 +482,6 @@ def bone(nx, ny, nz):
     return a("leviathan_bone_block") + ("[axis=z]" if abs(nx) > max(abs(ny), abs(nz)) else "[axis=x]")
 
 
-def rift_maw(seed):
-    """The fossil skull of a Star Leviathan, the size of a small hill, on its own floating island:
-    a great domed cranium, a long snout, the lower jaw fallen half open, rows of bone teeth, and at
-    the back of the mouth the dark stone of the dormant throat. Four empty eye sockets look out from
-    the sides of the skull; with a Charged Void Crystal in each, a Portal Lens wakes it."""
-    t = Template(48, 34, 40, seed)
-    rnd = t.rnd
-    cz = 19
-    # The island: pale stone, an upside-down cone under a flat top.
-    for x in range(48):
-        for z in range(40):
-            d = math.hypot((x - 19) / 1.05, z - cz)
-            for y in range(0, 9):
-                radius = 4 + (y / 8) ** 0.7 * 13.5
-                if d <= radius + rnd.uniform(-0.6, 0.4):
-                    top = y == 8 or d > radius - 1
-                    t.set(x, y, z, a("pale_end_stone") if rnd.random() < 0.92 or not top else "minecraft:end_stone")
-    # The cranium: a hollow dome of bone.
-    ccx, ccy, rx, ry, rz = 13, 17, 10.5, 9.5, 11.5
-    for x in range(0, 26):
-        for y in range(8, 28):
-            for z in range(40):
-                nx, ny, nz = (x - ccx) / rx, (y - ccy) / ry, (z - cz) / rz
-                r = math.sqrt(nx * nx + ny * ny + nz * nz)
-                if 0.8 <= r <= 1.0 and rnd.random() > 0.035:
-                    t.set(x, y, z, bone(nx, ny, nz))
-                elif r < 0.8:
-                    t.set(x, y, z, "minecraft:air")
-    # The snout: a long, tapering roof of bone with a rim that hangs down at the sides.
-    for x in range(20, 45):
-        f = (x - 20) / 24
-        top = 26 - 4 * f
-        w = 10 - 4 * f
-        for z in range(40):
-            dz = (z - cz) / w
-            if abs(dz) > 1:
-                continue
-            surface = round(top - dz * dz * 2.5)
-            bottom = round(top - 2) if abs(dz) < 0.8 else round(top - 4)
-            for y in range(bottom, surface + 1):
-                t.set(x, y, z, a("leviathan_bone_block") + "[axis=z]")   # grain across: long faces front and top
-    # The lower jaw, fallen half open: a U of bone resting on the island, running out over the void.
-    for x in range(19, 43):
-        f = (x - 19) / 23
-        w = 9 - 3.5 * f
-        floor = 9 + round(1.5 * f)
-        for z in range(40):
-            dz = (z - cz) / w
-            if abs(dz) > 1:
-                continue
-            t.set(x, floor, z, a("leviathan_bone_block") + "[axis=z]")
-            if abs(dz) > 0.72:
-                for y in range(floor + 1, floor + 4):
-                    t.set(x, y, z, a("leviathan_bone_block") + "[axis=z]")
-    # The mouth: open space between the jaws.
-    for x in range(22, 47):
-        f = min(1.0, (x - 20) / 24)
-        w = 9 - 3.5 * f
-        roof = round(26 - 4 * f - 2)
-        for z in range(40):
-            if abs(z - cz) < w - 1.6:
-                for y in range(11 + round(1.5 * f), roof):
-                    t.set(x, y, z, "minecraft:air")
-    # Teeth: hanging from the snout's rim and rising from the jaw, staggered.
-    for x in range(24, 43, 2):
-        f = (x - 20) / 24
-        wu = 10 - 4 * f
-        rim = round(26 - 4 * f - 4)
-        for side in (-1, 1):
-            z = round(cz + side * (wu - 1.2))
-            for k in range(1, 4 if x < 38 else 3):
-                t.set(x, rim - k, z, a("leviathan_bone_block") + "[axis=y]")
-        fl = (x + 1 - 19) / 23
-        wl = 9 - 3.5 * fl
-        jaw_top = 9 + round(1.5 * fl) + 3
-        for side in (-1, 1):
-            z = round(cz + side * (wl - 1.2))
-            for k in range(1, 3):
-                t.set(x + 1, jaw_top + k, z, a("leviathan_bone_block") + "[axis=y]")
-    # The throat: a disc of dark stone closing the back of the mouth.
-    for y in range(8, 24):
-        for z in range(40):
-            if math.hypot(y - 15.5, z - cz) <= 5.2:
-                for x in (21, 22):
-                    t.set(x, y, z, a("maw_throat"))
-    # The eye sockets: two each side, under heavy brows.
-    for ex, ey in ((10, 20), (16, 19)):
-        for side, facing in ((-1, "north"), (1, "south")):
-            z = cz
-            for k in range(1, 20):                      # out to the skull's outer surface
-                if t.get(ex, ey, cz + side * k) not in (None, "minecraft:air"):
-                    z = cz + side * k
-            t.set(ex, ey, z, a("maw_eye") + f"[facing={facing},lit=false]")
-            t.set(ex, ey, z + side, "minecraft:air")
-            t.set(ex, ey - 1, z, a("leviathan_bone_block") + "[axis=x]")
-            for bx in (ex - 1, ex, ex + 1):
-                t.set(bx, ey + 1, z + side, a("leviathan_bone_block") + "[axis=x]")   # the brow juts out
-    # Whalelight Scales still cling to the bone here and there.
-    for (x, y, z), (state, _) in list(t.blocks.items()):
-        if "leviathan_bone" in state and rnd.random() < 0.025 and t.get(x, y + 1, z) in (None, "minecraft:air"):
-            t.set(x, y, z, a("whalelight_scale"))
-    return t
-
-
 # ------------------------------------------------------------------ Constellation Maze
 
 def maze_platform(t, cx, y, cz, radius, rnd):
@@ -868,11 +764,8 @@ STRUCTURES = [
     dict(name="solar_array", variants=[lambda: solar_array(51)],
          biomes=[a("corona")], spread=(34, 14, 92814473), height={"absolute": -8},
          heightmap="WORLD_SURFACE_WG", spawns=None, adaptation="beard_thin", ground=(16, 4096, 18)),
-    # Maws and mazes float out over open void, among the small islands.
-    dict(name="rift_maw", variants=[lambda: rift_maw(61)],
-         biomes=["minecraft:small_end_islands", a("nebula_fields"), a("hollow_isles")], spread=(26, 9, 48129573),
-         height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 48}, "max_inclusive": {"absolute": 70}},
-         heightmap=None, spawns=None, adaptation=None, ground=(-4096, 36, 22)),
+    # Mazes float out over open void, among the small islands. (The Rift Maw is built in Java now: see
+    # write_data.)
     # Phase 10: one tower per Glimmering Crags, roughly.
     dict(name="resonant_spire", variants=[lambda: resonant_spire(81)],
          biomes=[a("glimmering_crags")], spread=(28, 10, 51772093), height={"absolute": -3},
@@ -906,8 +799,6 @@ def write_templates(preview=False):
             if preview:
                 import preview as pv
                 pv.save(t, file)
-                if st["name"] in ("rift_maw",):
-                    pv.save(t, file + "_front", turn=True)
                 if "--cut" in sys.argv and st["name"] == "comet_crater":
                     pv.save(t, file + "_cut", cut=("z", t.size[2] // 2))
     return made
@@ -939,6 +830,16 @@ def write_data():
     write_json(DATA / "worldgen/structure_set/whalefall.json", {
         "placement": {"type": "minecraft:random_spread", "salt": 70127811, "separation": 30, "spacing": 64},
         "structures": [{"structure": a("whalefall"), "weight": 1}]})
+    # Phase 11: the Rift Maw is built by Java too (RiftMawStructure / RiftMawPiece): a colossal skull
+    # on its own island, out over the void among the small islands.
+    write_json(DATA / "worldgen/structure/rift_maw.json", {
+        "type": a("rift_maw"), "biomes": f"#{NS}:has_structure/rift_maw", "step": "surface_structures",
+        "spawn_overrides": {}, "terrain_adaptation": "none"})
+    write_json(DATA / "worldgen/structure_set/rift_maw.json", {
+        "placement": {"type": "minecraft:random_spread", "salt": 48129573, "separation": 12, "spacing": 30},
+        "structures": [{"structure": a("rift_maw"), "weight": 1}]})
+    write_json(DATA / "tags/worldgen/biome/has_structure/rift_maw.json", {"values": [
+        "minecraft:small_end_islands", a("nebula_fields"), a("hollow_isles")]})
     write_json(DATA / "tags/worldgen/biome/has_structure/whalefall.json", {"values": [
         "minecraft:small_end_islands", "minecraft:end_barrens", "minecraft:end_midlands", "minecraft:end_highlands",
         a("nebula_fields"), a("chorus_thicket"), a("ashen_barrens"), a("comet_wake"), a("hollow_isles"), a("corona"),

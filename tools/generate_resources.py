@@ -1449,6 +1449,16 @@ def structures_phase6():
             entry("minecraft:nautilus_shell", 1, (1, 1))]},
         chance("temporal_crystal", 0.15),
     ])
+    # The camp in a Rift Maw's cranium: what the first explorers left - and the crystals that light its eyes.
+    chest_loot("rift_maw", [
+        {"rolls": 1, "entries": [entry("charged_void_crystal", 1, (1, 2))]},
+        {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
+            entry("void_crystal", 4, (1, 4)), entry("chart_fragment", 3, (1, 2)), entry("leviathan_bone_block", 3, (2, 6)),
+            entry("whalelight_scale", 3, (1, 4)), entry("minecraft:ender_pearl", 3, (1, 3)), entry("minecraft:spyglass", 1),
+            entry("minecraft:map", 2), entry("minecraft:soul_lantern", 2, (1, 2)), entry("glowing_spores", 2, (2, 5))]},
+        chance("star_chart", 0.35),
+        chance("temporal_crystal", 0.15),
+    ])
     # The Constellation Maze's reward: a Temporal Crystal, and a Star Chart that marks a Rift Maw.
     chest_loot("constellation_maze", [
         {"rolls": 1, "entries": [entry("temporal_crystal")]},

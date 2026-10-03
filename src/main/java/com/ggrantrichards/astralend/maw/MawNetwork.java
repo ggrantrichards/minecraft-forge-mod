@@ -62,7 +62,7 @@ public class MawNetwork extends SavedData {
         Identifier.fromNamespaceAndPath(AstralEnd.MODID, "maw_network"), MawNetwork::new, CODEC,
         DataFixTypes.SAVED_DATA_RANDOM_SEQUENCES);
 
-    private static final int MAX_THROAT = 400;
+    private static final int MAX_THROAT = 1200;
     private static final int COOLDOWN = 80;
 
     private final List<Maw> maws;
@@ -99,7 +99,7 @@ public class MawNetwork extends SavedData {
         int lit = 0;
         int sockets = 0;
         long eyeX = 0, eyeZ = 0;
-        for (BlockPos p : BlockPos.betweenClosed(pos.offset(-24, -16, -24), pos.offset(24, 20, 24))) {
+        for (BlockPos p : BlockPos.betweenClosed(pos.offset(-44, -24, -44), pos.offset(44, 32, 44))) {     // the eyes are high on the cranium
             BlockState state = level.getBlockState(p);
             if (state.is(ModBlocks.MAW_EYE.get())) {
                 sockets++;

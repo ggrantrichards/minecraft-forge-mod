@@ -125,6 +125,8 @@ final class MechanicsSurvey {
     static void checkSpawnEggs(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
         String[] mobs = {"pollinator", "void_wanderer", "umbral_stalker", "cinder_mite", "void_ray", "hollow", "drift_whale",
             "watcher", "live_comet", "spire_wyrm"};
+        net.minecraft.server.level.ServerPlayer player = standIn(end);
+        player.snapTo(standOn.getX() + 0.5, standOn.getY(), standOn.getZ() - 4.5, 0.0F, 30.0F);
         StringBuilder report = new StringBuilder("spawn eggs:");
         for (int k = 0; k < mobs.length; k++) {
             String mob = mobs[k];
@@ -144,7 +146,8 @@ final class MechanicsSurvey {
             net.minecraft.world.item.ItemStack egg = new net.minecraft.world.item.ItemStack(item.get());
             net.minecraft.world.phys.AABB around = new net.minecraft.world.phys.AABB(ground).inflate(6.0);
             int before = end.getEntities(type.get(), around, e -> true).size();
-            var result = egg.useOn(use(end, egg, ground));
+            player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, egg);
+            var result = egg.useOn(use(player, ground));
             var spawned = end.getEntities(type.get(), around, e -> true);
             int made = spawned.size() - before;
             String state = "";
@@ -173,6 +176,7 @@ final class MechanicsSurvey {
     // mustn't (vanilla's rule) - so a portal that won't light is the frames, not the mod.
     static void checkHandBuiltPortal(ServerLevel end, List<String> failures, Consumer<String> log) {
         net.minecraft.server.level.ServerLevel overworld = end.getServer().overworld();
+        net.minecraft.server.level.ServerPlayer player = standIn(overworld);
         StringBuilder report = new StringBuilder("hand-built End portal:");
         for (boolean inward : new boolean[] {true, false}) {
             BlockPos c = new BlockPos(inward ? 20 : 40, 200, 20);   // in the sky over spawn: nothing in the way
@@ -188,7 +192,9 @@ final class MechanicsSurvey {
             }
             for (BlockPos f : frames) {
                 net.minecraft.world.item.ItemStack eye = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ENDER_EYE);
-                eye.useOn(use(overworld, eye, f));
+                player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, eye);
+                player.snapTo(c.getX() + 0.5, c.getY() + 1, c.getZ() + 0.5, 0.0F, 60.0F);   // inside the ring, as a player would stand
+                eye.useOn(use(player, f));
             }
             int eyes = 0;
             for (BlockPos f : frames) {
@@ -214,10 +220,19 @@ final class MechanicsSurvey {
         log.accept(report.toString());
     }
 
-    // An item used on the top of a block, the way a hand (or a dispenser) uses it.
-    private static net.minecraft.world.item.context.UseOnContext use(ServerLevel level, net.minecraft.world.item.ItemStack stack, BlockPos on) {
-        return new net.minecraft.world.item.context.UseOnContext(level, null, net.minecraft.world.InteractionHand.MAIN_HAND, stack,
-            new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(on).add(0, 0.5, 0), net.minecraft.core.Direction.UP, on, false)) {};
+    // The item in the stand-in's hand, used on the top of a block.
+    private static net.minecraft.world.item.context.UseOnContext use(net.minecraft.server.level.ServerPlayer player, BlockPos on) {
+        return new net.minecraft.world.item.context.UseOnContext(player, net.minecraft.world.InteractionHand.MAIN_HAND,
+            new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(on).add(0, 0.5, 0), net.minecraft.core.Direction.UP, on, false));
+    }
+
+    // A player for the survey's hands: a real ServerPlayer, never joined to the game (no
+    // connection, not in the player list), so nothing is sent anywhere.
+    private static net.minecraft.server.level.ServerPlayer standIn(ServerLevel level) {
+        var profile = new com.mojang.authlib.GameProfile(java.util.UUID.nameUUIDFromBytes("astralend-survey".getBytes()), "AstralSurvey");
+        var player = new net.minecraft.server.level.ServerPlayer(level.getServer(), level, profile,
+            net.minecraft.server.level.ClientInformation.createDefault());
+        return player;
     }
 
     private static void place(ServerLevel level, BlockPos at, net.minecraft.core.Direction in, boolean inward, java.util.List<BlockPos> frames) {

@@ -1,0 +1,164 @@
+package com.ggrantrichards.astralend.client;
+
+import com.mojang.logging.LogUtils;
+import java.lang.reflect.Method;
+import java.util.function.Consumer;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.event.MovementInputUpdateEvent;
+import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.ViewportEvent;
+import net.minecraftforge.event.TickEvent;
+import org.slf4j.Logger;
+
+// Upwelling turns you upside down: with gravity pointing up you fall onto the underside of whatever
+// is above you, and stand there, head down, walking on the ceiling. (The server side - gravity, and
+// the fall "up" hurting - is UpwellingEffect; this is everything you see and do.)
+//
+//   - the view rolls over (in half a second) and drops to where your eyes are when you hang from your
+//     feet, 1.44 blocks below where they'd be standing;
+//   - the mouse and the strafe keys turn the way the screen shows, not the way the world is;
+//   - on a ceiling you have your footing (walking speed, and you can jump - down, away from it);
+//   - you aim from your eyes, so what's under the crosshair is what you mine or use;
+//   - everyone, you included in third person, is drawn upside down while it lasts.
+public final class UpsideDown {
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private static final float DROP = 1.62F - 0.18F;    // standing eye height, mirrored about the middle of the body
+
+    private static float flip;           // 0 = upright, 1 = upside down (eased)
+    private static float flipOld;
+    private static float lastYaw = Float.NaN, lastPitch = Float.NaN;
+    private static Method setPosition;
+    private static boolean warned;
+
+    public static void register() {
+        TickEvent.ClientTickEvent.Post.BUS.addListener(UpsideDown::onClientTick);
+        ViewportEvent.ComputeCameraAngles.BUS.addListener(UpsideDown::onCamera);
+        MovementInputUpdateEvent.BUS.addListener(UpsideDown::onInput);
+        RenderLivingEvent.Pre.BUS.addListener((Consumer<RenderLivingEvent.Pre<?, ?, ?>>) UpsideDown::onRenderLiving);
+    }
+
+    // Upside down: gravity reversed (the Upwelling effect, or anything else that turns it round).
+    public static boolean isFlipped(Entity entity) {
+        return entity instanceof LivingEntity living && living.getAttributes().hasAttribute(Attributes.GRAVITY)
+            && living.getAttributeValue(Attributes.GRAVITY) < 0.0;
+    }
+
+    private static void onClientTick(TickEvent.ClientTickEvent.Post event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        flipOld = flip;
+        boolean flipped = player != null && isFlipped(player);
+        flip = Mth.approach(flip, flipped ? 1.0F : 0.0F, 0.1F);
+        if (player == null || !flipped) {
+            return;
+        }
+        // Pressed against a ceiling: that's your floor now.
+        if (player.verticalCollision && !player.verticalCollisionBelow && player.getDeltaMovement().y >= -0.01) {
+            player.setOnGround(true);
+        }
+    }
+
+    // How far over the view is, for this frame.
+    private static float amount(float partialTick) {
+        float f = Mth.lerp(partialTick, flipOld, flip);
+        return f * f * (3.0F - 2.0F * f);
+    }
+
+    private static void onCamera(ViewportEvent.ComputeCameraAngles event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        LocalPlayer player = minecraft.player;
+        float f = amount((float) event.getPartialTick());
+        if (player == null || f <= 0.0F || event.getCamera().entity() != player) {
+            lastYaw = Float.NaN;
+            return;
+        }
+        // Turning: the mouse moved the view as if upright; mirror that so it follows the screen.
+        if (f > 0.5F && !Float.isNaN(lastYaw)) {
+            float yaw = lastYaw - (player.getYRot() - lastYaw);
+            float pitch = Mth.clamp(lastPitch - (player.getXRot() - lastPitch), -90.0F, 90.0F);
+            player.setYRot(yaw);
+            player.setXRot(pitch);
+            event.setYaw(yaw);
+            event.setPitch(pitch);
+        }
+        lastYaw = player.getYRot();
+        lastPitch = player.getXRot();
+        event.setRoll(event.getRoll() + 180.0F * f);
+        if (!event.getCamera().isDetached()) {
+            Camera camera = event.getCamera();
+            Vec3 eye = camera.position().add(0.0, -DROP * f, 0.0);
+            moveCamera(camera, eye);
+            if (f > 0.5F) {
+                aimFrom(minecraft, player, eye, (float) event.getPartialTick());
+            }
+        }
+    }
+
+    private static void moveCamera(Camera camera, Vec3 to) {
+        try {
+            if (setPosition == null) {
+                setPosition = Camera.class.getDeclaredMethod("setPosition", Vec3.class);
+                setPosition.setAccessible(true);
+            }
+            setPosition.invoke(camera, to);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            if (!warned) {
+                warned = true;
+                LOGGER.warn("Upwelling: couldn't move the camera to the upside-down eye", e);
+            }
+        }
+    }
+
+    // What's under the crosshair, looked for from the eyes you see through.
+    private static void aimFrom(Minecraft minecraft, LocalPlayer player, Vec3 from, float partialTick) {
+        Vec3 look = player.getViewVector(partialTick);
+        double blockReach = player.blockInteractionRange(), entityReach = player.entityInteractionRange();
+        BlockHitResult block = minecraft.level.clip(new ClipContext(from, from.add(look.scale(blockReach)),
+            ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+        Vec3 to = from.add(look.scale(entityReach));
+        AABB sweep = player.getBoundingBox().move(from.subtract(player.getEyePosition(partialTick))).expandTowards(look.scale(entityReach)).inflate(1.0);
+        EntityHitResult entity = ProjectileUtil.getEntityHitResult(player, from, to, sweep,
+            e -> !e.isSpectator() && e.isPickable(), entityReach * entityReach);
+        if (entity != null && from.distanceToSqr(entity.getLocation()) < from.distanceToSqr(block.getLocation())) {
+            minecraft.hitResult = entity;
+            minecraft.crosshairPickEntity = entity.getEntity();
+        } else {
+            minecraft.hitResult = block;
+            minecraft.crosshairPickEntity = null;
+        }
+    }
+
+    // Strafing follows the screen too.
+    private static void onInput(MovementInputUpdateEvent event) {
+        if (flip > 0.5F && event.getEntity() == Minecraft.getInstance().player) {
+            Vec2 move = event.getInput().moveVector;
+            event.getInput().moveVector = new Vec2(-move.x, move.y);
+        }
+    }
+
+    private static void onRenderLiving(RenderLivingEvent.Pre<?, ?, ?> event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.level == null) {
+            return;
+        }
+        Entity entity = minecraft.level.getEntity(event.getState().id);
+        if (entity != null && isFlipped(entity)) {
+            event.getState().isUpsideDown = true;
+        }
+    }
+
+    private UpsideDown() {}
+}

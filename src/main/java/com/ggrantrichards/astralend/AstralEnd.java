@@ -72,6 +72,7 @@ public final class AstralEnd {
             com.ggrantrichards.astralend.client.ClientTrailer.register();   // nor this, without -Dastralend.trailer=true
             com.ggrantrichards.astralend.client.ClientPlaytests.register(); // nor this, without -Dastralend.playtests=true
             AstralSky.register();            // the End's sky: stars, auroras, the Remnant, flares
+            com.ggrantrichards.astralend.client.UpsideDown.register();      // Upwelling: the view, controls and bodies turned over
             com.ggrantrichards.astralend.client.starforge.StarforgeClient.register(modBusGroup);  // the Forge's screen, armour accents
         }
         WorldgenSurvey.register(); // does nothing unless started with -Dastralend.survey=true
