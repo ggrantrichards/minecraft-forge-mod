@@ -151,7 +151,9 @@ public final class ClientPlaytests {
             player.removeAllEffects();
             // Nothing but the Wyrm fight is about getting hurt: the rest can't kill the player (a death
             // screen would stop every scene after it).
-            player.setInvulnerable(!test.name().equals("wyrm_fight"));
+            if (!test.name().equals("wyrm_fight")) {
+                player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 20 * 60, 4, false, false));   // Resistance V: no damage
+            }
             switch (test.name()) {
                 case "whale_ride" -> {
                     ClientScreenshots.Shot s = shot("mob_drift_whale_side");
