@@ -242,7 +242,7 @@ final class MechanicsSurvey {
 
     // Batch C: Upwelling turns gravity around, End Chimes still a second teleport, Voidgel bounces.
     static void checkContent(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
-        var mite = net.minecraft.world.entity.EntityType.ENDERMITE.create(end, EntitySpawnReason.COMMAND);
+        var mite = ModEntities.POLLINATOR.get().create(end, EntitySpawnReason.COMMAND);
         if (mite != null) {
             mite.snapTo(standOn.getX() + 0.5, standOn.getY() + 1.0, standOn.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(mite);
