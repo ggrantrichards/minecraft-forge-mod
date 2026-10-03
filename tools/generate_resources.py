@@ -934,7 +934,7 @@ def mob_spawns(biome):
     return {"argument": {"spawn_costs": {}, "spawns_by_category": spawns}, "modifier": "overlay"}
 
 
-# Which music each astral biome plays (sounds in ModSounds.java; who made it in sounds/CREDITS.txt).
+# Which music each astral biome plays (sounds in ModSounds.java; who made it in sounds/credits.txt).
 # The Ashen Barrens keep the End's own music: the dead country gets nothing new.
 BIOME_MUSIC = {"nebula_fields": "music.nebula_fields", "chorus_thicket": "music.chorus_thicket",
                "glimmering_crags": "music.glimmering_crags", "hollow_isles": "music.outer_end",

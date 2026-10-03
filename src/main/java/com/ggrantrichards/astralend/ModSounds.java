@@ -7,7 +7,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 // The mod's music. The tracks are free to use (CC0, and one CC-BY 3.0); who made them is in
-// assets/astralend/sounds/CREDITS.txt. Which biome plays which is in its JSON
+// assets/astralend/sounds/credits.txt. Which biome plays which is in its JSON
 // ("minecraft:audio/background_music"); the music disc's song is data/astralend/jukebox_song/.
 public final class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, AstralEnd.MODID);

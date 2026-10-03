@@ -87,7 +87,7 @@ live only in the living biomes, and **Starforging** is softer (Echo Strike 10%, 
 5% a piece, Heat Shield 1 s a piece, Soak Light half a heart), its alloy needs Dragon's Breath, and its
 templates turn up in End City treasure.
 
-**Music** for the astral biomes, all free to use - see [sounds/CREDITS.txt](src/main/resources/assets/astralend/sounds/CREDITS.txt):
+**Music** for the astral biomes, all free to use - see [sounds/credits.txt](src/main/resources/assets/astralend/sounds/credits.txt):
 "Out There" by yd, "Ambient Relaxing Loop" and "Heavenly Loop" by isaiah658, "Observing the Star" by
 madeso (all CC0), and "Space Music" by HitCtrl (CC-BY 3.0).
 
