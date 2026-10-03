@@ -337,7 +337,15 @@ public final class ClientTrailer {
             }
         }
 
-        if (scene.opts().containsKey("orbit") && focus != null) {
+        Vec3 chase = "chase".equals(scene.opts().get("comet")) ? cometAt(f) : null;
+        if (chase != null) {
+            // comet=chase: fly just behind and above the comet as it comes in, looking at it
+            Vec3 ahead = cometAt(Math.min(f + 2, scene.frames() - 1));
+            Vec3 heading = ahead != null && ahead.distanceToSqr(chase) > 1.0E-4 ? ahead.subtract(chase).normalize() : forward;
+            Vec3 side = new Vec3(-heading.z, 0, heading.x);
+            double settle = Math.min(1.0, Math.max(0.0, (t - 0.7) / 0.3));   // pull up and back as it lands
+            eye = chase.subtract(heading.scale(7.0 + 6.0 * settle)).add(side.scale(2.5)).add(0, 2.5 + 5.0 * settle, 0);
+        } else if (scene.opts().containsKey("orbit") && focus != null) {
             Vec3 flat = new Vec3(eye0.x - focus.x, 0, eye0.z - focus.z);
             double radius = flat.length() - scene.num("fwd", 0) * e;
             double angle = Math.atan2(flat.z, flat.x) + Math.toRadians(scene.num("orbit", 0)) * e;

@@ -18,6 +18,7 @@
 #   roll              degrees of camera roll, eased in over the shot
 #   ease              both (default), in, out or none
 #   comet             a live comet crosses the sky and comes down ahead; the camera follows it
+#                     (comet=chase: the camera flies just behind it all the way down)
 # and things to happen: wake@N, bridges@N (on frame N), flare=<phase>, clear, and for the Spire Wyrm
 # wyrm_wake@N (it wakes on its nest), wyrm_circle@N (it circles the top of its spire, in view),
 # wyrm_breath@N (it breathes at the camera), wyrm_stun@N (the bell nearest the camera rings and
@@ -51,7 +52,7 @@ mob_umbral_stalker_lit 65 orbit=30 | Umbral Stalker
 mob_hollow 75 orbit=-40 | The Hollow
 vo 0.3 | Keep an eye on the sky.
 card 2.8 | Keep an eye on the sky.
-comet_wake 190 comet | Live Comets
+comet_wake 190 comet=chase | Live Comets
 sky_corona_flare 110 yaw=25 pitch=-18:-10 flare=flare | Sunstorms
 vo 0.3 | Someone was here before you.
 card 2.8 | Someone was here before you.

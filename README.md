@@ -7,7 +7,7 @@ into a sparse, mysterious network of astral islands. The full plan is in
 **Status:** phases 1-10 done. Mod ID: `astralend`. Phase 10 reworked the whole mod toward what a real
 Mojang End update would ship - see [Phase 10](#phase-10-the-rework) below, which also lists every rename.
 
-[![Fifteen seconds of the trailer, filmed in the game. Click for the full trailer on YouTube.](docs/modrinth/teaser.webp)](https://youtu.be/ZUQVTpnqRTQ)
+[![Fifteen seconds of the trailer, filmed in the game: the Spire Wyrm wakes. Click for the full trailer on YouTube.](docs/modrinth/teaser.webp)](https://youtu.be/ZUQVTpnqRTQ)
 
 **[Watch the trailer](https://youtu.be/ZUQVTpnqRTQ)**
 
