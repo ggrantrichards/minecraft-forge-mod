@@ -575,7 +575,8 @@ public final class WorldgenSurvey {
         // Up the shaft from 30 blocks below the nest, and level with it from 22 blocks out.
         lines.add(String.format(java.util.Locale.ROOT, "wyrm_shaft %.1f %.1f %.1f -45 -60", nest.x - 2.0, nest.y - 30.0, nest.z - 2.0));
         lines.add(String.format(java.util.Locale.ROOT, "wyrm_flight %.1f %.1f %.1f -45 -8", nest.x - 16.0, nest.y + 4.0, nest.z - 16.0));
-        // The bell nearest the top, seen from just outside the spire's wall, level with it.
+        // The bell nearest the top, seen from inside the shaft (the bells hang at the ledges' inner
+        // edges), from just past the middle, a little above it.
         BlockPos bell = null;
         for (BlockPos p : BlockPos.betweenClosed(BlockPos.containing(nest).offset(-18, -40, -18), BlockPos.containing(nest).offset(18, 4, 18))) {
             if (end.getBlockState(p).is(Blocks.BELL) && (bell == null || p.getY() > bell.getY())) {
@@ -585,7 +586,7 @@ public final class WorldgenSurvey {
         if (bell != null) {
             net.minecraft.world.phys.Vec3 ring = net.minecraft.world.phys.Vec3.atCenterOf(bell);
             net.minecraft.world.phys.Vec3 out = new net.minecraft.world.phys.Vec3(ring.x - nest.x, 0, ring.z - nest.z).normalize();
-            net.minecraft.world.phys.Vec3 cam = ring.add(out.scale(9.0)).add(0, 2.0, 0);
+            net.minecraft.world.phys.Vec3 cam = new net.minecraft.world.phys.Vec3(nest.x, ring.y, nest.z).add(out.scale(-2.5)).add(0, 2.5, 0);
             net.minecraft.world.phys.Vec3 d = ring.subtract(cam);
             double yaw = Math.toDegrees(Math.atan2(-d.x, d.z));
             double pitch = -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
