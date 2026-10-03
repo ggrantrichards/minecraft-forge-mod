@@ -25,16 +25,16 @@ from PIL import Image
 
 from pixelart import chunks, hexc, ramp
 
-VANILLA_URL = "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.4/assets/minecraft/textures/block/{}.png"
+VANILLA_URL = "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.4/assets/minecraft/textures/{}.png"
 CACHE = Path(__file__).resolve().parent / ".vanilla"
 
 
-def vanilla(name):
-    """A vanilla block texture (the first frame, if it's animated)."""
-    path = CACHE / f"{name}.png"
+def vanilla(name, kind="block"):
+    """A vanilla block (or item) texture (the first frame, if it's animated)."""
+    path = CACHE / (f"{name}.png" if kind == "block" else f"{kind}/{name}.png")
     if not path.exists():
-        CACHE.mkdir(exist_ok=True)
-        with urllib.request.urlopen(VANILLA_URL.format(name), timeout=30) as r:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with urllib.request.urlopen(VANILLA_URL.format(f"{kind}/{name}"), timeout=30) as r:
             path.write_bytes(r.read())
     return Image.open(path).convert("RGBA").crop((0, 0, 16, 16))
 
@@ -55,9 +55,9 @@ def shift(img, hue=0.0, sat=1.0, val=1.0, lift=0.0):
     return out
 
 
-def gradient(img, dark, light):
+def gradient(img, *stops):
     """A gradient map: each pixel's brightness, stretched over the texture's own range, picks a tone
-    between `dark` and `light`. The pattern and the number of tones stay vanilla's."""
+    along `stops` (dark to light). The pattern and the number of tones stay vanilla's."""
     out = img.copy()
     px = out.load()
 
@@ -65,12 +65,31 @@ def gradient(img, dark, light):
         return 0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2]
     ls = [lum(px[x, y]) for y in range(16) for x in range(16) if px[x, y][3]]
     lo, hi = min(ls), max(ls)
-    d, l = hexc(dark), hexc(light)
+    cs = [hexc(c) for c in stops]
     for y in range(16):
         for x in range(16):
             p = px[x, y]
+            if not p[3]:
+                continue
             t = (lum(p) - lo) / (hi - lo) if hi > lo else 0.5
-            px[x, y] = tuple(round(d[i] + (l[i] - d[i]) * t) for i in range(3)) + (p[3],)
+            k = min(len(cs) - 2, int(t * (len(cs) - 1)))
+            f = t * (len(cs) - 1) - k
+            d, l = cs[k], cs[k + 1]
+            px[x, y] = tuple(round(d[i] + (l[i] - d[i]) * f) for i in range(3)) + (p[3],)
+    return out
+
+
+def ore(host, vanilla_ore, *stops):
+    """An ore the vanilla way: the host stone, with the ore's clusters (the pixels where the vanilla
+    ore differs from vanilla stone) laid over it, recoloured along `stops`."""
+    src, stone = vanilla(vanilla_ore), vanilla("stone")
+    clusters = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for y in range(16):
+        for x in range(16):
+            if src.getpixel((x, y)) != stone.getpixel((x, y)):
+                clusters.putpixel((x, y), src.getpixel((x, y)))
+    out = host.copy()
+    out.alpha_composite(gradient(clusters, *stops))
     return out
 
 
@@ -83,28 +102,78 @@ def sunscorched_stone():
 
 
 def chorus_moss():
-    return shift(vanilla("moss_block"), hue=0.55, sat=0.62, val=1.25)
-
-
-def chorus_stalk():
-    return shift(vanilla("crimson_stem"), hue=-0.12, sat=0.48, val=1.45)
-
-
-def chorus_stalk_top():
-    return shift(vanilla("crimson_stem_top"), hue=-0.12, sat=0.48, val=1.45)
-
-
-def chorus_bloom():
-    """Cherry leaves in chorus violet; the little green leaves become a deep chorus purple."""
-    img = shift(vanilla("cherry_leaves"), hue=-0.13, sat=1.0, val=0.92)
-    src = vanilla("cherry_leaves").load()
+    """Moss in violet, split-toned: its shadows lean blue, its tufts lean pink - livelier than a recolour."""
+    img = shift(vanilla("moss_block").transpose(Image.Transpose.FLIP_LEFT_RIGHT), hue=0.55, sat=0.62, val=1.25)
     px = img.load()
     for y in range(16):
         for x in range(16):
-            r, g, b, a = src[x, y]
-            if a and g > r:   # a green leaf pixel
-                v = (r + g + b) / (3 * 255)
-                px[x, y] = (round(70 + 60 * v), round(36 + 30 * v), round(84 + 60 * v), a)
+            r, g, b, a = px[x, y]
+            h, s_, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+            h = (h + (v - 0.55) * 0.12) % 1.0
+            r, g, b = colorsys.hsv_to_rgb(h, s_, v)
+            px[x, y] = (round(r * 255), round(g * 255), round(b * 255), a)
+    return img
+
+
+# Chorus wood: the crimson stem's braided veins (flipped, so they don't line up with crimson's), its
+# bark in chorus purple and its veins in the lavender of chorus fruit, with a pale flower-white node
+# where a few veins meet.
+CHORUS_VEIN = [hexc("94609e"), hexc("ad7cb8"), hexc("c79ed0"), hexc("e4c8ea")]
+_CRIMSON_VEIN = {(123, 0, 0): 0, (137, 15, 15): 1, (150, 21, 21): 2, (177, 39, 39): 3,
+                 (148, 24, 24): 1, (172, 32, 32): 3}
+
+
+def _chorus_wood(name, nodes=()):
+    src = vanilla(name)
+    img = shift(src, hue=-0.12, sat=0.48, val=1.45)
+    px, sp = img.load(), src.load()
+    for y in range(16):
+        for x in range(16):
+            i = _CRIMSON_VEIN.get(sp[x, y][:3])
+            if i is not None:
+                px[x, y] = CHORUS_VEIN[i]
+    for (x, y) in nodes:
+        px[x, y] = hexc("f6eafa")
+    return img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+
+
+def chorus_stalk():
+    return _chorus_wood("crimson_stem")
+
+
+def chorus_stalk_top():
+    return _chorus_wood("crimson_stem_top")
+
+
+def stripped_chorus_stalk():
+    return shift(vanilla("stripped_crimson_stem"), hue=-0.12, sat=0.42, val=1.6)
+
+
+def stripped_chorus_stalk_top():
+    return shift(vanilla("stripped_crimson_stem_top"), hue=-0.12, sat=0.42, val=1.6)
+
+
+def chorus_wood(name, kind="block"):
+    return lambda: shift(vanilla(name, kind), hue=-0.12, sat=0.48, val=1.45)
+
+
+def chorus_bloom():
+    """Not a tree's leaves: clusters of chorus blossoms. Cherry leaves' shape, its petals in the tones
+    of the chorus flower (lilac to near-white), its little green leaves left open."""
+    src = vanilla("cherry_leaves")
+    img = src.copy()
+    px = img.load()
+    pal = [hexc("563a5e"), hexc("7c5b8a"), hexc("ab8ab4"), hexc("d6bbdc"), hexc("eed6f0")]
+    tones = sorted({sum(p[:3]) for p in src.getdata() if p[3] and p[1] <= p[0]})
+    for y in range(16):
+        for x in range(16):
+            r, g, b, a = px[x, y]
+            if not a:
+                continue
+            if g > r:
+                px[x, y] = (0, 0, 0, 0)               # a green leaf: left open
+            else:
+                px[x, y] = pal[tones.index(r + g + b) * len(pal) // len(tones)]
     return img
 
 
@@ -122,6 +191,105 @@ def leviathan_bone_side():
 
 def leviathan_bone_top():
     return gradient(vanilla("bone_block_top"), "9c988a", "e2dfd2")
+
+
+def pale_end_stone_bricks():
+    return gradient(vanilla("end_stone_bricks"), "a6a2b4", "e4e2ec")
+
+
+def sunscorched_stone_bricks():
+    return gradient(vanilla("end_stone_bricks"), "b48448", "efcf8e")
+
+
+def polished_sunscorched_stone():
+    return gradient(vanilla("sandstone_top"), "c0915a", "efcf8e")
+
+
+# Lumine wood: the warped fungus's stem and planks, cooled from teal to the cap's blue; the stem's
+# dark bark turned a pale lavender grey, its veins the cap's glowing blue.
+def lumine_wood(name, kind="block"):
+    return lambda: shift(vanilla(name, kind), hue=0.08, sat=0.7, val=1.2)
+
+
+def two_tone(img, is_a, stops_a, stops_b):
+    """Gradient-maps the pixels where is_a(pixel) along stops_a, the rest along stops_b."""
+    a = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    b = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for y in range(16):
+        for x in range(16):
+            p = img.getpixel((x, y))
+            (a if is_a(p) else b).putpixel((x, y), p)
+    out = gradient(a, *stops_a)
+    out.alpha_composite(gradient(b, *stops_b))
+    return out
+
+
+def _lumine_stem(name):
+    return lambda: two_tone(vanilla(name), lambda p: p[1] > p[0], ("2f6f9c", "5fb4e0", "a8e2fa"),
+                            ("4a4560", "6e6888", "8e88a8"))
+
+
+def stardust_block():
+    """Sand made of starlight: vanilla sand in pale violet, with a few glittering grains."""
+    img = gradient(vanilla("sand"), "9a86c0", "c8b8e4", "e4dcf4")
+    for (x, y) in ((3, 2), (12, 6), (7, 11), (14, 14)):
+        img.putpixel((x, y), hexc("fff6d4"))
+    return img
+
+
+# Nullwood: dark oak, in the deep violet of the Hollow Isles.
+NULL = ("120c22", "2e2150", "5a4590", "8a74c4")
+
+
+def nullwood(name, kind="block"):
+    return lambda: gradient(vanilla(name, kind), *NULL)
+
+
+def nullwood_leaves():
+    return gradient(vanilla("dark_oak_leaves"), "160f2a", "33265e", "6a54b0")
+
+
+def meteoric_iron_ore():
+    return ore(charred_end_stone(), "iron_ore", "2a2b34", "7f8494", "eef0f6")
+
+
+def solarite_ore():
+    return ore(sunscorched_stone(), "gold_ore", "6e2e04", "e0820f", "fff2b0")
+
+
+def void_crystal_ore():
+    return ore(nightstone(), "diamond_ore", "2a1258", "8a54f0", "f0e2ff")
+
+
+METEORIC = ("24232c", "6c6f80", "dfe2ec")
+
+
+def meteoric(name, kind="block"):
+    return lambda: gradient(vanilla(name, kind), *METEORIC)
+
+
+def solarite(name, kind="block"):
+    return lambda: shift(vanilla(name, kind), hue=-0.055, sat=1.05, val=1.0)
+
+
+def void_crystal_block():
+    return shift(vanilla("budding_amethyst"), hue=0.015, sat=1.1, val=0.72)
+
+
+def glimmer_cluster():
+    return shift(vanilla("amethyst_cluster"), hue=-0.27, sat=0.85, val=1.0)
+
+
+def whalelight_scale():
+    return gradient(vanilla("pearlescent_froglight_side"), "7a8fd0", "c4d4f6", "f6f9ff")
+
+
+def petrified_stalk_side():
+    return gradient(chorus_stalk(), "3e3a40", "8a8488", "c2bcbc")
+
+
+def petrified_stalk_top():
+    return gradient(chorus_stalk_top(), "3e3a40", "8a8488", "c2bcbc")
 
 
 # ---- drawn, kept from the first pass
@@ -150,4 +318,51 @@ TEXTURES = [
     ("block/leviathan_bone_top.png", leviathan_bone_top),
     ("block/nightstone.png", nightstone),
     ("block/charred_end_stone.png", charred_end_stone),
+    ("block/stripped_chorus_stalk.png", stripped_chorus_stalk),
+    ("block/stripped_chorus_stalk_top.png", stripped_chorus_stalk_top),
+    ("block/chorus_planks.png", chorus_wood("crimson_planks")),
+    ("block/chorus_door_top.png", chorus_wood("crimson_door_top")),
+    ("block/chorus_door_bottom.png", chorus_wood("crimson_door_bottom")),
+    ("block/chorus_trapdoor.png", chorus_wood("crimson_trapdoor")),
+    ("item/chorus_door.png", chorus_wood("crimson_door", "item")),
+    ("block/lumine_stem.png", _lumine_stem("warped_stem")),
+    ("block/lumine_stem_top.png", _lumine_stem("warped_stem_top")),
+    ("block/stardust_block.png", stardust_block),
+    ("block/stripped_lumine_stem.png", lumine_wood("stripped_warped_stem")),
+    ("block/stripped_lumine_stem_top.png", lumine_wood("stripped_warped_stem_top")),
+    ("block/lumine_planks.png", lumine_wood("warped_planks")),
+    ("block/lumine_door_top.png", lumine_wood("warped_door_top")),
+    ("block/lumine_door_bottom.png", lumine_wood("warped_door_bottom")),
+    ("block/lumine_trapdoor.png", lumine_wood("warped_trapdoor")),
+    ("item/lumine_door.png", lumine_wood("warped_door", "item")),
+    ("block/nullwood_log.png", nullwood("dark_oak_log")),
+    ("block/nullwood_log_top.png", nullwood("dark_oak_log_top")),
+    ("block/stripped_nullwood_log.png", nullwood("stripped_dark_oak_log")),
+    ("block/stripped_nullwood_log_top.png", nullwood("stripped_dark_oak_log_top")),
+    ("block/nullwood_planks.png", nullwood("dark_oak_planks")),
+    ("block/nullwood_door_top.png", nullwood("dark_oak_door_top")),
+    ("block/nullwood_door_bottom.png", nullwood("dark_oak_door_bottom")),
+    ("block/nullwood_trapdoor.png", nullwood("dark_oak_trapdoor")),
+    ("item/nullwood_door.png", nullwood("dark_oak_door", "item")),
+    ("block/nullwood_leaves.png", nullwood_leaves),
+    ("block/pale_end_stone_bricks.png", pale_end_stone_bricks),
+    ("block/sunscorched_stone_bricks.png", sunscorched_stone_bricks),
+    ("block/polished_sunscorched_stone.png", polished_sunscorched_stone),
+    ("block/meteoric_iron_ore.png", meteoric_iron_ore),
+    ("block/solarite_ore.png", solarite_ore),
+    ("block/void_crystal_ore.png", void_crystal_ore),
+    ("block/raw_meteoric_iron_block.png", meteoric("raw_iron_block")),
+    ("block/meteoric_iron_block.png", meteoric("iron_block")),
+    ("item/raw_meteoric_iron.png", meteoric("raw_iron", "item")),
+    ("item/meteoric_iron_ingot.png", meteoric("iron_ingot", "item")),
+    ("item/meteoric_iron_nugget.png", meteoric("iron_nugget", "item")),
+    ("block/raw_solarite_block.png", solarite("raw_gold_block")),
+    ("block/solarite_block.png", solarite("gold_block")),
+    ("item/raw_solarite.png", solarite("raw_gold", "item")),
+    ("item/solarite_ingot.png", solarite("gold_ingot", "item")),
+    ("block/void_crystal_block.png", void_crystal_block),
+    ("block/glimmer_cluster.png", glimmer_cluster),
+    ("block/whalelight_scale.png", whalelight_scale),
+    ("block/petrified_stalk_side.png", petrified_stalk_side),
+    ("block/petrified_stalk_top.png", petrified_stalk_top),
 ]
