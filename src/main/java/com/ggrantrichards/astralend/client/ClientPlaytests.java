@@ -12,6 +12,7 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -39,6 +40,12 @@ import org.slf4j.Logger;
 //   wyrm_fight     step onto a Resonant Spire's top in survival: the Wyrm wakes and fights; the camera
 //                  keeps it in view
 //   corona_drop    teleport into the Corona from high up, as with /tp, and look round as you land
+//   upwelling      drink Upwelling under a ledge: fall up onto its underside, walk on it, turn, jump off
+//   biome_border   fly east out of the Nebula Fields across its border: does the sky shift gently,
+//                  do the biomes interlock?
+//   maw_hall       stand in the hall inside a Rift Maw's skull and look all round it
+//   remnant_flight fly in toward the Remnant from far off: the picture of it in the sky gives way to
+//                  the real thing
 public final class ClientPlaytests {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String TAG = "[AstralEnd playtest] ";
@@ -48,7 +55,11 @@ public final class ClientPlaytests {
     private static final List<Test> TESTS = List.of(
         new Test("whale_ride", 300, 10),
         new Test("wyrm_fight", 700, 10),
-        new Test("corona_drop", 260, 13));
+        new Test("corona_drop", 260, 13),
+        new Test("upwelling", 320, 10),
+        new Test("biome_border", 360, 12),
+        new Test("maw_hall", 240, 12),
+        new Test("remnant_flight", 400, 16));
 
     private static int index = -1;
     private static int ticks;
@@ -168,6 +179,42 @@ public final class ClientPlaytests {
                     end.getEntitiesOfClass(SpireWyrm.class, new net.minecraft.world.phys.AABB(nest, nest).inflate(40))
                         .stream().findFirst().ifPresent(w -> subject = w);
                 }
+                case "upwelling" -> {
+                    // A ledge to hang from: a 9x9 roof of Nightstone 6 blocks over the Nebula Fields.
+                    ClientScreenshots.Shot s = shot("nebula_fields");
+                    BlockPos ground = s != null ? BlockPos.containing(s.x(), s.y(), s.z()) : new BlockPos(0, 80, 400);
+                    ground = end.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, ground);
+                    for (BlockPos p : BlockPos.betweenClosed(ground.offset(-4, 6, -4), ground.offset(4, 6, 4))) {
+                        end.setBlockAndUpdate(p, com.ggrantrichards.astralend.ModBlocks.NIGHTSTONE.get().defaultBlockState());
+                    }
+                    for (BlockPos p : BlockPos.betweenClosed(ground.offset(-4, 0, -4), ground.offset(4, 5, 4))) {
+                        end.setBlockAndUpdate(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                    }
+                    put(player, end, Vec3.atBottomCenterOf(ground), 0, 0);
+                    player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.alchemy.PotionContents
+                        .createItemStack(Items.POTION, com.ggrantrichards.astralend.ModEffects.UPWELLING_POTION.getHolder().orElseThrow()));
+                }
+                case "biome_border", "remnant_flight" -> {
+                    ClientScreenshots.Shot s = shot(test.name().equals("biome_border") ? "pt_border" : "structure_remnant");
+                    if (s == null) {
+                        LOGGER.error(TAG + "nowhere to start {} in astralend-shots.txt", test.name());
+                        return;
+                    }
+                    double back = test.name().equals("remnant_flight") ? 260 : 0;     // from about 300 blocks out
+                    double yaw = Math.toRadians(s.yaw());
+                    put(player, end, new Vec3(s.x() + Math.sin(yaw) * back, s.y() + 10, s.z() - Math.cos(yaw) * back), s.yaw(), 5);
+                    player.setGameMode(GameType.CREATIVE);
+                    player.getAbilities().flying = true;
+                    player.onUpdateAbilities();
+                }
+                case "maw_hall" -> {
+                    ClientScreenshots.Shot s = shot("structure_rift_maw_hall");
+                    if (s == null) {
+                        LOGGER.error(TAG + "no Rift Maw hall in astralend-shots.txt");
+                        return;
+                    }
+                    put(player, end, new Vec3(s.x(), s.y() - 1.6, s.z()), s.yaw(), 0);
+                }
                 case "corona_drop" -> {
                     ClientScreenshots.Shot s = shot("corona");
                     Vec3 at = s != null ? new Vec3(s.x() + 26, 140, s.z() + 26) : new Vec3(-2750, 140, -1000);
@@ -230,6 +277,39 @@ public final class ClientPlaytests {
                         server.getPlayerList().getPlayers().get(0)), 7.0F));   // a sword hit when it's in reach
                 }
             }
+            case "upwelling" -> {
+                if (t == 5) {
+                    keys.keyUse.setDown(true);                       // drink it
+                }
+                if (t == 50) {
+                    keys.keyUse.setDown(false);
+                }
+                keys.keyUp.setDown(t > 120 && t < 220);              // walk along the ceiling
+                if (t >= 160 && t < 200) {
+                    player.setYRot(player.getYRot() + 2.0F);
+                }
+                keys.keyJump.setDown(t >= 240 && t < 246);          // and drop off it
+                if (t == 280) {
+                    minecraft.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+                }
+                if (t % 20 == 0) {
+                    LOGGER.info(TAG + "upwelling t={} y={} on ground {} gravity {} upside down {}", t, String.format("%.2f", player.getY()),
+                        player.onGround(), player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.GRAVITY),
+                        UpsideDown.isFlipped(player));
+                }
+            }
+            case "biome_border", "remnant_flight" -> {
+                keys.keyUp.setDown(true);
+                keys.keySprint.setDown(test.name().equals("biome_border"));
+                if (t % 30 == 0) {
+                    LOGGER.info(TAG + "{} t={} at {} biome {}", test.name(), t, player.blockPosition().toShortString(),
+                        minecraft.level.getBiome(player.blockPosition()).unwrapKey().map(k -> k.identifier().toString()).orElse("?"));
+                }
+            }
+            case "maw_hall" -> {
+                player.setYRot(player.getYRot() + 1.5F);
+                player.setXRot(10.0F * Mth.sin(t * 0.05F));
+            }
             case "corona_drop" -> {
                 player.setYRot(player.getYRot() + 2.0F);              // look all the way round as you fall
                 player.setXRot(t < 120 ? 25.0F : 5.0F);
@@ -245,6 +325,8 @@ public final class ClientPlaytests {
     private static void release(Minecraft minecraft) {
         minecraft.options.keyUp.setDown(false);
         minecraft.options.keyJump.setDown(false);
+        minecraft.options.keyUse.setDown(false);
+        minecraft.options.keySprint.setDown(false);
         minecraft.options.setCameraType(CameraType.FIRST_PERSON);
     }
 

@@ -414,6 +414,7 @@ public final class WorldgenSurvey {
         structureShot(lines, structures, "resonant_spire", 60.0, 40.0, 30.0);
         structureShot(lines, structures, "solar_array_room", 3.0, 2.2, 0.0);
         wyrmShots(lines, structures, end);
+        borderShot(lines, areas.get('N'), end);
         lines.addAll(EXTRA_SHOTS);
         try {
             java.nio.file.Files.write(java.nio.file.Path.of("astralend-shots.txt"), lines);
@@ -622,6 +623,28 @@ public final class WorldgenSurvey {
 
     // A viewpoint "structure_<name> x y z yaw pitch": `distance` blocks north-west of the found block and
     // `height` above it, looking at a point `aimLift` above that block.
+    // For the playtests: where to start a flight east across the edge of the Nebula Fields - 100 blocks
+    // short of the first place east of its centre where the biome changes, 30 above the ground.
+    private static void borderShot(List<String> lines, Area area, ServerLevel end) {
+        if (area == null) {
+            return;
+        }
+        var here = end.getBiome(area.centre);
+        for (int dx = 4; dx < 4000; dx += 4) {
+            BlockPos p = area.centre.offset(dx, 0, 0);
+            var there = end.getBiome(p);
+            if (!there.equals(here)) {
+                int x = p.getX() - 100;
+                int y = Math.max(70, end.getChunkSource().getGenerator().getBaseHeight(x, p.getZ(),
+                    net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG, end, end.getChunkSource().randomState())) + 30;
+                log("border: " + here.unwrapKey().map(k -> k.identifier().toString()).orElse("?") + " gives way to "
+                    + there.unwrapKey().map(k -> k.identifier().toString()).orElse("?") + " at " + p.toShortString());
+                lines.add(String.format(java.util.Locale.ROOT, "pt_border %d.5 %d %d.5 -90 15", x, y, p.getZ()));
+                return;
+            }
+        }
+    }
+
     // The Spire Wyrm asleep on the nest of the spire the survey found (and, for the trailer, a view up
     // the shaft and one from a balcony): checks it's there and asleep, and where to film it.
     private static void wyrmShots(List<String> lines, Map<String, BlockPos> structures, ServerLevel end) {

@@ -193,10 +193,13 @@ public class DriftWhale extends Mob implements ItemSteerable {
     @Override
     protected void tickRidden(Player controller, Vec3 riddenInput) {
         super.tickRidden(controller, riddenInput);
-        // A heavy animal: it turns slowly toward where the rider looks.
-        float yRot = this.getYRot() + Mth.wrapDegrees(controller.getYRot() - this.getYRot()) * 0.05F;
+        // A heavy animal: it swings round toward where the rider looks, steadily (at most 4 degrees a
+        // tick), and its turn is drawn smoothly between ticks (the old rotation is left for the
+        // renderer to interpolate from).
+        float turn = Mth.clamp(Mth.wrapDegrees(controller.getYRot() - this.getYRot()) * 0.12F, -4.0F, 4.0F);
+        float yRot = this.getYRot() + turn;
         this.setRot(yRot, 0.0F);
-        this.yRotO = this.yBodyRot = this.yHeadRot = yRot;
+        this.yBodyRot = this.yHeadRot = yRot;
     }
 
     @Override

@@ -98,7 +98,12 @@ public class AstralEndBiomeSource extends BiomeSource {
         if ((long) chunkX * chunkX + (long) chunkZ * chunkZ <= CENTRAL_RADIUS_SQR) {
             return this.end;
         }
-        switch (region(sampler, blockX, blockZ)) {
+        // Borders interlock rather than run as hard lines: the regions are read a little to one side
+        // or the other of where we are (by up to ~14 blocks, varying smoothly), so near a border the
+        // two biomes - astral or vanilla - reach into each other in lobes and patches over 15-25 blocks.
+        int warpedX = blockX + (int) Math.round(warp(blockX, blockZ, 0x51ED));
+        int warpedZ = blockZ + (int) Math.round(warp(blockX, blockZ, 0x7A3B));
+        switch (region(sampler, warpedX, warpedZ)) {
             case NEBULA_FIELDS: return this.nebulaFields;
             case ASHEN_BARRENS: return this.ashenBarrens;
             case COMET_WAKE: return this.cometWake;
@@ -119,6 +124,29 @@ public class AstralEndBiomeSource extends BiomeSource {
         } else {
             return heightValue < -0.21875 ? this.islands : this.barrens;
         }
+    }
+
+    // A smooth offset in blocks: two octaves of value noise (about 40 and 12 blocks across).
+    static double warp(int x, int z, int salt) {
+        return valueNoise(x / 40.0, z / 40.0, salt) * 10.0 + valueNoise(x / 12.0, z / 12.0, salt * 31) * 4.0;
+    }
+
+    private static double valueNoise(double x, double z, int salt) {
+        int x0 = (int) Math.floor(x), z0 = (int) Math.floor(z);
+        double fx = x - x0, fz = z - z0;
+        fx = fx * fx * (3 - 2 * fx);
+        fz = fz * fz * (3 - 2 * fz);
+        double a = lattice(x0, z0, salt), b = lattice(x0 + 1, z0, salt), c = lattice(x0, z0 + 1, salt), d = lattice(x0 + 1, z0 + 1, salt);
+        return (a + (b - a) * fx) + ((c + (d - c) * fx) - (a + (b - a) * fx)) * fz;
+    }
+
+    // A fixed value in [-1, 1] for a lattice point.
+    private static double lattice(int x, int z, int salt) {
+        long h = x * 0x9E3779B97F4A7C15L ^ z * 0xC2B2AE3D27D4EB4FL ^ salt * 0x165667B19E3779F9L;
+        h ^= h >>> 31;
+        h *= 0xBF58476D1CE4E5B9L;
+        h ^= h >>> 29;
+        return ((h >>> 11) * 0x1.0p-53) * 2.0 - 1.0;
     }
 
     // The astral region at a block position (ignoring the central 1,024 blocks); also used by the survey.
