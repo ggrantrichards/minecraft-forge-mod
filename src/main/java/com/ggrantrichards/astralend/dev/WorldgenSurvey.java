@@ -572,6 +572,7 @@ public final class WorldgenSurvey {
             return;
         }
         net.minecraft.world.phys.Vec3 nest = wyrms.get(0).position();
+        lines.add(String.format(java.util.Locale.ROOT, "pt_wyrm_nest %.1f %.1f %.1f 0 0", nest.x, nest.y, nest.z));   // for the playtests
         // On the nest, from the north-west, a little above it.
         lines.add(String.format(java.util.Locale.ROOT, "wyrm_nest %.1f %.1f %.1f -45 %.1f", nest.x - 6.0, nest.y + 5.0, nest.z - 6.0,
             Math.toDegrees(Math.atan2(5.0 + 1.62 - 0.5, Math.sqrt(72.0)))));

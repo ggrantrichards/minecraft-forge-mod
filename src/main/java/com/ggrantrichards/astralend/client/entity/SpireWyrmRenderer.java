@@ -56,8 +56,8 @@ public class SpireWyrmRenderer extends MobRenderer<SpireWyrm, SpireWyrmRenderer.
     // Its body trails up to 20 blocks behind its head, so it's drawn whenever any of it could be in
     // view - not just when the head is (which made the body blink out as the head left the screen).
     @Override
-    public boolean shouldRender(SpireWyrm entity, net.minecraft.client.renderer.culling.Frustum frustum, double x, double y, double z) {
-        return frustum.isVisible(entity.getBoundingBox().inflate(24.0)) && entity.distanceToSqr(x, y, z) < 256.0 * 256.0;
+    protected net.minecraft.world.phys.AABB getBoundingBoxForCulling(SpireWyrm entity, float partialTick) {
+        return entity.getBoundingBox().inflate(24.0);     // the whole long body, not just the head's box
     }
 
     @Override

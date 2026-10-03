@@ -43,6 +43,7 @@ public final class ModEntities {
             .clientTrackingRange(10).build(ENTITY_TYPES.key("hollow")));
     public static final RegistryObject<EntityType<DriftWhale>> DRIFT_WHALE = ENTITY_TYPES.register("drift_whale",
         () -> EntityType.Builder.of(DriftWhale::new, MobCategory.AMBIENT).sized(2.6F, 2.3F).eyeHeight(1.2F).fireImmune()
+            .passengerAttachments(3.3F)    // the rider sits on its back (drawn 3.3 blocks up), not inside it
             .clientTrackingRange(16).build(ENTITY_TYPES.key("drift_whale")));
     public static final RegistryObject<EntityType<Watcher>> WATCHER = ENTITY_TYPES.register("watcher",
         () -> EntityType.Builder.of(Watcher::new, MobCategory.MISC).sized(1.0F, 2.9F).eyeHeight(2.4F).fireImmune()

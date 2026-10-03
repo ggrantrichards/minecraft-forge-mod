@@ -581,13 +581,19 @@ def ground_cover(name, block, count, on=None):
     ]})
 
 
-def big_feature(name, feature_name, count=1, rarity=1, heightmap="MOTION_BLOCKING"):
-    """A large Java feature (tree, spire...) placed on the surface: `count` per chunk, in 1 of `rarity` chunks."""
+def big_feature(name, feature_name, count=1, rarity=1, heightmap="MOTION_BLOCKING", groves=None):
+    """A large Java feature (tree, spire...) placed on the surface: `count` per chunk, in 1 of `rarity` chunks.
+    groves=(noise_level, sparse, dense): instead of a fixed count, vanilla's biome noise (patches a hundred
+    or two blocks across) decides - `dense` per chunk where it's above noise_level, `sparse` elsewhere."""
     feature(feature_name, {"type": rid(feature_name)})
     placement = []
     if rarity > 1:
         placement.append({"type": "minecraft:rarity_filter", "chance": rarity})
-    if count > 1:
+    if groves:
+        level, sparse, dense = groves
+        placement.append({"type": "minecraft:noise_threshold_count", "noise_level": level, "below_noise": sparse,
+                          "above_noise": dense})
+    elif count > 1:
         placement.append({"type": "minecraft:count", "count": count})
     placement += [{"type": "minecraft:in_square"}, {"type": "minecraft:heightmap", "heightmap": heightmap},
                   {"type": "minecraft:biome"}]
@@ -793,6 +799,8 @@ def worldgen():
     plant_patch("nebula_starblooms", "starbloom", rarity=1, count=32, spread=6)
     # A forest of giant Lumineshrooms over a carpet of Nebula Tufts, with tendrils hanging below.
     big_feature("nebula_giant_lumineshrooms", "giant_lumineshroom", count=1)
+    # Oases: ponds sunk into the moss, reeds and lumineshrooms crowding their banks.
+    big_feature("nebula_oases", "oasis", rarity=4, heightmap="WORLD_SURFACE_WG")
     ground_cover("nebula_tufts", "nebula_tufts", 110)
     feature("tendril_underside", {"type": rid("tendril_underside")})
     placed("nebula_tendrils", {"feature": rid("tendril_underside"), "placement": [
@@ -837,7 +845,7 @@ def worldgen():
         "effects": {"water_color": "#7a5fc4"},
         # Features by generation step. Step 4 (surface structures) has the return gateway, the
         # same as in the End Highlands; step 9 (vegetal decoration) has the plants.
-        "features": [[], [], [], [], ["minecraft:end_gateway_return"], [], [], [], [],
+        "features": [[], [rid("nebula_oases")], [], [], ["minecraft:end_gateway_return"], [], [], [], [],
                      [rid("nebula_giant_lumineshrooms"), rid("nebula_lumineshrooms"), rid("nebula_starblooms"),
                       rid("nebula_astral_vines"), rid("nebula_tufts"), rid("nebula_tendrils"), "minecraft:chorus_plant"]],
         "has_precipitation": False,
@@ -1064,7 +1072,9 @@ def worldgen_phase3():
 
     # ---- Chorus Thicket (Phase 10): the Nebula Fields' sister. Chorus trees crowded on Chorus Moss,
     # vanilla chorus between them, and the Endermen who eat it.
-    big_feature("chorus_thicket_trees", "chorus_tree", count=5)
+    # Dense groves of chorus trees with clearings between them (a lone tree now and then).
+    big_feature("chorus_thicket_trees", "chorus_tree", groves=(0.15, 0, 7))
+    big_feature("chorus_thicket_lone_trees", "chorus_tree", rarity=3)
     plant_patch("chorus_thicket_sprouts", "chorus_sprout", rarity=3, count=6, spread=5)
     plant_patch("chorus_thicket_starblooms", "starbloom", rarity=2, count=16, spread=6)
     ground_cover("chorus_thicket_carpet", "chorus_moss_carpet", 20, on=[rid("chorus_moss")])
@@ -1073,7 +1083,7 @@ def worldgen_phase3():
         {"type": "minecraft:in_square"}, {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"},
         {"type": "minecraft:biome"}]})
     end_biome("chorus_thicket", "Chorus Thicket", fog="#3a1c3e", water="#c06ad0",
-              features_step9=[rid("chorus_thicket_trees"), rid("chorus_thicket_chorus"), rid("chorus_thicket_sprouts"),
+              features_step9=[rid("chorus_thicket_trees"), rid("chorus_thicket_lone_trees"), rid("chorus_thicket_chorus"), rid("chorus_thicket_sprouts"),
                               rid("chorus_thicket_starblooms"), rid("chorus_thicket_carpet")],
               particle="minecraft:portal", particle_chance=0.006)
 

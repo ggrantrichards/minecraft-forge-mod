@@ -28,6 +28,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BellBlockEntity;
@@ -244,7 +245,7 @@ public class SpireWyrm extends Monster {
             this.stunCooldown--;
         }
         this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
-        Player target = this.target(level);
+        LivingEntity target = this.target(level);
         boolean enraged = this.getHealth() < this.getMaxHealth() * 0.5F;
         if (enraged && !this.enraged) {
             this.enraged = true;                                     // the second phase: faster, fiercer
@@ -430,7 +431,7 @@ public class SpireWyrm extends Monster {
     }
 
     // Whoever is on the platform at the top of the spire (or just over it).
-    private boolean onPlatform(Player p) {
+    private boolean onPlatform(Entity p) {
         double dx = p.getX() - this.home.x, dz = p.getZ() - this.home.z;
         return dx * dx + dz * dz < 14.0 * 14.0 && p.getY() > this.home.y - 3.0 && p.getY() < this.home.y + 20.0;
     }
@@ -535,16 +536,16 @@ public class SpireWyrm extends Monster {
 
     // The player it fights: one at the top of its spire (on the platform or in the air above it). Those
     // still climbing the shaft below are left to climb.
-    private @Nullable Player testTarget;
+    private @Nullable LivingEntity testTarget;
 
-    // For the survey's fight test: fight this player (a stand-in the level doesn't list as a player).
-    public void fightForTest(Player stand) {
+    // For the survey's fight test: fight this stand-in as if it were a player at the top.
+    public void fightForTest(LivingEntity stand) {
         this.testTarget = stand;
     }
 
-    private @Nullable Player target(ServerLevel level) {
-        Player p = this.testTarget != null ? this.testTarget : level.getNearestPlayer(TARGETS, this);
-        if (p == null || this.home == null || p.isCreative() || p.isSpectator()) {
+    private @Nullable LivingEntity target(ServerLevel level) {
+        LivingEntity p = this.testTarget != null ? this.testTarget : level.getNearestPlayer(TARGETS, this);
+        if (p == null || this.home == null || p instanceof Player pl && (pl.isCreative() || pl.isSpectator())) {
             this.setTarget(null);
             return null;
         }

@@ -70,6 +70,7 @@ public final class AstralEnd {
             SpectatorOverlayFix.register();  // client-only code; the server never loads it
             ClientScreenshots.register();    // does nothing unless started with -Dastralend.screenshots=true
             com.ggrantrichards.astralend.client.ClientTrailer.register();   // nor this, without -Dastralend.trailer=true
+            com.ggrantrichards.astralend.client.ClientPlaytests.register(); // nor this, without -Dastralend.playtests=true
             AstralSky.register();            // the End's sky: stars, auroras, the Remnant, flares
             com.ggrantrichards.astralend.client.starforge.StarforgeClient.register(modBusGroup);  // the Forge's screen, armour accents
         }

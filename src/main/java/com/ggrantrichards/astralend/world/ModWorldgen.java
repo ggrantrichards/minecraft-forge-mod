@@ -47,6 +47,7 @@ public final class ModWorldgen {
         // Phase 10
         FEATURE_TYPES.register("chorus_tree", () -> com.ggrantrichards.astralend.world.feature.ChorusTreeFeature.CODEC);
         FEATURE_TYPES.register("glimmer_spire", () -> com.ggrantrichards.astralend.world.feature.GlimmerSpireFeature.CODEC);
+        FEATURE_TYPES.register("oasis", () -> com.ggrantrichards.astralend.world.feature.OasisFeature.CODEC);
         FEATURE_TYPES.register("underside", () -> com.ggrantrichards.astralend.world.feature.UndersideFeature.CODEC);
     }
 

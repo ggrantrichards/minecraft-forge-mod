@@ -86,8 +86,8 @@ final class MechanicsSurvey {
         }
         wyrm.snapTo(nest.getX() + 0.5, nest.getY(), nest.getZ() + 0.5, 0.0F, 0.0F);
         end.addFreshEntity(wyrm);
-        net.minecraft.server.level.ServerPlayer stand = net.minecraftforge.common.util.FakePlayerFactory.getMinecraft(end);
-        stand.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        // A stand-in for the player: an armour stand where they'd be standing.
+        var stand = new net.minecraft.world.entity.decoration.ArmorStand(end, 0, 0, 0);
         stand.snapTo(nest.getX() + 6.5, nest.getY(), nest.getZ() + 0.5, 0.0F, 0.0F);
         wyrm.fightForTest(stand);
         java.util.Map<String, Integer> seen = new java.util.LinkedHashMap<>();
@@ -123,8 +123,6 @@ final class MechanicsSurvey {
     // Every spawn egg, used on the ground the way a player uses it: does the mob appear, and is it
     // still there (and, for the Umbral Stalker, visible) a couple of seconds later?
     static void checkSpawnEggs(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
-        net.minecraft.server.level.ServerPlayer player = net.minecraftforge.common.util.FakePlayerFactory.getMinecraft(end);
-        player.snapTo(standOn.getX() + 0.5, standOn.getY(), standOn.getZ() - 4.5, 0.0F, 30.0F);
         String[] mobs = {"pollinator", "void_wanderer", "umbral_stalker", "cinder_mite", "void_ray", "hollow", "drift_whale",
             "watcher", "live_comet", "spire_wyrm"};
         StringBuilder report = new StringBuilder("spawn eggs:");
@@ -144,11 +142,9 @@ final class MechanicsSurvey {
                 end.setBlock(ground.above(up), Blocks.AIR.defaultBlockState(), 3);
             }
             net.minecraft.world.item.ItemStack egg = new net.minecraft.world.item.ItemStack(item.get());
-            player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, egg);
             net.minecraft.world.phys.AABB around = new net.minecraft.world.phys.AABB(ground).inflate(6.0);
             int before = end.getEntities(type.get(), around, e -> true).size();
-            var result = egg.useOn(new net.minecraft.world.item.context.UseOnContext(player, net.minecraft.world.InteractionHand.MAIN_HAND,
-                new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(ground).add(0, 0.5, 0), net.minecraft.core.Direction.UP, ground, false)));
+            var result = egg.useOn(use(end, egg, ground));
             var spawned = end.getEntities(type.get(), around, e -> true);
             int made = spawned.size() - before;
             String state = "";
@@ -177,7 +173,6 @@ final class MechanicsSurvey {
     // mustn't (vanilla's rule) - so a portal that won't light is the frames, not the mod.
     static void checkHandBuiltPortal(ServerLevel end, List<String> failures, Consumer<String> log) {
         net.minecraft.server.level.ServerLevel overworld = end.getServer().overworld();
-        net.minecraft.server.level.ServerPlayer player = net.minecraftforge.common.util.FakePlayerFactory.getMinecraft(overworld);
         StringBuilder report = new StringBuilder("hand-built End portal:");
         for (boolean inward : new boolean[] {true, false}) {
             BlockPos c = new BlockPos(inward ? 20 : 40, 200, 20);   // in the sky over spawn: nothing in the way
@@ -193,9 +188,7 @@ final class MechanicsSurvey {
             }
             for (BlockPos f : frames) {
                 net.minecraft.world.item.ItemStack eye = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ENDER_EYE);
-                player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, eye);
-                eye.useOn(new net.minecraft.world.item.context.UseOnContext(player, net.minecraft.world.InteractionHand.MAIN_HAND,
-                    new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(f).add(0, 0.5, 0), net.minecraft.core.Direction.UP, f, false)));
+                eye.useOn(use(overworld, eye, f));
             }
             int eyes = 0;
             for (BlockPos f : frames) {
@@ -219,6 +212,12 @@ final class MechanicsSurvey {
             }
         }
         log.accept(report.toString());
+    }
+
+    // An item used on the top of a block, the way a hand (or a dispenser) uses it.
+    private static net.minecraft.world.item.context.UseOnContext use(ServerLevel level, net.minecraft.world.item.ItemStack stack, BlockPos on) {
+        return new net.minecraft.world.item.context.UseOnContext(level, null, net.minecraft.world.InteractionHand.MAIN_HAND, stack,
+            new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(on).add(0, 0.5, 0), net.minecraft.core.Direction.UP, on, false)) {};
     }
 
     private static void place(ServerLevel level, BlockPos at, net.minecraft.core.Direction in, boolean inward, java.util.List<BlockPos> frames) {

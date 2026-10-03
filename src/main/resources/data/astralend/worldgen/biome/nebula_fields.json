@@ -50,7 +50,9 @@
   },
   "features": [
     [],
-    [],
+    [
+      "astralend:nebula_oases"
+    ],
     [],
     [],
     [

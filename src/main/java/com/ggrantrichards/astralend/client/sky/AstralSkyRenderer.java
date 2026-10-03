@@ -85,6 +85,7 @@ public class AstralSkyRenderer extends SkyRenderer {
     private float partialTick;
     private Vec3 camera = Vec3.ZERO;
     private boolean inCorona;
+    private float corona;     // 0..1: how much of the view round the camera is the Corona (eased)
     private float auroraStrength;
     private final float[] auroraTarget = new float[7];   // strength, then two colours (r, g, b)
     private final float[] aurora = new float[7];
@@ -117,10 +118,36 @@ public class AstralSkyRenderer extends SkyRenderer {
         this.partialTick = partialTicks;
         this.time = level.getGameTime() + partialTicks;
         this.camera = camera.position();
-        Holder<Biome> biome = level.getBiome(BlockPos.containing(this.camera));
-        this.inCorona = biome.is(ModBiomes.CORONA);
-        // Aurora strength and colours for this biome; eased toward, so crossing a border fades them.
+        // What the sky looks like here is blended from the biomes in a 24-block square round the camera
+        // (the middle counting double), then eased toward: so walking or flying across a border, the
+        // auroras and the Corona's burning sky fade over 10-15 blocks, never snap.
         float[] t = this.auroraTarget;
+        java.util.Arrays.fill(t, 0.0F);
+        float[] one = new float[7];
+        float corona = 0.0F, weights = 0.0F;
+        for (int sx = -12; sx <= 12; sx += 12) {
+            for (int sz = -12; sz <= 12; sz += 12) {
+                float w = sx == 0 && sz == 0 ? 2.0F : 1.0F;
+                Holder<Biome> biome = level.getBiome(BlockPos.containing(this.camera.x + sx, this.camera.y, this.camera.z + sz));
+                auroraFor(biome, one);
+                for (int i = 0; i < 7; i++) {
+                    t[i] += one[i] * w;
+                }
+                corona += biome.is(ModBiomes.CORONA) ? w : 0.0F;
+                weights += w;
+            }
+        }
+        for (int i = 0; i < 7; i++) {
+            t[i] /= weights;
+            this.aurora[i] += (t[i] - this.aurora[i]) * 0.03F;
+        }
+        this.corona += (corona / weights - this.corona) * 0.03F;
+        this.inCorona = this.corona > 0.5F;
+        this.auroraStrength = this.aurora[0];
+    }
+
+    // The auroras of a biome: strength, then two colours (r, g, b each).
+    private static void auroraFor(Holder<Biome> biome, float[] t) {
         if (biome.is(ModBiomes.ASHEN_BARRENS)) {
             set(t, 1.0F, 0.35F, 1.0F, 0.6F, 1.0F, 0.82F, 0.35F);
         } else if (biome.is(ModBiomes.NEBULA_FIELDS)) {
@@ -131,15 +158,11 @@ public class AstralSkyRenderer extends SkyRenderer {
             set(t, 0.7F, 0.25F, 1.0F, 0.85F, 0.5F, 1.0F, 0.9F);
         } else if (biome.is(ModBiomes.COMET_WAKE)) {
             set(t, 0.4F, 0.55F, 0.9F, 1.0F, 0.8F, 0.95F, 1.0F);
-        } else if (biome.is(ModBiomes.HOLLOW_ISLES) || this.inCorona) {
-            t[0] = 0.0F;
+        } else if (biome.is(ModBiomes.HOLLOW_ISLES) || biome.is(ModBiomes.CORONA)) {
+            set(t, 0.0F, 0.12F, 0.65F, 0.5F, 1.0F, 0.5F, 0.8F);
         } else {
             set(t, 0.12F, 0.65F, 0.5F, 1.0F, 0.5F, 0.8F, 1.0F);
         }
-        for (int i = 0; i < 7; i++) {
-            this.aurora[i] += (t[i] - this.aurora[i]) * 0.01F;
-        }
-        this.auroraStrength = this.aurora[0];
     }
 
     private static void set(float[] a, float... values) {
@@ -154,7 +177,7 @@ public class AstralSkyRenderer extends SkyRenderer {
         }
         FlareState flare = ClientFlares.state();
         float intensity = ClientFlares.intensity(this.partialTick);
-        float coronaFlare = this.inCorona ? intensity : 0.0F;
+        float coronaFlare = this.corona * intensity;
 
         // ---- everything that moves is rebuilt each frame into one buffer, in drawing order
         Quads quads = new Quads();
@@ -348,11 +371,11 @@ public class AstralSkyRenderer extends SkyRenderer {
         double dz = flare.remnantZ() - this.camera.z;
         double distance = Math.sqrt(dx * dx + dz * dz);
         float closeness = (float) Mth.clamp(1.0 - (distance - 300.0) / 3000.0, 0.0, 1.0);
-        float elevation = this.inCorona ? (float) Math.toRadians(52.0) : (float) Math.toRadians(7.0 + 33.0 * closeness);
+        float elevation = (float) Math.toRadians(Mth.lerp(this.corona, 7.0F + 33.0F * closeness, 52.0F));
         float yaw = distance < 1.0 ? 0.0F : (float) Math.atan2(dz, dx);
         Vector3f dir = new Vector3f(Mth.cos(yaw) * Mth.cos(elevation), Mth.sin(elevation), Mth.sin(yaw) * Mth.cos(elevation));
         float pulse = 1.0F + 0.05F * Mth.sin((float) this.time * 0.02F);
-        float size = (7.0F + 9.0F * closeness + (this.inCorona ? 6.0F : 0.0F)) * pulse * (1.0F + 0.25F * intensity);
+        float size = (7.0F + 9.0F * closeness + 6.0F * this.corona) * pulse * (1.0F + 0.25F * intensity);
         float glow = 0.3F + 0.7F * intensity;
         quads.group(REMNANT_FLARE);
         float haloSize = size * (1.7F + 1.1F * intensity);

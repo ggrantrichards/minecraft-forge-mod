@@ -102,6 +102,26 @@ jobs:
             && git -c user.name="CI" -c user.email="ci@users.noreply.github.com" commit -qm "Screenshots from ${GITHUB_SHA::7}" \
             && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-screenshots
 
+      # Plays the scripted playtests in the real client (client/ClientPlaytests.java) and publishes a
+      # contact sheet per test and the log to the ci-playtests branch.
+      - name: Playtests in the real client
+        if: always() && hashFiles('run/survey-world/level.dat') != '' && !contains(github.event.head_commit.message, '[trailer]')
+        timeout-minutes: 25
+        run: .github/scripts/playtests.sh
+
+      - name: Publish the playtests
+        if: always() && hashFiles('playtests/*.jpg') != ''
+        run: |
+          mkdir -p /tmp/pt && cp playtests/*.jpg /tmp/pt/
+          grep "AstralEnd playtest" playtests.log | sed 's/.*\[AstralEnd playtest\] //' > /tmp/pt/playtests.txt || true
+          grep -E "/ERROR\]|Exception" playtests.log | head -60 >> /tmp/pt/playtests.txt || true
+          cd /tmp/pt
+          printf "# Playtests\n\nFrom commit ${GITHUB_SHA::7} on ${GITHUB_REF_NAME}.\n\n" > README.md
+          for f in *.jpg; do printf "### ${f}\n\n![](${f})\n\n" >> README.md; done
+          git init -q && git checkout -q -b ci-playtests && git add . \
+            && git -c user.name="CI" -c user.email="ci@users.noreply.github.com" commit -qm "Playtests from ${GITHUB_SHA::7}" \
+            && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-playtests
+
       # Films the trailer and cuts it together (client/ClientTrailer.java, tools/trailer/), then
       # publishes it to the ci-trailer branch. Only for commits whose message says [trailer]: it takes
       # about half an hour.
