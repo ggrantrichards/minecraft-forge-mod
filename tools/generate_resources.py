@@ -964,6 +964,12 @@ def end_biome(name, english, fog, water, features_step4=(), features_step7=(), f
         "minecraft:visual/fog_color": fog,
         **background_music(name),
     }
+    # Its ambience (tools/sounds/ambience.py): a quiet loop, and now and then a sound of the place.
+    attributes["minecraft:audio/ambient_sounds"] = {
+        "loop": rid(f"ambient.{name}.loop"),
+        "additions": {"sound": rid(f"ambient.{name}.additions"), "tick_chance": 0.006},
+        "mood": {"sound": "minecraft:ambient.cave", "tick_delay": 6000, "block_search_extent": 8, "offset": 2.0},
+    }
     if particle:
         attributes["minecraft:visual/ambient_particles"] = {"argument": [
             {"particle": {"type": particle}, "probability": particle_chance}], "modifier": "append"}
@@ -1975,6 +1981,10 @@ def content_phase10():
               "music.glimmering_crags": "music/space_music", "music.outer_end": "music/out_there",
               "music_disc.observing_the_star": "records/observing_the_star"}
     sounds = {event: {"sounds": [{"name": rid(path), "stream": True}]} for event, path in tracks.items()}
+    for biome in ("nebula_fields", "chorus_thicket", "ashen_barrens", "comet_wake", "hollow_isles", "corona", "glimmering_crags"):
+        sounds[f"ambient.{biome}.loop"] = {"sounds": [{"name": rid(f"ambient/{biome}/loop"), "stream": True, "volume": 0.6}]}
+        sounds[f"ambient.{biome}.additions"] = {"sounds": [{"name": rid(f"ambient/{biome}/additions{i}"), "volume": 0.5}
+                                                          for i in range(1, 4)]}
     # The Spire Wyrm's voice (tools/sounds/wyrm_sounds.py): each sound and how many variants it has.
     for name, count in {"roar": 2, "ambient": 3, "hurt": 3, "death": 1, "charge": 2, "breath": 2, "slam": 2, "snore": 2}.items():
         sounds[f"entity.spire_wyrm.{name}"] = {"subtitle": f"subtitles.{NS}.entity.spire_wyrm.{name}",

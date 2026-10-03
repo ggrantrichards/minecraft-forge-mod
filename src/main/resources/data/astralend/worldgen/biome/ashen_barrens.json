@@ -10,6 +10,19 @@
       "modifier": "overlay"
     },
     "minecraft:visual/fog_color": "#1b2329",
+    "minecraft:audio/ambient_sounds": {
+      "loop": "astralend:ambient.ashen_barrens.loop",
+      "additions": {
+        "sound": "astralend:ambient.ashen_barrens.additions",
+        "tick_chance": 0.006
+      },
+      "mood": {
+        "sound": "minecraft:ambient.cave",
+        "tick_delay": 6000,
+        "block_search_extent": 8,
+        "offset": 2.0
+      }
+    },
     "minecraft:visual/ambient_particles": {
       "argument": [
         {

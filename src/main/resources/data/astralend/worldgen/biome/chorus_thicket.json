@@ -31,6 +31,19 @@
         "replace_current_music": false
       }
     },
+    "minecraft:audio/ambient_sounds": {
+      "loop": "astralend:ambient.chorus_thicket.loop",
+      "additions": {
+        "sound": "astralend:ambient.chorus_thicket.additions",
+        "tick_chance": 0.006
+      },
+      "mood": {
+        "sound": "minecraft:ambient.cave",
+        "tick_delay": 6000,
+        "block_search_extent": 8,
+        "offset": 2.0
+      }
+    },
     "minecraft:visual/ambient_particles": {
       "argument": [
         {

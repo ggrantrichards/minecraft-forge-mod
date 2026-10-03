@@ -39,6 +39,181 @@
       }
     ]
   },
+  "ambient.nebula_fields.loop": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/nebula_fields/loop",
+        "stream": true,
+        "volume": 0.6
+      }
+    ]
+  },
+  "ambient.nebula_fields.additions": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/nebula_fields/additions1",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/nebula_fields/additions2",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/nebula_fields/additions3",
+        "volume": 0.5
+      }
+    ]
+  },
+  "ambient.chorus_thicket.loop": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/chorus_thicket/loop",
+        "stream": true,
+        "volume": 0.6
+      }
+    ]
+  },
+  "ambient.chorus_thicket.additions": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/chorus_thicket/additions1",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/chorus_thicket/additions2",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/chorus_thicket/additions3",
+        "volume": 0.5
+      }
+    ]
+  },
+  "ambient.ashen_barrens.loop": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/ashen_barrens/loop",
+        "stream": true,
+        "volume": 0.6
+      }
+    ]
+  },
+  "ambient.ashen_barrens.additions": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/ashen_barrens/additions1",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/ashen_barrens/additions2",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/ashen_barrens/additions3",
+        "volume": 0.5
+      }
+    ]
+  },
+  "ambient.comet_wake.loop": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/comet_wake/loop",
+        "stream": true,
+        "volume": 0.6
+      }
+    ]
+  },
+  "ambient.comet_wake.additions": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/comet_wake/additions1",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/comet_wake/additions2",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/comet_wake/additions3",
+        "volume": 0.5
+      }
+    ]
+  },
+  "ambient.hollow_isles.loop": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/hollow_isles/loop",
+        "stream": true,
+        "volume": 0.6
+      }
+    ]
+  },
+  "ambient.hollow_isles.additions": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/hollow_isles/additions1",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/hollow_isles/additions2",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/hollow_isles/additions3",
+        "volume": 0.5
+      }
+    ]
+  },
+  "ambient.corona.loop": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/corona/loop",
+        "stream": true,
+        "volume": 0.6
+      }
+    ]
+  },
+  "ambient.corona.additions": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/corona/additions1",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/corona/additions2",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/corona/additions3",
+        "volume": 0.5
+      }
+    ]
+  },
+  "ambient.glimmering_crags.loop": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/glimmering_crags/loop",
+        "stream": true,
+        "volume": 0.6
+      }
+    ]
+  },
+  "ambient.glimmering_crags.additions": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/glimmering_crags/additions1",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/glimmering_crags/additions2",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/glimmering_crags/additions3",
+        "volume": 0.5
+      }
+    ]
+  },
   "entity.spire_wyrm.roar": {
     "subtitle": "subtitles.astralend.entity.spire_wyrm.roar",
     "sounds": [

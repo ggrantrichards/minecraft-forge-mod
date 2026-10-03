@@ -28,6 +28,16 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> WYRM_SLAM = music("entity.spire_wyrm.slam");
     public static final RegistryObject<SoundEvent> WYRM_SNORE = music("entity.spire_wyrm.snore");
 
+    // Phase 11: each biome's ambience (tools/sounds/ambience.py): a background loop and the odd sound
+    // dropped in, named in the biome's "minecraft:audio/ambient_sounds".
+    static {
+        for (String biome : new String[] {"nebula_fields", "chorus_thicket", "ashen_barrens", "comet_wake", "hollow_isles", "corona",
+                                          "glimmering_crags"}) {
+            music("ambient." + biome + ".loop");
+            music("ambient." + biome + ".additions");
+        }
+    }
+
     private static RegistryObject<SoundEvent> music(String name) {
         return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AstralEnd.MODID, name)));
     }
