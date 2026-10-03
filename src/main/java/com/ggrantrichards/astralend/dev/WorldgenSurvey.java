@@ -570,8 +570,8 @@ public final class WorldgenSurvey {
         }
         net.minecraft.world.phys.Vec3 nest = wyrms.get(0).position();
         // On the nest, from the north-west, a little above it.
-        lines.add(String.format(java.util.Locale.ROOT, "wyrm_nest %.1f %.1f %.1f -45 %.1f", nest.x - 9.0, nest.y + 3.0, nest.z - 9.0,
-            Math.toDegrees(Math.atan2(3.0 + 1.62 - 1.0, Math.sqrt(162.0)))));
+        lines.add(String.format(java.util.Locale.ROOT, "wyrm_nest %.1f %.1f %.1f -45 %.1f", nest.x - 6.0, nest.y + 5.0, nest.z - 6.0,
+            Math.toDegrees(Math.atan2(5.0 + 1.62 - 0.5, Math.sqrt(72.0)))));
         // Up the shaft from 30 blocks below the nest, and level with it from 22 blocks out.
         lines.add(String.format(java.util.Locale.ROOT, "wyrm_shaft %.1f %.1f %.1f -45 -60", nest.x - 2.0, nest.y - 30.0, nest.z - 2.0));
         lines.add(String.format(java.util.Locale.ROOT, "wyrm_flight %.1f %.1f %.1f -45 -8", nest.x - 16.0, nest.y + 4.0, nest.z - 16.0));
@@ -725,17 +725,55 @@ public final class WorldgenSurvey {
         if (area.standOn == null) {
             return;
         }
-        int x = area.standOn.getX();
-        int z = area.standOn.getZ();
-        int ground = area.standOn.getY();
-        double mobY = ground + lift;
         double d = distance / Math.sqrt(2.0);
+        BlockPos spot = clearSpot(end, area.standOn, d, lift, eye);
+        int x = spot.getX();
+        int z = spot.getZ();
+        int ground = spot.getY();
+        double mobY = ground + lift;
         double eyeY = ground + eye;
         double camY = eyeY - 1.62;  // a teleport places the feet; the eyes are 1.62 higher
         double pitch = Math.toDegrees(Math.atan2(eyeY - (mobY + 0.5), distance));
         String name = "mob_" + parts[0] + (parts.length > 1 ? "_" + parts[1].split(",")[0].replace("flare=", "") : "");
         lines.add(String.format(java.util.Locale.ROOT, "%s %.1f %.1f %.1f -45 %.1f astralend:%s %.1f %.1f %.1f%s", name,
             x + 0.5 - d, camY, z + 0.5 - d, pitch, parts[0], x + 0.5, mobY, z + 0.5, parts.length > 1 ? " " + parts[1] : ""));
+    }
+
+    // A spot near `from` where the camera (d blocks north-west on each axis, `eye` above the ground)
+    // sees the mob (`lift` above it) with nothing solid in between: no pillar, tree or wall in front.
+    private static BlockPos clearSpot(ServerLevel end, BlockPos from, double d, double lift, double eye) {
+        for (int r = 0; r <= 24; r += 4) {
+            for (int dx = -r; dx <= r; dx += 4) {
+                for (int dz = -r; dz <= r; dz += 4) {
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) != r) {
+                        continue;   // this ring only
+                    }
+                    int x = from.getX() + dx, z = from.getZ() + dz;
+                    int ground = end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+                    if (ground < end.getMinY() + 8 || Math.abs(ground - from.getY()) > 12) {
+                        continue;
+                    }
+                    net.minecraft.world.phys.Vec3 mob = new net.minecraft.world.phys.Vec3(x + 0.5, ground + lift + 0.5, z + 0.5);
+                    net.minecraft.world.phys.Vec3 cam = new net.minecraft.world.phys.Vec3(x + 0.5 - d, ground + eye, z + 0.5 - d);
+                    if (clearBetween(end, cam, mob)) {
+                        return new BlockPos(x, ground, z);
+                    }
+                }
+            }
+        }
+        return from;
+    }
+
+    private static boolean clearBetween(ServerLevel end, net.minecraft.world.phys.Vec3 a, net.minecraft.world.phys.Vec3 b) {
+        int steps = (int) Math.ceil(a.distanceTo(b) * 4.0);
+        for (int i = 0; i <= steps - 2; i++) {   // up to just short of the mob itself
+            BlockPos p = BlockPos.containing(a.lerp(b, (double) i / steps));
+            if (!end.getBlockState(p).getCollisionShape(end, p).isEmpty()) {
+                return false;
+            }
+        }
+        // and room for the camera's own head
+        return end.getBlockState(BlockPos.containing(a)).getCollisionShape(end, BlockPos.containing(a)).isEmpty();
     }
 
     // Among the candidate spots nearest the centre, the one with the most land (by terrain height,

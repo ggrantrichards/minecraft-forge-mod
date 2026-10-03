@@ -11,6 +11,10 @@ on:
         type: choice
         options: [beta, alpha, release]
         default: beta
+      refresh_gallery:
+        description: Upload every gallery picture again (after new screenshots)
+        type: boolean
+        default: false
 
 jobs:
   release:
@@ -36,4 +40,5 @@ jobs:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
         run: |
           JAR=$(ls build/libs/*.jar | grep -v -- '-sources' | head -1)
-          python3 tools/release/modrinth.py "$JAR" --type "${{ inputs.version_type }}"
+          python3 tools/release/modrinth.py "$JAR" --type "${{ inputs.version_type }}" \
+            ${{ inputs.refresh_gallery && '--refresh-gallery' || '' }}

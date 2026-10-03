@@ -161,6 +161,9 @@ public class SpireWyrm extends Monster {
         this.noPhysics = true;
         this.setNoGravity(true);
         super.tick();
+        if (!this.level().isClientSide()) {
+            this.bossEvent.setVisible(this.phase() != Phase.ASLEEP);   // no boss bar until it wakes
+        }
         this.yBodyRot = this.getYRot();
         this.yHeadRot = this.getYRot();
         this.updateTrail();
@@ -236,7 +239,6 @@ public class SpireWyrm extends Monster {
             this.stunCooldown--;
         }
         this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
-        this.bossEvent.setVisible(this.phase() != Phase.ASLEEP);
         Player target = this.target(level);
         if (this.phase() == Phase.ASLEEP) {
             this.setDeltaMovement(Vec3.ZERO);

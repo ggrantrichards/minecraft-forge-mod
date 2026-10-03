@@ -70,6 +70,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("jar")
     parser.add_argument("--type", default="beta", choices=["alpha", "beta", "release"])
+    parser.add_argument("--refresh-gallery", action="store_true",
+                        help="upload every picture again (new screenshots of the same views keep their titles)")
     args = parser.parse_args()
     # Forgive the usual paste mistakes: quotes, a "Bearer " prefix, stray whitespace or line breaks.
     token = "".join(os.environ.get("MODRINTH_TOKEN", "").split()).strip("\"'")
@@ -132,11 +134,12 @@ def main():
     pid = project["id"]
 
     # The gallery, then the description with its pictures pointing at the gallery. Pictures are known
-    # by title: one whose description changed is uploaded again, and one no longer listed is removed.
+    # by title: one whose description changed is uploaded again (all of them, with --refresh-gallery),
+    # and one no longer listed is removed.
     have = {g.get("title"): g for g in (project.get("gallery") or [])}
     wanted = {entry["title"]: entry for entry in gallery}
     for title, old in list(have.items()):
-        if title not in wanted or (old.get("description") or "") != wanted[title]["description"]:
+        if args.refresh_gallery or title not in wanted or (old.get("description") or "") != wanted[title]["description"]:
             status, err = request("DELETE", f"/project/{pid}/gallery?{urllib.parse.urlencode({'url': old['url']})}", token)
             if status not in (200, 204):
                 die(f"Couldn't remove the old picture {title} ({status}): {err}")
