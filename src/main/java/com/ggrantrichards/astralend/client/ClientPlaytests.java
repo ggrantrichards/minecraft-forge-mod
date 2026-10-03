@@ -143,7 +143,7 @@ public final class ClientPlaytests {
                     ClientScreenshots.Shot s = shot("mob_drift_whale_side");
                     Vec3 at = s != null ? new Vec3(s.mobX(), s.mobY() + 6, s.mobZ()) : new Vec3(0, 120, 0);
                     put(player, end, at.add(-4, 0, 0), -90, 10);
-                    DriftWhale whale = ModEntities.DRIFT_WHALE.get().create(end, EntitySpawnReason.SPAWN_EGG);
+                    DriftWhale whale = ModEntities.DRIFT_WHALE.get().create(end, EntitySpawnReason.COMMAND);
                     whale.snapTo(at.x, at.y, at.z, -90, 0);
                     whale.setPersistenceRequired();
                     end.addFreshEntity(whale);
