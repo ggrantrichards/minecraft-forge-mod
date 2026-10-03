@@ -1,31 +1,20 @@
 #!/usr/bin/env bash
 set +e
 exec > >(tee /tmp/probe.txt) 2>&1
-mkdir -p /tmp/music && cd /tmp/music
-for page in space-music-out-there outer-space-loop heavenly-loop ambient-relaxing-loop cc0-space-music space-music-2 loopable-dungeon-ambience; do
+for page in space-music-out-there cc0-space-music heavenly-loop ambient-relaxing-loop space-music-2; do
   echo "===== $page"
-  curl -sL "https://opengameart.org/content/$page" -o "$page.html"
-  python3 - "$page.html" <<'PY'
-import re, sys, html
-t = open(sys.argv[1], encoding="utf-8", errors="replace").read()
-title = re.search(r"<title>(.*?)</title>", t, re.S)
-print("TITLE:", html.unescape(title.group(1)).strip() if title else "?")
-a = re.search(r'field-name-author-submitter.*?<a[^>]*>(.*?)</a>', t, re.S)
-print("SUBMITTER:", html.unescape(a.group(1)).strip() if a else "?")
-for m in re.findall(r'field-name-field-art-licenses.*?</div>\s*</div>\s*</div>', t, re.S)[:1]:
-    print("LICENSES:", sorted(set(re.findall(r'title="([^"]+)"', m))))
-body = re.search(r'field-name-body.*?<div class="field-item[^"]*">(.*?)</div>', t, re.S)
-if body:
-    txt = re.sub(r"<[^>]+>", " ", body.group(1))
-    print("BODY:", " ".join(html.unescape(txt).split())[:700])
-for f in sorted(set(re.findall(r'https://opengameart\.org/sites/default/files/[^"\']+\.(?:ogg|mp3|wav|flac)', t))):
-    print("FILE:", f)
+  curl -sL "https://opengameart.org/content/$page" -o p.html
+  grep -o -E 'https?://creativecommons\.org/[a-z/0-9.-]+|license-icon[^>]*>|GPL [0-9.]+|OGA-BY [0-9.]+|CC0|CC-BY[-A-Z]* [0-9.]+' p.html | sort | uniq -c
+  python3 - <<'PY'
+import re, html
+t = open("p.html", encoding="utf-8", errors="replace").read()
+for key in ("Attribution Instructions", "Attribution notes", "Copyright/Attribution Notice", "field-name-field-copyright-notice", "Author:", "Submitted by"):
+    i = t.find(key)
+    if i >= 0:
+        print(key, "->", " ".join(html.unescape(re.sub(r"<[^>]+>", " ", t[i:i+600])).split())[:300])
+i = t.find("License(s)")
+if i >= 0:
+    print("LICENSE BLOCK ->", " ".join(html.unescape(re.sub(r"<[^>]+>", " ", t[i:i+900])).split())[:300])
 PY
 done
-mkdir -p files
-for f in $(grep -h -o 'https://opengameart\.org/sites/default/files/[^"'"'"']*\.ogg' *.html | sort -u | head -12); do
-  curl -sL "$f" -o "files/$(basename "$f")"
-done
-ls -la files
-cd "$GITHUB_WORKSPACE"
 exit 0
