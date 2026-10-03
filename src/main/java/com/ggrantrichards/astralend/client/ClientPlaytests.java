@@ -280,6 +280,12 @@ public final class ClientPlaytests {
                     LOGGER.info(TAG + "wyrm_fight t={} phase={} health={} at {} player health {}", t, wyrm.phase(),
                         String.format("%.0f", wyrm.getHealth()), wyrm.position(), String.format("%.1f", player.getHealth()));
                 }
+                if (t % 10 == 0) {
+                    server.execute(() -> {
+                        ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+                        p.setHealth(p.getMaxHealth());              // so the whole fight plays out
+                    });
+                }
                 if (t % 40 == 20 && subject instanceof SpireWyrm wyrm && wyrm.position().distanceTo(player.position()) < 6) {
                     server.execute(() -> wyrm.hurtServer((ServerLevel) wyrm.level(), wyrm.damageSources().playerAttack(
                         server.getPlayerList().getPlayers().get(0)), 7.0F));   // a sword hit when it's in reach

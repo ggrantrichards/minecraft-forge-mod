@@ -447,7 +447,7 @@ public class SpireWyrm extends Monster {
             if (player.hurtServer(level, this.damageSources().mobAttack(this), this.enraged ? 12.0F : 9.0F)) {
                 Vec3 away = player.position().subtract(at).multiply(1, 0, 1);
                 away = away.lengthSqr() < 1.0E-4 ? new Vec3(1, 0, 0) : away.normalize();
-                player.push(away.x * 1.2, 0.5, away.z * 1.2);
+                player.push(away.x * 0.55, 0.3, away.z * 0.55);     // staggered, not flung off the tower
                 if (player instanceof ServerPlayer sp) {
                     sp.connection.send(new net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket(sp));
                 }
