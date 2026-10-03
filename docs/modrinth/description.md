@@ -48,6 +48,8 @@ or knock chunks off its head. A **Lodestar** keeps them from landing near your b
 - **Umbral Stalker:** a shadow that always knows where you are, and snuffs out your lights. It fears fire.
 - **Void Wanderer**, **End Pollinator**, **Void Ray**, **Cinder Mite**, **The Hollow**, and the **Watcher**.
 
+{{The creatures}}
+
 {{Drift Whale}}
 
 ## Places to find

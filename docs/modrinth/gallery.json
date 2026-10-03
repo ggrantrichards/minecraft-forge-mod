@@ -26,6 +26,11 @@
     "description": "A Resonant Spire, and the Spire Wyrm that nests atop it."
   },
   {
+    "title": "The Spire Wyrm, asleep",
+    "file": "docs/images/phase10/wyrm_nest.png",
+    "description": "The Spire Wyrm coiled asleep on its nest atop a Resonant Spire. Don't wake it."
+  },
+  {
     "title": "Whalefall",
     "file": "docs/images/phase10/whalefall.png",
     "description": "The skeleton of a Star Leviathan, adrift in the void."
@@ -58,7 +63,7 @@
   {
     "file": "docs/images/mobs/drift_whale.png",
     "title": "Drift Whale",
-    "description": "A huge, gentle whale that swims through the void. Ride it with a Chorus Flower on a Stick."
+    "description": "A huge, gentle whale that swims through the void, its spots glowing like deep-sea light. Ride it with a Chorus Flower on a Stick."
   },
   {
     "file": "docs/images/mobs/void_wanderer.png",
@@ -79,5 +84,15 @@
     "file": "docs/images/structures/game_rift_maw.png",
     "title": "Rift Maw",
     "description": "The fossil skull of a Star Leviathan. Its throat is a way across the End."
+  },
+  {
+    "title": "The creatures",
+    "file": "docs/images/mobs.png",
+    "description": "Every creature of the Astral End, from the End Pollinator to the Spire Wyrm."
+  },
+  {
+    "title": "The blocks",
+    "file": "docs/images/blocks.png",
+    "description": "Every full block the Astral End adds."
   }
 ]

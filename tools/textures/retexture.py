@@ -258,7 +258,22 @@ def solarite_ore():
 
 
 def void_crystal_ore():
-    return ore(nightstone(), "diamond_ore", "2a1258", "8a54f0", "f0e2ff")
+    """Precious, and it should look it: deepslate diamond ore's clusters, in a vivid violet running to
+    white, each sunk in a dark rim cut into the Nightstone so it stands out from the rock."""
+    host = nightstone()
+    src, stone = vanilla("deepslate_diamond_ore"), vanilla("deepslate")
+    lit = {(x, y) for y in range(16) for x in range(16) if src.getpixel((x, y)) != stone.getpixel((x, y))}
+    hp = host.load()
+    for (x, y) in lit:
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            q = ((x + dx) % 16, (y + dy) % 16)
+            if q not in lit:
+                hp[q] = hexc("07040c")
+    clusters = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for (x, y) in lit:
+        clusters.putpixel((x, y), src.getpixel((x, y)))
+    host.alpha_composite(gradient(clusters, "3a1478", "9a5cff", "d8b8ff", "ffffff"))
+    return host
 
 
 METEORIC = ("24232c", "6c6f80", "dfe2ec")
@@ -290,6 +305,31 @@ def petrified_stalk_side():
 
 def petrified_stalk_top():
     return gradient(chorus_stalk_top(), "3e3a40", "8a8488", "c2bcbc")
+
+
+def spore_lantern():
+    """A froglight's soft glowing grain, in the teal of the spores it's made from."""
+    return gradient(vanilla("verdant_froglight_side"), "1d5e58", "3fb8a4", "9ff2d8", "eafff6")
+
+
+def voidgel():
+    """A slime block of the void: the same see-through jelly, deep violet, its little core darker."""
+    return gradient(vanilla("slime_block"), "2b1356", "6b3fc4", "b894ff")
+
+
+def lodestar_side():
+    return gradient(vanilla("lodestone_side"), "23242e", "5d6274", "c9cede")
+
+
+def lodestar_top():
+    """The lodestone's top in meteoric steel, a violet star in the middle where the iron points."""
+    img = gradient(vanilla("lodestone_top"), "23242e", "5d6274", "c9cede")
+    star = {(7, 7): "f0e2ff", (8, 7): "f0e2ff", (7, 8): "f0e2ff", (8, 8): "f0e2ff",
+            (6, 7): "a77bff", (9, 8): "a77bff", (7, 6): "a77bff", (8, 9): "a77bff",
+            (6, 8): "7a4ae0", (9, 7): "7a4ae0", (8, 6): "7a4ae0", (7, 9): "7a4ae0"}
+    for (x, y), c in star.items():
+        img.putpixel((x, y), hexc(c))
+    return img
 
 
 # ---- drawn, kept from the first pass
@@ -365,4 +405,8 @@ TEXTURES = [
     ("block/whalelight_scale.png", whalelight_scale),
     ("block/petrified_stalk_side.png", petrified_stalk_side),
     ("block/petrified_stalk_top.png", petrified_stalk_top),
+    ("block/spore_lantern.png", spore_lantern),
+    ("block/voidgel.png", voidgel),
+    ("block/lodestar_side.png", lodestar_side),
+    ("block/lodestar_top.png", lodestar_top),
 ]

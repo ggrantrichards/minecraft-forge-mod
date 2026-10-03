@@ -69,8 +69,9 @@ class Part:
 
 
 class Mob:
-    def __init__(self, name, size, parts, egg, halo=None):
+    def __init__(self, name, size, parts, egg, halo=None, clear=()):
         self.halo = halo  # a faint colour added round every glowing pixel (a soft bioluminescent bloom)
+        self.clear = {c[:3] for c in clear}  # colours (eyes) the bloom keeps off and doesn't spread from
         self.name = name
         self.size = size  # texture width, height
         self.parts = parts
@@ -234,19 +235,22 @@ def paint_mob(mob, seed):
                             glow.putpixel((x, y), g)
                             has_glow = True
     if has_glow and mob.halo:
-        add_halo(img, glow, mob.halo)
+        add_halo(img, glow, mob.halo, mob.clear)
     return img, (glow if has_glow else None)
 
 
-def add_halo(img, glow, colour):
+def add_halo(img, glow, colour, clear=frozenset()):
     """The glow layer is drawn additively (like a spider's eyes), so a dim colour round each light
     reads as a soft bloom of light on the skin around it."""
     g = glow.load()
     lit = {(x, y) for y in range(glow.height) for x in range(glow.width) if g[x, y][3]}
     for (x, y) in lit:
+        if g[x, y][:3] in clear:
+            continue
         for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
             q = (x + dx, y + dy)
-            if q not in lit and 0 <= q[0] < glow.width and 0 <= q[1] < glow.height and img.getpixel(q)[3]:
+            if (q not in lit and 0 <= q[0] < glow.width and 0 <= q[1] < glow.height and img.getpixel(q)[3]
+                    and img.getpixel(q)[:3] not in clear):
                 g[q] = colour
 
 
@@ -854,8 +858,11 @@ def whale_head(face, px, py, fw, fh, rnd):
 def whale_head_glow(face, px, py, fw, fh, rnd):
     eye_x = 2 if face == "east" else fw - 3
     if face in ("east", "west") and py == 6 and px == eye_x:
-        return hexc("a8e8ff")
-    return whale_glow(face, px, py, fw, fh, rnd)
+        return hexc("bfe0ff")                              # the eye's catchlight
+    lights = whale_glow(face, px, py, fw, fh, rnd)
+    if face in ("east", "west") and abs(px - eye_x) <= 2 and 4 <= py <= 9:
+        return None                                        # no lights round the eye: it stays clear
+    return lights
 
 
 def whale_jaw(face, px, py, fw, fh, rnd):
@@ -902,7 +909,8 @@ WHALE = Mob("drift_whale", (128, 64), [
             ]),
         ]),
     ]),
-], egg=(hexc("3a4fa8"), hexc("dbe6ff")), halo=hexc("1a3866"))
+], egg=(hexc("3a4fa8"), hexc("dbe6ff")), halo=hexc("1a3866"),
+             clear=(hexc("bfe0ff"), hexc("141c3c"), hexc("27346a")))   # the eyes stay clear
 
 
 # ---- The Watcher: a floating construct of pale observatory stone, built like the Breeze or the

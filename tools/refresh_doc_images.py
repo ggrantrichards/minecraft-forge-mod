@@ -19,12 +19,15 @@ SIZE = (854, 480)
 PICTURES = {
     **{f"screens/{b}": b for b in ("nebula_fields", "ashen_barrens", "comet_wake", "corona", "hollow_isles")},
     "screens/shattered_observatory": "structure_shattered_observatory",
-    **{f"mobs/{m}": f"mob_{m}" for m in ("cinder_mite", "drift_whale", "hollow", "pollinator", "umbral_stalker",
-                                          "umbral_stalker_lit", "void_ray", "void_wanderer", "watcher")},
+    **{f"mobs/{m}": f"mob_{m}" for m in ("cinder_mite", "hollow", "pollinator", "umbral_stalker_lit", "void_ray",
+                                          "void_wanderer", "watcher")},
+    "mobs/drift_whale": "mob_drift_whale_side",
+    "mobs/umbral_stalker": "mob_umbral_stalker_angled",
     "phase10/chorus_thicket": "chorus_thicket",
     "phase10/glimmering_crags": "glimmering_crags",
     "phase10/resonant_spire": "structure_resonant_spire",
     "phase10/whalefall": "structure_whalefall",
+    "phase10/wyrm_nest": "wyrm_nest",
 }
 
 

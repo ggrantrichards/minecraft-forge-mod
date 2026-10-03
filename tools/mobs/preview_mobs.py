@@ -122,10 +122,10 @@ def render(mob, texture, yaw, pitch, size=260, glow=None, scale=None):
                     c = tex[ix, iy]
                     if c[3] < 20:
                         continue
+                    c = tuple(int(c[i] * shade) for i in range(3)) + (c[3],)
                     if gl and gl[ix, iy][3] > 20:
-                        c = gl[ix, iy][:3] + (255,)       # glowing parts, at full brightness
-                    else:
-                        c = tuple(int(c[i] * shade) for i in range(3)) + (c[3],)
+                        # the glow layer is added on top, at full brightness (as the game's eyes layer does)
+                        c = tuple(min(255, c[i] + gl[ix, iy][i]) for i in range(3)) + (255,)
                     depth[yy][xx] = z
                     base = px[xx, yy]
                     a = c[3] / 255
