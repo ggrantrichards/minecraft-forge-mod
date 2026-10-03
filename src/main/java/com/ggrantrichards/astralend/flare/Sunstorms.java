@@ -5,14 +5,12 @@ import com.ggrantrichards.astralend.ModBlocks;
 import com.ggrantrichards.astralend.ModEffects;
 import com.ggrantrichards.astralend.block.FlarebloomBlock;
 import com.ggrantrichards.astralend.block.SunscaleLichenBlock;
-import com.ggrantrichards.astralend.world.ModBiomes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.QuartPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -26,7 +24,6 @@ import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.BiomeResolver;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -309,48 +306,18 @@ public class Sunstorms extends SavedData {
     public static final net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> REMNANT =
         net.minecraft.tags.TagKey.create(Registries.STRUCTURE, net.minecraft.resources.Identifier.fromNamespaceAndPath(AstralEnd.MODID, "remnant"));
 
-    // The Remnant over the Corona nearest `from` (its middle), or the middle of that Corona's sky if
-    // there's no Remnant built for it.
+    // The Remnant nearest `from` (its middle): one hangs over the hell half of every Eclipse.
     public static BlockPos nearestRemnant(ServerLevel level, BlockPos from) {
-        BlockPos corona = nearestCorona(level, from);
-        if (corona == null) {
-            return null;
-        }
-        int y = level.getMinY() + com.ggrantrichards.astralend.world.structure.RemnantStructure.HEIGHT + 5;
-        BlockPos remnant = level.findNearestMapStructure(REMNANT, corona, 4, false);
-        // (A structure is located by its chunk's corner; the Remnant hangs over the chunk's middle.)
-        return remnant != null ? new BlockPos(remnant.getX() + 8, y, remnant.getZ() + 8) : new BlockPos(corona.getX(), y, corona.getZ());
+        BlockPos anchor = com.ggrantrichards.astralend.world.structure.RemnantStructure.anchor(
+            level.getChunkSource().randomState().sampler().temperature(), from.getX(), from.getZ(), 3);
+        return anchor == null ? null : new BlockPos(anchor.getX(), level.getMinY() + anchor.getY() + 5, anchor.getZ());
     }
 
-    // Also used by the worldgen survey, to aim its screenshot of the Remnant.
+    // The middle of the hell half (the Corona) of the Eclipse nearest `from`, at ground level. Also used
+    // by the worldgen survey, to aim its screenshot of the Remnant.
     public static BlockPos nearestCorona(ServerLevel level, BlockPos from) {
-        BiomeResolver biomes = level.getChunkSource().getGenerator().getBiomeSource()
-            .createUncachedResolver(level.getChunkSource().randomState());
-        int step = 128;
-        int qy = QuartPos.fromBlock(64);
-        for (int ring = 0; ring <= 40; ring++) {
-            BlockPos best = null;
-            double bestDistance = Double.MAX_VALUE;
-            for (int dx = -ring; dx <= ring; dx++) {
-                for (int dz = -ring; dz <= ring; dz++) {
-                    if (Math.max(Math.abs(dx), Math.abs(dz)) != ring) {
-                        continue;
-                    }
-                    int x = from.getX() + dx * step;
-                    int z = from.getZ() + dz * step;
-                    if (biomes.getNoiseBiome(QuartPos.fromBlock(x), qy, QuartPos.fromBlock(z)).is(ModBiomes.CORONA)) {
-                        double d = (double) dx * dx + (double) dz * dz;
-                        if (d < bestDistance) {
-                            bestDistance = d;
-                            best = new BlockPos(x, 64, z);
-                        }
-                    }
-                }
-            }
-            if (best != null) {
-                return best;
-            }
-        }
-        return null;
+        BlockPos anchor = com.ggrantrichards.astralend.world.structure.RemnantStructure.anchor(
+            level.getChunkSource().randomState().sampler().temperature(), from.getX(), from.getZ(), 3);
+        return anchor == null ? null : new BlockPos(anchor.getX(), 64, anchor.getZ());
     }
 }

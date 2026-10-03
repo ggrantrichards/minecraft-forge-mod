@@ -6,6 +6,7 @@ import com.ggrantrichards.astralend.entity.ModEntities;
 import com.ggrantrichards.astralend.world.AstralEndBiomeSource;
 import com.ggrantrichards.astralend.world.Upwells;
 import com.ggrantrichards.astralend.world.LowGravity;
+import com.ggrantrichards.astralend.world.EclipseLayout;
 import com.ggrantrichards.astralend.world.ModBiomes;
 import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
@@ -65,7 +66,9 @@ public final class WorldgenSurvey {
         new BiomeInfo(ModBiomes.GLIMMERING_CRAGS, 'G', "Glimmering Crags", 1, 15, 3),
         new BiomeInfo(ModBiomes.ASHEN_BARRENS, 'A', "Ashen Barrens", 3, 25, 3),
         new BiomeInfo(ModBiomes.HOLLOW_ISLES, 'D', "Hollow Isles", 2, 20, 3),
-        new BiomeInfo(ModBiomes.CORONA, 'C', "The Corona", 2, 20, 3),
+        // The Eclipse: rare, and small (360 blocks across), its two halves.
+        new BiomeInfo(ModBiomes.CORONA, 'C', "The Corona", 0.02, 3, 3),
+        new BiomeInfo(ModBiomes.ECLIPSE, 'E', "The Eclipse", 0.02, 3, 3),
         // The distillation's variants: patches inside their parents' territories.
         new BiomeInfo(ModBiomes.DEEP_HOLLOWS, 'V', "Deep Hollows", 0.2, 12, 3),
         new BiomeInfo(ModBiomes.SHATTERED_CRAGS, 'X', "Shattered Crags", 0.1, 8, 3));
@@ -195,7 +198,8 @@ public final class WorldgenSurvey {
         log("Biome map of the End, " + (2 * MAP_RADIUS) + " x " + (2 * MAP_RADIUS) + " blocks, north up, one character = "
             + MAP_STEP + " blocks:");
         log("  O central island   N Nebula Fields   A Ashen Barrens   D Hollow Isles   "
-            + "C The Corona   T Chorus Tangle   G Glimmering Crags   V Deep Hollows   X Shattered Crags   "
+            + "C The Corona (the Eclipse's hell half)   E The Eclipse (its heaven half)   T Chorus Tangle   "
+            + "G Glimmering Crags   V Deep Hollows   X Shattered Crags   "
             + "H/M/B/s vanilla Highlands/Midlands/Barrens/Small Islands");
         Map<Character, Integer> outerCounts = new HashMap<>();
         Map<Character, Integer> runs = new HashMap<>();
@@ -237,7 +241,7 @@ public final class WorldgenSurvey {
             log("  " + row);
         }
         StringBuilder shares = new StringBuilder("Outer End (beyond 1,100 blocks):");
-        for (char c : "NATDVCGXHMBs".toCharArray()) {
+        for (char c : "NATDVCEGXHMBs".toCharArray()) {
             shares.append(String.format(" %c %.1f%%", c, 100.0 * outerCounts.getOrDefault(c, 0) / Math.max(1, outerTotal)));
         }
         log(shares.toString());
@@ -251,7 +255,8 @@ public final class WorldgenSurvey {
                     info.minShare(), info.maxShare()));
             }
             double minCoherence = 50;
-            if (share > 0 && coherence < minCoherence) {
+            boolean small = info.symbol() == 'C' || info.symbol() == 'E';   // the Eclipse is too small for the map's grid
+            if (share > 0 && coherence < minCoherence && !small) {
                 failures.add(String.format("%s is scattered, not regions (coherence %.0f%%, expected %.0f%%+)", info.name(),
                     coherence, minCoherence));
             }
@@ -263,6 +268,17 @@ public final class WorldgenSurvey {
         }
 
         // ---- Generate an area of each astral biome and count what's there ----
+        // The Eclipse's two halves are surveyed at known spots of the nearest one: over the heart of its
+        // hell half (under the Remnant), and in its heaven half beside the Wellspring.
+        EclipseLayout.Eclipse eclipse = EclipseLayout.nearest(0, 0, randomState.sampler().temperature(), 3);
+        if (eclipse == null) {
+            failures.add("no Eclipse within 3 cells of the centre");
+        } else {
+            log(String.format("Nearest Eclipse: centre %.0f, %.0f, turned %.0f degrees", eclipse.x(), eclipse.z(),
+                Math.toDegrees(eclipse.angle())));
+            spots.put('C', List.of(BlockPos.containing(eclipse.worldX(-0.6, 0.1), 64, eclipse.worldZ(-0.6, 0.1))));
+            spots.put('E', List.of(BlockPos.containing(eclipse.worldX(0.5, 0.3), 64, eclipse.worldZ(0.5, 0.3))));
+        }
         Map<Character, Area> areas = new LinkedHashMap<>();
         for (BiomeInfo info : ASTRAL) {
             BlockPos spot = bestSpot(spots.getOrDefault(info.symbol(), List.of()), end, generator, randomState);
@@ -304,6 +320,10 @@ public final class WorldgenSurvey {
         checkAurora(areas.get('A'), failures);
         checkHollowIsles(areas.get('D'), end, failures);
         checkCorona(areas.get('C'), failures);
+        checkEclipse(areas.get('E'), failures);
+        if (eclipse != null) {
+            testEclipse(end, eclipse, failures);
+        }
         checkThicket(areas.get('T'), failures);
         checkCrags(areas.get('G'), end, failures);
         checkDeepHollows(areas.get('V'), failures);
@@ -320,7 +340,8 @@ public final class WorldgenSurvey {
             new Home(ModEntities.POLLINATOR.get(), 'N'), new Home(ModEntities.VOID_WANDERER.get(), 'D'),
             new Home(ModEntities.UMBRAL_STALKER.get(), 'G'), new Home(ModEntities.VOID_RAY.get(), 'C'),
             new Home(ModEntities.DRIFT_WHALE.get(), 'A'), new Home(ModEntities.WATCHER.get(), 'N'),
-            new Home(ModEntities.SPIRE_WYRM.get(), 'G'));
+            new Home(ModEntities.SPIRE_WYRM.get(), 'G'), new Home(ModEntities.HUSHBACK.get(), 'E'),
+            new Home(ModEntities.HYDRAGRIP.get(), 'E'), new Home(ModEntities.MIRROR_WRETCH.get(), 'C'));
         for (Home home : homes) {
             Area area = areas.get(home.biome());
             String name = home.type().getDescription().getString();
@@ -397,6 +418,9 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('A'), end, "drift_whale side", 11.0, 7.0, 7.5);
         mobShot(lines, areas.get('N'), end, "watcher", 6.5, 0.5, 2.6);
         mobShot(lines, areas.get('G'), end, "spire_wyrm", 16.0, 6.0, 5.0);
+        mobShot(lines, areas.get('E'), end, "hushback", 3.2, 0.5, 1.4);
+        mobShot(lines, areas.get('E'), end, "hydragrip", 2.2, 0.3, 0.9);
+        mobShot(lines, areas.get('C'), end, "mirror_wretch", 4.2, 0.8, 2.4);
         // Phase 5: the sky and Sunstorms.
         skyShot(lines, areas.get('A'), "sky_ashen_barrens", -45.0F, -32.0F, null, "flare=calm");
         skyShot(lines, areas.get('N'), "sky_nebula_fields", -45.0F, -32.0F, null, "flare=calm");
@@ -463,6 +487,83 @@ public final class WorldgenSurvey {
 
     // The Remnant: its heart (light in Solarite) where the structure starts, high over the Corona, a
     // chamber round it and a way in. Then views: from out in the air beside it, and in the chamber.
+    // Where the Remnant nearest `from` starts, as /locate would report it (its chunk's corner).
+    private static BlockPos remnantStart(ServerLevel end, BlockPos from) {
+        BlockPos anchor = com.ggrantrichards.astralend.world.structure.RemnantStructure.anchor(
+            end.getChunkSource().randomState().sampler().temperature(), from.getX(), from.getZ(), 3);
+        return anchor == null ? null : new BlockPos(anchor.getX() - 8, 64, anchor.getZ() - 8);
+    }
+
+    // The Eclipse's heaven half: Living Turf, Breathcomb, giant Lumineshrooms, and no Endermen's chorus.
+    private static void checkEclipse(Area area, List<String> failures) {
+        if (!enoughLand(area, failures)) {
+            return;
+        }
+        atLeast(area, ModBlocks.LIVING_TURF.get(), 40, failures);
+        atLeast(area, ModBlocks.BREATHCOMB.get(), 1, failures);
+        atLeast(area, ModBlocks.LUMINE_CAP.get(), 5, failures);
+        int scorched = area.in(ModBlocks.SUNSCORCHED_STONE.get());
+        log("The Eclipse: " + scorched + " Sunscorched Stone blocks in the heaven half (its seed of hell is elsewhere)");
+    }
+
+    // The Eclipse's landmarks: the Wellspring (water on a glass floor over the void), its two seeds, and
+    // the two halves in the right places.
+    private static void testEclipse(ServerLevel end, EclipseLayout.Eclipse e, List<String> failures) {
+        double wx = e.worldX(EclipseLayout.WELLSPRING[0], EclipseLayout.WELLSPRING[1]);
+        double wz = e.worldZ(EclipseLayout.WELLSPRING[0], EclipseLayout.WELLSPRING[1]);
+        int cx = (int) Math.floor(wx) >> 4, cz = (int) Math.floor(wz) >> 4;
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                end.getChunk(cx + dx, cz + dz);
+            }
+        }
+        int water = 0, glass = 0, below = 0;
+        BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
+        double r = EclipseLayout.WELLSPRING_RADIUS * EclipseLayout.RADIUS - 1.5;
+        for (int x = (int) (wx - r); x <= (int) (wx + r); x++) {
+            for (int z = (int) (wz - r); z <= (int) (wz + r); z++) {
+                if ((x - wx) * (x - wx) + (z - wz) * (z - wz) > r * r) {
+                    continue;
+                }
+                for (int y = end.getMinY(); y < end.getMinY() + 128; y++) {
+                    BlockState state = end.getBlockState(p.set(x, y, z));
+                    if (state.is(Blocks.WATER)) {
+                        water++;
+                    } else if (state.is(ModBlocks.ASTRAL_GLASS.get())) {
+                        glass++;
+                    } else if (!state.isAir() && y < 50) {
+                        below++;
+                    }
+                }
+            }
+        }
+        log(String.format("The Wellspring at %.0f, %.0f: %d water, %d glass floor, %d solid blocks under it", wx, wz, water, glass, below));
+        if (water < 2000 || glass < 400 || below > 20) {
+            failures.add("the Wellspring should be water on a glass floor over open void (" + water + " water, " + glass
+                + " glass, " + below + " solid under it)");
+        }
+        // Its halves where the yin-yang says (the biome map is warped near borders, so test well inside).
+        var resolver = end.getChunkSource().getGenerator().getBiomeSource().createUncachedResolver(end.getChunkSource().randomState());
+        record Probe(double u, double v, net.minecraft.resources.ResourceKey<Biome> want) {}
+        int right = 0, total = 0;
+        for (Probe probe : List.of(new Probe(0.6, -0.1, ModBiomes.ECLIPSE), new Probe(-0.6, 0.1, ModBiomes.CORONA),
+                                   new Probe(0.0, 0.5, ModBiomes.CORONA), new Probe(0.0, -0.5, ModBiomes.ECLIPSE),
+                                   new Probe(0.75, 0.3, ModBiomes.ECLIPSE), new Probe(-0.75, -0.3, ModBiomes.CORONA))) {
+            Holder<Biome> b = resolver.getNoiseBiome(QuartPos.fromBlock((int) e.worldX(probe.u(), probe.v())), QuartPos.fromBlock(64),
+                QuartPos.fromBlock((int) e.worldZ(probe.u(), probe.v())));
+            total++;
+            if (b.is(probe.want())) {
+                right++;
+            }
+        }
+        log("The Eclipse's halves: " + right + " of " + total + " test points in the right half");
+        if (right < total) {
+            failures.add("the Eclipse's yin-yang is wrong at " + (total - right) + " of " + total + " test points");
+        }
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "eclipse_overview %.1f %d %.1f %.1f 50.0", e.x() - 190, 190, e.z() - 190, -45.0));
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "eclipse_wellspring %.1f %d %.1f %.1f 25.0", wx - 26, 72, wz - 26, -45.0));
+    }
+
     private static void testRemnant(ServerLevel end, BlockPos start, List<String> failures) {
         // The start is reported at its chunk's corner; the Remnant hangs over the chunk's middle.
         BlockPos heart = null;
@@ -616,7 +717,8 @@ public final class WorldgenSurvey {
             BlockPos search = from;
             // The nearest few, so a hot crater turns up too: each search starts past the last one found.
             for (int i = 0; i < (w.name().equals("comet_crater") ? 6 : 1); i++) {
-                BlockPos start = end.findNearestMapStructure(tag, search, 100, false);
+                // (The Remnant is asked of every chunk, so it's found from the Eclipse layout, not searched for.)
+                BlockPos start = w.name().equals("remnant") ? remnantStart(end, search) : end.findNearestMapStructure(tag, search, 100, false);
                 if (start == null || starts.contains(start)) {
                     break;
                 }
@@ -1289,6 +1391,7 @@ public final class WorldgenSurvey {
         if (biome.is(ModBiomes.ASHEN_BARRENS)) return 'A';
         if (biome.is(ModBiomes.HOLLOW_ISLES)) return 'D';
         if (biome.is(ModBiomes.CORONA)) return 'C';
+        if (biome.is(ModBiomes.ECLIPSE)) return 'E';
         if (biome.is(ModBiomes.CHORUS_THICKET)) return 'T';
         if (biome.is(ModBiomes.GLIMMERING_CRAGS)) return 'G';
         if (biome.is(ModBiomes.DEEP_HOLLOWS)) return 'V';

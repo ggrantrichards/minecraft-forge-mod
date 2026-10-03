@@ -16,6 +16,9 @@ public final class ModModelLayers {
     public static final ModelLayerLocation DRIFT_WHALE = layer("drift_whale");
     public static final ModelLayerLocation WATCHER = layer("watcher");
     public static final ModelLayerLocation SPIRE_WYRM = layer("spire_wyrm");
+    public static final ModelLayerLocation HUSHBACK = layer("hushback");
+    public static final ModelLayerLocation HYDRAGRIP = layer("hydragrip");
+    public static final ModelLayerLocation MIRROR_WRETCH = layer("mirror_wretch");
 
     public static void register() {
         EntityRenderersEvent.RegisterLayerDefinitions.BUS.addListener(event -> {
@@ -26,6 +29,9 @@ public final class ModModelLayers {
             event.registerLayerDefinition(DRIFT_WHALE, MobMeshes::driftWhale);
             event.registerLayerDefinition(WATCHER, MobMeshes::watcher);
             event.registerLayerDefinition(SPIRE_WYRM, MobMeshes::spireWyrm);
+            event.registerLayerDefinition(HUSHBACK, MobMeshes::hushback);
+            event.registerLayerDefinition(HYDRAGRIP, MobMeshes::hydragrip);
+            event.registerLayerDefinition(MIRROR_WRETCH, MobMeshes::mirrorWretch);
         });
         EntityRenderersEvent.RegisterRenderers.BUS.addListener(event -> {
             event.registerEntityRenderer(ModEntities.POLLINATOR.get(), PollinatorRenderer::new);
@@ -35,6 +41,9 @@ public final class ModModelLayers {
             event.registerEntityRenderer(ModEntities.DRIFT_WHALE.get(), DriftWhaleRenderer::new);
             event.registerEntityRenderer(ModEntities.WATCHER.get(), WatcherRenderer::new);
             event.registerEntityRenderer(ModEntities.SPIRE_WYRM.get(), SpireWyrmRenderer::new);
+            event.registerEntityRenderer(ModEntities.HUSHBACK.get(), HushbackRenderer::new);
+            event.registerEntityRenderer(ModEntities.HYDRAGRIP.get(), HydragripRenderer::new);
+            event.registerEntityRenderer(ModEntities.MIRROR_WRETCH.get(), MirrorWretchRenderer::new);
         });
     }
 

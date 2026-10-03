@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "breath=0": {
+      "model": "astralend:block/breathcomb_0"
+    },
+    "breath=1": {
+      "model": "astralend:block/breathcomb_1"
+    },
+    "breath=2": {
+      "model": "astralend:block/breathcomb_2"
+    },
+    "breath=3": {
+      "model": "astralend:block/breathcomb_3"
+    }
+  }
+}

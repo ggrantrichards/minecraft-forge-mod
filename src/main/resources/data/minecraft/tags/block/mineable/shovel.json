@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "astralend:living_turf",
     "astralend:stardust_block"
   ]
 }

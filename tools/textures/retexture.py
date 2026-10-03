@@ -255,6 +255,38 @@ def hollow_vines(name):
     return lambda: gradient(vanilla(name), "120a20", "33245a", "5e4a9c")
 
 
+# The Eclipse's heaven half: the only green in the End, and its breathing light.
+TURF = ("1d4630", "3a8048", "79c066")
+
+
+def living_turf_top():
+    return gradient(vanilla("grass_block_top"), *TURF)
+
+
+def living_turf_side():
+    img = vanilla("end_stone").copy()
+    img.alpha_composite(gradient(vanilla("grass_block_side_overlay"), *TURF))
+    return img
+
+
+BREATH = (("2c2618", "4e4430", "6c5e40"), ("5a4a2c", "8a7448", "b09868"), ("9a8048", "d0b470", "efdcaa"),
+          ("c8a860", "f2dfa0", "fffbe8"))
+
+
+def breathcomb(stage):
+    return lambda: gradient(vanilla("honeycomb_block"), *BREATH[stage])
+
+
+def hushfleece():
+    """A tuft of the Hushback's fleece: vanilla's string-white feather, pale and cool."""
+    return gradient(vanilla("feather", "item"), "a8b4c0", "d8e2ea", "f8fcff")
+
+
+def hushback_flank(cooked):
+    return lambda: gradient(vanilla("cooked_mutton" if cooked else "mutton", "item"),
+                            *(("4a2e24", "8a5a40", "c8946a", "e8c8a0") if cooked else ("6a4a58", "b08494", "dcb8c4", "f0e4ea")))
+
+
 def nullwood_leaves():
     return gradient(vanilla("dark_oak_leaves"), "160f2a", "33265e", "6a54b0")
 
@@ -379,6 +411,12 @@ TEXTURES = [
     ("item/nullwood_door.png", nullwood("dark_oak_door", "item")),
     ("block/nullwood_leaves.png", nullwood_leaves),
     ("block/hollow_vines.png", hollow_vines("weeping_vines")),
+    ("block/living_turf_top.png", living_turf_top),
+    ("item/hushfleece.png", hushfleece),
+    ("item/hushback_flank.png", hushback_flank(False)),
+    ("item/cooked_hushback_flank.png", hushback_flank(True)),
+    ("block/living_turf_side.png", living_turf_side),
+    *[(f"block/breathcomb_{i}.png", breathcomb(i)) for i in range(4)],
     ("block/hollow_vines_plant.png", hollow_vines("weeping_vines_plant")),
     ("block/pale_end_stone_bricks.png", pale_end_stone_bricks),
     ("block/sunscorched_stone_bricks.png", sunscorched_stone_bricks),

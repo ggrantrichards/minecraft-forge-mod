@@ -27,7 +27,8 @@ public class LumineshroomBlock extends VegetationBlock {
 
     @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.is(ModBlocks.CHORUS_MOSS.get()) || state.is(Blocks.END_STONE) || state.is(ModBlocks.NIGHTSTONE.get());
+        return state.is(ModBlocks.CHORUS_MOSS.get()) || state.is(Blocks.END_STONE) || state.is(ModBlocks.NIGHTSTONE.get())
+            || state.is(ModBlocks.LIVING_TURF.get());
     }
 
     @Override

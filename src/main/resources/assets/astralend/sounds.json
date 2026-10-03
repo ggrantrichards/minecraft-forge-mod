@@ -7,7 +7,7 @@
       }
     ]
   },
-  "music.chorus_thicket": {
+  "music.eclipse": {
     "sounds": [
       {
         "name": "astralend:music/heavenly_loop",
@@ -235,6 +235,31 @@
       },
       {
         "name": "astralend:ambient/shattered_crags/additions3",
+        "volume": 0.5
+      }
+    ]
+  },
+  "ambient.eclipse.loop": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/eclipse/loop",
+        "stream": true,
+        "volume": 0.6
+      }
+    ]
+  },
+  "ambient.eclipse.additions": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/eclipse/additions1",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/eclipse/additions2",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/eclipse/additions3",
         "volume": 0.5
       }
     ]

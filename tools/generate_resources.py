@@ -90,6 +90,10 @@ ITEMS = [
     ("star_chart", "Star Chart"),
     ("upwell_mote", "Upwell Mote"),
     ("resonant_key", "Resonant Key"),
+    # The distillation: from the Hushback
+    ("hushfleece", "Hushfleece"),
+    ("hushback_flank", "Raw Hushback Flank"),
+    ("cooked_hushback_flank", "Cooked Hushback Flank"),
 ]
 
 PLURAL = {"nightstone_bricks": "nightstone_brick", "pale_end_stone_bricks": "pale_end_stone_brick",
@@ -675,9 +679,9 @@ def terrain():
     raw = {
         "ashen_barrens": mul(cold, ramp(belt, REGION_COLD_BELT)),
         "hollow_isles": mul(middle, ramp(belt, REGION_MID_BELT)),
-        "corona": mul(middle, ramp(mul(belt, -1.0), REGION_MID_BELT)),
     }
-    vanilla_share = sub(sub(sub(not_nebula, raw["ashen_barrens"]), raw["hollow_isles"]), raw["corona"])
+    # (The Corona's territory is gone: it's the hell half of the rare Eclipse now, below.)
+    vanilla_share = sub(sub(not_nebula, raw["ashen_barrens"]), raw["hollow_isles"])
     crags = mul(vanilla_share, ramp(ruin, REGION_CRAGS))
     raw["glimmering_crags"] = mul(crags, sub(1.0, ramp(variant, REGION_VARIANT)))
     raw["shattered_crags"] = mul(crags, ramp(variant, REGION_VARIANT))
@@ -718,8 +722,6 @@ def terrain():
     hollowed = sub(add(vanilla, mul(noise, 0.5)), mul(dmax(add(islands, -0.2), 0.0), 6.0))
     df("terrain/hollow_isles", dmax(hollowed, landmass(add(58.0, mul(hills, 4.0)), ring)))
 
-    # The Corona: flat-topped mesas with sheer cliffs, so there's little natural shelter.
-    df("terrain/corona", dmax(vanilla, landmass(add(62.0, mul(hills, 1.5)), depth_from(add(mask, -0.02), 400.0, 30.0))))
 
     # Chorus Thicket: like the Nebula Fields, but gentler: low, broad mounds for the chorus to stand on.
     df("terrain/chorus_thicket", dmax(vanilla, landmass(add(60.0, mul(hills, 4.0)), depth_from(add(mask, -0.08), 110.0, 38.0))))
@@ -739,9 +741,14 @@ def terrain():
     df("terrain/shattered_crags", landmass(add(56.0, mul(rid("terrain/shard_height"), 22.0)), shards))
 
     shaped = vanilla
-    for biome in ("nebula_fields", "chorus_thicket", "corona", "hollow_isles", "ashen_barrens", "glimmering_crags",
+    for biome in ("nebula_fields", "chorus_thicket", "hollow_isles", "ashen_barrens", "glimmering_crags",
                   "shattered_crags"):
         shaped = lerp(rid(f"terrain/weight/{biome}"), shaped, rid(f"terrain/{biome}"))
+    # The Eclipse: one great disc of land in a ring of void, over everything else (EclipseDensity.java
+    # works out where each one is, from the same nebula noise the biome source reads).
+    df("terrain/eclipse_weight", {"type": rid("eclipse"), "nebula": nebula, "hills": hills, "output": "weight"})
+    df("terrain/eclipse", {"type": rid("eclipse"), "nebula": nebula, "hills": hills, "output": "shape"})
+    shaped = lerp(rid("terrain/eclipse_weight"), shaped, rid("terrain/eclipse"))
     df("terrain/shaped", shaped)
 
 
@@ -794,7 +801,9 @@ def worldgen():
         # Whole islands of a different stone:
         in_biome("ashen_barrens", block("pale_end_stone")),
         in_biome("hollow_isles", block("nightstone")),
-        # The Corona: a bleached crust of Sunscorched Stone over Charred End Stone.
+        # The Eclipse's heaven half: Living Turf over End Stone.
+        in_biome("eclipse", {"type": "minecraft:condition", "if_true": "minecraft:on_floor", "then_run": block("living_turf")}),
+        # The Corona (the Eclipse's hell half): a bleached crust of Sunscorched Stone over Charred End Stone.
         in_biome("corona", {"type": "minecraft:sequence", "sequence": [
             {"type": "minecraft:condition", "if_true": "minecraft:under_floor", "then_run": block("sunscorched_stone")},
             block("charred_end_stone")]}),
@@ -866,6 +875,9 @@ def worldgen():
     tag("worldgen/biome", f"{NS}:low_gravity", rid("nebula_fields"))
     # Phase 9: data-pack switches for the two events (empty a tag to turn its event off).
     tag("worldgen/biome", f"{NS}:sunstorms", rid("corona"))
+    # The Eclipse (both halves): where the astral sky shows.
+    for half in ("eclipse", "corona"):
+        tag("worldgen/biome", f"{NS}:eclipse", rid(half))
     # Biomes where Upwell Cores flip gravity. Empty this tag in a datapack to turn it off.
     tag("worldgen/biome", f"{NS}:upwells", rid("hollow_isles"))
     # Chorus grows in the living astral biomes too: on Chorus Moss and Nightstone as on End Stone.
@@ -936,25 +948,30 @@ MOB_SPAWNS = {
     # The Umbral Stalker hunts only in the Crags' root caves (its spawn rule wants a roof of rock overhead).
     "glimmering_crags": {"monster": [("umbral_stalker", 6, 1)]},
     "shattered_crags": {"creature": [("void_ray", 8, 3)]},
-    "corona": {"creature": [("pollinator", 12, 3)]},
+    # The Eclipse: its heaven half's life, endermites for the Hydragrips to hunt, and on the border
+    # between the halves (its spawn rule decides), the Mirror Wretch.
+    "eclipse": {"creature": [("pollinator", 10, 3), ("hushback", 10, 4), ("hydragrip", 5, 2)],
+                "monster": [("minecraft:endermite", 3, 2), ("mirror_wretch", 6, 1)]},
+    "corona": {"monster": [("mirror_wretch", 6, 1)]},
 }
 
 
 # Endermen live where the End is alive; the dead Ashen Barrens and the sun-scorched Corona have none.
-NO_ENDERMEN = ("ashen_barrens", "corona")
+NO_ENDERMEN = ("ashen_barrens", "corona", "eclipse")
 
 
 def mob_spawns(biome):
     spawns = {"monster": [] if biome in NO_ENDERMEN else [{"type": "minecraft:enderman", "count": 4, "weight": 10}]}
     for category, entries in MOB_SPAWNS.get(biome, {}).items():
         spawns.setdefault(category, [])
-        spawns[category] += [{"type": rid(mob), "count": count, "weight": weight} for mob, weight, count in entries]
+        spawns[category] += [{"type": mob if ":" in mob else rid(mob), "count": count, "weight": weight}
+                             for mob, weight, count in entries]
     return {"argument": {"spawn_costs": {}, "spawns_by_category": spawns}, "modifier": "overlay"}
 
 
 # Which music each astral biome plays (sounds in ModSounds.java; who made it in sounds/credits.txt).
 # The Ashen Barrens keep the End's own music: the dead country gets nothing new.
-BIOME_MUSIC = {"nebula_fields": "music.nebula_fields", "chorus_thicket": "music.chorus_thicket",
+BIOME_MUSIC = {"nebula_fields": "music.nebula_fields", "chorus_thicket": "music.nebula_fields", "eclipse": "music.eclipse",
                "glimmering_crags": "music.glimmering_crags", "shattered_crags": "music.glimmering_crags",
                "hollow_isles": "music.outer_end", "deep_hollows": "music.outer_end",
                "corona": "music.outer_end"}
@@ -1097,6 +1114,9 @@ def worldgen_phase3():
               particle="minecraft:reverse_portal", particle_chance=0.004)
 
     # ---- The Corona: Sunscorched Stone over Charred End Stone; Solarite; adapted and dead life
+    # (the Eclipse's hell half since the distillation; its landmarks run in both halves)
+    java_feature("eclipse_landmarks")
+    placed("eclipse_landmarks", {"feature": rid("eclipse_landmarks"), "placement": []})
     ore("solarite_surface_vein", "solarite_ore", rid("sunscorched_stone"), size=8)
     surface_feature("corona_solarite_surface", "solarite_surface_vein", count=5, y_offset=-3)
     ore("solarite_deep_vein", "solarite_ore", rid("charred_end_stone"), size=3)
@@ -1113,11 +1133,40 @@ def worldgen_phase3():
     big_feature("corona_scorch_fissures", "scorch_fissure", rarity=2, heightmap="WORLD_SURFACE_WG")
     end_biome("corona", "The Corona", fog="#4a2616", water="#d9823b",
               features_step7=[rid("corona_solarite_deep")],
-              features_step4=[rid("corona_solarite_surface")],
+              features_step4=[rid("corona_solarite_surface"), rid("eclipse_landmarks")],
               features_step9=[rid("corona_scorch_fissures"), rid("corona_solarite_spires"), rid("corona_petrified_stalks"), rid("corona_sunscale_lichen"), rid("corona_flareblooms"), rid("corona_ashen_lumineshrooms"),
                               rid("corona_petrified_vines"), rid("corona_pollinator_husks")],
               particle="minecraft:white_ash", particle_chance=0.03)
 
+
+    # ---- The Eclipse's heaven half (the hell half is the Corona, above): living turf, giant
+    # Lumineshrooms (their only home), Breathcomb, the Wellspring and its seeds (EclipseLandmarksFeature).
+    big_feature("eclipse_giant_lumineshrooms", "giant_lumineshroom", count=2)
+    plant_patch("eclipse_lumineshrooms", "lumineshroom", rarity=1, count=24, spread=6, on=[rid("living_turf")])
+    plant_patch("eclipse_starblooms", "starbloom", rarity=1, count=20, spread=6, on=[rid("living_turf")])
+    feature("breathcomb", {"type": "minecraft:simple_block", "to_place": {"id": rid("breathcomb")}})
+    placed("eclipse_breathcomb", {"feature": rid("breathcomb"), "placement": [
+        {"type": "minecraft:rarity_filter", "chance": 2}, {"type": "minecraft:in_square"},
+        {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"}, {"type": "minecraft:biome"},
+        {"type": "minecraft:count", "count": 10},
+        {"type": "minecraft:offset", "x": trapezoid(3), "y": trapezoid(1), "z": trapezoid(3)},
+        {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
+            {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
+            {"type": "minecraft:matching_blocks", "blocks": [rid("living_turf"), rid("breathcomb")], "offset": [0, -1, 0]}]}},
+    ]})
+    feature("eclipse_grass", {"type": "minecraft:simple_block", "to_place": {"id": "minecraft:short_grass"}})
+    placed("eclipse_grass", {"feature": rid("eclipse_grass"), "placement": [
+        {"type": "minecraft:count", "count": 60}, {"type": "minecraft:in_square"},
+        {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"}, {"type": "minecraft:biome"},
+        {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
+            {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
+            {"type": "minecraft:matching_blocks", "blocks": [rid("living_turf")], "offset": [0, -1, 0]}]}},
+    ]})
+    end_biome("eclipse", "The Eclipse", fog="#24304a", water="#3f8fd0",
+              features_step4=[rid("eclipse_landmarks")],
+              features_step9=[rid("eclipse_giant_lumineshrooms"), rid("eclipse_breathcomb"), rid("eclipse_lumineshrooms"),
+                              rid("eclipse_starblooms"), rid("eclipse_grass")],
+              particle="minecraft:end_rod", particle_chance=0.002)
 
     # ---- Chorus Thicket (the distillation's Chorus Tangle): tangled thickets of vanilla chorus on Chorus
     # Moss, in groves with clearings between - hard to cross, easy to fall from. No trees: the Hollow
@@ -1167,6 +1216,10 @@ MOBS = [
     ("drift_whale", "Drift Whale"),
     ("watcher", "The Watcher"),
     ("spire_wyrm", "Spire Wyrm"),
+    # The distillation: the Eclipse's mobs
+    ("hushback", "Hushback"),
+    ("hydragrip", "Hydragrip"),
+    ("mirror_wretch", "Mirror Wretch"),
 ]
 
 
@@ -1727,7 +1780,7 @@ def round_out_phase9():
 
 
 ASTRAL_BIOMES = ("nebula_fields", "ashen_barrens", "hollow_isles", "corona", "chorus_thicket", "glimmering_crags",
-                "deep_hollows", "shattered_crags")
+                "deep_hollows", "shattered_crags", "eclipse")
 
 
 def has_item(item):
@@ -1947,12 +2000,12 @@ def content_phase10():
     shaped(template, template, ["DTD", "DND", "DDD"], {"D": "minecraft:diamond", "T": rid(template), "N": rid("nightstone")},
            count=2, category="misc")
     # Music: sounds.json for the biome tracks and the disc; the disc's jukebox song.
-    tracks = {"music.nebula_fields": "music/ambient_relaxing_loop", "music.chorus_thicket": "music/heavenly_loop",
+    tracks = {"music.nebula_fields": "music/ambient_relaxing_loop", "music.eclipse": "music/heavenly_loop",
               "music.glimmering_crags": "music/space_music", "music.outer_end": "music/out_there",
               "music_disc.observing_the_star": "records/observing_the_star"}
     sounds = {event: {"sounds": [{"name": rid(path), "stream": True}]} for event, path in tracks.items()}
     for biome in ("nebula_fields", "chorus_thicket", "ashen_barrens", "hollow_isles", "corona", "glimmering_crags",
-                  "deep_hollows", "shattered_crags"):
+                  "deep_hollows", "shattered_crags", "eclipse"):
         sounds[f"ambient.{biome}.loop"] = {"sounds": [{"name": rid(f"ambient/{biome}/loop"), "stream": True, "volume": 0.6}]}
         sounds[f"ambient.{biome}.additions"] = {"sounds": [{"name": rid(f"ambient/{biome}/additions{i}"), "volume": 0.5}
                                                           for i in range(1, 4)]}
@@ -1980,6 +2033,46 @@ def content_phase10():
                 parent=rid("end/wyrmslayer"))
     advancement("still_air", rid("end_chimes"), "Still the Air", "Hang End Chimes, and stop an Enderman's teleport with them",
                 parent=rid("end/astral_horizons"))
+
+
+def distillation_blocks():
+    """The distillation's new blocks and the Eclipse's mobs' drops (more in later phases)."""
+    # The Eclipse's mobs. The Hushback: its flank (it can be sheared for Hushfleece, in Java). The
+    # Hydragrip drops nothing (it gives Ender Pearls alive). The Mirror Wretch drops a shard of its face.
+    entity_loot("hushback", [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("hushback_flank"), "modifier": [
+        {"type": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 1, "max": 2}},
+        {"type": "minecraft:furnace_smelt", "conditions": [{"condition": "minecraft:entity_properties", "entity": "this",
+                                                             "predicate": {"flags": {"is_on_fire": True}}}]},
+        {"type": "minecraft:enchanted_count_increase", "count": {"type": "minecraft:uniform", "min": 0.0, "max": 1.0},
+         "enchantment": "minecraft:looting"}]}]}])
+    entity_loot("hydragrip", [])
+    entity_loot("mirror_wretch", [player_kill_drop("abyss_shard", 1)])
+    for kind, time in (("smelting", 200), ("smoking", 100), ("campfire_cooking", 600)):
+        cooking(f"cooked_hushback_flank_from_{kind}", kind, rid("hushback_flank"), "cooked_hushback_flank", 0.35, time)
+    recipe("white_wool_from_hushfleece", {"type": "minecraft:crafting_shapeless", "category": "building",
+                                          "ingredients": [rid("hushfleece")] * 4, "result": {"id": "minecraft:white_wool"}})
+    tag("item", "minecraft:meat", rid("hushback_flank"))
+    tag("item", "minecraft:meat", rid("cooked_hushback_flank"))
+
+    # Living Turf: the Eclipse's ground, grass over End Stone (it drops End Stone without Silk Touch).
+    blockstate("living_turf", {"variants": {"": {"model": rid("block/living_turf")}}})
+    block_model("living_turf", {"parent": "minecraft:block/cube_bottom_top", "textures": {
+        "top": rid("block/living_turf_top"), "side": rid("block/living_turf_side"), "bottom": "minecraft:block/end_stone"}})
+    item_def("living_turf", rid("block/living_turf"))
+    lang[f"block.{NS}.living_turf"] = "Living Turf"
+    loot("living_turf", [{"rolls": 1, "entries": [{"type": "minecraft:alternatives", "children": [
+        {"type": "minecraft:item", "condition": "minecraft:tool/can_silk_touch", "name": rid("living_turf")},
+        {"type": "minecraft:item", "name": "minecraft:end_stone"}]}]}])
+    for t in ("minecraft:mineable/shovel", f"{NS}:astral_soil", "minecraft:dirt", "minecraft:supports_vegetation"):
+        tag("block", t, rid("living_turf"))
+    # Breathcomb: four stages of its breath, dim to bright.
+    blockstate("breathcomb", {"variants": {f"breath={i}": {"model": rid(f"block/breathcomb_{i}")} for i in range(4)}})
+    for i in range(4):
+        block_model(f"breathcomb_{i}", {"parent": "minecraft:block/cube_all", "textures": {"all": rid(f"block/breathcomb_{i}")}})
+    item_def("breathcomb", rid("block/breathcomb_2"))
+    lang[f"block.{NS}.breathcomb"] = "Breathcomb"
+    drop_self("breathcomb")
+    tag("block", "minecraft:mineable/hoe", rid("breathcomb"))
 
 
 def recipe_unlocks():
@@ -2386,6 +2479,7 @@ def main():
     advancements_phase9()
     mechanics_phase10()
     content_phase10()
+    distillation_blocks()
     recipe_unlocks()      # last: it reads every recipe written above
 
     # ---------------------------------------------------------------- write tags + lang

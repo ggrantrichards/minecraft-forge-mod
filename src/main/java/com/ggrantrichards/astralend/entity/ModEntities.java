@@ -51,6 +51,17 @@ public final class ModEntities {
         () -> EntityType.Builder.of(SpireWyrm::new, MobCategory.MONSTER).sized(2.0F, 2.0F).eyeHeight(1.2F).fireImmune()
             .clientTrackingRange(16).updateInterval(1).build(ENTITY_TYPES.key("spire_wyrm")));
 
+    // ---- The distillation: the Eclipse's mobs.
+    public static final RegistryObject<EntityType<Hushback>> HUSHBACK = ENTITY_TYPES.register("hushback",
+        () -> EntityType.Builder.of(Hushback::new, MobCategory.CREATURE).sized(1.0F, 1.3F).eyeHeight(1.15F)
+            .clientTrackingRange(10).build(ENTITY_TYPES.key("hushback")));
+    public static final RegistryObject<EntityType<Hydragrip>> HYDRAGRIP = ENTITY_TYPES.register("hydragrip",
+        () -> EntityType.Builder.of(Hydragrip::new, MobCategory.CREATURE).sized(0.7F, 0.6F).eyeHeight(0.45F)
+            .clientTrackingRange(8).build(ENTITY_TYPES.key("hydragrip")));
+    public static final RegistryObject<EntityType<MirrorWretch>> MIRROR_WRETCH = ENTITY_TYPES.register("mirror_wretch",
+        () -> EntityType.Builder.of(MirrorWretch::new, MobCategory.MONSTER).sized(0.7F, 2.7F).eyeHeight(2.4F)
+            .clientTrackingRange(10).build(ENTITY_TYPES.key("mirror_wretch")));
+
     public static void register() {
         EntityAttributeCreationEvent.BUS.addListener(event -> {
             event.put(POLLINATOR.get(), EndPollinator.createAttributes().build());
@@ -60,6 +71,9 @@ public final class ModEntities {
             event.put(DRIFT_WHALE.get(), DriftWhale.createAttributes().build());
             event.put(WATCHER.get(), Watcher.createAttributes().build());
             event.put(SPIRE_WYRM.get(), SpireWyrm.createAttributes().build());
+            event.put(HUSHBACK.get(), Hushback.createAttributes().build());
+            event.put(HYDRAGRIP.get(), Hydragrip.createAttributes().build());
+            event.put(MIRROR_WRETCH.get(), MirrorWretch.createAttributes().build());
         });
         SpawnPlacementRegisterEvent.BUS.addListener(event -> {
             var replace = SpawnPlacementRegisterEvent.Operation.REPLACE;
@@ -68,6 +82,9 @@ public final class ModEntities {
             event.register(VOID_WANDERER.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::onSolidGround, replace);
             event.register(UMBRAL_STALKER.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::inCave, replace);
             event.register(VOID_RAY.get(), SpawnPlacementTypes.ON_GROUND, ground, VoidRay::checkVoidRaySpawnRules, replace);
+            event.register(HUSHBACK.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::onAstralSoil, replace);
+            event.register(HYDRAGRIP.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::nearWater, replace);
+            event.register(MIRROR_WRETCH.get(), SpawnPlacementTypes.ON_GROUND, ground, MirrorWretch::checkWretchSpawnRules, replace);
         });
     }
 
@@ -79,6 +96,20 @@ public final class ModEntities {
     private static <T extends net.minecraft.world.entity.Entity> boolean onSolidGround(
         EntityType<T> type, LevelAccessor level, EntitySpawnReason reason, BlockPos pos, RandomSource random) {
         return !level.getBlockState(pos.below()).isAir();
+    }
+
+    // The Hydragrip: on the turf, with water within a few blocks.
+    private static <T extends net.minecraft.world.entity.Entity> boolean nearWater(
+        EntityType<T> type, LevelAccessor level, EntitySpawnReason reason, BlockPos pos, RandomSource random) {
+        if (!level.getBlockState(pos.below()).is(ModBlocks.ASTRAL_SOIL)) {
+            return false;
+        }
+        for (BlockPos p : BlockPos.betweenClosed(pos.offset(-4, -2, -4), pos.offset(4, 1, 4))) {
+            if (level.getFluidState(p).is(net.minecraft.tags.FluidTags.WATER)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // The Umbral Stalker: only under a roof of rock, in the dark (the Glimmering Crags' root caves).

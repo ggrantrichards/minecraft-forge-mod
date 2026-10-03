@@ -29,6 +29,14 @@ public final class ModWorldgen {
     public static final RegistryObject<MapCodec<? extends BiomeSource>> ASTRAL_END =
         BIOME_SOURCES.register("astral_end", () -> AstralEndBiomeSource.CODEC);
 
+    // The distillation: the Eclipse's island, a density function coded in Java (see EclipseDensity).
+    public static final DeferredRegister<MapCodec<? extends net.minecraft.world.level.levelgen.DensityFunction>> DENSITY_FUNCTION_TYPES =
+        DeferredRegister.create(Registries.DENSITY_FUNCTION_TYPE, AstralEnd.MODID);
+
+    static {
+        DENSITY_FUNCTION_TYPES.register("eclipse", () -> EclipseDensity.DATA_CODEC);
+    }
+
     public static final DeferredRegister<MapCodec<? extends Feature>> FEATURE_TYPES =
         DeferredRegister.create(Registries.FEATURE_TYPE, AstralEnd.MODID);
 
@@ -51,6 +59,7 @@ public final class ModWorldgen {
         FEATURE_TYPES.register("underside", () -> com.ggrantrichards.astralend.world.feature.UndersideFeature.CODEC);
         // The distillation
         FEATURE_TYPES.register("root_cave", () -> com.ggrantrichards.astralend.world.feature.RootCaveFeature.CODEC);
+        FEATURE_TYPES.register("eclipse_landmarks", () -> com.ggrantrichards.astralend.world.feature.EclipseLandmarksFeature.CODEC);
     }
 
     // Phase 6: structures that check the ground before they start (see IslandStructure).

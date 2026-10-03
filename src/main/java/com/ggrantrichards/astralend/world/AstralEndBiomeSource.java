@@ -34,7 +34,8 @@ public class AstralEndBiomeSource extends BiomeSource {
                 RegistryOps.retrieveElement(ModBiomes.CHORUS_THICKET),
                 RegistryOps.retrieveElement(ModBiomes.GLIMMERING_CRAGS),
                 RegistryOps.retrieveElement(ModBiomes.DEEP_HOLLOWS),
-                RegistryOps.retrieveElement(ModBiomes.SHATTERED_CRAGS)
+                RegistryOps.retrieveElement(ModBiomes.SHATTERED_CRAGS),
+                RegistryOps.retrieveElement(ModBiomes.ECLIPSE)
             )
             .apply(i, i.stable(AstralEndBiomeSource::new))
     );
@@ -55,12 +56,13 @@ public class AstralEndBiomeSource extends BiomeSource {
     private final Holder<Biome> glimmeringCrags;
     private final Holder<Biome> deepHollows;
     private final Holder<Biome> shatteredCrags;
+    private final Holder<Biome> eclipse;
 
     private AstralEndBiomeSource(Holder<Biome> end, Holder<Biome> highlands, Holder<Biome> midlands,
                                  Holder<Biome> islands, Holder<Biome> barrens, Holder<Biome> nebulaFields,
                                  Holder<Biome> ashenBarrens, Holder<Biome> hollowIsles,
                                  Holder<Biome> corona, Holder<Biome> chorusThicket, Holder<Biome> glimmeringCrags,
-                                 Holder<Biome> deepHollows, Holder<Biome> shatteredCrags) {
+                                 Holder<Biome> deepHollows, Holder<Biome> shatteredCrags, Holder<Biome> eclipse) {
         this.end = end;
         this.highlands = highlands;
         this.midlands = midlands;
@@ -74,13 +76,14 @@ public class AstralEndBiomeSource extends BiomeSource {
         this.glimmeringCrags = glimmeringCrags;
         this.deepHollows = deepHollows;
         this.shatteredCrags = shatteredCrags;
+        this.eclipse = eclipse;
     }
 
     @Override
     protected Stream<Holder<Biome>> collectPossibleBiomes() {
         return Stream.of(this.end, this.highlands, this.midlands, this.islands, this.barrens, this.nebulaFields,
             this.ashenBarrens, this.hollowIsles, this.corona, this.chorusThicket,
-            this.glimmeringCrags, this.deepHollows, this.shatteredCrags);
+            this.glimmeringCrags, this.deepHollows, this.shatteredCrags, this.eclipse);
     }
 
     @Override
@@ -107,11 +110,19 @@ public class AstralEndBiomeSource extends BiomeSource {
         // two biomes - astral or vanilla - reach into each other in lobes and patches over 15-25 blocks.
         int warpedX = blockX + (int) Math.round(warp(blockX, blockZ, 0x51ED));
         int warpedZ = blockZ + (int) Math.round(warp(blockX, blockZ, 0x7A3B));
+        // The rare Eclipse comes first: its heaven half, or its hell half (the Corona).
+        EclipseLayout.Eclipse e = EclipseLayout.at(warpedX, warpedZ, sampler.temperature());
+        if (e != null) {
+            switch (e.part(warpedX, warpedZ)) {
+                case HEAVEN: return this.eclipse;
+                case HELL: return this.corona;
+                case NONE: break;
+            }
+        }
         switch (region(sampler, warpedX, warpedZ)) {
             case NEBULA_FIELDS: return this.nebulaFields;
             case ASHEN_BARRENS: return this.ashenBarrens;
             case HOLLOW_ISLES: return this.hollowIsles;
-            case CORONA: return this.corona;
             case CHORUS_THICKET: return this.chorusThicket;
             case GLIMMERING_CRAGS: return this.glimmeringCrags;
             case DEEP_HOLLOWS: return this.deepHollows;

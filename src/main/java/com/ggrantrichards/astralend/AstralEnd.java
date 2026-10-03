@@ -44,6 +44,7 @@ public final class AstralEnd {
         ModEffects.POTIONS.register(modBusGroup);
         ModWorldgen.BIOME_SOURCES.register(modBusGroup);
         ModWorldgen.FEATURE_TYPES.register(modBusGroup);
+        ModWorldgen.DENSITY_FUNCTION_TYPES.register(modBusGroup);
         ModWorldgen.STRUCTURE_TYPES.register(modBusGroup);
         ModWorldgen.STRUCTURE_PIECES.register(modBusGroup);
         com.ggrantrichards.astralend.starforge.Starforge.COMPONENTS.register(modBusGroup);   // Phase 8: Starforging
@@ -61,6 +62,7 @@ public final class AstralEnd {
         Sunstorms.register();
         com.ggrantrichards.astralend.maw.MawNetwork.register();
         com.ggrantrichards.astralend.maze.MazeScoping.register();
+        com.ggrantrichards.astralend.world.EclipseLife.register();   // Endermen panic in the Eclipse
         com.ggrantrichards.astralend.starforge.Starforge.register();          // upgrade tooltips
         com.ggrantrichards.astralend.starforge.StarforgeEffects.register();   // what the upgrades do
         FlareCommand.register();

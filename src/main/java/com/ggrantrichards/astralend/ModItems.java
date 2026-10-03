@@ -86,6 +86,13 @@ public final class ModItems {
     public static final RegistryObject<Item> RIFT_PEARL = register("rift_pearl", com.ggrantrichards.astralend.starforge.RiftPearlItem::new,
         new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.EPIC));
 
+    // The distillation: the Hushback's fleece, and its meat.
+    public static final RegistryObject<Item> HUSHFLEECE = simple("hushfleece");
+    public static final RegistryObject<Item> HUSHBACK_FLANK = register("hushback_flank", Item::new, new Item.Properties()
+        .food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.3F).build()));
+    public static final RegistryObject<Item> COOKED_HUSHBACK_FLANK = register("cooked_hushback_flank", Item::new, new Item.Properties()
+        .food(new FoodProperties.Builder().nutrition(7).saturationModifier(0.8F).build()));
+
     // Phase 9: a stew of Lumineshroom and Comet Cress that lets you see in the dark for a while, and a
     // compass that points the way home to the End's central island (like a lodestone compass).
     public static final RegistryObject<Item> GLOWING_STEW = register("glowing_stew", Item::new, new Item.Properties().stacksTo(1)
@@ -107,6 +114,9 @@ public final class ModItems {
     public static final RegistryObject<Item> DRIFT_WHALE_SPAWN_EGG = spawnEgg("drift_whale", ModEntities.DRIFT_WHALE);
     public static final RegistryObject<Item> WATCHER_SPAWN_EGG = spawnEgg("watcher", ModEntities.WATCHER);
     public static final RegistryObject<Item> SPIRE_WYRM_SPAWN_EGG = spawnEgg("spire_wyrm", ModEntities.SPIRE_WYRM);
+    public static final RegistryObject<Item> HUSHBACK_SPAWN_EGG = spawnEgg("hushback", ModEntities.HUSHBACK);
+    public static final RegistryObject<Item> HYDRAGRIP_SPAWN_EGG = spawnEgg("hydragrip", ModEntities.HYDRAGRIP);
+    public static final RegistryObject<Item> MIRROR_WRETCH_SPAWN_EGG = spawnEgg("mirror_wretch", ModEntities.MIRROR_WRETCH);
 
     private static net.minecraft.tags.TagKey<net.minecraft.world.level.block.entity.BannerPattern> patternTag(String name) {
         return net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.BANNER_PATTERN,

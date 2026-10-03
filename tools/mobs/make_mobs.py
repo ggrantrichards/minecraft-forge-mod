@@ -1150,12 +1150,147 @@ SPIRE_WYRM = Mob("spire_wyrm", (128, 64), [
     ]),
 ] + [wyrm_segment(i, small=i >= 10) for i in range(12)], egg=(WYRM[2], WYRM_CRYSTAL[1]))
 
-MOBS = [POLLINATOR, WANDERER, STALKER, VOID_RAY, WHALE, WATCHER, SPIRE_WYRM]
+# ---- The distillation's Eclipse mobs.
+
+# Hushback: a herd grazer so pale and clear its bones show. The hide and fleece are translucent (the
+# renderer draws it see-through); the bones inside are opaque and drawn first, so they show through.
+HIDE_CLEAR = [hexc("d8e4ec", 120), hexc("e4eef4", 120), hexc("eef6fa", 130), hexc("f8fcff", 140)]
+HB_BONE = [hexc("b8ae98"), hexc("d0c8b2"), hexc("e8e2d0"), hexc("f6f2e6")]
+
+
+def hush_hide(face, px, py, fw, fh, rnd):
+    return clamp(1 + shade_flat(face) + (1 if n() > 0.7 else 0), HIDE_CLEAR)
+
+
+def hush_fleece(face, px, py, fw, fh, rnd):
+    """Sparse tufts on the back and flanks; the rest clear."""
+    if face == "down":
+        return None
+    return hexc("ffffff", 150) if (n() > 0.55 and rnd.random() < 0.7) else None
+
+
+def bone(face, px, py, fw, fh, rnd):
+    return clamp(1 + shade_flat(face) + (1 if n() > 0.75 else 0), HB_BONE)
+
+
+def rib(face, px, py, fw, fh, rnd):
+    """A rib: only the ring round the edge of a flat plate, the middle empty."""
+    if face in ("north", "south") and edge_dist(px, py, fw, fh) > 0:
+        return None
+    return bone(face, px, py, fw, fh, rnd)
+
+
+def hush_eye(face, px, py, fw, fh, rnd):
+    if face == "north" and py == 2 and px in (0, fw - 1):
+        return hexc("2a2440")
+    return hush_hide(face, px, py, fw, fh, rnd)
+
+
+HUSHBACK = Mob("hushback", (128, 64), [
+    Part("body", (0, 12, 2), [
+        B(-0.5, -5, -8, 1, 1, 16, bone, key="spine"),
+        B(-4, -4, -6, 8, 7, 1, rib, key="rib"), B(-4, -4, -2, 8, 7, 1, rib, key="rib"),
+        B(-4, -4, 2, 8, 7, 1, rib, key="rib"), B(-3, -3, 6, 6, 5, 1, rib),
+        B(-5, -5, -9, 10, 9, 18, hush_hide),
+    ], [
+        Part("fleece", (0, 0, 0), [B(-5, -5, -9, 10, 9, 18, hush_fleece, inflate=1.0)]),
+        Part("head", (0, -2, -9), [
+            B(-2, -3, -5, 4, 4, 5, bone),
+            B(-3, -4, -6, 6, 6, 7, hush_eye),
+        ]),
+    ]),
+    Part("leg_fr", (-3, 16, -5), [B(-0.5, 0, -0.5, 1, 8, 1, bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hush_hide, key="leg")]),
+    Part("leg_fl", (3, 16, -5), [B(-0.5, 0, -0.5, 1, 8, 1, bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hush_hide, key="leg")]),
+    Part("leg_br", (-3, 16, 8), [B(-0.5, 0, -0.5, 1, 8, 1, bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hush_hide, key="leg")]),
+    Part("leg_bl", (3, 16, 8), [B(-0.5, 0, -0.5, 1, 8, 1, bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hush_hide, key="leg")]),
+], egg=(hexc("e4eef4"), hexc("b8ae98")))
+
+
+# Hydragrip: sleek and otter-like, a wet deep teal over a pale belly, with a long tapering tail.
+GRIP = [hexc("16302f"), hexc("214541"), hexc("2f5c56"), hexc("41766d"), hexc("5a948a")]
+GRIP_BELLY = [hexc("a8b8a0"), hexc("c2d0b8"), hexc("d8e2cc")]
+
+
+def grip_fur(face, px, py, fw, fh, rnd):
+    if face == "down":
+        return clamp(1 + (1 if n() > 0.6 else 0), GRIP_BELLY)
+    return clamp(2 + shade_flat(face) + (1 if n() > 0.72 else 0) - (1 if n() < 0.2 else 0), GRIP)
+
+
+def grip_head(face, px, py, fw, fh, rnd):
+    if face == "north" and py == 1 and px in (0, fw - 1):
+        return hexc("0a0a0e")
+    if face == "north" and py == 0 and px in (0, fw - 1):
+        return hexc("e8f4f0")
+    return grip_fur(face, px, py, fw, fh, rnd)
+
+
+def grip_snout(face, px, py, fw, fh, rnd):
+    if face == "north" and py == 0 and px == fw // 2:
+        return hexc("101014")
+    return clamp(1 + (1 if n() > 0.5 else 0), GRIP_BELLY) if face in ("down", "north") else grip_fur(face, px, py, fw, fh, rnd)
+
+
+HYDRAGRIP = Mob("hydragrip", (64, 32), [
+    Part("body", (0, 19.5, 0), [B(-2.5, -2.5, -7, 5, 5, 14, grip_fur)], [
+        Part("head", (0, -1, -7), [B(-2, -2, -4, 4, 4, 4, grip_head), B(-1.5, 0, -6, 3, 2, 2, grip_snout)]),
+        Part("tail", (0, -1, 7), [B(-1, -1, 0, 2, 2, 5, grip_fur)], [
+            Part("tail_tip", (0, 0, 5), [B(-0.5, -0.5, 0, 1, 1, 4, grip_fur)]),
+        ]),
+    ]),
+    Part("leg_fr", (-2, 21, -5), [B(-1, 0, -1, 2, 3, 2, grip_fur, key="gleg")]),
+    Part("leg_fl", (2, 21, -5), [B(-1, 0, -1, 2, 3, 2, grip_fur, key="gleg")]),
+    Part("leg_br", (-2, 21, 5), [B(-1, 0, -1, 2, 3, 2, grip_fur, key="gleg")]),
+    Part("leg_bl", (2, 21, 5), [B(-1, 0, -1, 2, 3, 2, grip_fur, key="gleg")]),
+], egg=(GRIP[2], GRIP_BELLY[1]))
+
+
+# Mirror Wretch: too tall, too thin, grey-violet skin over a starved frame, and where its face should
+# be, a sheet of something like silvered glass that catches the light.
+WRETCH = [hexc("221e2c"), hexc("2f2a3c"), hexc("3d374c"), hexc("4d465e"), hexc("615a74")]
+MIRROR = [hexc("8a90a4"), hexc("b4bac8"), hexc("d8dce6"), hexc("f2f4f8")]
+
+
+def wretch_skin(face, px, py, fw, fh, rnd):
+    return clamp(2 + shade_flat(face) + (1 if n() > 0.74 else 0) - (1 if n() < 0.22 else 0), WRETCH)
+
+
+def wretch_ribs(face, px, py, fw, fh, rnd):
+    if face in ("north", "south") and py % 2 == 1 and 2 <= py <= 7 and 0 < px < fw - 1:
+        return WRETCH[0]
+    return wretch_skin(face, px, py, fw, fh, rnd)
+
+
+def mirror_face(face, px, py, fw, fh, rnd):
+    if face != "north":
+        return wretch_skin(face, px, py, fw, fh, rnd)
+    streak = (px + py) % 5 == 0
+    return MIRROR[3] if streak else clamp(1 + (1 if n() > 0.5 else 0), MIRROR)
+
+
+def mirror_glow(face, px, py, fw, fh, rnd):
+    if face == "north" and (px + py) % 5 == 0:
+        return hexc("dfe6ff")
+    return None
+
+
+MIRROR_WRETCH = Mob("mirror_wretch", (64, 64), [
+    Part("body", (0, -6, 0), [B(-3, 0, -1.5, 6, 11, 3, wretch_ribs)], [
+        Part("head", (0, 0, 0), [B(-2.5, -7, -2.5, 5, 7, 5, wretch_skin), B(-2, -6, -3, 4, 5, 1, mirror_face, mirror_glow)]),
+    ]),
+    Part("right_arm", (-4, -5, 0), [B(-1, 0, -1, 2, 21, 2, wretch_skin, key="warm")]),
+    Part("left_arm", (4, -5, 0), [B(-1, 0, -1, 2, 21, 2, wretch_skin, key="warm", mirror=True)]),
+    Part("right_leg", (-1.5, 5, 0), [B(-1, 0, -1, 2, 19, 2, wretch_skin, key="wleg")]),
+    Part("left_leg", (1.5, 5, 0), [B(-1, 0, -1, 2, 19, 2, wretch_skin, key="wleg", mirror=True)]),
+], egg=(WRETCH[2], MIRROR[2]))
+
+MOBS = [POLLINATOR, WANDERER, STALKER, VOID_RAY, WHALE, WATCHER, SPIRE_WYRM, HUSHBACK, HYDRAGRIP, MIRROR_WRETCH]
 # Cut by the distillation (their definitions stay above, unused): the Cinder Mite, the Hollow and the
 # Live Comet. Each mob's texture is painted from a seed fixed by its place in the original list, so
 # cutting some doesn't repaint the rest.
 SEED_INDEX = {"pollinator": 0, "void_wanderer": 1, "umbral_stalker": 2, "cinder_mite": 3, "void_ray": 4, "hollow": 5,
-              "drift_whale": 6, "watcher": 7, "live_comet": 8, "spire_wyrm": 9}
+              "drift_whale": 6, "watcher": 7, "live_comet": 8, "spire_wyrm": 9, "hushback": 10, "hydragrip": 11,
+              "mirror_wretch": 12}
 for _mob in MOBS:
     auto_uv(_mob)          # boxes drawn without a texture position get one
 

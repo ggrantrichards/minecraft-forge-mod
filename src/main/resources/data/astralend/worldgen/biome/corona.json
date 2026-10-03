@@ -4,12 +4,11 @@
       "argument": {
         "spawn_costs": {},
         "spawns_by_category": {
-          "monster": [],
-          "creature": [
+          "monster": [
             {
-              "type": "astralend:pollinator",
-              "count": 3,
-              "weight": 12
+              "type": "astralend:mirror_wretch",
+              "count": 1,
+              "weight": 6
             }
           ]
         }
@@ -62,7 +61,8 @@
     [],
     [
       "minecraft:end_gateway_return",
-      "astralend:corona_solarite_surface"
+      "astralend:corona_solarite_surface",
+      "astralend:eclipse_landmarks"
     ],
     [],
     [],

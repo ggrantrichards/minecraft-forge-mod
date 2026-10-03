@@ -47,7 +47,7 @@ import org.joml.Vector4f;
 // The End's sky. Draws vanilla's End sky first - black and starless, as it should stay - and adds:
 //
 //   - everywhere: now and then a void streak, a faint pale line falling down the far sky;
-//   - only over the Corona (the Eclipse to be), the astral sky, fading in over 10-15 blocks as you
+//   - only over the Eclipse (either half), the astral sky, fading in over 10-15 blocks as you
 //     cross into it: a starfield in two layers (one fixed, one turning once in 40 minutes), the
 //     constellations, green and gold auroras, the Remnant (the cinder of the collapsed star; it's a real
 //     structure, and close up the real one takes over), a far-off comet now and then, and very rarely
@@ -87,6 +87,7 @@ public class AstralSkyRenderer extends SkyRenderer {
     private Vec3 camera = Vec3.ZERO;
     private boolean inCorona;
     private float corona;     // 0..1: how much of the view round the camera is the Corona (eased)
+    private float eclipse;    // 0..1: how much of it is the Eclipse, either half (eased)
     private float scope;      // 0..1: looking through a spyglass (eased) - it shows the stars the void hides
     private float auroraStrength;
     private final float[] auroraTarget = new float[7];   // strength, then two colours (r, g, b)
@@ -126,7 +127,7 @@ public class AstralSkyRenderer extends SkyRenderer {
         float[] t = this.auroraTarget;
         java.util.Arrays.fill(t, 0.0F);
         float[] one = new float[7];
-        float corona = 0.0F, weights = 0.0F;
+        float corona = 0.0F, eclipse = 0.0F, weights = 0.0F;
         for (int sx = -12; sx <= 12; sx += 12) {
             for (int sz = -12; sz <= 12; sz += 12) {
                 float w = sx == 0 && sz == 0 ? 2.0F : 1.0F;
@@ -136,6 +137,7 @@ public class AstralSkyRenderer extends SkyRenderer {
                     t[i] += one[i] * w;
                 }
                 corona += biome.is(ModBiomes.CORONA) ? w : 0.0F;
+                eclipse += biome.is(ModBiomes.CORONA) || biome.is(ModBiomes.ECLIPSE) ? w : 0.0F;
                 weights += w;
             }
         }
@@ -144,6 +146,7 @@ public class AstralSkyRenderer extends SkyRenderer {
             this.aurora[i] += (t[i] - this.aurora[i]) * 0.03F;
         }
         this.corona += (corona / weights - this.corona) * 0.03F;
+        this.eclipse += (eclipse / weights - this.eclipse) * 0.03F;
         this.inCorona = this.corona > 0.5F;
         var player = net.minecraft.client.Minecraft.getInstance().player;
         this.scope += ((player != null && player.isScoping() ? 1.0F : 0.0F) - this.scope) * 0.15F;
@@ -152,10 +155,13 @@ public class AstralSkyRenderer extends SkyRenderer {
 
     // The auroras of a biome: strength, then two colours (r, g, b each).
     // The distillation: the End's sky stays vanilla's, black and starless - auroras (like the stars,
-    // the constellations and the Remnant) only show over the Corona, the Eclipse to be.
+    // the constellations and the Remnant) only show over the Eclipse: green and violet over its heaven
+    // half, green and gold over its hell half (the Corona).
     private static void auroraFor(Holder<Biome> biome, float[] t) {
-        if (biome.is(ModBiomes.CORONA)) {
-            set(t, 1.0F, 0.35F, 1.0F, 0.6F, 1.0F, 0.82F, 0.35F);
+        if (biome.is(ModBiomes.ECLIPSE)) {
+            set(t, 1.0F, 0.35F, 1.0F, 0.6F, 0.7F, 0.45F, 1.0F);
+        } else if (biome.is(ModBiomes.CORONA)) {
+            set(t, 0.8F, 0.35F, 1.0F, 0.6F, 1.0F, 0.82F, 0.35F);
         } else {
             set(t, 0.0F, 0.35F, 1.0F, 0.6F, 1.0F, 0.82F, 0.35F);
         }
@@ -183,8 +189,8 @@ public class AstralSkyRenderer extends SkyRenderer {
         }
         int behindStars = quads.groups.size();
         // Everywhere else the sky is vanilla's; only now and then a void streak falls, far away.
-        this.voidStreak(quads, 1.0F - 0.7F * this.corona);
-        float sky = this.corona;     // how much of the astral sky shows: only over the Corona
+        this.voidStreak(quads, 1.0F - 0.7F * this.eclipse);
+        float sky = this.eclipse;    // how much of the astral sky shows: only over the Eclipse
         float seen = Math.max(sky, this.scope);   // the stars and constellations: there too through a spyglass
         if (sky > 0.01F) {
             this.silhouette(quads, sky);
@@ -217,7 +223,7 @@ public class AstralSkyRenderer extends SkyRenderer {
                 this.draw(pass, quads.groups.get(i), view, white);
             }
             // The stars fade while the Corona's sky burns.
-            float starAlpha = Math.max(this.corona, 0.7F * this.scope) * Mth.clamp(1.0F - 1.4F * coronaFlare, 0.0F, 1.0F);
+            float starAlpha = Math.max(this.eclipse, 0.7F * this.scope) * Mth.clamp(1.0F - 1.4F * coronaFlare, 0.0F, 1.0F);
             this.drawStars(pass, view, 0, this.fixedStarQuads, new Vector4f(1.0F, 1.0F, 1.0F, 0.75F * starAlpha));
             Matrix4f turning = new Matrix4f(view)
                 .rotate((float) Math.toRadians(23.0), 1.0F, 0.0F, 0.0F)

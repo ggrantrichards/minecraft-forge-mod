@@ -105,6 +105,23 @@
       "if_true": {
         "type": "minecraft:biome",
         "biome_is": [
+          "astralend:eclipse"
+        ]
+      },
+      "then_run": {
+        "type": "minecraft:condition",
+        "if_true": "minecraft:on_floor",
+        "then_run": {
+          "type": "minecraft:block",
+          "result_state": "astralend:living_turf"
+        }
+      }
+    },
+    {
+      "type": "minecraft:condition",
+      "if_true": {
+        "type": "minecraft:biome",
+        "biome_is": [
           "astralend:corona"
         ]
       },

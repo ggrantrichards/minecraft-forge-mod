@@ -8,7 +8,9 @@ package com.ggrantrichards.astralend.world;
 //    where the belt noise is low (below -THICKET): its sister, the Chorus Thicket.
 //  - "belt" noise (the vegetation slot) splits the rest of the outer End:
 //        nebula noise low  (< COLD):  belt high -> Ashen Barrens (belt low stays vanilla)
-//        nebula noise middle:         belt high -> Hollow Isles, belt low -> the Corona
+//        nebula noise middle:         belt high -> Hollow Isles (belt low stays vanilla; it was the
+//                                     Corona, which the distillation folded into the rare Eclipse -
+//                                     see EclipseLayout)
 //    and between those, vanilla's Highlands/Midlands/Barrens/Small Islands.
 //  - "ruin" noise (the ridges slot): rare peaks inside what would be vanilla -> the Glimmering Crags.
 //  - "variant" noise (the continents slot), faster: patches inside a territory where it turns into its
@@ -23,7 +25,7 @@ public final class AstralRegions {
     public static final double CRAGS = 0.45;       // ruin above this, where it would be vanilla
     public static final double VARIANT = 0.2;      // variant above this: a territory's variant
 
-    public enum Region { VANILLA, NEBULA_FIELDS, CHORUS_THICKET, ASHEN_BARRENS, HOLLOW_ISLES, CORONA, GLIMMERING_CRAGS,
+    public enum Region { VANILLA, NEBULA_FIELDS, CHORUS_THICKET, ASHEN_BARRENS, HOLLOW_ISLES, GLIMMERING_CRAGS,
         DEEP_HOLLOWS, SHATTERED_CRAGS }
 
     public static Region pick(double nebula, double belt, double ruin, double variant) {
@@ -43,7 +45,6 @@ public final class AstralRegions {
             if (belt > COLD_BELT) return Region.ASHEN_BARRENS;
         } else {
             if (belt > MID_BELT) return Region.HOLLOW_ISLES;
-            if (belt < -MID_BELT) return Region.CORONA;
         }
         return ruin > CRAGS ? Region.GLIMMERING_CRAGS : Region.VANILLA;
     }

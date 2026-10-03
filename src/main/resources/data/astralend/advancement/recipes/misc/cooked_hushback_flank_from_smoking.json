@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:cooked_hushback_flank_from_smoking"
+      }
+    },
+    "has_hushback_flank": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:hushback_flank"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_hushback_flank"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:cooked_hushback_flank_from_smoking"
+    ]
+  }
+}

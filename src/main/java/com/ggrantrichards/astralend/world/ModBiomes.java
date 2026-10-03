@@ -13,6 +13,8 @@ public final class ModBiomes {
     public static final ResourceKey<Biome> NEBULA_FIELDS = key("nebula_fields");
     public static final ResourceKey<Biome> ASHEN_BARRENS = key("ashen_barrens");
     public static final ResourceKey<Biome> HOLLOW_ISLES = key("hollow_isles");
+    // The Eclipse: its heaven half ("eclipse") and its hell half, the old Corona ("corona").
+    public static final ResourceKey<Biome> ECLIPSE = key("eclipse");
     public static final ResourceKey<Biome> CORONA = key("corona");
     public static final ResourceKey<Biome> CHORUS_THICKET = key("chorus_thicket");
     public static final ResourceKey<Biome> GLIMMERING_CRAGS = key("glimmering_crags");

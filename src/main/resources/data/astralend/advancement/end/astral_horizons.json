@@ -127,6 +127,20 @@
           }
         }
       }
+    },
+    "eclipse": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "biomes": "astralend:eclipse"
+            }
+          }
+        }
+      }
     }
   },
   "requirements": [
@@ -138,7 +152,8 @@
       "chorus_thicket",
       "glimmering_crags",
       "deep_hollows",
-      "shattered_crags"
+      "shattered_crags",
+      "eclipse"
     ]
   ]
 }

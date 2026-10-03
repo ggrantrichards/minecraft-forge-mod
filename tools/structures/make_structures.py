@@ -762,7 +762,7 @@ STRUCTURES = [
          biomes=["minecraft:end_highlands", a("nebula_fields")], spread=(40, 16, 33094871), height={"absolute": -2},
          heightmap="WORLD_SURFACE_WG", spawns=None, adaptation="beard_thin", ground=(16, 4096, 18)),
     dict(name="solar_array", variants=[lambda: solar_array(51)],
-         biomes=[a("corona")], spread=(34, 14, 92814473), height={"absolute": -8},
+         biomes=[a("corona")], spread=(8, 4, 92814473), height={"absolute": -8},
          heightmap="WORLD_SURFACE_WG", spawns=None, adaptation="beard_thin", ground=(16, 4096, 18)),
     # Mazes float out over open void, among the small islands. (The Rift Maw is built in Java now: see
     # write_data.)
@@ -849,17 +849,19 @@ def write_data():
         "structures": [{"structure": a("rift_maw"), "weight": 1}]})
     write_json(DATA / "tags/worldgen/biome/has_structure/rift_maw.json", {"values": [
         "minecraft:small_end_islands", a("nebula_fields"), a("hollow_isles")]})
-    # The Remnant hangs high over the Corona, one to each stretch of it (RemnantStructure / RemnantPiece).
+    # The Remnant hangs high over the hell half (the Corona) of every Eclipse (RemnantStructure /
+    # RemnantPiece). Every chunk is a candidate; RemnantStructure only starts in the one under the
+    # Eclipse's anchor (EclipseLayout.REMNANT).
     write_json(DATA / "worldgen/structure/remnant.json", {
         "type": a("remnant"), "biomes": f"#{NS}:has_structure/remnant", "step": "surface_structures",
         "spawn_overrides": {}, "terrain_adaptation": "none"})
     write_json(DATA / "worldgen/structure_set/remnant.json", {
-        "placement": {"type": "minecraft:random_spread", "salt": 31337117, "separation": 16, "spacing": 36},
+        "placement": {"type": "minecraft:random_spread", "salt": 31337117, "separation": 0, "spacing": 1},
         "structures": [{"structure": a("remnant"), "weight": 1}]})
     write_json(DATA / "tags/worldgen/biome/has_structure/remnant.json", {"values": [a("corona")]})
     write_json(DATA / "tags/worldgen/biome/has_structure/whalefall.json", {"values": [
         "minecraft:small_end_islands", "minecraft:end_barrens", "minecraft:end_midlands", "minecraft:end_highlands",
-        a("nebula_fields"), a("chorus_thicket"), a("ashen_barrens"), a("hollow_isles"), a("corona"),
+        a("nebula_fields"), a("chorus_thicket"), a("ashen_barrens"), a("hollow_isles"),
         a("glimmering_crags")]})
 
 

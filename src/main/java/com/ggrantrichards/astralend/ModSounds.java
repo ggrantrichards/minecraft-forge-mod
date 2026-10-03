@@ -13,7 +13,7 @@ public final class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, AstralEnd.MODID);
 
     public static final RegistryObject<SoundEvent> MUSIC_NEBULA_FIELDS = music("music.nebula_fields");
-    public static final RegistryObject<SoundEvent> MUSIC_CHORUS_THICKET = music("music.chorus_thicket");
+    public static final RegistryObject<SoundEvent> MUSIC_ECLIPSE = music("music.eclipse");
     public static final RegistryObject<SoundEvent> MUSIC_GLIMMERING_CRAGS = music("music.glimmering_crags");
     public static final RegistryObject<SoundEvent> MUSIC_OUTER_END = music("music.outer_end");
     public static final RegistryObject<SoundEvent> DISC_OBSERVING_THE_STAR = music("music_disc.observing_the_star");
@@ -32,7 +32,7 @@ public final class ModSounds {
     // dropped in, named in the biome's "minecraft:audio/ambient_sounds".
     static {
         for (String biome : new String[] {"nebula_fields", "chorus_thicket", "ashen_barrens", "hollow_isles", "corona",
-                                          "glimmering_crags", "deep_hollows", "shattered_crags"}) {
+                                          "glimmering_crags", "deep_hollows", "shattered_crags", "eclipse"}) {
             music("ambient." + biome + ".loop");
             music("ambient." + biome + ".additions");
         }

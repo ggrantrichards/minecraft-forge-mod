@@ -123,7 +123,8 @@ final class MechanicsSurvey {
     // Every spawn egg, used on the ground the way a player uses it: does the mob appear, and is it
     // still there (and, for the Umbral Stalker, visible) a couple of seconds later?
     static void checkSpawnEggs(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
-        String[] mobs = {"pollinator", "void_wanderer", "umbral_stalker", "void_ray", "drift_whale", "watcher", "spire_wyrm"};
+        String[] mobs = {"pollinator", "void_wanderer", "umbral_stalker", "void_ray", "drift_whale", "watcher", "spire_wyrm",
+                         "hushback", "hydragrip", "mirror_wretch"};
         net.minecraft.server.level.ServerPlayer player = standIn(end);
         player.snapTo(standOn.getX() + 0.5, standOn.getY(), standOn.getZ() - 4.5, 0.0F, 30.0F);
         StringBuilder report = new StringBuilder("spawn eggs:");

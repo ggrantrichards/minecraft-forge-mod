@@ -305,6 +305,14 @@ public final class ModBlocks {
     // ================================================================ Phase 3.5: the biome worlds
 
     // ---- Giant Lumineshrooms (like the Nether's huge fungi) ----
+    // ---- The distillation: the Eclipse's heaven half. Living Turf, its ground (the only green in the
+    // End), and Breathcomb, whose light swells and fades over five minutes.
+    public static final RegistryObject<Block> LIVING_TURF = register("living_turf", Block::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.GRASS).strength(0.6F).sound(SoundType.GRASS));
+    public static final RegistryObject<Block> BREATHCOMB = register("breathcomb", com.ggrantrichards.astralend.block.BreathcombBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).strength(0.6F).sound(SoundType.CORAL_BLOCK)
+            .lightLevel(com.ggrantrichards.astralend.block.BreathcombBlock::light));
+
     public static final RegistryObject<Block> LUMINE_CAP = register("lumine_cap", Block::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).instrument(NoteBlockInstrument.BASS).strength(1.0F)
             .sound(SoundType.SHROOMLIGHT).lightLevel(state -> 12));

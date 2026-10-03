@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "astralend:hushfleece",
+    "astralend:hushfleece",
+    "astralend:hushfleece",
+    "astralend:hushfleece"
+  ],
+  "result": {
+    "id": "minecraft:white_wool"
+  }
+}

@@ -158,6 +158,16 @@ def loop_shattered(rnd):
     return out
 
 
+def loop_eclipse(rnd):
+    """The heaven half: running water, and a warm open chord that swells and fades like its light."""
+    n = (LOOP_SECONDS + 2) * RATE
+    t = np.arange(n) / RATE
+    water = band(rnd.normal(0, 1, n), 400, 5000) * (0.5 + 0.5 * slow(rnd, n, 0.8, 0.6)) * 0.18
+    chord = sum(np.sin(2 * np.pi * f * t + rnd.uniform(0, 6)) * slow(rnd, n, 0.06, 0.8)
+                for f in (196.0, 246.9, 293.7, 392.0)) * 0.1
+    return water + chord
+
+
 # ---- additions: short sounds dropped in now and then
 
 def chime(rnd):
@@ -205,6 +215,7 @@ BIOMES = {
     "glimmering_crags": (loop_crags, chime),
     "deep_hollows": (loop_deep_hollows, creak),
     "shattered_crags": (loop_shattered, chime),
+    "eclipse": (loop_eclipse, chime),
 }
 
 
