@@ -533,6 +533,11 @@ def music_disc():
 TEXTURES += [("item/music_disc_observing_the_star.png", music_disc)]
 
 
+# The commonest blocks, redrawn closer to vanilla (retexture.py); last, so they replace older drawings.
+from retexture import TEXTURES as _RETEXTURE  # noqa: E402
+TEXTURES += _RETEXTURE
+
+
 if __name__ == "__main__":
     out = Path(__file__).resolve().parents[2] / "src/main/resources/assets/astralend/textures"
     import json
