@@ -42,9 +42,9 @@ or knock chunks off its head. A **Lodestar** keeps them from landing near your b
 
 ## New creatures
 
-- **Drift Whale:** a huge, translucent whale swimming slowly through the void. Ride it with a Chorus
+- **Drift Whale:** a huge, translucent whale swimming slowly through the void, its spots glowing like deep-sea light. Ride it with a Chorus
   Flower on a Stick.
-- **Spire Wyrm:** a serpent kin of the Ender Dragon, coiled atop the Resonant Spires. Ring the bells.
+- **Spire Wyrm:** a serpent kin of the Ender Dragon, asleep atop the Resonant Spires. Wake it, then ring the bells.
 - **Umbral Stalker:** a shadow that always knows where you are, and snuffs out your lights. It fears fire.
 - **Void Wanderer**, **End Pollinator**, **Void Ray**, **Cinder Mite**, **The Hollow**, and the **Watcher**.
 

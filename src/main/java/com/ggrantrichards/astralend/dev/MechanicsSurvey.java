@@ -56,6 +56,20 @@ final class MechanicsSurvey {
             }
             stalker.discard();
         }
+
+        // ---- the Spire Wyrm sleeps until disturbed, and a blow wakes it
+        com.ggrantrichards.astralend.entity.SpireWyrm wyrm = ModEntities.SPIRE_WYRM.get().create(end, EntitySpawnReason.COMMAND);
+        if (wyrm != null) {
+            wyrm.snapTo(standOn.getX() + 0.5, standOn.getY() + 30.0, standOn.getZ() + 0.5, 0.0F, 0.0F);
+            end.addFreshEntity(wyrm);
+            boolean asleep = wyrm.isAsleep();
+            wyrm.hurtServer(end, end.damageSources().generic(), 1.0F);
+            log.accept(String.format("mechanics: Spire Wyrm asleep at first: %s, %s after a blow", asleep, wyrm.phase()));
+            if (!asleep || wyrm.isAsleep()) {
+                failures.add("mechanics: a Spire Wyrm should sleep on its nest until something wakes it");
+            }
+            wyrm.discard();
+        }
     }
 
     // Batch C: Upwelling turns gravity around, End Chimes still a second teleport, Voidgel bounces.

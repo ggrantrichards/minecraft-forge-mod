@@ -66,6 +66,7 @@ jobs:
           grep "AstralEnd survey" survey.log | sed 's/.*\[AstralEnd survey\] //' || { tail -60 survey-console.log; exit 1; }
           if grep -E "(WARN|ERROR).*astralend" survey.log; then echo "::error::the survey server logged problems with astralend"; exit 1; fi
           grep -q "SURVEY PASSED" survey.log || { echo "::error::the worldgen survey failed (see above)"; exit 1; }
+          if grep -q "Exception stopping the server" survey.log; then echo "::error::the survey server crashed while stopping (the world may not have saved)"; exit 1; fi
 
       # Boots the real game client on a virtual screen, waits until every texture and model has
       # loaded, then fails if the game reported anything missing for this mod.

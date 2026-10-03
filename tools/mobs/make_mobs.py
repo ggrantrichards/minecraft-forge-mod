@@ -69,7 +69,8 @@ class Part:
 
 
 class Mob:
-    def __init__(self, name, size, parts, egg):
+    def __init__(self, name, size, parts, egg, halo=None):
+        self.halo = halo  # a faint colour added round every glowing pixel (a soft bioluminescent bloom)
         self.name = name
         self.size = size  # texture width, height
         self.parts = parts
@@ -232,7 +233,21 @@ def paint_mob(mob, seed):
                         if g is not None:
                             glow.putpixel((x, y), g)
                             has_glow = True
+    if has_glow and mob.halo:
+        add_halo(img, glow, mob.halo)
     return img, (glow if has_glow else None)
+
+
+def add_halo(img, glow, colour):
+    """The glow layer is drawn additively (like a spider's eyes), so a dim colour round each light
+    reads as a soft bloom of light on the skin around it."""
+    g = glow.load()
+    lit = {(x, y) for y in range(glow.height) for x in range(glow.width) if g[x, y][3]}
+    for (x, y) in lit:
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            q = (x + dx, y + dy)
+            if q not in lit and 0 <= q[0] < glow.width and 0 <= q[1] < glow.height and img.getpixel(q)[3]:
+                g[q] = colour
 
 
 # ------------------------------------------------------------------ painters
@@ -818,12 +833,14 @@ def whale_body(face, px, py, fw, fh, rnd):
 
 
 def whale_glow(face, px, py, fw, fh, rnd):
+    """Bioluminescence: a lateral line of lights down each flank and a scatter of points over its skin,
+    in the cold cyan of deep-sea light; each gets a faint bloom round it (see `halo`)."""
     if face in ("east", "west"):
         v = py / max(1, fh - 1)
         if abs(v - 0.55) < 0.05 and px % 3 == 0:
-            return hexc("d6ecff")                            # the lateral line of lights
+            return hexc("8fe6ff")                            # the lateral line of lights
     if face in ("up", "east", "west") and rnd.random() < 0.03:
-        return hexc("f0f6ff")                                # stars on its skin
+        return hexc("c4f2ff") if rnd.random() < 0.5 else hexc("7fd0ff")   # points of light
     return None
 
 
@@ -837,7 +854,7 @@ def whale_head(face, px, py, fw, fh, rnd):
 def whale_head_glow(face, px, py, fw, fh, rnd):
     eye_x = 2 if face == "east" else fw - 3
     if face in ("east", "west") and py == 6 and px == eye_x:
-        return hexc("bfe0ff")
+        return hexc("a8e8ff")
     return whale_glow(face, px, py, fw, fh, rnd)
 
 
@@ -885,7 +902,7 @@ WHALE = Mob("drift_whale", (128, 64), [
             ]),
         ]),
     ]),
-], egg=(hexc("3a4fa8"), hexc("dbe6ff")))
+], egg=(hexc("3a4fa8"), hexc("dbe6ff")), halo=hexc("1a3866"))
 
 
 # ---- The Watcher: a floating construct of pale observatory stone, built like the Breeze or the

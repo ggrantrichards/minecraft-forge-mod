@@ -33,3 +33,4 @@ cp "$LOG" screenshots.log 2>/dev/null
 grep "AstralEnd screenshots" screenshots.log | sed 's/.*\[AstralEnd screenshots\] //'
 ls -la run/screenshots/ 2>/dev/null
 ls run/screenshots/astralend-*.png > /dev/null 2>&1 || { echo "::error::no screenshots were taken"; tail -40 screenshots.log; exit 1; }
+if grep -q "the world never opened" screenshots.log; then echo "::error::the client never got into the world (see astralend-stuck.png)"; exit 1; fi

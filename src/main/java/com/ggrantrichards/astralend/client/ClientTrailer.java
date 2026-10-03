@@ -207,7 +207,7 @@ public final class ClientTrailer {
                     continue;
                 }
                 String[] words = line.split("\\|")[0].trim().split("\\s+");
-                if (words[0].equals("card") || words[0].equals("logo")) {
+                if (words[0].equals("card") || words[0].equals("logo") || words[0].equals("vo")) {
                     continue;
                 }
                 Map<String, String> opts = new HashMap<>();
@@ -328,6 +328,13 @@ public final class ClientTrailer {
             }
         }
 
+        if ("wyrm".equals(scene.opts().get("focus"))) {
+            Vec3 w = wyrmAt(minecraft);
+            if (w != null) {
+                aim = aim == null ? w : aim.lerp(w, 0.12);
+            }
+        }
+
         if (scene.opts().containsKey("orbit") && focus != null) {
             Vec3 flat = new Vec3(eye0.x - focus.x, 0, eye0.z - focus.z);
             double radius = flat.length() - scene.num("fwd", 0) * e;
@@ -350,7 +357,8 @@ public final class ClientTrailer {
                 .add(0, scene.num("up", 0) * e, 0);
             yaw = yaw0 + (float) (scene.num("yaw", 0) * e);
         }
-        if (aim != null && (scene.opts().containsKey("orbit") || scene.opts().containsKey("comet"))) {
+        if (aim != null && (scene.opts().containsKey("orbit") || scene.opts().containsKey("comet")
+                || "wyrm".equals(scene.opts().get("focus")))) {
             Vec3 d = aim.subtract(eye);
             yaw = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
             pitch = (float) -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
@@ -365,6 +373,20 @@ public final class ClientTrailer {
         player.yBodyRot = yaw;
         player.yBodyRotO = yaw;
         player.setDeltaMovement(Vec3.ZERO);
+    }
+
+    // The Spire Wyrm nearest the shot (as the client sees it), a little above its head: what focus=wyrm
+    // keeps in the middle of the picture.
+    private static Vec3 wyrmAt(Minecraft minecraft) {
+        com.ggrantrichards.astralend.entity.SpireWyrm best = null;
+        double bestDistance = 160.0 * 160.0;
+        for (Entity e : minecraft.level.entitiesForRendering()) {
+            if (e instanceof com.ggrantrichards.astralend.entity.SpireWyrm w && w.distanceToSqr(eye0) < bestDistance) {
+                best = w;
+                bestDistance = w.distanceToSqr(eye0);
+            }
+        }
+        return best == null ? null : best.position().add(0.0, 1.0, 0.0);
     }
 
     // ---- the live comet: it comes in high from the far left, crosses the sky and lands ahead

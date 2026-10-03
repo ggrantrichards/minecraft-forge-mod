@@ -197,6 +197,31 @@ public final class ClientScreenshots {
                 com.ggrantrichards.astralend.maze.MazeScoping.lightBridges(end, here.offset(24, -18, 24), id);
             }
         }
+        if (style.startsWith("wyrm_")) {
+            // The Spire Wyrm nearest the camera, on cue: wake it, have it breathe just ahead of the
+            // camera, or ring the bell nearest it and stun it.
+            List<com.ggrantrichards.astralend.entity.SpireWyrm> wyrms = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.SpireWyrm.class,
+                new AABB(here).inflate(64.0, 100.0, 64.0));
+            if (wyrms.isEmpty()) {
+                LOGGER.error("[AstralEnd screenshots] no Spire Wyrm near {} for {}", here.toShortString(), style);
+                return;
+            }
+            com.ggrantrichards.astralend.entity.SpireWyrm wyrm = wyrms.get(0);
+            switch (style) {
+                case "wyrm_wake" -> wyrm.wake(end);
+                case "wyrm_breath" -> {
+                    // between the camera and the Wyrm, five blocks out: breathed at whoever is filming
+                    wyrm.wake(end);
+                    net.minecraft.world.phys.Vec3 camera = net.minecraft.world.phys.Vec3.atCenterOf(here);
+                    wyrm.breatheAtOnCue(end, camera.add(wyrm.position().subtract(camera).normalize().scale(5.0)));
+                }
+                case "wyrm_stun" -> {
+                    wyrm.wake(end);
+                    wyrm.stunAtNearestBellOnCue(end);
+                }
+                default -> LOGGER.error("[AstralEnd screenshots] unknown event {}", style);
+            }
+        }
         if (style.equals("wake")) {
             // A Rift Maw, woken: light its eyes and open its throat.
             BlockPos throat = null;

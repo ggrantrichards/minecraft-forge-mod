@@ -64,7 +64,8 @@ Heart, Shutters and Lamp, the Orrery Sentinel), and Comet Ice (comets bring vani
 
 - **The Resonant Spires** (Glimmering Crags): ninety-block hollow towers with no stairs - climb them on
   shulker bullets or a Potion of Upwelling - and the **Spire Wyrm** at the top, a serpent kin of the
-  Ender Dragon. It coils through the tower, lunges, and breathes lingering void breath; flying it takes
+  Ender Dragon. It sleeps coiled on its nest until you climb near or strike it, then wakes with a roar
+  and a wave of darkness and rises off the spire. It coils through the tower, lunges, and breathes lingering void breath; flying it takes
   half damage, but **ring a bell** on a ledge as it passes and it crashes, stunned, onto the ledge. It
   drops the **Resonant Key** for the **Resonance Vault**: the Wyrm and Spire banner patterns, the
   **Eclipse** armor trim, the music disc **"Observing the Star"**, a Starforge Template and more.
@@ -90,6 +91,10 @@ templates turn up in End City treasure.
 **Music** for the astral biomes, all free to use - see [sounds/credits.txt](src/main/resources/assets/astralend/sounds/credits.txt):
 "Out There" by yd, "Ambient Relaxing Loop" and "Heavenly Loop" by isaiah658, "Observing the Star" by
 madeso (all CC0), and "Space Music" by HitCtrl (CC-BY 3.0).
+
+**The trailer's narration** is spoken by [Kokoro](https://huggingface.co/hexgrad/Kokoro-82M) (the
+Kokoro-82M voice model, Apache-2.0, run with [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx)),
+pitched down for the trailer; see [tools/trailer/narrate.py](tools/trailer/narrate.py).
 
 **Textures** of the commonest new blocks and their families (the End stones and their bricks, Chorus
 Moss, the chorus, lumine and nullwood woods, Chorus Bloom, Lumine Cap, Glimmer Crystal, Leviathan Bone,
@@ -334,28 +339,30 @@ New blocks and items:
 
 ### Phase 4: the mobs
 
-Eight creatures live in the astral End. Every one has its own model, animations and textures
-(glowing parts shine in the dark), a spawn egg in the creative tab, and its own behaviour.
-These are in-game screenshots taken on every build:
+Ten creatures live in the astral End (as of Phase 10; see its section for what changed). Every one
+has its own model, animations and textures (glowing parts shine in the dark), a spawn egg in the
+creative tab, and its own behaviour. These are in-game screenshots taken on every build:
 
 | End Pollinator | Void Wanderer | Umbral Stalker, lit by a Spore Lantern |
 |---|---|---|
 | ![End Pollinator](docs/images/mobs/pollinator.png) | ![Void Wanderer](docs/images/mobs/void_wanderer.png) | ![Umbral Stalker in the light](docs/images/mobs/umbral_stalker_lit.png) |
-| **Cinder Mite** | **Corona Skimmer** | **Black Hole Guardian** |
-| ![Cinder Mite](docs/images/mobs/cinder_mite.png) | ![Corona Skimmer](docs/images/mobs/void_ray.png) | ![Black Hole Guardian](docs/images/mobs/hollow.png) |
+| **Cinder Mite** | **Void Ray** | **The Hollow** |
+| ![Cinder Mite](docs/images/mobs/cinder_mite.png) | ![Void Ray](docs/images/mobs/void_ray.png) | ![The Hollow](docs/images/mobs/hollow.png) |
 | **Drift Whale** | **The Watcher** | **The same Umbral Stalker, hunting in the dark** |
 | ![Drift Whale](docs/images/mobs/drift_whale.png) | ![The Watcher](docs/images/mobs/watcher.png) | ![Umbral Stalker hunting in the dark: a faint shimmer](docs/images/mobs/umbral_stalker.png) |
 
 | Mob | Where | What it does | Leaves behind |
 |---|---|---|---|
-| **End Pollinator** | Nebula Fields, Aurora Shallows | A little jellyfish-like drifter. Floats between glowing plants and hovers over them; a pollinated plant spreads to the ground beside it. Starblooms tempt it and make it breed. | **Glowing Spores**, every 5-10 minutes, like a chicken lays eggs. Killing it drops nothing. |
-| **Void Wanderer** | Dark Matter Belt, Shattered Observatory | A clockwork construct of the Cartographers: a verdigris bronze body with void crystal set in its seams, one great glass lens and a spinning gimbal ring. It floats over and studies you, a ring of light sweeping over you: **stand still for 5 seconds** and it leaves you a **Chart Fragment** (a shard of its star map) and drifts away. Each one studies each player once. Hit it and it looses homing starbolts back (shulker bullets) and blinks away when hurt. | Chart Fragment (for letting it chart you); its **Cracked Lens** if killed |
-| **Umbral Stalker** | Dark Matter Belt (hostile) | A hunched shadow brute that walks on its knuckles, with bone tusks, dark-matter crystals growing from its back and a violet rift glowing in its chest - but in the dark you can't see it at all until it picks you as prey; then a faint shimmer shows where it moves. It creeps up **while your back is turned** and backs off when you face it. It hunts like a lion: hidden, it creeps in low and slow, then **pounces** from a few blocks behind you - a heavy ambush blow that throws you away from it, toward the void near an edge. Light reveals it (block light 7+: Null Lanterns, Spore Lanterns, torches). | **Umbral Membrane** |
+| **End Pollinator** | Nebula Fields, Chorus Thicket | A little jellyfish-like drifter carrying a glowing sac of chorus pollen. Floats between glowing plants and hovers over them; a pollinated plant spreads to the ground beside it. Starblooms tempt it and make it breed. | **Glowing Spores**, every 5-10 minutes, like a chicken lays eggs. Killing it drops nothing. |
+| **Void Wanderer** | Hollow Isles, Shattered Observatory | A drifting sentinel of End City purpur with void crystal set in its seams, one great glass lens and a spinning purpur ring. It floats over and studies you: **stand still for 5 seconds** and it leaves you a **Chart Fragment** and drifts away. Each one studies each player once. Hit it and it looses homing shulker bullets back and blinks away when hurt. | Chart Fragment (for letting it chart you); its **Cracked Lens** if killed |
+| **Umbral Stalker** | Hollow Isles (hostile) | A hunched shadow brute that walks on its knuckles, with bone tusks, dark-matter crystals on its back and a violet rift in its chest. Unseen until it picks you as prey, it **senses you through walls**, creeps up while your back is turned and pounces. While it hunts it **snuffs out lights** for good (only with `mobGriefing` on). It **fears fire**: burn it (flint and steel, Fire Aspect, Flame, or a torch in your hand) and it runs, then comes back once it's out. | **Umbral Membrane** |
 | **Cinder Mite** | The Corona (hostile) | Glowing burrowers that come in swarms of about four, set you on fire, and burrow back into the stone after a minute. Immune to fire; **water kills them** in about two seconds. | **Cinder**, a fuel (smelts 4 items) |
-| **Corona Skimmer** | The Corona | A flat manta that rests on the ground looking like stone, then lifts off and glides in wide circles; whole flocks ride the Stellar Flares. **Shear it** while its wings shimmer for **Skimmer Film**; the wings fill again in the next flare's afterglow. | Skimmer Film (sheared, not killed) |
-| **Black Hole Guardian** | Dark Matter Belt, Comet Wake (rare, one at a time) | A small singularity that pulls you and your dropped items in. Items it swallows are **kept, not destroyed**: it drops them when it dies or collapses (after 2-3 minutes). You can only hurt it while its ring **flickers**. | **Singularity Shard**, only from a kill |
-| **Drift Whale** | The void, most often over the Aurora Shallows (one at a time) | A huge translucent whale that swims slowly through the void, turns toward you and hums. Nothing can hurt it. Very rarely sheds a glowing **Whalelight Scale**. | Three advancements: *Something Big Out There*, *Whale Song*, *Tagalong* |
+| **Void Ray** | The Corona | A flat manta with a back as dark as the void and gold-edged wings; it rests on the ground, then glides in wide circles, whole flocks riding the Sunstorms. **Shear it** while its wings shimmer for **Ray Film**; they fill again in the next storm's afterglow. | Ray Film (sheared, not killed) |
+| **The Hollow** | Hollow Isles, Comet Wake (rare, one at a time) | A small singularity that pulls you and your dropped items in. Items it swallows are **kept, not destroyed**: it drops them when it dies or collapses (after 2-3 minutes). You can only hurt it while its ring **flickers**. | **Abyss Shard**, only from a kill |
+| **Drift Whale** | The open void between islands (one at a time) | A huge, translucent whale that swims slowly through the void, grazes on chorus and hums; the points of light on its skin are **bioluminescent** and glow in the dark. 400 health; it never fights back, it flees. Feed it Chorus Fruit, and **ride it** with a **Chorus Flower on a Stick**. Very rarely sheds a glowing **Whalelight Scale**. | Three advancements: *Something Big Out There*, *Whale Song*, *Tagalong* |
 | **The Watcher** | Shattered Observatory (only when you're alone) | A floating sentinel of pale stone with one great eye, gold bands, glowing runes and shards circling it, at the edge of sight, there for a few seconds. Walk toward it and it's gone. **Catch it in a spyglass** and it vanishes too, leaving you a **Star Chart**. | Star Chart, and the advancement *Something Looks Back* |
+| **Spire Wyrm** (mini-boss) | Atop each Resonant Spire, Glimmering Crags | A serpent kin of the Ender Dragon. It **sleeps coiled on its nest** until you climb near it or strike it; then it wakes with a roar and a wave of darkness and rises off the spire. It coils through the tower, lunges and breathes lingering void breath, and flying it shrugs off half of every blow, but **ring a bell** as it passes and it crashes, stunned, onto the ledge. | The **Resonant Key** (opens the Resonance Vault) and a **Rift Pearl** |
+| **Live Comet** | The sky over the Comet Wake | A tumbling lump of meteoric rock crusted with comet ice, trailing light; it lands and leaves a small crater with blue ice and meteoric iron. A **Lodestar** keeps them off your builds. | Its crater |
 
 New blocks and items from the mobs:
 

@@ -1,5 +1,6 @@
 """Cuts the trailer together: the frames the game filmed (dev/ClientTrailer.java), the title cards,
-the captions and the score (music.py), into an H.264 video.
+the captions, the score (music.py) and the narration (narrate.py, spoken beforehand into
+<out dir>/vo/), into an H.264 video.
 
     python3 tools/trailer/compose.py <frames dir> <font ascii.png> <out dir>
 
@@ -9,6 +10,7 @@ the edit without watching it). Needs numpy, Pillow and ffmpeg.
 import os
 import subprocess
 import sys
+import wave
 from pathlib import Path
 
 import numpy as np
@@ -104,20 +106,76 @@ def centred(frame, font, text, scale, y, color=(255, 255, 255), alpha=1.0):
 
 def parse():
     beats = []
+    vo = None
     for line in SCENES.read_text().splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
             continue
         head, _, caption = line.partition("|")
         words = head.split()
+        if words[0] == "vo":
+            vo = (float(words[1]) if len(words) > 1 else 0.0, caption.strip())
+            continue
         if words[0] == "card":
             beats.append({"kind": "card", "frames": round(float(words[1]) * FPS), "text": caption.strip()})
         elif words[0] == "logo":
             beats.append({"kind": "logo", "frames": round(float(words[1]) * FPS)})
         else:
             beats.append({"kind": "shot", "shot": words[0], "frames": int(words[1]), "caption": caption.strip(),
-                          "index": len([b for b in beats if b["kind"] == "shot"])})
+                          "index": len([b for b in beats if b["kind"] == "shot"]),
+                          "events": {w.split("@")[0]: int(w.split("@")[1]) for w in words[2:] if "@" in w}})
+        if vo is not None:
+            beats[-1]["vo"] = vo
+            vo = None
     return beats
+
+
+def narration(beats, starts):
+    """(time in seconds, line, index) for every line the narrator says, in order."""
+    out = []
+    for b, s in zip(beats, starts):
+        if "vo" in b:
+            out.append((s / FPS + b["vo"][0], b["vo"][1], len(out)))
+    return out
+
+
+def mix_narration(track, beats, starts, vo_dir):
+    """Lays the narrator's lines over the score, each where its beat says (later, if the line before
+    is still being spoken), and ducks the score under the voice."""
+    lines = narration(beats, starts)
+    voice = np.zeros_like(track)
+    busy_until = 0.0
+    placed = 0
+    for at, text, i in lines:
+        path = Path(vo_dir) / f"{i:02d}.wav"
+        if not path.exists():
+            print(f"narration: no recording for line {i} ({text!r}); skipping it")
+            continue
+        with wave.open(str(path)) as w:
+            data = np.frombuffer(w.readframes(w.getnframes()), "<i2").astype(np.float32) / 32768
+            data = data.reshape(-1, w.getnchannels()).T
+            if data.shape[0] == 1:
+                data = np.vstack([data, data])
+        if at < busy_until + 0.25:
+            print(f"narration: line {i} ({text!r}) moved from {at:.1f} s to {busy_until + 0.25:.1f} s")
+            at = busy_until + 0.25
+        n0 = int(at * music.RATE)
+        n1 = min(track.shape[1], n0 + data.shape[1])
+        if n1 <= n0:
+            continue
+        voice[:, n0:n1] += data[:, :n1 - n0]
+        busy_until = at + data.shape[1] / music.RATE
+        placed += 1
+    # duck: the score dips to 40% under the voice, easing down and back over a third of a second
+    talking = (np.abs(voice).max(axis=0) > 1e-3).astype(np.float32)
+    k = int(0.35 * music.RATE)
+    kernel = np.ones(k, np.float32) / k
+    envelope = np.convolve(np.convolve(talking, kernel, "same"), kernel, "same")
+    envelope = np.clip(envelope * 1.6, 0, 1)
+    out = track * (1 - 0.6 * envelope) + voice * 0.95
+    peak = np.max(np.abs(out))
+    print(f"narration: {placed} of {len(lines)} lines placed")
+    return out / peak * 0.92 if peak > 0.92 else out
 
 
 def frame_path(frames_dir, beat, i):
@@ -227,12 +285,23 @@ def render(frames_dir, font_path, out_dir):
     cards = [s / FPS for b, s in zip(beats, starts) if b["kind"] == "card"]
     title = start_of(lambda b: b["kind"] == "logo", seconds - 8) + 0.25
     sections = {"bloom": start_of(lambda b: b["kind"] == "shot" and b["shot"] == "nebula_fields", 14.0),
-                "pulse": cards[2] if len(cards) > 2 else 40.0,
-                "lift": cards[4] if len(cards) > 4 else title - 30,
+                "pulse": start_of(lambda b: b["kind"] == "card" and b["text"].startswith("New life"),
+                                  cards[2] if len(cards) > 2 else 40.0),
+                "lift": start_of(lambda b: b["kind"] == "card" and b["text"].startswith("Don't wake"),
+                                 cards[4] if len(cards) > 4 else title - 30),
                 "title": title}
     print("score sections:", {k: round(v, 1) for k, v in sections.items()}, "length", round(seconds, 1))
+    track = music.score(seconds, sections)
+    # the Spire Wyrm's roar as it wakes: a boom on the frame it wakes, a riser into it
+    for b, st in zip(beats, starts):
+        if b["kind"] == "shot" and "wyrm_wake" in b.get("events", {}):
+            at = (st + b["events"]["wyrm_wake"]) / FPS + 0.2
+            music.place(track, music.riser(2.0) * 0.5, max(0.0, at - 2.0))
+            music.place(track, music.boom() * 1.2, at)
+            print(f"the Wyrm wakes at {at:.1f} s")
+    track = mix_narration(track, beats, starts, out_dir / "vo")
     wav = out_dir / "score.wav"
-    music.write(str(wav), music.score(seconds, sections))
+    music.write(str(wav), track)
 
     mp4 = out_dir / "the_astral_end_trailer.mp4"
     ffmpeg = os.environ.get("FFMPEG", "ffmpeg")
@@ -287,6 +356,9 @@ def render(frames_dir, font_path, out_dir):
             enc.stdin.write(frame.tobytes())
             if i == n // 2:
                 Image.fromarray(frame).save(out_dir / "stills" / f"{bi:02d}_{b.get('shot', b['kind'])}.png")
+            elif b["kind"] == "shot" and i % 24 == 12 and any(k in b["shot"] for k in ("wyrm", "whale", "comet_wake")):
+                # moving things, a picture a second, to judge them in motion
+                Image.fromarray(frame).save(out_dir / "stills" / f"{bi:02d}_{b['shot']}_f{i:03d}.png")
             if b["kind"] == "logo" and i == int(FPS * 3.5):
                 Image.fromarray(frame).save(out_dir / "poster.png")
     enc.stdin.close()

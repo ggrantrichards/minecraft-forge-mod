@@ -3,6 +3,8 @@
 #
 #   card <seconds> | <text>                  words on black between shots ("\" breaks a line)
 #   logo <seconds>                           the title card at the end
+#   vo <offset> | <words>                    the narrator says <words>, starting <offset> seconds into
+#                                            the next beat (tools/trailer/narrate.py speaks them)
 #   <shot> <frames> [key=value ...] | <caption>
 #
 # <shot> is a viewpoint the worldgen survey chose (astralend-shots.txt). The camera starts there and
@@ -11,43 +13,66 @@
 #   yaw               degrees to pan (positive: to the right); pitch=a:b tilts from a to b
 #   orbit             degrees to circle the focus (positive: counter-clockwise from above)
 #   focus             what to orbit and look at: the shot's mob (default), or "hit" (where the view
-#                     first meets the ground)
+#                     first meets the ground); "wyrm" keeps the nearest Spire Wyrm in the picture
 #   track             blocks per frame that the camera and the mob glide along together
 #   roll              degrees of camera roll, eased in over the shot
 #   ease              both (default), in, out or none
 #   comet             a live comet crosses the sky and comes down ahead; the camera follows it
-# and things to happen: wake@N, bridges@N (on frame N), flare=<phase>, clear.
+# and things to happen: wake@N, bridges@N (on frame N), flare=<phase>, clear, and for the Spire Wyrm
+# wyrm_wake@N (it wakes on its nest), wyrm_breath@N (it breathes at the camera), wyrm_stun@N (the
+# bell nearest it rings and stuns it).
 # The caption after "|" is shown small in the corner; leave it empty for none.
 
-card 4.0 | For ages, the End stood still.
+vo 0.6 | For ten thousand years... the End stood still.
+card 4.5 | For ages, the End stood still.
 sky_nebula_fields 150 pitch=-40:16 fwd=6 flare=calm |
+vo 0.3 | Now... it is waking up.
 card 3.0 | Now it is waking up.
+vo 0.8 | Beyond the dragon's island, new worlds drift in the dark.
 nebula_fields 90 fwd=14 up=-3 yaw=8 | Nebula Fields
 chorus_thicket 90 fwd=12 up=-2 yaw=-6 | Chorus Thicket
+vo 0.4 | Forests of chorus. Crags of crystal. And a sun that never sets.
 glimmering_crags 90 fwd=12 yaw=8 | Glimmering Crags
 ashen_barrens 90 fwd=14 up=-2 yaw=-8 | Ashen Barrens
 corona 90 fwd=12 yaw=10 | The Corona
 comet_wake 90 fwd=14 up=-2 yaw=-6 | Comet Wake
 hollow_isles 90 fwd=12 yaw=8 | Hollow Isles
-card 2.5 | New life drifts between the islands.
+vo 0.3 | New life drifts between the islands.
+card 3.0 | New life drifts between the islands.
 mob_pollinator 75 orbit=50 | End Pollinator
+vo 0.8 | Some of it is gentle...
 mob_drift_whale_side 130 track=0.12 | Drift Whale
 mob_void_wanderer 75 orbit=-45 | Void Wanderer
 mob_void_ray 65 orbit=40 | Void Ray
 mob_watcher 75 fwd=2.5 | The Watcher
+vo 0.2 | ...and some of it hunts in the dark.
 mob_umbral_stalker_lit 65 orbit=30 | Umbral Stalker
 mob_hollow 75 orbit=-40 | The Hollow
-mob_spire_wyrm 90 orbit=35 | Spire Wyrm
-card 2.5 | Keep an eye on the sky.
+vo 0.3 | Keep an eye on the sky.
+card 2.8 | Keep an eye on the sky.
 comet_wake 190 comet | Live Comets
 sky_corona_flare 110 yaw=25 pitch=-18:-10 flare=flare | Sunstorms
-card 2.5 | Someone was here before you.
+vo 0.3 | Someone was here before you.
+card 2.8 | Someone was here before you.
 structure_shattered_observatory 110 orbit=30 focus=hit | The Shattered Observatory
 structure_rift_maw 110 fwd=4 wake@30 | Rift Maws
 structure_constellation_maze 110 orbit=20 focus=hit bridges@30 | Constellation Mazes
-structure_resonant_spire 110 orbit=25 focus=hit | Resonant Spires
+vo 0.6 | Leviathans, dead for ages... turned to stone, and to shelter.
 structure_whalefall 130 orbit=25 focus=hit | The Whalefall
-card 2.5 | Bring something back.
+vo 0.6 | And at the top of the highest spire...
+structure_resonant_spire 110 orbit=25 focus=hit | Resonant Spires
+vo 0.4 | ...something is sleeping.
+wyrm_nest 96 fwd=2.5 focus=wyrm |
+vo 0.4 | Don't. Wake. It.
+card 3.0 | Don't wake it.
+wyrm_nest 150 fwd=-7 up=5 focus=wyrm wyrm_wake@4 | The Spire Wyrm
+wyrm_flight 110 side=-6 focus=wyrm |
+wyrm_shaft 90 focus=wyrm wyrm_breath@24 |
+vo 0.5 | Ring the bells. Bring it down.
+wyrm_flight 120 side=5 focus=wyrm wyrm_stun@8 | Ring the bells
+vo 0.3 | Then bring something back.
+card 2.8 | Bring something back.
 starforge_astral_forge 75 orbit=35 focus=hit | Starforging
+vo 1.4 | The Astral End.
 nebula_fields_aerial 150 fwd=-20 up=14 pitch=38:24 ease=in |
 logo 8.0

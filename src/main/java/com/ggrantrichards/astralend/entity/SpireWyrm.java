@@ -40,6 +40,9 @@ import org.jspecify.annotations.Nullable;
 // The Spire Wyrm: a serpent kin of the Ender Dragon that nests atop a Resonant Spire, the mini-boss
 // of the Glimmering Crags.
 //
+// It sleeps coiled on its nest until someone climbs near it or strikes it. Then it wakes: a roar, a
+// wave of darkness through the spire, and it rises off the nest, uncoiling, as its boss bar appears.
+//
 // It coils up and down its spire, weaving out through the wall openings and back in, its long
 // body (a chain of SpireWyrmParts) following the path its head flies. In a fight it:
 //   - coils past you - its body hurts and throws whoever it touches, its tail most of all;
@@ -62,7 +65,9 @@ public class SpireWyrm extends Monster {
     private static final double INNER = 6.0, OUTER = 17.0;
     private static final int STUN_TICKS = 120, STUN_COOLDOWN = 300;
 
-    public enum Phase { COIL, LUNGE, BREATH, STUNNED }
+    public enum Phase { COIL, LUNGE, BREATH, STUNNED, ASLEEP, WAKING }
+    private static final int WAKING_TICKS = 70;
+    private static final double WAKE_RANGE = 22.0;
 
     private final SpireWyrmPart[] parts = new SpireWyrmPart[SEGMENTS];
     private final ArrayDeque<Vec3> trail = new ArrayDeque<>();
@@ -99,7 +104,7 @@ public class SpireWyrm extends Monster {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(DATA_PHASE, Phase.COIL.ordinal());
+        builder.define(DATA_PHASE, Phase.ASLEEP.ordinal());
     }
 
     public Phase phase() {
@@ -164,6 +169,19 @@ public class SpireWyrm extends Monster {
     // The head's path, a point every quarter block; each segment sits SEGMENT_LENGTH further along it.
     private void updateTrail() {
         Vec3 head = this.position().add(0.0, this.getBbHeight() / 2.0, 0.0);
+        if (this.trail.isEmpty() && this.phase() == Phase.ASLEEP) {
+            // Asleep: the body lies coiled round the head, a slowly widening spiral on the nest.
+            Vec3 c = head.add(0.0, -0.4, 0.0);
+            double a = Math.toRadians(this.getYRot() + 90.0F);
+            double length = (SEGMENTS + 2) * SEGMENT_LENGTH;
+            for (int i = 0; i <= length * 4; i++) {
+                double walked = i * 0.25;
+                double r = 2.2 + walked * 0.09;
+                a -= 0.25 / r;
+                this.trail.addLast(c.add(Math.cos(a) * r - Math.cos(Math.toRadians(this.getYRot() + 90.0F)) * 2.2,
+                    walked * 0.02, Math.sin(a) * r - Math.sin(Math.toRadians(this.getYRot() + 90.0F)) * 2.2));
+            }
+        }
         if (this.trail.isEmpty()) {
             Vec3 back = this.getLookAngle().scale(-1.0);
             for (int i = (int) ((SEGMENTS + 2) * SEGMENT_LENGTH * 4); i >= 0; i--) {
@@ -218,7 +236,32 @@ public class SpireWyrm extends Monster {
             this.stunCooldown--;
         }
         this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
+        this.bossEvent.setVisible(this.phase() != Phase.ASLEEP);
         Player target = this.target(level);
+        if (this.phase() == Phase.ASLEEP) {
+            this.setDeltaMovement(Vec3.ZERO);
+            if (target != null && target.distanceToSqr(this.home) < WAKE_RANGE * WAKE_RANGE) {
+                this.wake(level);
+            } else if (this.tickCount % 40 == 0) {
+                Vec3 snout = this.position().add(this.getLookAngle().scale(1.8)).add(0, 0.6, 0);
+                level.sendParticles(ParticleTypes.REVERSE_PORTAL, snout.x, snout.y, snout.z, 3, 0.1, 0.05, 0.1, 0.01);
+            }
+            return;
+        }
+        if (this.phase() == Phase.WAKING) {
+            // Rising off the nest, uncoiling, still roaring.
+            Vec3 up = this.home.add(0, 10.0, 0).add(Math.cos(this.phaseTicks * 0.09) * 3.0, 0, Math.sin(this.phaseTicks * 0.09) * 3.0);
+            Vec3 to = up.subtract(this.position());
+            this.setDeltaMovement(to.lengthSqr() > 1.0E-4 ? to.normalize().scale(Math.min(0.35, to.length())) : Vec3.ZERO);
+            this.lookAt(this.position().add(this.getDeltaMovement()).add(0, 0.2, 0));
+            if (this.phaseTicks == 30) {
+                this.playSound(SoundEvents.ENDER_DRAGON_GROWL, 5.0F, 0.75F);
+            }
+            if (this.phaseTicks > WAKING_TICKS) {
+                this.setPhase(Phase.COIL);
+            }
+            return;
+        }
         this.listenForBells(level);
         Vec3 goal;
         double speed;
@@ -284,6 +327,60 @@ public class SpireWyrm extends Monster {
         }
         if (this.phase() != Phase.STUNNED && this.tickCount % 4 == 0) {
             this.hurtTouching(level);
+        }
+    }
+
+    // Wakes: whoever disturbed it hears it first. A roar, a wave of darkness through the spire (like a
+    // Warden's), a burst of void from the nest, then it rises (see WAKING above).
+    public void wake(ServerLevel level) {
+        if (this.phase() != Phase.ASLEEP) {
+            return;
+        }
+        if (this.home == null) {
+            this.home = this.position();
+        }
+        this.setPhase(Phase.WAKING);
+        this.playSound(SoundEvents.ENDER_DRAGON_GROWL, 6.0F, 0.6F);
+        level.sendParticles(ParticleTypes.SONIC_BOOM, this.getX(), this.getY() + 1.0, this.getZ(), 1, 0, 0, 0, 0);
+        level.sendParticles(ParticleTypes.REVERSE_PORTAL, this.getX(), this.getY() + 1.0, this.getZ(), 160, 3.0, 1.0, 3.0, 0.15);
+        for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, this.getBoundingBox().inflate(40.0, SPIRE_DEPTH, 40.0),
+                p -> !p.isCreative() && !p.isSpectator())) {
+            player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 100, 0, false, false), this);
+        }
+    }
+
+    public boolean isAsleep() {
+        return this.phase() == Phase.ASLEEP;
+    }
+
+    // For the trailer: breathe at a spot, or be stunned by the bell nearest it, on cue.
+    public void breatheAtOnCue(ServerLevel level, Vec3 at) {
+        this.setPhase(Phase.BREATH);
+        this.lookAt(at);
+        AreaEffectCloud cloud = new AreaEffectCloud(level, at.x, at.y, at.z);
+        cloud.setOwner(this);
+        cloud.setRadius(2.5F);
+        cloud.setDuration(80);
+        cloud.setRadiusPerTick(-0.005F);
+        level.addFreshEntity(cloud);
+        level.sendParticles(ParticleTypes.REVERSE_PORTAL, at.x, at.y + 0.5, at.z, 60, 1.5, 0.3, 1.5, 0.02);
+        level.sendParticles(ParticleTypes.PORTAL, at.x, at.y + 0.5, at.z, 80, 1.5, 0.3, 1.5, 0.3);
+        this.playSound(SoundEvents.ENDER_DRAGON_SHOOT, 2.0F, 0.8F);
+    }
+
+    public void stunAtNearestBellOnCue(ServerLevel level) {
+        this.findBells(level);
+        BlockPos best = null;
+        for (BlockPos p : this.bells) {
+            if (best == null || p.distSqr(this.blockPosition()) < best.distSqr(this.blockPosition())) {
+                best = p;
+            }
+        }
+        if (best != null && level.getBlockEntity(best) instanceof BellBlockEntity bell) {
+            bell.onHit(net.minecraft.core.Direction.NORTH);
+            level.playSound(null, best, SoundEvents.BELL_BLOCK, net.minecraft.sounds.SoundSource.BLOCKS, 2.0F, 1.0F);
+            this.stunCooldown = 0;
+            this.stun(level, best);
         }
     }
 
@@ -382,19 +479,23 @@ public class SpireWyrm extends Monster {
                 continue;
             }
             if (bell.shaking && bell.ticks <= 1 && this.near(Vec3.atCenterOf(p), 10.0)) {
-                // Stunned: it drops onto the ledge beside the bell, toward the middle of the shaft.
-                Vec3 bellAt = Vec3.atCenterOf(p);
-                Vec3 in = this.home != null ? new Vec3(this.home.x - bellAt.x, 0, this.home.z - bellAt.z).normalize() : Vec3.ZERO;
-                this.stunAt = bellAt.add(in.scale(1.5)).add(0, -0.4, 0);
-                this.setPhase(Phase.STUNNED);
-                this.playSound(SoundEvents.ENDER_DRAGON_HURT, 3.0F, 0.6F);
-                for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, this.getBoundingBox().inflate(32.0))) {
-                    com.ggrantrichards.astralend.world.ModAdvancements.award(player, "ring_out");
-                }
-                level.sendParticles(ParticleTypes.SONIC_BOOM, bellAt.x, bellAt.y, bellAt.z, 1, 0, 0, 0, 0);
+                this.stun(level, p);
                 return;
             }
         }
+    }
+
+    // Stunned: it drops onto the ledge beside the bell, toward the middle of the shaft.
+    private void stun(ServerLevel level, BlockPos p) {
+        Vec3 bellAt = Vec3.atCenterOf(p);
+        Vec3 in = this.home != null ? new Vec3(this.home.x - bellAt.x, 0, this.home.z - bellAt.z).normalize() : Vec3.ZERO;
+        this.stunAt = bellAt.add(in.scale(1.5)).add(0, -0.4, 0);
+        this.setPhase(Phase.STUNNED);
+        this.playSound(SoundEvents.ENDER_DRAGON_HURT, 3.0F, 0.6F);
+        for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, this.getBoundingBox().inflate(32.0))) {
+            com.ggrantrichards.astralend.world.ModAdvancements.award(player, "ring_out");
+        }
+        level.sendParticles(ParticleTypes.SONIC_BOOM, bellAt.x, bellAt.y, bellAt.z, 1, 0, 0, 0, 0);
     }
 
     private boolean near(Vec3 at, double range) {
@@ -417,6 +518,10 @@ public class SpireWyrm extends Monster {
 
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+        if (this.phase() == Phase.ASLEEP && !source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            this.wake(level);   // a blow to a sleeping wyrm lands in full, and wakes it
+            return super.hurtServer(level, source, damage);
+        }
         float scale = this.phase() == Phase.STUNNED ? 1.5F : 0.5F;
         return super.hurtServer(level, source, damage * scale);
     }
@@ -447,6 +552,9 @@ public class SpireWyrm extends Monster {
 
     @Override
     protected @Nullable SoundEvent getAmbientSound() {
+        if (this.phase() == Phase.ASLEEP) {
+            return null;
+        }
         return this.random.nextInt(3) == 0 ? SoundEvents.ENDER_DRAGON_AMBIENT : null;
     }
 
@@ -478,6 +586,7 @@ public class SpireWyrm extends Monster {
             output.putDouble("HomeY", this.home.y);
             output.putDouble("HomeZ", this.home.z);
         }
+        output.putBoolean("Asleep", this.phase() == Phase.ASLEEP);
     }
 
     @Override
@@ -489,5 +598,7 @@ public class SpireWyrm extends Monster {
         if (this.hasCustomName()) {
             this.bossEvent.setName(this.getDisplayName());
         }
+        this.setPhase(input.getBooleanOr("Asleep", true) ? Phase.ASLEEP : Phase.COIL);
+        this.trail.clear();
     }
 }

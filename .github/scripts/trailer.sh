@@ -4,6 +4,16 @@
 set -u
 LOG=run/logs/latest.log
 rm -rf "$LOG" trailer-console.log run/screenshots/trailer trailer
+
+# The narration first (tools/trailer/narrate.py), so a problem with it shows before the long filming.
+sudo apt-get install -y -qq ffmpeg > /dev/null
+python3 -m pip install -q --break-system-packages numpy pillow kokoro-onnx soundfile
+mkdir -p /tmp/kokoro
+for f in kokoro-v1.0.onnx voices-v1.0.bin; do
+    [ -s /tmp/kokoro/$f ] || curl -sSL --retry 4 -o /tmp/kokoro/$f "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/$f"
+done
+python3 tools/trailer/narrate.py /tmp/kokoro/kokoro-v1.0.onnx /tmp/kokoro/voices-v1.0.bin trailer \
+    || { echo "::error::the narration could not be spoken"; exit 1; }
 mkdir -p run/saves && rm -rf run/saves/survey-world && cp -r run/survey-world run/saves/survey-world
 cp tools/trailer/scenes.txt run/astralend-trailer.txt
 # A longer view than the screenshots, no chat, no tutorial hints.
@@ -36,8 +46,6 @@ echo "$(ls run/screenshots/trailer 2>/dev/null | wc -l) frames filmed"
 ls run/screenshots/trailer/*.png > /dev/null 2>&1 || { echo "::error::no frames were filmed"; tail -40 trailer.log; exit 1; }
 
 # Cut it together: the game's own font for the titles, numpy for the score, ffmpeg for the video.
-sudo apt-get install -y -qq ffmpeg > /dev/null
-python3 -m pip install -q --break-system-packages numpy pillow
 JAR=$(find .gradle/mavenizer/repo -name 'client-extra*.jar' | head -1)
 unzip -p "$JAR" assets/minecraft/textures/font/ascii.png > /tmp/ascii.png
 python3 tools/trailer/compose.py run/screenshots/trailer /tmp/ascii.png trailer

@@ -36,6 +36,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import org.slf4j.Logger;
 
@@ -94,7 +95,21 @@ public final class WorldgenSurvey {
         if (server.getWorldData() instanceof net.minecraft.world.level.storage.PrimaryLevelData data) {
             data.withConfirmedWarning(true);
         }
-        server.halt(false);
+        // Stop once the server has ticked a while. The survey generates hundreds of chunks before the
+        // first tick; halting with all their follow-up work still queued runs that work inline while
+        // stopping, which overflows the stack and loses the save (and with it the answer above).
+        surveyed = server;
+        TickEvent.ServerTickEvent.Post.BUS.addListener(WorldgenSurvey::stopWhenSettled);
+    }
+
+    private static MinecraftServer surveyed;
+    private static int ticksAfterSurvey;
+
+    private static void stopWhenSettled(TickEvent.ServerTickEvent.Post event) {
+        if (surveyed != null && ++ticksAfterSurvey == 200) {
+            log("ten seconds of ticks after the survey; stopping (stopping saves the world)");
+            surveyed.halt(false);
+        }
     }
 
     // ================================================================ 1. Getting to the End
@@ -395,6 +410,7 @@ public final class WorldgenSurvey {
         structureShot(lines, structures, "solar_array", 34.0, 36.0, 4.0);
         structureShot(lines, structures, "resonant_spire", 60.0, 40.0, 30.0);
         structureShot(lines, structures, "solar_array_room", 3.0, 2.2, 0.0);
+        wyrmShots(lines, structures, end);
         lines.addAll(EXTRA_SHOTS);
         try {
             java.nio.file.Files.write(java.nio.file.Path.of("astralend-shots.txt"), lines);
@@ -538,6 +554,29 @@ public final class WorldgenSurvey {
 
     // A viewpoint "structure_<name> x y z yaw pitch": `distance` blocks north-west of the found block and
     // `height` above it, looking at a point `aimLift` above that block.
+    // The Spire Wyrm asleep on the nest of the spire the survey found (and, for the trailer, a view up
+    // the shaft and one from a balcony): checks it's there and asleep, and where to film it.
+    private static void wyrmShots(List<String> lines, Map<String, BlockPos> structures, ServerLevel end) {
+        BlockPos at = structures.get("resonant_spire");
+        if (at == null) {
+            return;
+        }
+        List<com.ggrantrichards.astralend.entity.SpireWyrm> wyrms = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.SpireWyrm.class,
+            new net.minecraft.world.phys.AABB(at).inflate(48.0, 120.0, 48.0));
+        log("resonant_spire: " + wyrms.size() + " Spire Wyrm(s) on the nest" + (wyrms.isEmpty() ? "" : ", asleep: " + wyrms.get(0).isAsleep()
+            + " at " + wyrms.get(0).blockPosition().toShortString()));
+        if (wyrms.isEmpty()) {
+            return;
+        }
+        net.minecraft.world.phys.Vec3 nest = wyrms.get(0).position();
+        // On the nest, from the north-west, a little above it.
+        lines.add(String.format(java.util.Locale.ROOT, "wyrm_nest %.1f %.1f %.1f -45 %.1f", nest.x - 9.0, nest.y + 3.0, nest.z - 9.0,
+            Math.toDegrees(Math.atan2(3.0 + 1.62 - 1.0, Math.sqrt(162.0)))));
+        // Up the shaft from 30 blocks below the nest, and level with it from 22 blocks out.
+        lines.add(String.format(java.util.Locale.ROOT, "wyrm_shaft %.1f %.1f %.1f -45 -60", nest.x - 2.0, nest.y - 30.0, nest.z - 2.0));
+        lines.add(String.format(java.util.Locale.ROOT, "wyrm_flight %.1f %.1f %.1f -45 -8", nest.x - 16.0, nest.y + 4.0, nest.z - 16.0));
+    }
+
     private static void structureShot(List<String> lines, Map<String, BlockPos> structures, String name, double distance,
                                       double height, double aimLift) {
         BlockPos at = structures.get(name);
