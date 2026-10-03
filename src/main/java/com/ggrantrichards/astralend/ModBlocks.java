@@ -139,6 +139,11 @@ public final class ModBlocks {
         () -> vine());
     public static final RegistryObject<Block> ASTRAL_VINE_PLANT = registerNoItem("astral_vine_plant", AstralVinePlantBlock::new,
         () -> vine());
+    // The distillation: Hollow Vines hang from the Deep Hollows' Nullwood to the ground, like weeping vines.
+    public static final RegistryObject<Block> HOLLOW_VINES = register("hollow_vines", com.ggrantrichards.astralend.block.HollowVinesBlock::new,
+        () -> vine());
+    public static final RegistryObject<Block> HOLLOW_VINES_PLANT = registerNoItem("hollow_vines_plant",
+        com.ggrantrichards.astralend.block.HollowVinesPlantBlock::new, () -> vine());
     // Comet Cress: a crop that hangs from the underside of Stardust. Its item is ModItems.COMET_CRESS.
     public static final RegistryObject<Block> COMET_CRESS = registerNoItem("comet_cress", CometCressBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).noCollision().randomTicks().instabreak()

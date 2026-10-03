@@ -11,6 +11,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
@@ -65,7 +66,7 @@ public final class ModEntities {
             var ground = Heightmap.Types.MOTION_BLOCKING_NO_LEAVES;
             event.register(POLLINATOR.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::onAstralSoil, replace);
             event.register(VOID_WANDERER.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::onSolidGround, replace);
-            event.register(UMBRAL_STALKER.get(), SpawnPlacementTypes.ON_GROUND, ground, Monster::checkMonsterSpawnRules, replace);
+            event.register(UMBRAL_STALKER.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::inCave, replace);
             event.register(VOID_RAY.get(), SpawnPlacementTypes.ON_GROUND, ground, VoidRay::checkVoidRaySpawnRules, replace);
         });
     }
@@ -78,6 +79,12 @@ public final class ModEntities {
     private static <T extends net.minecraft.world.entity.Entity> boolean onSolidGround(
         EntityType<T> type, LevelAccessor level, EntitySpawnReason reason, BlockPos pos, RandomSource random) {
         return !level.getBlockState(pos.below()).isAir();
+    }
+
+    // The Umbral Stalker: only under a roof of rock, in the dark (the Glimmering Crags' root caves).
+    private static boolean inCave(EntityType<? extends Monster> type, ServerLevelAccessor level, EntitySpawnReason reason,
+                                  BlockPos pos, RandomSource random) {
+        return !level.canSeeSky(pos) && Monster.checkMonsterSpawnRules(type, level, reason, pos, random);
     }
 
     private ModEntities() {}

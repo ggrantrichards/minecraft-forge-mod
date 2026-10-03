@@ -1,0 +1,85 @@
+{
+  "attributes": {
+    "minecraft:gameplay/natural_mob_spawns": {
+      "argument": {
+        "spawn_costs": {},
+        "spawns_by_category": {
+          "monster": [
+            {
+              "type": "minecraft:enderman",
+              "count": 4,
+              "weight": 10
+            }
+          ],
+          "creature": [
+            {
+              "type": "astralend:void_wanderer",
+              "count": 1,
+              "weight": 2
+            }
+          ]
+        }
+      },
+      "modifier": "overlay"
+    },
+    "minecraft:visual/fog_color": "#150f26",
+    "minecraft:audio/background_music": {
+      "default": {
+        "sound": "astralend:music.outer_end",
+        "min_delay": 3000,
+        "max_delay": 12000,
+        "replace_current_music": false
+      }
+    },
+    "minecraft:audio/ambient_sounds": {
+      "loop": "astralend:ambient.deep_hollows.loop",
+      "additions": {
+        "sound": "astralend:ambient.deep_hollows.additions",
+        "tick_chance": 0.006
+      },
+      "mood": {
+        "sound": "minecraft:ambient.cave",
+        "tick_delay": 6000,
+        "block_search_extent": 8,
+        "offset": 2.0
+      }
+    },
+    "minecraft:visual/ambient_particles": {
+      "argument": [
+        {
+          "particle": {
+            "type": "minecraft:reverse_portal"
+          },
+          "probability": 0.004
+        }
+      ],
+      "modifier": "append"
+    }
+  },
+  "carvers": [],
+  "downfall": 0.5,
+  "effects": {
+    "water_color": "#241a44"
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [
+      "minecraft:end_gateway_return",
+      "astralend:hollow_isles_upwells"
+    ],
+    [],
+    [],
+    [],
+    [],
+    [
+      "astralend:deep_hollows_nullwood_trees",
+      "astralend:deep_hollows_vines",
+      "astralend:hollow_isles_voidgel"
+    ]
+  ],
+  "has_precipitation": false,
+  "temperature": 0.5
+}

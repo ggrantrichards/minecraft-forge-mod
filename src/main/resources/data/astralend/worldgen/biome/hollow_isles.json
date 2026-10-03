@@ -9,11 +9,6 @@
               "type": "minecraft:enderman",
               "count": 4,
               "weight": 10
-            },
-            {
-              "type": "astralend:umbral_stalker",
-              "count": 1,
-              "weight": 4
             }
           ],
           "creature": [

@@ -608,6 +608,7 @@ REGION_COLD_BELT = 0.2    # |belt| beyond this in the cold band
 REGION_MID_BELT = 0.3     # |belt| beyond this in the middle band (Hollow Isles / Corona)
 REGION_THICKET = 0.22     # belt < -this in the nebula band: the Chorus Thicket
 REGION_CRAGS = 0.45       # ruin > this, in what would be vanilla: the Glimmering Crags
+REGION_VARIANT = 0.2      # variant > this: a territory's variant (Deep Hollows, Shattered Crags)
 BLEND = 0.03              # terrain blends between shapes over +-this much noise at a border
 
 
@@ -655,11 +656,13 @@ def ramp(x, at, width=BLEND):
 
 
 def terrain():
-    nebula, belt, ruin = rid("region/nebula"), rid("region/belt"), rid("region/ruin")
+    nebula, belt, ruin, variant = rid("region/nebula"), rid("region/belt"), rid("region/ruin"), rid("region/variant")
     # Region noises: large and slow, so each biome is a territory a few thousand blocks across.
     df("region/nebula", {"type": "minecraft:noise", "noise": "minecraft:vegetation", "xz_scale": 0.08, "y_scale": 0.0})
     df("region/belt", {"type": "minecraft:noise", "noise": "minecraft:temperature", "xz_scale": 0.3, "y_scale": 0.0})
     df("region/ruin", {"type": "minecraft:noise", "noise": "minecraft:ridge", "xz_scale": 0.05, "y_scale": 0.0})
+    # Faster: patches a few hundred blocks across inside a territory, where it turns into its variant.
+    df("region/variant", {"type": "minecraft:noise", "noise": "minecraft:continentalness", "xz_scale": 0.5, "y_scale": 0.0})
 
     # Weights (0..1) of each biome's terrain. They are 0 within 1,024 blocks of the centre, so the
     # main island and the gap around it are exactly vanilla.
@@ -675,7 +678,9 @@ def terrain():
         "corona": mul(middle, ramp(mul(belt, -1.0), REGION_MID_BELT)),
     }
     vanilla_share = sub(sub(sub(not_nebula, raw["ashen_barrens"]), raw["hollow_isles"]), raw["corona"])
-    raw["glimmering_crags"] = mul(vanilla_share, ramp(ruin, REGION_CRAGS))
+    crags = mul(vanilla_share, ramp(ruin, REGION_CRAGS))
+    raw["glimmering_crags"] = mul(crags, sub(1.0, ramp(variant, REGION_VARIANT)))
+    raw["shattered_crags"] = mul(crags, ramp(variant, REGION_VARIANT))
     thicket = ramp(mul(belt, -1.0), REGION_THICKET)
     raw["nebula_fields"] = mul(ramp(nebula, REGION_NEBULA), sub(1.0, thicket))
     raw["chorus_thicket"] = mul(ramp(nebula, REGION_NEBULA), thicket)
@@ -696,14 +701,16 @@ def terrain():
     def depth_from(m, scale, most):
         return clamp(mul(m, scale), 0.0, most)
 
-    # Nebula Fields: rolling hills of moss on wide islands.
-    df("terrain/nebula_fields", dmax(vanilla, landmass(add(60.0, mul(hills, 7.0)), depth_from(add(mask, -0.02), 120.0, 40.0))))
+    # The distillation: smaller islands with bigger gaps (the void is the point), so each landmass
+    # starts further up its mask than it used to.
+    # Nebula Fields: rolling hills of moss on islands with wide void between them.
+    df("terrain/nebula_fields", dmax(vanilla, landmass(add(60.0, mul(hills, 7.0)), depth_from(add(mask, -0.09), 120.0, 40.0))))
 
     # Ashen Barrens: wide, thin, flat-topped shelves (level at y=54) that thin to a see-through edge.
     shelf_islands = mul(add(add(islands, 0.12), mul(noise, 0.2)), 14.0)
     shelves = dmin(y_line(0, 54.5 * 0.25, 128, (54.5 - 128) * 0.25),
                    add(y_line(0, -54.5 * 0.25, 128, (128 - 54.5) * 0.25), mul(shelf_islands, 0.25)))
-    df("terrain/ashen_barrens", dmax(shelves, landmass(54.5, depth_from(add(mask, 0.05), 40.0, 10.0))))
+    df("terrain/ashen_barrens", dmax(shelves, landmass(54.5, depth_from(add(mask, -0.02), 40.0, 10.0))))
 
     # Hollow Isles: ring archipelagos. Land follows a band along the mask's contour, which traces
     # broken rings and arcs around empty centres; vanilla islands are hollowed out the same way.
@@ -715,17 +722,25 @@ def terrain():
     df("terrain/corona", dmax(vanilla, landmass(add(62.0, mul(hills, 1.5)), depth_from(add(mask, -0.02), 400.0, 30.0))))
 
     # Chorus Thicket: like the Nebula Fields, but gentler: low, broad mounds for the chorus to stand on.
-    df("terrain/chorus_thicket", dmax(vanilla, landmass(add(60.0, mul(hills, 4.0)), depth_from(add(mask, -0.02), 110.0, 38.0))))
+    df("terrain/chorus_thicket", dmax(vanilla, landmass(add(60.0, mul(hills, 4.0)), depth_from(add(mask, -0.08), 110.0, 38.0))))
 
     # Glimmering Crags: islands bristling with jagged peaks. A fast noise lifts the top surface into
     # spires up to ~50 blocks high (and deepens the island under them, so they stand on something).
     df("terrain/crag_peaks", {"type": "minecraft:noise", "noise": "minecraft:ridge", "xz_scale": 6.0, "y_scale": 0.0})
     peaks = clamp(mul(add(rid("terrain/crag_peaks"), -0.15), 90.0), 0.0, 48.0)
     df("terrain/glimmering_crags", dmax(vanilla, landmass(add(add(56.0, mul(hills, 4.0)), peaks),
-                                                          add(depth_from(add(mask, 0.04), 110.0, 40.0), mul(peaks, 0.6)))))
+                                                          add(depth_from(add(mask, -0.02), 110.0, 40.0), mul(peaks, 0.6)))))
+
+    # Shattered Crags: the Crags broken into a field of fragments a dozen blocks across, at scattered
+    # heights, with gaps too wide to jump - flyable only with an elytra. No vanilla islands among them.
+    df("terrain/shard_field", {"type": "minecraft:noise", "noise": "minecraft:ridge", "xz_scale": 5.0, "y_scale": 0.0})
+    df("terrain/shard_height", {"type": "minecraft:noise", "noise": "minecraft:surface", "xz_scale": 3.0, "y_scale": 0.0})
+    shards = clamp(mul(add(rid("terrain/shard_field"), -0.3), 70.0), 0.0, 12.0)
+    df("terrain/shattered_crags", landmass(add(56.0, mul(rid("terrain/shard_height"), 22.0)), shards))
 
     shaped = vanilla
-    for biome in ("nebula_fields", "chorus_thicket", "corona", "hollow_isles", "ashen_barrens", "glimmering_crags"):
+    for biome in ("nebula_fields", "chorus_thicket", "corona", "hollow_isles", "ashen_barrens", "glimmering_crags",
+                  "shattered_crags"):
         shaped = lerp(rid(f"terrain/weight/{biome}"), shaped, rid(f"terrain/{biome}"))
     df("terrain/shaped", shaped)
 
@@ -747,7 +762,8 @@ def worldgen():
         "material_rule": rid("end"),
         "noise": {"height": 128, "min_y": 0},
         "noise_router": {
-            "chunk_surface_level": 0.0, "continents": 0.0, "depth": 0.0,
+            "chunk_surface_level": 0.0, "depth": 0.0,
+            "continents": rid("region/variant"),
             "erosion": "minecraft:end/islands",
             "final_density": END_FINAL_DENSITY,
             "ridges": rid("region/ruin"),
@@ -773,6 +789,8 @@ def worldgen():
         in_biome("chorus_thicket", {"type": "minecraft:condition", "if_true": "minecraft:on_floor",
                                     "then_run": block("chorus_moss")}),
         in_biome("glimmering_crags", block("nightstone")),
+        in_biome("shattered_crags", block("nightstone")),
+        in_biome("deep_hollows", block("nightstone")),
         # Whole islands of a different stone:
         in_biome("ashen_barrens", block("pale_end_stone")),
         in_biome("hollow_isles", block("nightstone")),
@@ -909,11 +927,15 @@ def java_feature(name):
 
 # Mobs by biome and spawn category (on top of the End's Endermen). The Drift Whale and the Watcher
 # aren't here: MobSpawning.java places them one at a time. (The distillation: Pollinators live only
-# where the Eclipse will be - the Corona for now - and Void Rays over the Glimmering Crags.)
+# where the Eclipse will be - the Corona for now - Void Rays circle the Shattered Crags' gaps, and the
+# Umbral Stalker lives in the Glimmering Crags' caves.)
 MOB_SPAWNS = {
     "nebula_fields": {"creature": [("void_wanderer", 4, 1)]},
-    "hollow_isles": {"monster": [("umbral_stalker", 4, 1)], "creature": [("void_wanderer", 4, 1)]},
-    "glimmering_crags": {"creature": [("void_ray", 8, 3)]},
+    "hollow_isles": {"creature": [("void_wanderer", 4, 1)]},
+    "deep_hollows": {"creature": [("void_wanderer", 2, 1)]},
+    # The Umbral Stalker hunts only in the Crags' root caves (its spawn rule wants a roof of rock overhead).
+    "glimmering_crags": {"monster": [("umbral_stalker", 6, 1)]},
+    "shattered_crags": {"creature": [("void_ray", 8, 3)]},
     "corona": {"creature": [("pollinator", 12, 3)]},
 }
 
@@ -933,7 +955,8 @@ def mob_spawns(biome):
 # Which music each astral biome plays (sounds in ModSounds.java; who made it in sounds/credits.txt).
 # The Ashen Barrens keep the End's own music: the dead country gets nothing new.
 BIOME_MUSIC = {"nebula_fields": "music.nebula_fields", "chorus_thicket": "music.chorus_thicket",
-               "glimmering_crags": "music.glimmering_crags", "hollow_isles": "music.outer_end",
+               "glimmering_crags": "music.glimmering_crags", "shattered_crags": "music.glimmering_crags",
+               "hollow_isles": "music.outer_end", "deep_hollows": "music.outer_end",
                "corona": "music.outer_end"}
 
 
@@ -1040,6 +1063,39 @@ def worldgen_phase3():
                               rid("hollow_isles_stardust_underhangs")],
               particle="minecraft:reverse_portal", particle_chance=0.002)
 
+    # ---- Deep Hollows (the Hollow Isles' variant): the forest closes in. Nullwood twice as thick, Hollow
+    # Vines hanging from it to the ground, darker fog, almost no light.
+    big_feature("deep_hollows_nullwood_trees", "nullwood_tree", count=7)
+    feature("hollow_vines", {
+        "type": "minecraft:block_column",
+        "allowed_placement": {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
+        "direction": "down",
+        "layers": [
+            {"height": {"type": "minecraft:uniform", "min_inclusive": 2, "max_inclusive": 9},
+             "provider": {"id": rid("hollow_vines_plant")}},
+            {"height": 1, "provider": {"type": "minecraft:randomized_int", "property": "age",
+                                       "source": {"id": rid("hollow_vines"), "properties": {"age": "0"}},
+                                       "values": {"type": "minecraft:uniform", "min_inclusive": 17, "max_inclusive": 25}}},
+        ],
+        "prioritize_tip": True,
+    })
+    placed("deep_hollows_vines", {"feature": rid("hollow_vines"), "placement": [
+        {"type": "minecraft:count", "count": 40},
+        {"type": "minecraft:in_square"},
+        {"type": "minecraft:height_range", "height": {"type": "minecraft:uniform", "min_inclusive": {"absolute": 50},
+                                                      "max_inclusive": {"absolute": 90}}},
+        {"type": "minecraft:biome"},
+        # From a spot in the open under the canopy, up to the leaves; the vine hangs from just under them.
+        {"type": "minecraft:environment_scan", "direction_of_search": "up", "max_steps": 16,
+         "target_condition": {"type": "minecraft:matching_blocks", "blocks": [rid("nullwood_leaves")]},
+         "allowed_search_condition": {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"}},
+        {"type": "minecraft:random_offset", "xz_spread": 0, "y_spread": -1},
+    ]})
+    end_biome("deep_hollows", "Deep Hollows", fog="#150f26", water="#241a44",
+              features_step4=[rid("hollow_isles_upwells")],
+              features_step9=[rid("deep_hollows_nullwood_trees"), rid("deep_hollows_vines"), rid("hollow_isles_voidgel")],
+              particle="minecraft:reverse_portal", particle_chance=0.004)
+
     # ---- The Corona: Sunscorched Stone over Charred End Stone; Solarite; adapted and dead life
     ore("solarite_surface_vein", "solarite_ore", rid("sunscorched_stone"), size=8)
     surface_feature("corona_solarite_surface", "solarite_surface_vein", count=5, y_offset=-3)
@@ -1076,19 +1132,29 @@ def worldgen_phase3():
               features_step9=[rid("chorus_thicket_chorus"), rid("chorus_thicket_starblooms"), rid("chorus_thicket_carpet")],
               particle="minecraft:portal", particle_chance=0.006)
 
-    # ---- Glimmering Crags (Phase 10): jagged Nightstone peaks grown through with smoky violet Glimmer Crystal.
-    # Void Crystal grows here and only here: in the very bottoms of the islands.
+    # ---- Glimmering Crags (Phase 10): the petrified trunks of colossal Nullwood that died long ago,
+    # grown through with smoky violet Glimmer Crystal. Inside the bigger islands, the hollows their roots
+    # left: the End's first caves, sealed and dark, where Void Crystal grows (here and only here) and the
+    # Umbral Stalker hunts.
     big_feature("glimmering_crags_spires", "glimmer_spire", count=2, heightmap="WORLD_SURFACE_WG")
     plant_patch("glimmering_crags_clusters", "glimmer_cluster", rarity=1, count=12, spread=6, on=[rid("nightstone")])
-    feature("void_crystal_underside", {"type": rid("underside"), "kind": "void_crystal"})
-    placed("glimmering_crags_void_crystal", {"feature": rid("void_crystal_underside"), "placement": [
-        {"type": "minecraft:rarity_filter", "chance": 3}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
+    java_feature("root_cave")
+    placed("glimmering_crags_root_caves", {"feature": rid("root_cave"), "placement": [
+        {"type": "minecraft:rarity_filter", "chance": 2}, {"type": "minecraft:biome"}]})
     placed("glimmering_crags_voidgel", {"feature": rid("voidgel_drip"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 2}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
     end_biome("glimmering_crags", "Glimmering Crags", fog="#1c1826", water="#7c7290",
               features_step4=[rid("glimmering_crags_spires")],
-              features_step9=[rid("glimmering_crags_clusters"), rid("glimmering_crags_void_crystal"), rid("glimmering_crags_voidgel")],
+              features_step7=[rid("glimmering_crags_root_caves")],
+              features_step9=[rid("glimmering_crags_clusters"), rid("glimmering_crags_voidgel")],
               particle="minecraft:white_ash", particle_chance=0.004)
+
+    # ---- Shattered Crags (the Crags' variant): a field of fragments, flyable only with an elytra.
+    # Void Rays circle the gaps.
+    plant_patch("shattered_crags_clusters", "glimmer_cluster", rarity=1, count=8, spread=5, on=[rid("nightstone")])
+    end_biome("shattered_crags", "Shattered Crags", fog="#1a1622", water="#7c7290",
+              features_step9=[rid("shattered_crags_clusters"), rid("glimmering_crags_voidgel")],
+              particle="minecraft:white_ash", particle_chance=0.006)
 
 
 # ------------------------------------------------------------------ Phase 4: mobs
@@ -1660,7 +1726,8 @@ def round_out_phase9():
 
 
 
-ASTRAL_BIOMES = ("nebula_fields", "ashen_barrens", "hollow_isles", "corona", "chorus_thicket", "glimmering_crags")
+ASTRAL_BIOMES = ("nebula_fields", "ashen_barrens", "hollow_isles", "corona", "chorus_thicket", "glimmering_crags",
+                "deep_hollows", "shattered_crags")
 
 
 def has_item(item):
@@ -1884,7 +1951,8 @@ def content_phase10():
               "music.glimmering_crags": "music/space_music", "music.outer_end": "music/out_there",
               "music_disc.observing_the_star": "records/observing_the_star"}
     sounds = {event: {"sounds": [{"name": rid(path), "stream": True}]} for event, path in tracks.items()}
-    for biome in ("nebula_fields", "chorus_thicket", "ashen_barrens", "hollow_isles", "corona", "glimmering_crags"):
+    for biome in ("nebula_fields", "chorus_thicket", "ashen_barrens", "hollow_isles", "corona", "glimmering_crags",
+                  "deep_hollows", "shattered_crags"):
         sounds[f"ambient.{biome}.loop"] = {"sounds": [{"name": rid(f"ambient/{biome}/loop"), "stream": True, "volume": 0.6}]}
         sounds[f"ambient.{biome}.additions"] = {"sounds": [{"name": rid(f"ambient/{biome}/additions{i}"), "volume": 0.5}
                                                           for i in range(1, 4)]}
@@ -2017,6 +2085,27 @@ def main():
                                                          "chances": [0.33, 0.55, 0.77, 1.0],
                                                          "enchantment": "minecraft:fortune"},
                  "name": rid("astral_vine")},
+            ]}],
+            "rolls": 1,
+        }])
+    # Hollow Vines (the Deep Hollows): hang down like weeping vines (a head block and a body block).
+    for name, texture in (("hollow_vines", "hollow_vines"), ("hollow_vines_plant", "hollow_vines_plant")):
+        blockstate(name, {"variants": {"": {"model": rid(f"block/{name}")}}})
+        block_model(name, {"parent": "minecraft:block/cross", "textures": {"cross": rid(f"block/{texture}")}})
+    item_model("hollow_vines", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("block/hollow_vines")}})
+    item_def("hollow_vines", rid("item/hollow_vines"))
+    lang[f"block.{NS}.hollow_vines"] = "Hollow Vines"
+    lang[f"block.{NS}.hollow_vines_plant"] = "Hollow Vines Plant"
+    for name in ("hollow_vines", "hollow_vines_plant"):
+        tag("block", "minecraft:climbable", rid(name))
+        loot(name, [{
+            "entries": [{"type": "minecraft:alternatives", "children": [
+                {"type": "minecraft:item", "condition": {"type": "minecraft:any_of", "terms": [
+                    "minecraft:tool/can_shear", "minecraft:tool/can_silk_touch"]}, "name": rid("hollow_vines")},
+                {"type": "minecraft:item", "condition": {"type": "minecraft:table_bonus",
+                                                         "chances": [0.33, 0.55, 0.77, 1.0],
+                                                         "enchantment": "minecraft:fortune"},
+                 "name": rid("hollow_vines")},
             ]}],
             "rolls": 1,
         }])
@@ -2194,7 +2283,7 @@ def main():
     # not from the block's shape. The other motion tags include it. Every solid block of the mod
     # belongs in it, like vanilla's stone, glass, stairs, slabs and walls; plants, vines, carpets
     # and crops don't (vanilla leaves out grass and moss carpet too).
-    not_solid = {"lumineshroom", "starbloom", "astral_vine", "astral_vine_plant", "comet_cress", "shimmer_grass",
+    not_solid = {"lumineshroom", "starbloom", "astral_vine", "astral_vine_plant", "hollow_vines", "hollow_vines_plant", "comet_cress", "shimmer_grass",
                  "flarebloom", "sunscale_lichen", "ashen_lumineshroom", "petrified_astral_vine", "nebula_tufts",
                  "nebula_tendril", "nebula_tendril_plant", "nullwood_leaves", "nullwood_sapling", "shimmer_reed",
                  "null_lantern", "glimmer_cluster", "end_chimes"}

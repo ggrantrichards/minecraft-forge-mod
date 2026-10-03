@@ -11,6 +11,9 @@ package com.ggrantrichards.astralend.world;
 //        nebula noise middle:         belt high -> Hollow Isles, belt low -> the Corona
 //    and between those, vanilla's Highlands/Midlands/Barrens/Small Islands.
 //  - "ruin" noise (the ridges slot): rare peaks inside what would be vanilla -> the Glimmering Crags.
+//  - "variant" noise (the continents slot), faster: patches inside a territory where it turns into its
+//    variant - the Hollow Isles' Deep Hollows, the Glimmering Crags' Shattered Crags. (The Nebula
+//    Fields' variant, the Chorus Tangle, is the older belt split above.)
 public final class AstralRegions {
     public static final double NEBULA = 0.18;
     public static final double COLD = -0.2;
@@ -18,10 +21,21 @@ public final class AstralRegions {
     public static final double MID_BELT = 0.3;     // |belt| beyond this in the middle band
     public static final double THICKET = 0.22;     // belt below -this, in the nebula band
     public static final double CRAGS = 0.45;       // ruin above this, where it would be vanilla
+    public static final double VARIANT = 0.2;      // variant above this: a territory's variant
 
-    public enum Region { VANILLA, NEBULA_FIELDS, CHORUS_THICKET, ASHEN_BARRENS, HOLLOW_ISLES, CORONA, GLIMMERING_CRAGS }
+    public enum Region { VANILLA, NEBULA_FIELDS, CHORUS_THICKET, ASHEN_BARRENS, HOLLOW_ISLES, CORONA, GLIMMERING_CRAGS,
+        DEEP_HOLLOWS, SHATTERED_CRAGS }
 
-    public static Region pick(double nebula, double belt, double ruin) {
+    public static Region pick(double nebula, double belt, double ruin, double variant) {
+        Region region = pick(nebula, belt, ruin);
+        if (variant > VARIANT) {
+            if (region == Region.HOLLOW_ISLES) return Region.DEEP_HOLLOWS;
+            if (region == Region.GLIMMERING_CRAGS) return Region.SHATTERED_CRAGS;
+        }
+        return region;
+    }
+
+    private static Region pick(double nebula, double belt, double ruin) {
         if (nebula > NEBULA) {
             return belt < -THICKET ? Region.CHORUS_THICKET : Region.NEBULA_FIELDS;
         }

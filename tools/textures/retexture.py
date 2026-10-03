@@ -250,6 +250,11 @@ def nullwood(name, kind="block"):
     return lambda: gradient(vanilla(name, kind), *NULL)
 
 
+def hollow_vines(name):
+    """The Deep Hollows' hanging vines: weeping vines in the forest's black violet."""
+    return lambda: gradient(vanilla(name), "120a20", "33245a", "5e4a9c")
+
+
 def nullwood_leaves():
     return gradient(vanilla("dark_oak_leaves"), "160f2a", "33265e", "6a54b0")
 
@@ -373,6 +378,8 @@ TEXTURES = [
     ("block/nullwood_trapdoor.png", nullwood("dark_oak_trapdoor")),
     ("item/nullwood_door.png", nullwood("dark_oak_door", "item")),
     ("block/nullwood_leaves.png", nullwood_leaves),
+    ("block/hollow_vines.png", hollow_vines("weeping_vines")),
+    ("block/hollow_vines_plant.png", hollow_vines("weeping_vines_plant")),
     ("block/pale_end_stone_bricks.png", pale_end_stone_bricks),
     ("block/sunscorched_stone_bricks.png", sunscorched_stone_bricks),
     ("block/polished_sunscorched_stone.png", polished_sunscorched_stone),

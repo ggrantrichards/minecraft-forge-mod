@@ -32,7 +32,9 @@ public class AstralEndBiomeSource extends BiomeSource {
                 RegistryOps.retrieveElement(ModBiomes.HOLLOW_ISLES),
                 RegistryOps.retrieveElement(ModBiomes.CORONA),
                 RegistryOps.retrieveElement(ModBiomes.CHORUS_THICKET),
-                RegistryOps.retrieveElement(ModBiomes.GLIMMERING_CRAGS)
+                RegistryOps.retrieveElement(ModBiomes.GLIMMERING_CRAGS),
+                RegistryOps.retrieveElement(ModBiomes.DEEP_HOLLOWS),
+                RegistryOps.retrieveElement(ModBiomes.SHATTERED_CRAGS)
             )
             .apply(i, i.stable(AstralEndBiomeSource::new))
     );
@@ -51,11 +53,14 @@ public class AstralEndBiomeSource extends BiomeSource {
     private final Holder<Biome> corona;
     private final Holder<Biome> chorusThicket;
     private final Holder<Biome> glimmeringCrags;
+    private final Holder<Biome> deepHollows;
+    private final Holder<Biome> shatteredCrags;
 
     private AstralEndBiomeSource(Holder<Biome> end, Holder<Biome> highlands, Holder<Biome> midlands,
                                  Holder<Biome> islands, Holder<Biome> barrens, Holder<Biome> nebulaFields,
                                  Holder<Biome> ashenBarrens, Holder<Biome> hollowIsles,
-                                 Holder<Biome> corona, Holder<Biome> chorusThicket, Holder<Biome> glimmeringCrags) {
+                                 Holder<Biome> corona, Holder<Biome> chorusThicket, Holder<Biome> glimmeringCrags,
+                                 Holder<Biome> deepHollows, Holder<Biome> shatteredCrags) {
         this.end = end;
         this.highlands = highlands;
         this.midlands = midlands;
@@ -67,13 +72,15 @@ public class AstralEndBiomeSource extends BiomeSource {
         this.corona = corona;
         this.chorusThicket = chorusThicket;
         this.glimmeringCrags = glimmeringCrags;
+        this.deepHollows = deepHollows;
+        this.shatteredCrags = shatteredCrags;
     }
 
     @Override
     protected Stream<Holder<Biome>> collectPossibleBiomes() {
         return Stream.of(this.end, this.highlands, this.midlands, this.islands, this.barrens, this.nebulaFields,
             this.ashenBarrens, this.hollowIsles, this.corona, this.chorusThicket,
-            this.glimmeringCrags);
+            this.glimmeringCrags, this.deepHollows, this.shatteredCrags);
     }
 
     @Override
@@ -107,6 +114,8 @@ public class AstralEndBiomeSource extends BiomeSource {
             case CORONA: return this.corona;
             case CHORUS_THICKET: return this.chorusThicket;
             case GLIMMERING_CRAGS: return this.glimmeringCrags;
+            case DEEP_HOLLOWS: return this.deepHollows;
+            case SHATTERED_CRAGS: return this.shatteredCrags;
             case VANILLA: break;
         }
         // Vanilla's outer-End choice, unchanged.
@@ -149,6 +158,7 @@ public class AstralEndBiomeSource extends BiomeSource {
     public static AstralRegions.Region region(Climate.Sampler sampler, int blockX, int blockZ) {
         return AstralRegions.pick(sampler.temperature().sampleValue(blockX, 0, blockZ),
             sampler.humidity().sampleValue(blockX, 0, blockZ),
-            sampler.weirdness().sampleValue(blockX, 0, blockZ));
+            sampler.weirdness().sampleValue(blockX, 0, blockZ),
+            sampler.continentalness().sampleValue(blockX, 0, blockZ));
     }
 }

@@ -10,8 +10,8 @@
   },
   "noise_router": {
     "chunk_surface_level": 0.0,
-    "continents": 0.0,
     "depth": 0.0,
+    "continents": "astralend:region/variant",
     "erosion": "minecraft:end/islands",
     "final_density": {
       "type": "minecraft:add",

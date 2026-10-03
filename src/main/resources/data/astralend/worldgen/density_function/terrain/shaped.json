@@ -1,31 +1,36 @@
 {
   "type": "minecraft:lerp",
-  "alpha": "astralend:terrain/weight/glimmering_crags",
+  "alpha": "astralend:terrain/weight/shattered_crags",
   "first": {
     "type": "minecraft:lerp",
-    "alpha": "astralend:terrain/weight/ashen_barrens",
+    "alpha": "astralend:terrain/weight/glimmering_crags",
     "first": {
       "type": "minecraft:lerp",
-      "alpha": "astralend:terrain/weight/hollow_isles",
+      "alpha": "astralend:terrain/weight/ashen_barrens",
       "first": {
         "type": "minecraft:lerp",
-        "alpha": "astralend:terrain/weight/corona",
+        "alpha": "astralend:terrain/weight/hollow_isles",
         "first": {
           "type": "minecraft:lerp",
-          "alpha": "astralend:terrain/weight/chorus_thicket",
+          "alpha": "astralend:terrain/weight/corona",
           "first": {
             "type": "minecraft:lerp",
-            "alpha": "astralend:terrain/weight/nebula_fields",
-            "first": "minecraft:end/sloped_cheese",
-            "second": "astralend:terrain/nebula_fields"
+            "alpha": "astralend:terrain/weight/chorus_thicket",
+            "first": {
+              "type": "minecraft:lerp",
+              "alpha": "astralend:terrain/weight/nebula_fields",
+              "first": "minecraft:end/sloped_cheese",
+              "second": "astralend:terrain/nebula_fields"
+            },
+            "second": "astralend:terrain/chorus_thicket"
           },
-          "second": "astralend:terrain/chorus_thicket"
+          "second": "astralend:terrain/corona"
         },
-        "second": "astralend:terrain/corona"
+        "second": "astralend:terrain/hollow_isles"
       },
-      "second": "astralend:terrain/hollow_isles"
+      "second": "astralend:terrain/ashen_barrens"
     },
-    "second": "astralend:terrain/ashen_barrens"
+    "second": "astralend:terrain/glimmering_crags"
   },
-  "second": "astralend:terrain/glimmering_crags"
+  "second": "astralend:terrain/shattered_crags"
 }

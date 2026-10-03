@@ -99,6 +99,34 @@
           }
         }
       }
+    },
+    "deep_hollows": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "biomes": "astralend:deep_hollows"
+            }
+          }
+        }
+      }
+    },
+    "shattered_crags": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "biomes": "astralend:shattered_crags"
+            }
+          }
+        }
+      }
     }
   },
   "requirements": [
@@ -108,7 +136,9 @@
       "hollow_isles",
       "corona",
       "chorus_thicket",
-      "glimmering_crags"
+      "glimmering_crags",
+      "deep_hollows",
+      "shattered_crags"
     ]
   ]
 }

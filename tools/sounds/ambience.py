@@ -1,7 +1,7 @@
 """Each biome's ambience, synthesised from scratch: a seamless background loop, and a few short sounds
 the game drops in now and then ("additions"), as vanilla's Nether biomes have.
 
-    python3 tools/sounds/ambience.py     -> src/main/resources/assets/astralend/sounds/ambient/<biome>/*.ogg
+    python3 tools/sounds/ambience.py [biome...]   -> src/main/resources/assets/astralend/sounds/ambient/<biome>/*.ogg
 
 Needs numpy, scipy and ffmpeg (FFMPEG names another binary). Quiet by design: ambience sits under
 everything else.
@@ -138,6 +138,26 @@ def loop_crags(rnd):
     return out
 
 
+def loop_deep_hollows(rnd):
+    """The Hollow Isles' hum, lower and closer, with the forest's slow creak under it."""
+    n = (LOOP_SECONDS + 2) * RATE
+    t = np.arange(n) / RATE
+    hum = (np.sin(2 * np.pi * 33.0 * t) + 0.8 * np.sin(2 * np.pi * 33.5 * t) + 0.3 * np.sin(2 * np.pi * 66.2 * t)) * 0.45
+    void = low(rnd.normal(0, 1, n), 220) * 2.4 * slow(rnd, n, 0.06, 0.85)
+    return hum * slow(rnd, n, 0.04, 0.5) + void
+
+
+def loop_shattered(rnd):
+    """Wind through the gaps between the fragments, and now and then a far crystal note."""
+    n = (LOOP_SECONDS + 2) * RATE
+    gusts = slow(rnd, n, 0.3, 0.95) ** 2
+    out = band(rnd.normal(0, 1, n), 250, 2200) * gusts * 0.5
+    for _ in range(int(LOOP_SECONDS * 0.3)):
+        f = rnd.choice([392.0, 523.3, 587.3, 784.0])
+        place(out, tone(f, 4.0, 1.4, rnd, ((1, 1.0), (2.76, 0.3))) * rnd.uniform(0.03, 0.08), rnd.integers(0, n - 2 * RATE))
+    return out
+
+
 # ---- additions: short sounds dropped in now and then
 
 def chime(rnd):
@@ -183,6 +203,8 @@ BIOMES = {
     "hollow_isles": (loop_hollow, moan),
     "corona": (loop_corona, fizz),
     "glimmering_crags": (loop_crags, chime),
+    "deep_hollows": (loop_deep_hollows, creak),
+    "shattered_crags": (loop_shattered, chime),
 }
 
 
@@ -201,8 +223,10 @@ def write_ogg(x, path, peak_db):
     os.unlink(tmp.name)
 
 
-def main():
+def main(only=()):
     for i, (biome, (loop, addition)) in enumerate(BIOMES.items()):
+        if only and biome not in only:
+            continue
         rnd = np.random.default_rng(100 + i)
         folder = OUT / biome
         folder.mkdir(parents=True, exist_ok=True)
@@ -213,4 +237,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(sys.argv[1:])     # name biomes to write only those

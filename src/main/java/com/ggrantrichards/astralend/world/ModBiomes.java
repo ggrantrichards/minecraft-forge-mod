@@ -16,6 +16,9 @@ public final class ModBiomes {
     public static final ResourceKey<Biome> CORONA = key("corona");
     public static final ResourceKey<Biome> CHORUS_THICKET = key("chorus_thicket");
     public static final ResourceKey<Biome> GLIMMERING_CRAGS = key("glimmering_crags");
+    // The distillation's variants: denser, darker Hollow Isles, and the Crags broken into fragments.
+    public static final ResourceKey<Biome> DEEP_HOLLOWS = key("deep_hollows");
+    public static final ResourceKey<Biome> SHATTERED_CRAGS = key("shattered_crags");
 
     // Biomes with low gravity. Datapacks can empty this tag to turn low gravity off.
     public static final TagKey<Biome> LOW_GRAVITY = TagKey.create(Registries.BIOME, id("low_gravity"));

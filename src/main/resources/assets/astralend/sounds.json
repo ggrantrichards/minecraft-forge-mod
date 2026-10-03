@@ -189,6 +189,56 @@
       }
     ]
   },
+  "ambient.deep_hollows.loop": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/deep_hollows/loop",
+        "stream": true,
+        "volume": 0.6
+      }
+    ]
+  },
+  "ambient.deep_hollows.additions": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/deep_hollows/additions1",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/deep_hollows/additions2",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/deep_hollows/additions3",
+        "volume": 0.5
+      }
+    ]
+  },
+  "ambient.shattered_crags.loop": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/shattered_crags/loop",
+        "stream": true,
+        "volume": 0.6
+      }
+    ]
+  },
+  "ambient.shattered_crags.additions": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/shattered_crags/additions1",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/shattered_crags/additions2",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/shattered_crags/additions3",
+        "volume": 0.5
+      }
+    ]
+  },
   "entity.spire_wyrm.roar": {
     "subtitle": "subtitles.astralend.entity.spire_wyrm.roar",
     "sounds": [

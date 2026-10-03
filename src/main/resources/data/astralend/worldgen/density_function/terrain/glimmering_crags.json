@@ -89,7 +89,7 @@
                 "left": {
                   "type": "minecraft:add",
                   "left": "astralend:terrain/mask",
-                  "right": 0.04
+                  "right": -0.02
                 },
                 "right": 110.0
               },

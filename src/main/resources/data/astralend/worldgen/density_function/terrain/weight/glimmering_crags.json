@@ -4,27 +4,86 @@
   "right": {
     "type": "minecraft:mul",
     "left": {
-      "type": "minecraft:sub",
+      "type": "minecraft:mul",
       "left": {
         "type": "minecraft:sub",
         "left": {
           "type": "minecraft:sub",
           "left": {
             "type": "minecraft:sub",
-            "left": 1.0,
+            "left": {
+              "type": "minecraft:sub",
+              "left": 1.0,
+              "right": {
+                "type": "minecraft:clamp",
+                "input": {
+                  "type": "minecraft:mul",
+                  "left": {
+                    "type": "minecraft:add",
+                    "left": "astralend:region/nebula",
+                    "right": -0.15
+                  },
+                  "right": 16.666666666666668
+                },
+                "min": 0.0,
+                "max": 1.0
+              }
+            },
             "right": {
-              "type": "minecraft:clamp",
-              "input": {
+              "type": "minecraft:mul",
+              "left": {
                 "type": "minecraft:mul",
                 "left": {
-                  "type": "minecraft:add",
-                  "left": "astralend:region/nebula",
-                  "right": -0.15
+                  "type": "minecraft:clamp",
+                  "input": {
+                    "type": "minecraft:mul",
+                    "left": {
+                      "type": "minecraft:add",
+                      "left": {
+                        "type": "minecraft:mul",
+                        "left": "astralend:region/nebula",
+                        "right": -1.0
+                      },
+                      "right": -0.17
+                    },
+                    "right": 16.666666666666668
+                  },
+                  "min": 0.0,
+                  "max": 1.0
                 },
-                "right": 16.666666666666668
+                "right": {
+                  "type": "minecraft:sub",
+                  "left": 1.0,
+                  "right": {
+                    "type": "minecraft:clamp",
+                    "input": {
+                      "type": "minecraft:mul",
+                      "left": {
+                        "type": "minecraft:add",
+                        "left": "astralend:region/nebula",
+                        "right": -0.15
+                      },
+                      "right": 16.666666666666668
+                    },
+                    "min": 0.0,
+                    "max": 1.0
+                  }
+                }
               },
-              "min": 0.0,
-              "max": 1.0
+              "right": {
+                "type": "minecraft:clamp",
+                "input": {
+                  "type": "minecraft:mul",
+                  "left": {
+                    "type": "minecraft:add",
+                    "left": "astralend:region/belt",
+                    "right": -0.17
+                  },
+                  "right": 16.666666666666668
+                },
+                "min": 0.0,
+                "max": 1.0
+              }
             }
           },
           "right": {
@@ -37,12 +96,8 @@
                   "type": "minecraft:mul",
                   "left": {
                     "type": "minecraft:add",
-                    "left": {
-                      "type": "minecraft:mul",
-                      "left": "astralend:region/nebula",
-                      "right": -1.0
-                    },
-                    "right": -0.17
+                    "left": "astralend:region/nebula",
+                    "right": 0.23
                   },
                   "right": 16.666666666666668
                 },
@@ -75,7 +130,7 @@
                 "left": {
                   "type": "minecraft:add",
                   "left": "astralend:region/belt",
-                  "right": -0.17
+                  "right": -0.27
                 },
                 "right": 16.666666666666668
               },
@@ -127,7 +182,11 @@
               "type": "minecraft:mul",
               "left": {
                 "type": "minecraft:add",
-                "left": "astralend:region/belt",
+                "left": {
+                  "type": "minecraft:mul",
+                  "left": "astralend:region/belt",
+                  "right": -1.0
+                },
                 "right": -0.27
               },
               "right": 16.666666666666668
@@ -138,75 +197,37 @@
         }
       },
       "right": {
-        "type": "minecraft:mul",
-        "left": {
+        "type": "minecraft:clamp",
+        "input": {
           "type": "minecraft:mul",
           "left": {
-            "type": "minecraft:clamp",
-            "input": {
-              "type": "minecraft:mul",
-              "left": {
-                "type": "minecraft:add",
-                "left": "astralend:region/nebula",
-                "right": 0.23
-              },
-              "right": 16.666666666666668
-            },
-            "min": 0.0,
-            "max": 1.0
+            "type": "minecraft:add",
+            "left": "astralend:region/ruin",
+            "right": -0.42000000000000004
           },
-          "right": {
-            "type": "minecraft:sub",
-            "left": 1.0,
-            "right": {
-              "type": "minecraft:clamp",
-              "input": {
-                "type": "minecraft:mul",
-                "left": {
-                  "type": "minecraft:add",
-                  "left": "astralend:region/nebula",
-                  "right": -0.15
-                },
-                "right": 16.666666666666668
-              },
-              "min": 0.0,
-              "max": 1.0
-            }
-          }
+          "right": 16.666666666666668
         },
-        "right": {
-          "type": "minecraft:clamp",
-          "input": {
-            "type": "minecraft:mul",
-            "left": {
-              "type": "minecraft:add",
-              "left": {
-                "type": "minecraft:mul",
-                "left": "astralend:region/belt",
-                "right": -1.0
-              },
-              "right": -0.27
-            },
-            "right": 16.666666666666668
-          },
-          "min": 0.0,
-          "max": 1.0
-        }
+        "min": 0.0,
+        "max": 1.0
       }
     },
     "right": {
-      "type": "minecraft:clamp",
-      "input": {
-        "type": "minecraft:mul",
-        "left": {
-          "type": "minecraft:add",
-          "left": "astralend:region/ruin",
-          "right": -0.42000000000000004
+      "type": "minecraft:sub",
+      "left": 1.0,
+      "right": {
+        "type": "minecraft:clamp",
+        "input": {
+          "type": "minecraft:mul",
+          "left": {
+            "type": "minecraft:add",
+            "left": "astralend:region/variant",
+            "right": -0.17
+          },
+          "right": 16.666666666666668
         },
-        "right": 16.666666666666668
-      },
-      "min": 0.0,
-      "max": 1.0
+        "min": 0.0,
+        "max": 1.0
+      }
     }
   }
 }

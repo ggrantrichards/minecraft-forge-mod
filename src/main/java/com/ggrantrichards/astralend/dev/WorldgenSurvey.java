@@ -65,7 +65,10 @@ public final class WorldgenSurvey {
         new BiomeInfo(ModBiomes.GLIMMERING_CRAGS, 'G', "Glimmering Crags", 1, 15, 3),
         new BiomeInfo(ModBiomes.ASHEN_BARRENS, 'A', "Ashen Barrens", 3, 25, 3),
         new BiomeInfo(ModBiomes.HOLLOW_ISLES, 'D', "Hollow Isles", 2, 20, 3),
-        new BiomeInfo(ModBiomes.CORONA, 'C', "The Corona", 2, 20, 3));
+        new BiomeInfo(ModBiomes.CORONA, 'C', "The Corona", 2, 20, 3),
+        // The distillation's variants: patches inside their parents' territories.
+        new BiomeInfo(ModBiomes.DEEP_HOLLOWS, 'V', "Deep Hollows", 0.2, 12, 3),
+        new BiomeInfo(ModBiomes.SHATTERED_CRAGS, 'X', "Shattered Crags", 0.1, 8, 3));
 
     public static void register() {
         if (Boolean.getBoolean("astralend.survey")) {
@@ -192,7 +195,8 @@ public final class WorldgenSurvey {
         log("Biome map of the End, " + (2 * MAP_RADIUS) + " x " + (2 * MAP_RADIUS) + " blocks, north up, one character = "
             + MAP_STEP + " blocks:");
         log("  O central island   N Nebula Fields   A Ashen Barrens   D Hollow Isles   "
-            + "C The Corona   T Chorus Thicket   G Glimmering Crags   H/M/B/s vanilla Highlands/Midlands/Barrens/Small Islands");
+            + "C The Corona   T Chorus Tangle   G Glimmering Crags   V Deep Hollows   X Shattered Crags   "
+            + "H/M/B/s vanilla Highlands/Midlands/Barrens/Small Islands");
         Map<Character, Integer> outerCounts = new HashMap<>();
         Map<Character, Integer> runs = new HashMap<>();
         Map<Character, Integer> continued = new HashMap<>();
@@ -233,7 +237,7 @@ public final class WorldgenSurvey {
             log("  " + row);
         }
         StringBuilder shares = new StringBuilder("Outer End (beyond 1,100 blocks):");
-        for (char c : "NAWDRCHMBs".toCharArray()) {
+        for (char c : "NATDVCGXHMBs".toCharArray()) {
             shares.append(String.format(" %c %.1f%%", c, 100.0 * outerCounts.getOrDefault(c, 0) / Math.max(1, outerTotal)));
         }
         log(shares.toString());
@@ -301,7 +305,9 @@ public final class WorldgenSurvey {
         checkHollowIsles(areas.get('D'), end, failures);
         checkCorona(areas.get('C'), failures);
         checkThicket(areas.get('T'), failures);
-        checkCrags(areas.get('G'), failures);
+        checkCrags(areas.get('G'), end, failures);
+        checkDeepHollows(areas.get('V'), failures);
+        checkShatteredCrags(areas.get('X'), failures);
         checkLowGravity(areas.get('N'), vanillaSpot, end, failures);
         checkMobs(areas, end, failures);
     }
@@ -312,7 +318,7 @@ public final class WorldgenSurvey {
         record Home(net.minecraft.world.entity.EntityType<?> type, char biome) {}
         List<Home> homes = List.of(
             new Home(ModEntities.POLLINATOR.get(), 'N'), new Home(ModEntities.VOID_WANDERER.get(), 'D'),
-            new Home(ModEntities.UMBRAL_STALKER.get(), 'D'), new Home(ModEntities.VOID_RAY.get(), 'C'),
+            new Home(ModEntities.UMBRAL_STALKER.get(), 'G'), new Home(ModEntities.VOID_RAY.get(), 'C'),
             new Home(ModEntities.DRIFT_WHALE.get(), 'A'), new Home(ModEntities.WATCHER.get(), 'N'),
             new Home(ModEntities.SPIRE_WYRM.get(), 'G'));
         for (Home home : homes) {
@@ -826,6 +832,8 @@ public final class WorldgenSurvey {
         final List<BlockPos> anomalies = new ArrayList<>();
         final List<String> profiles = new ArrayList<>();
         int decayingLeaves;
+        int caveAir;                                         // sealed cave air (the Crags' root hollows)
+        final List<BlockPos> caveFloors = new ArrayList<>();  // cave air with rock under it
         BlockPos standOn;
         int columnsIn;
         int landColumnsIn;
@@ -909,6 +917,13 @@ public final class WorldgenSurvey {
                                 } else if (state.isAir() && runTop != Integer.MIN_VALUE) {
                                     profile.append(' ').append(runTop).append('-').append(y + 1);
                                     runTop = Integer.MIN_VALUE;
+                                }
+                            }
+                            if (state.is(Blocks.CAVE_AIR) && inside) {
+                                area.caveAir++;
+                                if (area.caveFloors.size() < 400 && !chunk.getBlockState(pos.below()).isAir()
+                                    && chunk.getBlockState(pos.above()).isAir()) {
+                                    area.caveFloors.add(pos);
                                 }
                             }
                             if (state.isAir()) {
@@ -1006,7 +1021,7 @@ public final class WorldgenSurvey {
         if (!enoughLand(area, failures)) {
             return;
         }
-        landCoverage(area, 45, failures);
+        landCoverage(area, 30, failures);
         atLeast(area, ModBlocks.LUMINE_STEM.get(), 2, failures);       // giant Lumineshroom stemss
         atLeast(area, ModBlocks.LUMINE_CAP.get(), 8, failures);
         atLeast(area, ModBlocks.NEBULA_TUFTS.get(), 20, failures);
@@ -1039,7 +1054,7 @@ public final class WorldgenSurvey {
             return;
         }
         replacesEndStone(area, ModBlocks.PALE_END_STONE.get(), failures);
-        landCoverage(area, 40, failures);
+        landCoverage(area, 25, failures);
         atLeast(area, ModBlocks.SHIMMER_GRASS.get(), 15, failures);
         atLeast(area, ModBlocks.SHIMMER_REED.get(), 1, failures);
         atLeast(area, ModBlocks.PALE_END_STONE_BRICKS.get(), 0.05, failures);  // standing stones
@@ -1071,8 +1086,10 @@ public final class WorldgenSurvey {
         }
     }
 
-    // Phase 10: Nightstone peaks grown through with Glimmer Crystal; Void Crystal under the islands.
-    private static void checkCrags(Area area, List<String> failures) {
+    // Phase 10: Nightstone peaks grown through with Glimmer Crystal. The distillation: root caves inside
+    // the bigger islands, sealed (no daylight reaches them), where Void Crystal grows and the Umbral
+    // Stalker - and only the Stalker - can spawn.
+    private static void checkCrags(Area area, ServerLevel end, List<String> failures) {
         if (!enoughLand(area, failures)) {
             return;
         }
@@ -1080,6 +1097,58 @@ public final class WorldgenSurvey {
         atLeast(area, ModBlocks.GLIMMER_CRYSTAL.get(), 10, failures);
         atLeast(area, ModBlocks.GLIMMER_CLUSTER.get(), 1, failures);
         atLeast(area, ModBlocks.VOID_CRYSTAL_ORE.get(), 0.05, failures);
+        log(String.format("Glimmering Crags: %d blocks of root cave (%.0f per chunk of land), %d cave floors", area.caveAir,
+            area.caveAir / Math.max(1.0, area.landChunks()), area.caveFloors.size()));
+        if (area.caveAir < 40 * Math.max(1.0, area.landChunks()) / 4) {
+            failures.add(String.format("Glimmering Crags: hardly any root caves (%d blocks of cave air)", area.caveAir));
+        }
+        // The Stalker's spawn rule, asked where the game would ask it: dark cave floors yes, open ground no.
+        var stalker = ModEntities.UMBRAL_STALKER.get();
+        int caveYes = 0, tried = 0;
+        for (BlockPos floor : area.caveFloors) {
+            if (end.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, floor) > 0) {
+                continue;
+            }
+            tried++;
+            if (net.minecraft.world.entity.SpawnPlacements.checkSpawnRules(stalker, end,
+                    net.minecraft.world.entity.EntitySpawnReason.NATURAL, floor, end.getRandom())) {
+                caveYes++;
+            }
+            if (tried >= 40) {
+                break;
+            }
+        }
+        boolean openNo = area.standOn == null || !net.minecraft.world.entity.SpawnPlacements.checkSpawnRules(stalker, end,
+            net.minecraft.world.entity.EntitySpawnReason.NATURAL, area.standOn, end.getRandom());
+        log(String.format("Umbral Stalker spawn rule: %d of %d dark cave floors allow it; open ground %s", caveYes, tried,
+            openNo ? "doesn't" : "DOES"));
+        if (caveYes == 0 || !openNo) {
+            failures.add("Umbral Stalker: it should spawn on dark cave floors in the Crags (" + caveYes + "/" + tried
+                + ") and never on open ground (" + (openNo ? "ok" : "it does") + ")");
+        }
+    }
+
+    // The Hollow Isles' variant: the forest closes in, Hollow Vines hanging to the ground.
+    private static void checkDeepHollows(Area area, List<String> failures) {
+        if (!enoughLand(area, failures)) {
+            return;
+        }
+        replacesEndStone(area, ModBlocks.NIGHTSTONE.get(), failures);
+        atLeast(area, ModBlocks.NULLWOOD.log().get(), 25, failures);
+        atLeast(area, ModBlocks.HOLLOW_VINES_PLANT.get(), 3, failures);
+    }
+
+    // The Crags' variant: fragments, mostly void between them.
+    private static void checkShatteredCrags(Area area, List<String> failures) {
+        if (!enoughLand(area, failures)) {
+            return;
+        }
+        replacesEndStone(area, ModBlocks.NIGHTSTONE.get(), failures);
+        double land = 100.0 * area.landColumnsIn / Math.max(1, area.columnsIn);
+        log(String.format("Shattered Crags: land under %.0f%% of the biome", land));
+        if (land > 55) {
+            failures.add(String.format("Shattered Crags: %.0f%% of it is land (expected fragments with wide gaps, under 55%%)", land));
+        }
     }
 
     private static void checkHollowIsles(Area area, ServerLevel end, List<String> failures) {
@@ -1129,7 +1198,7 @@ public final class WorldgenSurvey {
             failures.add("The Corona: only " + scorchedTops + " of " + area.landColumnsIn + " land columns are topped with its scorched ground");
         }
         replacesEndStone(area, ModBlocks.CHARRED_END_STONE.get(), failures);
-        landCoverage(area, 45, failures);
+        landCoverage(area, 30, failures);
         atLeast(area, ModBlocks.PETRIFIED_STALK.get(), 2, failures);
         atLeast(area, ModBlocks.SOLARITE_ORE.get(), 1, failures);
         atLeast(area, ModBlocks.FLAREBLOOM.get(), 2, failures);
@@ -1222,6 +1291,8 @@ public final class WorldgenSurvey {
         if (biome.is(ModBiomes.CORONA)) return 'C';
         if (biome.is(ModBiomes.CHORUS_THICKET)) return 'T';
         if (biome.is(ModBiomes.GLIMMERING_CRAGS)) return 'G';
+        if (biome.is(ModBiomes.DEEP_HOLLOWS)) return 'V';
+        if (biome.is(ModBiomes.SHATTERED_CRAGS)) return 'X';
         if (biome.is(Biomes.THE_END)) return 'O';
         if (biome.is(Biomes.END_HIGHLANDS)) return 'H';
         if (biome.is(Biomes.END_MIDLANDS)) return 'M';

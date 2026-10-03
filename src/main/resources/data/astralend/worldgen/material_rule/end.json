@@ -53,6 +53,32 @@
       "if_true": {
         "type": "minecraft:biome",
         "biome_is": [
+          "astralend:shattered_crags"
+        ]
+      },
+      "then_run": {
+        "type": "minecraft:block",
+        "result_state": "astralend:nightstone"
+      }
+    },
+    {
+      "type": "minecraft:condition",
+      "if_true": {
+        "type": "minecraft:biome",
+        "biome_is": [
+          "astralend:deep_hollows"
+        ]
+      },
+      "then_run": {
+        "type": "minecraft:block",
+        "result_state": "astralend:nightstone"
+      }
+    },
+    {
+      "type": "minecraft:condition",
+      "if_true": {
+        "type": "minecraft:biome",
+        "biome_is": [
           "astralend:ashen_barrens"
         ]
       },

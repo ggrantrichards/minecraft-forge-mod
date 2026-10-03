@@ -49,6 +49,8 @@ public final class ModWorldgen {
         FEATURE_TYPES.register("scorch_fissure", () -> com.ggrantrichards.astralend.world.feature.ScorchFissureFeature.CODEC);
         FEATURE_TYPES.register("oasis", () -> com.ggrantrichards.astralend.world.feature.OasisFeature.CODEC);
         FEATURE_TYPES.register("underside", () -> com.ggrantrichards.astralend.world.feature.UndersideFeature.CODEC);
+        // The distillation
+        FEATURE_TYPES.register("root_cave", () -> com.ggrantrichards.astralend.world.feature.RootCaveFeature.CODEC);
     }
 
     // Phase 6: structures that check the ground before they start (see IslandStructure).
