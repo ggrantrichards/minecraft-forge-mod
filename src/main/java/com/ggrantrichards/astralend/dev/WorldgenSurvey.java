@@ -293,6 +293,8 @@ public final class WorldgenSurvey {
             PolishSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log);         // Phase 9
             MechanicsSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log);      // Phase 10
             MechanicsSurvey.checkContent(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
+            MechanicsSurvey.checkSpawnEggs(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
+            MechanicsSurvey.checkHandBuiltPortal(end, failures, WorldgenSurvey::log);
         }
         writeViewpoints(areas, end, structures);
         checkNebula(areas.get('N'), failures);

@@ -40,10 +40,18 @@ public class UmbralStalkerRenderer extends MobRenderer<UmbralStalker, UmbralStal
     }
 
     // Dormant in the dark: not drawn at all. Hunting: a faint shimmer (about 12% opaque). Revealed:
-    // fully visible.
+    // fully visible. A player in creative or spectator mode always sees it half-shown, the way they
+    // see barriers and light blocks - otherwise one from a spawn egg seems never to have appeared.
     @Override
     protected int getModelTint(State state) {
-        return state.revealed ? 0xFFFFFFFF : state.hunting ? 0x1FFFFFFF : 0x00FFFFFF;
+        if (state.revealed) {
+            return 0xFFFFFFFF;
+        }
+        var player = net.minecraft.client.Minecraft.getInstance().player;
+        if (player != null && (player.isCreative() || player.isSpectator())) {
+            return 0x88FFFFFF;
+        }
+        return state.hunting ? 0x1FFFFFFF : 0x00FFFFFF;
     }
 
     public static class State extends LivingEntityRenderState {
