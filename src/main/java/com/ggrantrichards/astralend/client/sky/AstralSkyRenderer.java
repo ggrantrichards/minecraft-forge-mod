@@ -44,18 +44,15 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-// The End's sky. Draws vanilla's End sky first, then on top of it, far away like the sun and moon:
+// The End's sky. Draws vanilla's End sky first - black and starless, as it should stay - and adds:
 //
-//   - a starfield in two layers: one fixed, one turning so slowly (once in 40 minutes) you only notice
-//     after a while;
-//   - auroras: slow curtains of light, strongest over the Ashen Barrens (green and gold), faint violet
-//     over the Nebula Fields; none in the Hollow Isles;
-//   - the Remnant, the cinder of the collapsed star, hanging over the nearest Corona (the server tells us
-//     where; it's a real structure, and close up the real one takes over). It brightens before a
-//     Sunstorm and blazes during one;
-//   - in the Corona during a flare: the sky turns gold and sheets of light roll across it on the wind;
-//   - now and then a far-off comet streaks past, and very rarely something huge - a whale, a ring - drifts
-//     across the far sky.
+//   - everywhere: now and then a void streak, a faint pale line falling down the far sky;
+//   - only over the Corona (the Eclipse to be), the astral sky, fading in over 10-15 blocks as you
+//     cross into it: a starfield in two layers (one fixed, one turning once in 40 minutes), the
+//     constellations, green and gold auroras, the Remnant (the cinder of the collapsed star; it's a real
+//     structure, and close up the real one takes over), a far-off comet now and then, and very rarely
+//     something huge - a whale, a ring - drifting across;
+//   - in the Corona during a Sunstorm: the sky turns gold and sheets of light roll across it.
 //
 // Nothing here is an entity or touches the world; it's all a few hundred quads a frame.
 public class AstralSkyRenderer extends SkyRenderer {
@@ -149,19 +146,13 @@ public class AstralSkyRenderer extends SkyRenderer {
     }
 
     // The auroras of a biome: strength, then two colours (r, g, b each).
+    // The distillation: the End's sky stays vanilla's, black and starless - auroras (like the stars,
+    // the constellations and the Remnant) only show over the Corona, the Eclipse to be.
     private static void auroraFor(Holder<Biome> biome, float[] t) {
-        if (biome.is(ModBiomes.ASHEN_BARRENS)) {
+        if (biome.is(ModBiomes.CORONA)) {
             set(t, 1.0F, 0.35F, 1.0F, 0.6F, 1.0F, 0.82F, 0.35F);
-        } else if (biome.is(ModBiomes.NEBULA_FIELDS)) {
-            set(t, 0.55F, 0.7F, 0.45F, 1.0F, 1.0F, 0.5F, 0.85F);
-        } else if (biome.is(ModBiomes.CHORUS_THICKET)) {
-            set(t, 0.45F, 0.95F, 0.5F, 1.0F, 1.0F, 0.75F, 0.95F);
-        } else if (biome.is(ModBiomes.GLIMMERING_CRAGS)) {
-            set(t, 0.7F, 0.25F, 1.0F, 0.85F, 0.5F, 1.0F, 0.9F);
-        } else if (biome.is(ModBiomes.HOLLOW_ISLES) || biome.is(ModBiomes.CORONA)) {
-            set(t, 0.0F, 0.12F, 0.65F, 0.5F, 1.0F, 0.5F, 0.8F);
         } else {
-            set(t, 0.12F, 0.65F, 0.5F, 1.0F, 0.5F, 0.8F, 1.0F);
+            set(t, 0.0F, 0.35F, 1.0F, 0.6F, 1.0F, 0.82F, 0.35F);
         }
     }
 
@@ -186,16 +177,23 @@ public class AstralSkyRenderer extends SkyRenderer {
             this.skyTint(quads, coronaFlare);
         }
         int behindStars = quads.groups.size();
-        this.silhouette(quads);
-        this.constellations(quads, Mth.clamp(1.0F - 1.4F * coronaFlare, 0.0F, 1.0F));
+        // Everywhere else the sky is vanilla's; only now and then a void streak falls, far away.
+        this.voidStreak(quads, 1.0F - 0.7F * this.corona);
+        float sky = this.corona;     // how much of the astral sky shows: only over the Corona
+        if (sky > 0.01F) {
+            this.silhouette(quads, sky);
+            this.constellations(quads, sky * Mth.clamp(1.0F - 1.4F * coronaFlare, 0.0F, 1.0F));
+        }
         if (this.auroraStrength > 0.01F) {
             quads.group(AURORA);
             this.auroras(quads);
         }
-        if (flare.hasRemnant()) {
-            this.remnant(quads, flare, intensity);
+        if (flare.hasRemnant() && sky > 0.01F) {
+            this.remnant(quads, flare, intensity, sky);
         }
-        this.comet(quads);
+        if (sky > 0.01F) {
+            this.comet(quads, sky);
+        }
         if (coronaFlare > 0.01F && (flare.phase() == FlarePhase.FLARE || flare.phase() == FlarePhase.WARNING)) {
             quads.group(FLARE_SHEET);
             this.flareSheets(quads, flare, coronaFlare);
@@ -211,7 +209,7 @@ public class AstralSkyRenderer extends SkyRenderer {
                 this.draw(pass, quads.groups.get(i), view, white);
             }
             // The stars fade while the Corona's sky burns.
-            float starAlpha = Mth.clamp(1.0F - 1.4F * coronaFlare, 0.0F, 1.0F);
+            float starAlpha = this.corona * Mth.clamp(1.0F - 1.4F * coronaFlare, 0.0F, 1.0F);
             this.drawStars(pass, view, 0, this.fixedStarQuads, new Vector4f(1.0F, 1.0F, 1.0F, 0.75F * starAlpha));
             Matrix4f turning = new Matrix4f(view)
                 .rotate((float) Math.toRadians(23.0), 1.0F, 0.0F, 0.0F)
@@ -368,13 +366,13 @@ public class AstralSkyRenderer extends SkyRenderer {
     // The Remnant, where it really hangs over the nearest Corona: low on the horizon from far away,
     // high overhead beneath it. Far off it's drawn larger than it is (as the moon is); close enough for
     // the real thing to be in view, the picture of it fades away and leaves the real one.
-    private void remnant(Quads quads, FlareState flare, float intensity) {
+    private void remnant(Quads quads, FlareState flare, float intensity, float sky) {
         double dx = flare.remnantX() + 0.5 - this.camera.x;
         double dy = flare.remnantY() + 0.5 - this.camera.y;
         double dz = flare.remnantZ() + 0.5 - this.camera.z;
         double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
         float view = Minecraft.getInstance().options.getEffectiveRenderDistance() * 16.0F;
-        float fade = (float) Mth.clamp((distance - view * 0.75) / (view * 0.45), 0.0, 1.0);
+        float fade = sky * (float) Mth.clamp((distance - view * 0.75) / (view * 0.45), 0.0, 1.0);
         if (fade <= 0.0F || distance < 1.0) {
             return;
         }
@@ -414,7 +412,7 @@ public class AstralSkyRenderer extends SkyRenderer {
     }
 
     // About once every 45 seconds (now and then), a comet streaks across the far sky.
-    private void comet(Quads quads) {
+    private void comet(Quads quads, float sky) {
         long window = (long) (this.time / 900.0);
         RandomSource random = RandomSource.createThreadLocalInstance(window * 341873128712L + 132897987541L);
         if (random.nextInt(5) >= 3) {
@@ -433,15 +431,40 @@ public class AstralSkyRenderer extends SkyRenderer {
         Vector3f head = new Vector3f(now).mul(DISTANCE);
         Vector3f tail = new Vector3f(before).mul(DISTANCE).sub(head).normalize().mul(16.0F);
         Vector3f side = new Vector3f(now).cross(tail).normalize().mul(0.9F);
-        float alpha = Mth.sin((float) p * Mth.PI);
+        float alpha = Mth.sin((float) p * Mth.PI) * sky;
         int colour = argb(alpha, 0.85F, 0.95F, 1.0F);
         quads.group(COMET);
         quads.quad(new Vector3f(head).sub(side), new Vector3f(head).add(side), new Vector3f(head).add(tail).add(side),
             new Vector3f(head).add(tail).sub(side), 0.0F, 0.0F, 1.0F, 1.0F, colour);
     }
 
+    // Now and then (about every few minutes), a faint pale line drops down the far sky, like something
+    // falling a very long way off. It's never explained.
+    private void voidStreak(Quads quads, float strength) {
+        long window = (long) (this.time / 3600.0);
+        RandomSource random = RandomSource.createThreadLocalInstance(window * 6364136223846793005L + 1442695040888963407L);
+        if (random.nextInt(3) != 0) {
+            return;
+        }
+        double start = window * 3600.0 + random.nextInt(3400);
+        double p = (this.time - start) / 140.0;
+        if (p < 0.0 || p > 1.0) {
+            return;
+        }
+        float yaw = random.nextFloat() * Mth.TWO_PI;
+        float elev = (float) Math.toRadians(32.0 - 30.0 * p);
+        Vector3f dir = direction(yaw, elev);
+        Vector3f head = new Vector3f(dir).mul(DISTANCE);
+        Vector3f up = new Vector3f(direction(yaw, elev + 0.12F)).mul(DISTANCE).sub(head);
+        Vector3f side = new Vector3f(dir).cross(up).normalize().mul(0.25F);
+        float alpha = 0.4F * strength * Mth.sin((float) p * Mth.PI);
+        quads.group(COMET);
+        quads.quad(new Vector3f(head).sub(side), new Vector3f(head).add(side), new Vector3f(head).add(up).add(side),
+            new Vector3f(head).add(up).sub(side), 0.0F, 0.0F, 1.0F, 1.0F, argb(alpha, 0.92F, 0.9F, 0.98F));
+    }
+
     // Very rarely (some of the 20-minute stretches), a vast shape drifts across the far sky.
-    private void silhouette(Quads quads) {
+    private void silhouette(Quads quads, float sky) {
         long window = (long) (this.time / 24000.0);
         RandomSource random = RandomSource.createThreadLocalInstance(window * 9781237L + 412391L);
         if (random.nextInt(2) == 0) {
@@ -456,7 +479,7 @@ public class AstralSkyRenderer extends SkyRenderer {
         quads.group(whale ? WHALE : RING);
         float yaw = random.nextFloat() * Mth.TWO_PI + (float) Math.toRadians(80.0) * (float) p;
         float elevation = (float) Math.toRadians(20.0 + 6.0 * Math.sin(p * Math.PI));
-        float alpha = (float) Math.min(1.0, Math.sin(p * Math.PI) * 1.6) * 0.85F;
+        float alpha = (float) Math.min(1.0, Math.sin(p * Math.PI) * 1.6) * 0.85F * sky;
         Vector3f dir = direction(yaw, elevation);
         if (whale) {
             quads.sprite(dir, 30.0F, 9.5F, 0.0F, 0, 0, 1, 1, argb(alpha, 1, 1, 1));
