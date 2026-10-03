@@ -50,7 +50,7 @@ public class Curator extends Monster {
     private static final EntityDataAccessor<Boolean> DATA_DORMANT = SynchedEntityData.defineId(Curator.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_SLAM = SynchedEntityData.defineId(Curator.class, EntityDataSerializers.INT);
     public static final double ARENA = 26.0;     // its reach from home
-    private final ServerBossEvent bossEvent = new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE,
+    private final ServerBossEvent bossEvent = new ServerBossEvent(java.util.UUID.randomUUID(), this.getDisplayName(), BossEvent.BossBarColor.PURPLE,
         BossEvent.BossBarOverlay.NOTCHED_10);
     private @Nullable BlockPos home;
     private int attackCooldown;
@@ -274,7 +274,6 @@ public class Curator extends Monster {
             this.setDeltaMovement(this.getDeltaMovement().scale(0.6));
             if (this.attackCooldown == 0) {
                 this.attackCooldown = 30;
-                this.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
                 this.doHurtTarget(level, target);
             }
         }

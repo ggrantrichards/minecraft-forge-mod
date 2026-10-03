@@ -1284,13 +1284,128 @@ MIRROR_WRETCH = Mob("mirror_wretch", (64, 64), [
     Part("left_leg", (1.5, 5, 0), [B(-1, 0, -1, 2, 19, 2, wretch_skin, key="wleg", mirror=True)]),
 ], egg=(WRETCH[2], MIRROR[2]))
 
-MOBS = [POLLINATOR, WANDERER, STALKER, VOID_RAY, WHALE, WATCHER, SPIRE_WYRM, HUSHBACK, HYDRAGRIP, MIRROR_WRETCH]
+# ---- The distillation's Leviathan mobs.
+
+# Hollowback: a Hushback hollowed out - the same shape, but its clear hide gone dark and cracked like
+# old horn, its fleece hanging in grey rags, the bones inside blackened, and two dull violet eyes.
+HOLLOW_HIDE = [hexc("1a1622", 150), hexc("241e2e", 160), hexc("2f283a", 170), hexc("3b3348", 180)]
+HOLLOW_BONE = [hexc("2c2620"), hexc("3e362c"), hexc("544a3c"), hexc("6a5e4c")]
+
+
+def hollow_hide(face, px, py, fw, fh, rnd):
+    if n() > 0.86:
+        return hexc("0c0a10", 235)                        # a crack
+    return clamp(1 + shade_flat(face) + (1 if n() > 0.7 else 0), HOLLOW_HIDE)
+
+
+def hollow_rags(face, px, py, fw, fh, rnd):
+    if face == "down":
+        return None
+    return hexc("3e3a46", 230) if (n() > 0.78 and rnd.random() < 0.5) else None
+
+
+def hollow_bone(face, px, py, fw, fh, rnd):
+    return clamp(1 + shade_flat(face) + (1 if n() > 0.75 else 0), HOLLOW_BONE)
+
+
+def hollow_rib(face, px, py, fw, fh, rnd):
+    if face in ("north", "south") and edge_dist(px, py, fw, fh) > 0:
+        return None
+    return hollow_bone(face, px, py, fw, fh, rnd)
+
+
+def hollow_eye(face, px, py, fw, fh, rnd):
+    if face == "north" and py == 2 and px in (0, fw - 1):
+        return hexc("8a5ab4")
+    return hollow_hide(face, px, py, fw, fh, rnd)
+
+
+def hollow_eye_glow(face, px, py, fw, fh, rnd):
+    if face == "north" and py == 2 and px in (0, fw - 1):
+        return hexc("b07ae0")
+    return None
+
+
+HOLLOWBACK = Mob("hollowback", (128, 64), [
+    Part("body", (0, 12, 2), [
+        B(-0.5, -5, -8, 1, 1, 16, hollow_bone, key="spine"),
+        B(-4, -4, -6, 8, 7, 1, hollow_rib, key="rib"), B(-4, -4, -2, 8, 7, 1, hollow_rib, key="rib"),
+        B(-4, -4, 2, 8, 7, 1, hollow_rib, key="rib"), B(-3, -3, 6, 6, 5, 1, hollow_rib),
+        B(-5, -5, -9, 10, 9, 18, hollow_hide),
+    ], [
+        Part("fleece", (0, 0, 0), [B(-5, -5, -9, 10, 9, 18, hollow_rags, inflate=1.0)]),
+        Part("head", (0, -2, -9), [
+            B(-2, -3, -5, 4, 4, 5, hollow_bone),
+            B(-3, -4, -6, 6, 6, 7, hollow_eye, hollow_eye_glow),
+        ]),
+    ]),
+    Part("leg_fr", (-3, 16, -5), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_hide, key="leg")]),
+    Part("leg_fl", (3, 16, -5), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_hide, key="leg")]),
+    Part("leg_br", (-3, 16, 8), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_hide, key="leg")]),
+    Part("leg_bl", (3, 16, 8), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_hide, key="leg")]),
+], egg=(HOLLOW_HIDE[2], hexc("8a5ab4")))
+
+
+# The Curator: an enderman-like construct (drawn at 1.5x) of obsidian plating inlaid with purpur, no
+# face but one slit of violet light, hovering - its legs end in points, not feet.
+OBSIDIAN = [hexc("0c0812"), hexc("150f1e"), hexc("1f162c"), hexc("2b1f3c"), hexc("3a2b50")]
+
+
+def curator_plate(face, px, py, fw, fh, rnd):
+    i = 2 + shade_flat(face) + (1 if n() > 0.8 else 0) - (1 if n() < 0.18 else 0)
+    if fh >= 6 and py % 6 == 0 and face in ("north", "south", "east", "west"):
+        return PURPUR[2]                                  # purpur inlay between the plates
+    if fw >= 4 and px == fw // 2 and face in ("north", "south") and fh >= 6:
+        return PURPUR[1]
+    return clamp(i, OBSIDIAN)
+
+
+def curator_inlay_glow(face, px, py, fw, fh, rnd):
+    if fh >= 6 and py % 6 == 0 and px % 2 == 0 and face in ("north", "south", "east", "west"):
+        return hexc("9c6ad8")
+    return None
+
+
+def curator_head(face, px, py, fw, fh, rnd):
+    if face == "north" and py == 4 and 1 <= px <= fw - 2:
+        return hexc("c49cff")                             # the slit
+    return clamp(2 + shade_flat(face) + (1 if n() > 0.8 else 0), OBSIDIAN)
+
+
+def curator_head_glow(face, px, py, fw, fh, rnd):
+    if face == "north" and py == 4 and 1 <= px <= fw - 2:
+        return hexc("e0c8ff")
+    return None
+
+
+def curator_limb(face, px, py, fw, fh, rnd):
+    if py % 7 == 0:
+        return PURPUR[2]
+    return clamp(2 + shade_flat(face) + (1 if n() > 0.8 else 0), OBSIDIAN)
+
+
+CURATOR = Mob("curator", (64, 64), [
+    Part("body", (0, -14, 0), [B(-4, 0, -2, 8, 14, 4, curator_plate, curator_inlay_glow),
+                                B(-6, 0, -2.5, 12, 3, 5, curator_plate, key="mantle")], [
+        Part("head", (0, 0, 0), [B(-4, -8, -4, 8, 8, 8, curator_head, curator_head_glow),
+                                 B(-1, -11, -1, 2, 3, 2, curator_limb)]),
+    ]),
+    Part("right_arm", (-7, -13, 0), [B(-1, 0, -1, 2, 30, 2, curator_limb, key="carm"),
+                                    B(-1.5, 16, -1.5, 3, 8, 3, curator_plate, key="cbracer")]),
+    Part("left_arm", (7, -13, 0), [B(-1, 0, -1, 2, 30, 2, curator_limb, key="carm", mirror=True),
+                                  B(-1.5, 16, -1.5, 3, 8, 3, curator_plate, key="cbracer", mirror=True)]),
+    Part("right_leg", (-2, 0, 0), [B(-1, 0, -1, 2, 22, 2, curator_limb, key="cleg")]),
+    Part("left_leg", (2, 0, 0), [B(-1, 0, -1, 2, 22, 2, curator_limb, key="cleg", mirror=True)]),
+], egg=(OBSIDIAN[2], hexc("9c6ad8")))
+
+MOBS = [POLLINATOR, WANDERER, STALKER, VOID_RAY, WHALE, WATCHER, SPIRE_WYRM, HUSHBACK, HYDRAGRIP, MIRROR_WRETCH,
+        HOLLOWBACK, CURATOR]
 # Cut by the distillation (their definitions stay above, unused): the Cinder Mite, the Hollow and the
 # Live Comet. Each mob's texture is painted from a seed fixed by its place in the original list, so
 # cutting some doesn't repaint the rest.
 SEED_INDEX = {"pollinator": 0, "void_wanderer": 1, "umbral_stalker": 2, "cinder_mite": 3, "void_ray": 4, "hollow": 5,
               "drift_whale": 6, "watcher": 7, "live_comet": 8, "spire_wyrm": 9, "hushback": 10, "hydragrip": 11,
-              "mirror_wretch": 12}
+              "mirror_wretch": 12, "hollowback": 13, "curator": 14}
 for _mob in MOBS:
     auto_uv(_mob)          # boxes drawn without a texture position get one
 

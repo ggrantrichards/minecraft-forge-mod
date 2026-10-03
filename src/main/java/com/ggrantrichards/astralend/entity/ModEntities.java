@@ -62,6 +62,14 @@ public final class ModEntities {
         () -> EntityType.Builder.of(MirrorWretch::new, MobCategory.MONSTER).sized(0.7F, 2.7F).eyeHeight(2.4F)
             .clientTrackingRange(10).build(ENTITY_TYPES.key("mirror_wretch")));
 
+    // ---- The distillation: the Leviathan's keepers (placed by the structure; they don't spawn naturally).
+    public static final RegistryObject<EntityType<Hollowback>> HOLLOWBACK = ENTITY_TYPES.register("hollowback",
+        () -> EntityType.Builder.of(Hollowback::new, MobCategory.MONSTER).sized(1.0F, 1.3F).eyeHeight(1.15F)
+            .clientTrackingRange(10).build(ENTITY_TYPES.key("hollowback")));
+    public static final RegistryObject<EntityType<Curator>> CURATOR = ENTITY_TYPES.register("curator",
+        () -> EntityType.Builder.of(Curator::new, MobCategory.MONSTER).sized(1.1F, 4.4F).eyeHeight(3.9F).fireImmune()
+            .clientTrackingRange(16).build(ENTITY_TYPES.key("curator")));
+
     public static void register() {
         EntityAttributeCreationEvent.BUS.addListener(event -> {
             event.put(POLLINATOR.get(), EndPollinator.createAttributes().build());
@@ -74,6 +82,8 @@ public final class ModEntities {
             event.put(HUSHBACK.get(), Hushback.createAttributes().build());
             event.put(HYDRAGRIP.get(), Hydragrip.createAttributes().build());
             event.put(MIRROR_WRETCH.get(), MirrorWretch.createAttributes().build());
+            event.put(HOLLOWBACK.get(), Hollowback.createAttributes().build());
+            event.put(CURATOR.get(), Curator.createAttributes().build());
         });
         SpawnPlacementRegisterEvent.BUS.addListener(event -> {
             var replace = SpawnPlacementRegisterEvent.Operation.REPLACE;

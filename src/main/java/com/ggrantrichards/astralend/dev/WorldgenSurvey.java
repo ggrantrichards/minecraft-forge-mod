@@ -271,7 +271,7 @@ public final class WorldgenSurvey {
         // ---- Generate an area of each astral biome and count what's there ----
         // The Eclipse's two halves are surveyed at known spots of the nearest one: over the heart of its
         // hell half (under the Remnant), and in its heaven half beside the Wellspring.
-        EclipseLayout.Eclipse eclipse = EclipseLayout.nearest(0, 0, randomState.sampler(), 3);
+        EclipseLayout.Eclipse eclipse = EclipseLayout.nearest(0, 0, EclipseLayout.sampler(randomState), 3);
         if (eclipse == null) {
             failures.add("no Eclipse within 3 cells of the centre");
         } else {
@@ -307,6 +307,7 @@ public final class WorldgenSurvey {
             }
         }
         Map<String, BlockPos> structures = checkStructures(areas, end, failures);
+        testLeviathan(end, failures);   // the distillation, phase 5
         if (areas.get('N') != null && areas.get('N').standOn != null) {
             EXTRA_SHOTS.addAll(StarforgeSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log));   // Phase 8
             PolishSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log);         // Phase 9
@@ -423,6 +424,8 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('E'), end, "hushback", 3.2, 0.5, 1.4);
         mobShot(lines, areas.get('E'), end, "hydragrip", 2.2, 0.3, 0.9);
         mobShot(lines, areas.get('C'), end, "mirror_wretch", 4.2, 0.8, 2.4);
+        mobShot(lines, areas.get('A'), end, "hollowback", 3.2, 0.5, 1.4);
+        mobShot(lines, areas.get('A'), end, "curator", 8.0, 0.5, 3.2);
         // Phase 5: the sky and Sunstorms.
         skyShot(lines, areas.get('A'), "sky_ashen_barrens", -45.0F, -32.0F, null, "flare=calm");
         skyShot(lines, areas.get('N'), "sky_nebula_fields", -45.0F, -32.0F, null, "flare=calm");
@@ -492,7 +495,7 @@ public final class WorldgenSurvey {
     // Where the Remnant nearest `from` starts, as /locate would report it (its chunk's corner).
     private static BlockPos remnantStart(ServerLevel end, BlockPos from) {
         BlockPos anchor = com.ggrantrichards.astralend.world.structure.RemnantStructure.anchor(
-            end.getChunkSource().randomState().sampler(), from.getX(), from.getZ(), 3);
+            EclipseLayout.sampler(end.getChunkSource().randomState()), from.getX(), from.getZ(), 3);
         return anchor == null ? null : new BlockPos(anchor.getX() - 8, 64, anchor.getZ() - 8);
     }
 
@@ -605,6 +608,97 @@ public final class WorldgenSurvey {
             heart.getX() - 5, heart.getY() - 1, heart.getZ()));
         EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_remnant_below %d.5 %d %d.5 -45.0 -55.0",
             heart.getX() - 30, Math.max(ground + 2, heart.getY() - 80), heart.getZ() - 30));
+    }
+
+    // The Leviathan: found the way /locate finds it; its skull built, with the reliquary's pedestal, the
+    // four End Chimes pylons, the Maw Eyes in the sockets and the Curator (dormant, deaf to all but a
+    // player); the dragon egg set on the pedestal lights the eyes. Then views: the whole skeleton from
+    // off its flank, and the reliquary from its door.
+    private static void testLeviathan(ServerLevel end, List<String> failures) {
+        var tag = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.STRUCTURE,
+            net.minecraft.resources.Identifier.fromNamespaceAndPath(com.ggrantrichards.astralend.AstralEnd.MODID, "leviathan"));
+        BlockPos start = end.findNearestMapStructure(tag, new BlockPos(1200, 64, 0), 200, false);
+        if (start == null) {
+            failures.add("leviathan: none found within 3200 blocks");
+            return;
+        }
+        var registry = end.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE);
+        com.ggrantrichards.astralend.world.structure.LeviathanPiece piece = null;
+        for (var entry : end.getChunk(start.getX() >> 4, start.getZ() >> 4).getAllStarts().entrySet()) {
+            var key = registry.getKey(entry.getKey());
+            if (key != null && key.getPath().equals("leviathan") && !entry.getValue().getPieces().isEmpty()
+                    && entry.getValue().getPieces().get(0) instanceof com.ggrantrichards.astralend.world.structure.LeviathanPiece lp) {
+                piece = lp;
+            }
+        }
+        if (piece == null) {
+            failures.add("leviathan: found a start at " + start.toShortString() + " but no Leviathan piece in it");
+            return;
+        }
+        BlockPos pedestal = piece.pedestal();
+        for (int cx = -3; cx <= 3; cx++) {
+            for (int cz = -3; cz <= 3; cz++) {
+                end.getChunk((pedestal.getX() >> 4) + cx, (pedestal.getZ() >> 4) + cz);
+            }
+        }
+        int eyes = 0, chimes = 0, bone = 0, purpur = 0;
+        for (BlockPos p : BlockPos.betweenClosed(pedestal.offset(-40, -40, -40), pedestal.offset(40, 30, 40))) {
+            BlockState state = end.getBlockState(p);
+            if (state.is(ModBlocks.MAW_EYE.get())) {
+                eyes++;
+            } else if (state.is(ModBlocks.END_CHIMES.get())) {
+                chimes++;
+            } else if (state.is(Blocks.BONE_BLOCK)) {
+                bone++;
+            } else if (state.is(ModBlocks.PURPUR_BRICKS.get())) {
+                purpur++;
+            }
+        }
+        boolean hasPedestal = end.getBlockState(pedestal).is(ModBlocks.LEVIATHAN_PEDESTAL.get());
+        var curators = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.Curator.class, new net.minecraft.world.phys.AABB(pedestal).inflate(48));
+        log(String.format("leviathan: start %s, pedestal at %s (%s); round the skull: %d Maw Eye blocks, %d End Chimes, %d bone, "
+            + "%d purpur bricks; %d Curator(s)%s", start.toShortString(), pedestal.toShortString(), hasPedestal ? "built" : "MISSING",
+            eyes, chimes, bone, purpur, curators.size(), curators.isEmpty() ? "" : curators.get(0).isDormant() ? ", dormant" : ", AWAKE"));
+        if (!hasPedestal || eyes < 4 || chimes != 4 || bone < 3000 || purpur < 200) {
+            failures.add(String.format("leviathan: expected the pedestal, 4+ Maw Eye blocks, 4 End Chimes, 3000+ bone and 200+ purpur "
+                + "bricks round the skull; got %s, %d, %d, %d, %d", hasPedestal, eyes, chimes, bone, purpur));
+        }
+        if (curators.size() != 1) {
+            failures.add("leviathan: expected one Curator in the reliquary, found " + curators.size());
+        } else {
+            var curator = curators.get(0);
+            boolean hurt = curator.hurtServer(end, end.damageSources().generic(), 10.0F);
+            if (!curator.isDormant() || hurt || curator.home() == null) {
+                failures.add("leviathan: the Curator should be dormant, unhurt by anything but a player, and know its home");
+            }
+        }
+        // The egg on the pedestal lights the skull's eyes.
+        if (hasPedestal) {
+            com.ggrantrichards.astralend.block.LeviathanPedestalBlock.enshrine(end, pedestal);
+            int lit = 0;
+            for (BlockPos p : BlockPos.betweenClosed(pedestal.offset(-28, -8, -28), pedestal.offset(28, 20, 28))) {
+                BlockState state = end.getBlockState(p);
+                if (state.is(ModBlocks.MAW_EYE.get()) && state.getValue(com.ggrantrichards.astralend.maw.MawEyeBlock.LIT)) {
+                    lit++;
+                }
+            }
+            log("leviathan: the egg enshrined lit " + lit + " of " + eyes + " Maw Eye blocks");
+            if (lit < eyes) {
+                failures.add("leviathan: enshrining the egg lit only " + lit + " of " + eyes + " Maw Eye blocks");
+            }
+        }
+        // Views: the skeleton from off its flank (it lies diagonally, so from the south-west of its middle),
+        // and the reliquary from just inside the skull.
+        BlockPos mid = new BlockPos(start.getX() + 8, pedestal.getY(), start.getZ() + 8);
+        double dx = pedestal.getX() - mid.getX(), dz = pedestal.getZ() - mid.getZ(), len = Math.hypot(dx, dz);
+        double sx = -dz / len, sz = dx / len;   // across the body
+        BlockPos cam = mid.offset((int) Math.round(sx * 190 - dx * 0.2), 40, (int) Math.round(sz * 190 - dz * 0.2));
+        double yaw = Math.toDegrees(Math.atan2(-(mid.getX() - cam.getX()), mid.getZ() - cam.getZ()));
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan %d.5 %d %d.5 %.1f 10.0 clear", cam.getX(), cam.getY(), cam.getZ(), yaw));
+        BlockPos door = new BlockPos((int) Math.round(pedestal.getX() - dx / len * 40), pedestal.getY() + 2,
+            (int) Math.round(pedestal.getZ() - dz / len * 40));
+        double inYaw = Math.toDegrees(Math.atan2(-(pedestal.getX() - door.getX()), pedestal.getZ() - door.getZ()));
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan_reliquary %d.5 %d %d.5 %.1f 5.0", door.getX(), door.getY(), door.getZ(), inYaw));
     }
 
     // A Constellation Maze: four platforms (the stars in their floors, where you stand to sight a

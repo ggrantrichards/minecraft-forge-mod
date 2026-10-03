@@ -36,7 +36,7 @@ public class RemnantStructure extends Structure {
     protected Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
         int cx = context.chunkPos().getMiddleBlockX();
         int cz = context.chunkPos().getMiddleBlockZ();
-        BlockPos anchor = anchor(context.randomState().sampler(), cx, cz, 0);
+        BlockPos anchor = anchor(com.ggrantrichards.astralend.world.EclipseLayout.sampler(context.randomState()), cx, cz, 0);
         if (anchor == null || anchor.getX() != cx || anchor.getZ() != cz) {
             return Optional.empty();
         }

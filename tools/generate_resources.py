@@ -1233,6 +1233,8 @@ MOBS = [
     ("hushback", "Hushback"),
     ("hydragrip", "Hydragrip"),
     ("mirror_wretch", "Mirror Wretch"),
+    ("hollowback", "Hollowback"),
+    ("curator", "The Curator"),
 ]
 
 
@@ -1469,7 +1471,7 @@ def structures_phase6():
     lang[f"item.{NS}.star_chart.marks_structure"] = "Marks a site: %s"
     for name, english in (("comet_crater", "Comet Crater"), ("wanderer_relay", "Wanderer Relay"), ("whalefall", "Whalefall"),
                           ("shattered_observatory", "Shattered Observatory"), ("solar_array", "Solar Array Ruins"),
-                          ("rift_maw", "Rift Maw"), ("constellation_maze", "Constellation Maze"),
+                          ("rift_maw", "Rift Maw"), ("leviathan", "Leviathan"), ("constellation_maze", "Constellation Maze"),
                           ("remnant", "The Remnant")):
         lang[f"structure.{NS}.{name}"] = english
         tag("worldgen/structure", rid(name), rid(name))      # a Star Chart looks each one up by its own tag
@@ -2057,6 +2059,12 @@ def distillation_blocks():
          "enchantment": "minecraft:looting"}]}]}])
     entity_loot("hydragrip", [])
     entity_loot("mirror_wretch", [player_kill_drop("abyss_shard", 1)])
+    # The Leviathan's keepers. The Curator always gives up its Core (the Starforge's Void Recall needs one).
+    entity_loot("hollowback", [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": "minecraft:bone", "functions": [
+        {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 0, "max": 2}}]}]}])
+    entity_loot("curator", [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("curators_core")}]},
+                            {"rolls": 1, "entries": [{"type": "minecraft:item", "name": "minecraft:obsidian", "functions": [
+                                {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 2, "max": 5}}]}]}])
     for kind, time in (("smelting", 200), ("smoking", 100), ("campfire_cooking", 600)):
         cooking(f"cooked_hushback_flank_from_{kind}", kind, rid("hushback_flank"), "cooked_hushback_flank", 0.35, time)
     recipe("white_wool_from_hushfleece", {"type": "minecraft:crafting_shapeless", "category": "building",
@@ -2123,8 +2131,40 @@ def distillation_blocks():
         advancement(f"sighted_{name}", "minecraft:spyglass", f"Sighted: {english[4:]}",
                     f"From the Eclipse, find {english} through a spyglass")
     # Where the Watcher leads you: the remains of leviathans (the Leviathan itself, from phase 5).
-    for structure in ("whalefall", "rift_maw"):
+    for structure in ("whalefall", "rift_maw", "leviathan"):
         tag("worldgen/structure", f"{NS}:leviathan_remains", rid(structure))
+
+    # The Leviathan: its reliquary's pedestal, its chests, and what it's for.
+    for lit in (False, True):
+        block_model("leviathan_pedestal" + ("_lit" if lit else ""), {"parent": "minecraft:block/cube_bottom_top", "textures": {
+            "top": "minecraft:block/purpur_pillar_top", "bottom": "minecraft:block/obsidian",
+            "side": "minecraft:block/crying_obsidian" if lit else "minecraft:block/obsidian"}})
+    blockstate("leviathan_pedestal", {"variants": {f"lit={str(l).lower()}": {"model": rid("block/leviathan_pedestal" + ("_lit" if l else ""))}
+                                                   for l in (False, True)}})
+    item_def("leviathan_pedestal", rid("block/leviathan_pedestal"))
+    lang[f"block.{NS}.leviathan_pedestal"] = "Leviathan's Pedestal"
+    chest_loot("leviathan", [
+        {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
+            entry("void_crystal", 4, (2, 5)), entry("charged_void_crystal", 2, (1, 2)), entry("whalelight_scale", 3, (1, 4)),
+            entry("leviathan_bone_block", 3, (2, 6)), entry("minecraft:ender_pearl", 3, (2, 4)), entry("minecraft:shulker_shell", 1, (1, 1)),
+            entry("minecraft:experience_bottle", 2, (2, 5)), entry("minecraft:purpur_block", 2, (4, 12)),
+            entry("minecraft:diamond", 1, (1, 3)), entry("minecraft:golden_apple", 1, (1, 1))]},
+        chance("starforge_template", 0.35),
+        chance("temporal_crystal", 0.2),
+        chance("rift_pearl", 0.04),
+    ])
+    advancement("leviathan", "minecraft:bone_block", "The Leviathan", "Set foot on the skeleton of a Leviathan",
+                criteria={"found": {"trigger": "minecraft:location", "conditions": {"player": {
+                    "type": "minecraft:entity_properties", "entity": "this",
+                    "predicate": {"minecraft:location": {"structures": rid("leviathan")}}}}}})
+    advancement("curator", rid("curators_core"), "The Collection Closes", "Defeat the Curator of a Leviathan's reliquary",
+                parent=f"{NS}:end/leviathan", frame="challenge", criteria={"killed": killed(rid("curator"))})
+    advancement("keeper_of_the_egg", "minecraft:dragon_egg", "Keeper of the Egg",
+                "Set the dragon egg on the pedestal in a Leviathan's skull", parent=f"{NS}:end/curator", frame="challenge")
+    advancement("wellspring", "minecraft:water_bucket", "Wellspring", "Swim in the waters of an Eclipse",
+                criteria={"swam": {"trigger": "minecraft:location", "conditions": {"player": {
+                    "type": "minecraft:entity_properties", "entity": "this",
+                    "predicate": {"minecraft:location": {"biomes": rid("eclipse"), "fluid": {"fluids": "#minecraft:water"}}}}}}})
 
     # Breathcomb: four stages of its breath, dim to bright.
     blockstate("breathcomb", {"variants": {f"breath={i}": {"model": rid(f"block/breathcomb_{i}")} for i in range(4)}})

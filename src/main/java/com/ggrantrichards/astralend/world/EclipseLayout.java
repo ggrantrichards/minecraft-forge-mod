@@ -1,6 +1,11 @@
 package com.ggrantrichards.astralend.world;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
 import net.minecraft.world.level.biome.Climate;
+import net.minecraft.world.level.levelgen.RandomState;
+import net.minecraft.world.level.levelgen.densityfunction.SamplerContext;
 
 // Where the Eclipses are, and the shape of each. Shared by the biome source (which half of an Eclipse a
 // spot is in), the terrain (EclipseTerrainFeature: the Eclipse's island), the Remnant (which hangs over each
@@ -32,6 +37,14 @@ public final class EclipseLayout {
     public static final double[] HEAVEN_SEED = {0.0, -0.5}; // in hell: one small living pool
 
     public enum Part { NONE, HEAVEN, HELL }
+
+    private static final Map<RandomState, Climate.Sampler> SAMPLERS = Collections.synchronizedMap(new WeakHashMap<>());
+
+    // The world's region noises, for code that isn't handed them (features, structures, the Sunstorms):
+    // an uncached sampler, the kind vanilla's own commands use, made once per world.
+    public static Climate.Sampler sampler(RandomState state) {
+        return SAMPLERS.computeIfAbsent(state, s -> s.createClimateSampler(SamplerContext.EMPTY_UNCACHED));
+    }
 
     public record Eclipse(double x, double z, double angle) {
         // A point of the Eclipse's frame, in the world.

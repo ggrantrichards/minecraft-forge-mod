@@ -276,6 +276,13 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).instrument(NoteBlockInstrument.BASEDRUM)
             .requiresCorrectToolForDrops().strength(25.0F, 600.0F).sound(SoundType.SCULK_CATALYST).lightLevel(state -> 2));
 
+    // ---- The distillation: the pedestal for the dragon egg in a Leviathan's reliquary. Unbreakable.
+    public static final RegistryObject<Block> LEVIATHAN_PEDESTAL = register("leviathan_pedestal",
+        com.ggrantrichards.astralend.block.LeviathanPedestalBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).instrument(NoteBlockInstrument.BASEDRUM)
+            .strength(-1.0F, 3600000.0F).sound(SoundType.STONE).noLootTable().noOcclusion()
+            .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.block.LeviathanPedestalBlock.LIT) ? 12 : 3));
+
     // ---- The Lodestar: the End's respawn point (the distillation; LodestarBlock) ----
     public static final RegistryObject<Block> LODESTAR = register("lodestar", com.ggrantrichards.astralend.block.LodestarBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).instrument(NoteBlockInstrument.BASEDRUM)

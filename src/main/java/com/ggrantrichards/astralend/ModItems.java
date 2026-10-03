@@ -130,6 +130,8 @@ public final class ModItems {
     public static final RegistryObject<Item> HUSHBACK_SPAWN_EGG = spawnEgg("hushback", ModEntities.HUSHBACK);
     public static final RegistryObject<Item> HYDRAGRIP_SPAWN_EGG = spawnEgg("hydragrip", ModEntities.HYDRAGRIP);
     public static final RegistryObject<Item> MIRROR_WRETCH_SPAWN_EGG = spawnEgg("mirror_wretch", ModEntities.MIRROR_WRETCH);
+    public static final RegistryObject<Item> HOLLOWBACK_SPAWN_EGG = spawnEgg("hollowback", ModEntities.HOLLOWBACK);
+    public static final RegistryObject<Item> CURATOR_SPAWN_EGG = spawnEgg("curator", ModEntities.CURATOR);
 
     private static net.minecraft.tags.TagKey<net.minecraft.world.level.block.entity.BannerPattern> patternTag(String name) {
         return net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.BANNER_PATTERN,

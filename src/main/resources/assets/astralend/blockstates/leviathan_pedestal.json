@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "astralend:block/leviathan_pedestal"
+    },
+    "lit=true": {
+      "model": "astralend:block/leviathan_pedestal_lit"
+    }
+  }
+}

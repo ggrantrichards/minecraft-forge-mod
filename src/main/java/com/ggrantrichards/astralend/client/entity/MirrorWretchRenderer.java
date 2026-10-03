@@ -30,7 +30,7 @@ public class MirrorWretchRenderer extends MobRenderer<MirrorWretch, MirrorWretch
     @Override
     public void extractRenderState(MirrorWretch entity, State state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
-        state.attackTime = entity.getAttackAnim(partialTicks);
+        state.attackTime = entity.getSwingAnimation(partialTicks);
     }
 
     public static class State extends LivingEntityRenderState {

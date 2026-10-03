@@ -1,0 +1,37 @@
+{
+  "parent": "astralend:end/leviathan",
+  "display": {
+    "icon": {
+      "id": "astralend:curators_core"
+    },
+    "title": {
+      "translate": "advancements.astralend.curator.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.curator.description"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "killed": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:entity_type": "astralend:curator"
+          }
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "killed"
+    ]
+  ]
+}

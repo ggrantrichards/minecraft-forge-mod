@@ -84,5 +84,11 @@ public final class ModWorldgen {
     public static final RegistryObject<net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType> REMNANT_PIECE =
         STRUCTURE_PIECES.register("remnant", () -> com.ggrantrichards.astralend.world.structure.RemnantPiece::new);
 
+    // Distillation 5: the Leviathan, a whole skeleton with a citadel built on it, by its own piece too.
+    public static final RegistryObject<StructureType<com.ggrantrichards.astralend.world.structure.LeviathanStructure>> LEVIATHAN =
+        STRUCTURE_TYPES.register("leviathan", () -> () -> com.ggrantrichards.astralend.world.structure.LeviathanStructure.CODEC);
+    public static final RegistryObject<net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType> LEVIATHAN_PIECE =
+        STRUCTURE_PIECES.register("leviathan", () -> com.ggrantrichards.astralend.world.structure.LeviathanPiece::new);
+
     private ModWorldgen() {}
 }

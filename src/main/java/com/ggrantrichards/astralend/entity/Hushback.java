@@ -98,7 +98,7 @@ public class Hushback extends Animal {
                     this.spawnAtLocation(level, new ItemStack(ModItems.HUSHFLEECE.get()));
                 }
                 level.playSound(null, this, SoundEvents.SHEEP_SHEAR, SoundSource.PLAYERS, 0.6F, 1.4F);
-                held.hurtAndBreak(1, player, net.minecraft.world.entity.LivingEntity.getSlotForHand(hand));
+                held.hurtAndBreak(1, player, hand);
             }
             return InteractionResult.SUCCESS;
         }

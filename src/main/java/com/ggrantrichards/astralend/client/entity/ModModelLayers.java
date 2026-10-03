@@ -19,6 +19,8 @@ public final class ModModelLayers {
     public static final ModelLayerLocation HUSHBACK = layer("hushback");
     public static final ModelLayerLocation HYDRAGRIP = layer("hydragrip");
     public static final ModelLayerLocation MIRROR_WRETCH = layer("mirror_wretch");
+    public static final ModelLayerLocation HOLLOWBACK = layer("hollowback");
+    public static final ModelLayerLocation CURATOR = layer("curator");
 
     public static void register() {
         EntityRenderersEvent.RegisterLayerDefinitions.BUS.addListener(event -> {
@@ -32,6 +34,8 @@ public final class ModModelLayers {
             event.registerLayerDefinition(HUSHBACK, MobMeshes::hushback);
             event.registerLayerDefinition(HYDRAGRIP, MobMeshes::hydragrip);
             event.registerLayerDefinition(MIRROR_WRETCH, MobMeshes::mirrorWretch);
+            event.registerLayerDefinition(HOLLOWBACK, MobMeshes::hollowback);
+            event.registerLayerDefinition(CURATOR, MobMeshes::curator);
         });
         EntityRenderersEvent.RegisterRenderers.BUS.addListener(event -> {
             event.registerEntityRenderer(ModEntities.POLLINATOR.get(), PollinatorRenderer::new);
@@ -44,6 +48,8 @@ public final class ModModelLayers {
             event.registerEntityRenderer(ModEntities.HUSHBACK.get(), HushbackRenderer::new);
             event.registerEntityRenderer(ModEntities.HYDRAGRIP.get(), HydragripRenderer::new);
             event.registerEntityRenderer(ModEntities.MIRROR_WRETCH.get(), MirrorWretchRenderer::new);
+            event.registerEntityRenderer(ModEntities.HOLLOWBACK.get(), HollowbackRenderer::new);
+            event.registerEntityRenderer(ModEntities.CURATOR.get(), CuratorRenderer::new);
         });
     }
 

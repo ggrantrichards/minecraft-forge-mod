@@ -41,7 +41,7 @@ import org.jspecify.annotations.Nullable;
 // burn, doesn't despawn in daylight - there is none - and doesn't follow you off the Eclipse.
 public class MirrorWretch extends Monster {
     private static final List<SoundEvent> LURES = List.of(SoundEvents.CHEST_OPEN, SoundEvents.WOODEN_DOOR_OPEN,
-        SoundEvents.SHEEP_AMBIENT, SoundEvents.ITEM_PICKUP, SoundEvents.STONE_STEP, SoundEvents.CAT_AMBIENT,
+        SoundEvents.SHEEP_AMBIENT, SoundEvents.ITEM_PICKUP, SoundEvents.STONE_STEP, SoundEvents.WOODEN_DOOR_CLOSE,
         SoundEvents.EXPERIENCE_ORB_PICKUP, SoundEvents.BELL_BLOCK);
     private int lureCooldown = 200;
 
@@ -158,7 +158,7 @@ public class MirrorWretch extends Monster {
         if (hit && target instanceof Player player) {
             Vec3 away = player.position().subtract(this.position()).multiply(1, 0, 1).normalize();
             player.push(away.x * 0.6, 0.25, away.z * 0.6);
-            player.hurtMarked = true;
+            player.syncVelocity = true;
         }
         return hit;
     }

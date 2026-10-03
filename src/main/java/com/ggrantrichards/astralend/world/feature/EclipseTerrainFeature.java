@@ -33,7 +33,7 @@ public record EclipseTerrainFeature() implements Feature {
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
-        var sampler = level.getLevel().getChunkSource().randomState().sampler();
+        var sampler = EclipseLayout.sampler(level.getLevel().getChunkSource().randomState());
         int x0 = origin.getX() & ~15, z0 = origin.getZ() & ~15;
         EclipseLayout.Eclipse e = EclipseLayout.at(x0 + 8, z0 + 8, sampler);
         if (e == null || e.distance(x0 + 8, z0 + 8) > EclipseLayout.RADIUS + VOID_RING + 12) {

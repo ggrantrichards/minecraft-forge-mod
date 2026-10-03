@@ -1,0 +1,28 @@
+{
+  "parent": "astralend:end/curator",
+  "display": {
+    "icon": {
+      "id": "minecraft:dragon_egg"
+    },
+    "title": {
+      "translate": "advancements.astralend.keeper_of_the_egg.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.keeper_of_the_egg.description"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

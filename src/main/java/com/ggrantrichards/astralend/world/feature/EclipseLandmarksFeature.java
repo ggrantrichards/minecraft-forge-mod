@@ -31,7 +31,7 @@ public record EclipseLandmarksFeature() implements Feature {
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
-        var nebula = level.getLevel().getChunkSource().randomState().sampler();
+        var nebula = EclipseLayout.sampler(level.getLevel().getChunkSource().randomState());
         int x0 = origin.getX() & ~15, z0 = origin.getZ() & ~15;
         EclipseLayout.Eclipse e = EclipseLayout.at(x0 + 8, z0 + 8, nebula);
         if (e == null || e.distance(x0 + 8, z0 + 8) > EclipseLayout.RADIUS + 24) {

@@ -859,6 +859,16 @@ def write_data():
         "placement": {"type": "minecraft:random_spread", "salt": 31337117, "separation": 0, "spacing": 1},
         "structures": [{"structure": a("remnant"), "weight": 1}]})
     write_json(DATA / "tags/worldgen/biome/has_structure/remnant.json", {"values": [a("corona")]})
+    # Distillation 5: the Leviathan (LeviathanStructure / LeviathanPiece), a whole skeleton with a citadel
+    # on it, out over the void of the small islands and the barrens. Rare: one region in 90 chunks square.
+    write_json(DATA / "worldgen/structure/leviathan.json", {
+        "type": a("leviathan"), "biomes": f"#{NS}:has_structure/leviathan", "step": "surface_structures",
+        "spawn_overrides": {}, "terrain_adaptation": "none"})
+    write_json(DATA / "worldgen/structure_set/leviathan.json", {
+        "placement": {"type": "minecraft:random_spread", "salt": 90210447, "separation": 40, "spacing": 90},
+        "structures": [{"structure": a("leviathan"), "weight": 1}]})
+    write_json(DATA / "tags/worldgen/biome/has_structure/leviathan.json", {"values": [
+        "minecraft:small_end_islands", "minecraft:end_barrens", a("ashen_barrens")]})
     write_json(DATA / "tags/worldgen/biome/has_structure/whalefall.json", {"values": [
         "minecraft:small_end_islands", "minecraft:end_barrens", "minecraft:end_midlands", "minecraft:end_highlands",
         a("nebula_fields"), a("chorus_thicket"), a("ashen_barrens"), a("hollow_isles"),

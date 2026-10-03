@@ -309,7 +309,7 @@ public class Sunstorms extends SavedData {
     // The Remnant nearest `from` (its middle): one hangs over the hell half of every Eclipse.
     public static BlockPos nearestRemnant(ServerLevel level, BlockPos from) {
         BlockPos anchor = com.ggrantrichards.astralend.world.structure.RemnantStructure.anchor(
-            level.getChunkSource().randomState().sampler(), from.getX(), from.getZ(), 3);
+            com.ggrantrichards.astralend.world.EclipseLayout.sampler(level.getChunkSource().randomState()), from.getX(), from.getZ(), 3);
         return anchor == null ? null : new BlockPos(anchor.getX(), level.getMinY() + anchor.getY() + 5, anchor.getZ());
     }
 
@@ -317,7 +317,7 @@ public class Sunstorms extends SavedData {
     // by the worldgen survey, to aim its screenshot of the Remnant.
     public static BlockPos nearestCorona(ServerLevel level, BlockPos from) {
         BlockPos anchor = com.ggrantrichards.astralend.world.structure.RemnantStructure.anchor(
-            level.getChunkSource().randomState().sampler(), from.getX(), from.getZ(), 3);
+            com.ggrantrichards.astralend.world.EclipseLayout.sampler(level.getChunkSource().randomState()), from.getX(), from.getZ(), 3);
         return anchor == null ? null : new BlockPos(anchor.getX(), 64, anchor.getZ());
     }
 }

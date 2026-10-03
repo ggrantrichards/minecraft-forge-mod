@@ -393,7 +393,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
     // high enough to clear the land.
     private @Nullable Vec3 towardEclipse(ServerLevel level) {
         var eclipse = com.ggrantrichards.astralend.world.EclipseLayout.nearest(this.getX(), this.getZ(),
-            level.getChunkSource().randomState().sampler(), 1);
+            com.ggrantrichards.astralend.world.EclipseLayout.sampler(level.getChunkSource().randomState()), 1);
         if (eclipse == null) {
             return null;
         }
