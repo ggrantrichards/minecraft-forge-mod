@@ -1,9 +1,20 @@
 #!/usr/bin/env bash
 set +e
 exec > >(tee /tmp/probe.txt) 2>&1
-J=$(find .gradle/mavenizer/repo -name 'client-extra*.jar' | head -1)
-mkdir -p /tmp/music/files
-for b in end_stone blackstone deepslate moss_block cherry_log cherry_log_top cherry_leaves sandstone terracotta smooth_sandstone amethyst_block bone_block_side deepslate_bricks calcite shroomlight quartz_block_side netherrack basalt_side tuff purpur_block mangrove_log dark_oak_log crimson_stem warped_wart_block; do
-  unzip -p "$J" assets/minecraft/textures/block/$b.png > /tmp/music/files/$b.png && echo ok $b
-done
+FJ=$(find .gradle/mavenizer/repo -name 'forge-26.3-*.jar' ! -name '*sources*' | head -1)
+echo "jar: $FJ"
+echo "== fake players"; unzip -l "$FJ" | grep -i "fakeplayer\|FakePlayer" | head
+for c in net.minecraftforge.common.util.FakePlayer net.minecraftforge.common.util.FakePlayerFactory; do echo "== $c"; javap -cp "$FJ" $c 2>&1 | head -30; done
+echo "== EntityRenderer culling"; javap -cp "$FJ" net.minecraft.client.renderer.entity.EntityRenderer | grep -i "render\|cull" | head -30
+echo "== LivingEntityRenderer"; javap -p -cp "$FJ" net.minecraft.client.renderer.entity.LivingEntityRenderer | grep -i "upside\|shaking\|setupRotations\|isBodyVisible" | head
+echo "== EntityType.Builder passengers"; javap -cp "$FJ" 'net.minecraft.world.entity.EntityType$Builder' | grep -i "passenger\|attach\|ridingOffset" | head
+echo "== KeyMapping"; javap -cp "$FJ" net.minecraft.client.KeyMapping | grep -i "setDown\|isDown\|click" | head
+echo "== ServerLevel noSave"; javap -cp "$FJ" net.minecraft.server.level.ServerLevel | grep -i "nosave" | head
+echo "== attribute classes"; unzip -l "$FJ" | grep -E "net/minecraft/world/attribute/[A-Za-z]+\.class" | awk '{print $4}' | head -60
+echo "== client attribute/fog"; unzip -l "$FJ" | grep -E "net/minecraft/client/renderer/fog/|CubicSampler|EnvironmentAttribute" | awk '{print $4}' | head -40
+echo "== Camera"; javap -cp "$FJ" net.minecraft.client.Camera | grep -i "attribute\|fog\|biome" | head
+for c in net.minecraft.world.attribute.EnvironmentAttributeSystem net.minecraft.world.attribute.EnvironmentAttributeProbe net.minecraft.world.attribute.EnvironmentAttributes; do echo "== $c"; javap -cp "$FJ" $c 2>&1 | head -40; done
+echo "== Forge fog/viewport events"; unzip -l "$FJ" | grep -E "net/minecraftforge/client/event/(ViewportEvent|.*Fog)" | awk '{print $4}'
+javap -cp "$FJ" 'net.minecraftforge.client.event.ViewportEvent$ComputeFogColor' 2>&1 | head -20
+echo "== Player upside down / Dinnerbone"; javap -p -cp "$FJ" net.minecraft.client.renderer.entity.LivingEntityRenderer | grep -i "boolean is" | head
 exit 0
