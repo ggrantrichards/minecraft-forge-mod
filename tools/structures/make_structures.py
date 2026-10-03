@@ -766,8 +766,9 @@ STRUCTURES = [
          heightmap="WORLD_SURFACE_WG", spawns=None, adaptation="beard_thin", ground=(16, 4096, 18)),
     # Mazes float out over open void, among the small islands. (The Rift Maw is built in Java now: see
     # write_data.)
-    # Phase 10: one tower per Glimmering Crags, roughly.
-    dict(name="resonant_spire", variants=[lambda: resonant_spire(81)],
+    # Phase 10's tower of the Glimmering Crags. Retired by the distillation (the Curator replaces the
+    # Spire Wyrm): its template is still built, so it can be placed by hand, but it isn't generated.
+    dict(name="resonant_spire", variants=[lambda: resonant_spire(81)], retired=True,
          biomes=[a("glimmering_crags")], spread=(28, 10, 51772093), height={"absolute": -3},
          heightmap="WORLD_SURFACE_WG", spawns=None, adaptation="beard_thin", ground=(16, 4096, 16)),
     dict(name="constellation_maze", variants=[lambda: constellation_maze(71)],
@@ -808,6 +809,14 @@ def write_data():
     """The worldgen JSON (structure, pool, set, biome tag). Called by generate_resources.py too."""
     for st in STRUCTURES:
         name = st["name"]
+        if st.get("retired"):
+            # Not generated: no worldgen files for it (and none left over from before).
+            for stale in (DATA / "worldgen/structure" / f"{name}.json", DATA / "worldgen/structure_set" / f"{name}.json",
+                          DATA / "worldgen/template_pool" / name / "start.json",
+                          DATA / "tags/worldgen/biome/has_structure" / f"{name}.json"):
+                if stale.exists():
+                    stale.unlink()
+            continue
         spacing, separation, salt = st["spread"]
         write_json(DATA / "worldgen/structure" / f"{name}.json",
                    structure_json(name, st["height"], st["heightmap"], st["spawns"], st["adaptation"], st["ground"]))

@@ -37,8 +37,6 @@ import org.slf4j.Logger;
 //
 //   whale_ride     mount a Drift Whale with a Chorus Flower on a Stick and steer it: forward, a turn,
 //                  a climb (first person, then from behind)
-//   wyrm_fight     step onto a Resonant Spire's top in survival: the Wyrm wakes and fights; the camera
-//                  keeps it in view
 //   corona_drop    teleport into the Corona from high up, as with /tp, and look round as you land
 //   upwelling      drink Upwelling under a ledge: fall up onto its underside, walk on it, turn, jump off
 //   biome_border   fly east out of the Nebula Fields across its border: does the sky shift gently,
@@ -54,7 +52,6 @@ public final class ClientPlaytests {
 
     private static final List<Test> TESTS = List.of(
         new Test("whale_ride", 300, 10),
-        new Test("wyrm_fight", 700, 10),
         new Test("corona_drop", 260, 13),
         new Test("upwelling", 320, 10),
         new Test("biome_border", 360, 12),

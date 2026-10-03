@@ -411,9 +411,7 @@ public final class WorldgenSurvey {
         structureShot(lines, structures, "whalefall", 150.0, 60.0, 30.0);
         structureShot(lines, structures, "shattered_observatory", 46.0, 26.0, 4.0);
         structureShot(lines, structures, "solar_array", 34.0, 36.0, 4.0);
-        structureShot(lines, structures, "resonant_spire", 60.0, 40.0, 30.0);
         structureShot(lines, structures, "solar_array_room", 3.0, 2.2, 0.0);
-        wyrmShots(lines, structures, end);
         borderShot(lines, areas.get('N'), end);
         lines.addAll(EXTRA_SHOTS);
         try {
@@ -627,8 +625,6 @@ public final class WorldgenSurvey {
             centre.getX() + 0.5 - d, centre.getY() + 18, centre.getZ() + 0.5 - d, pitch));
     }
 
-    // A viewpoint "structure_<name> x y z yaw pitch": `distance` blocks north-west of the found block and
-    // `height` above it, looking at a point `aimLift` above that block.
     // For the playtests: where to start a flight east across the edge of the Nebula Fields - 100 blocks
     // short of the first place east of its centre where the biome changes, 30 above the ground.
     private static void borderShot(List<String> lines, Area area, ServerLevel end) {
@@ -651,48 +647,8 @@ public final class WorldgenSurvey {
         }
     }
 
-    // The Spire Wyrm asleep on the nest of the spire the survey found (and, for the trailer, a view up
-    // the shaft and one from a balcony): checks it's there and asleep, and where to film it.
-    private static void wyrmShots(List<String> lines, Map<String, BlockPos> structures, ServerLevel end) {
-        BlockPos at = structures.get("resonant_spire");
-        if (at == null) {
-            return;
-        }
-        List<com.ggrantrichards.astralend.entity.SpireWyrm> wyrms = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.SpireWyrm.class,
-            new net.minecraft.world.phys.AABB(at).inflate(48.0, 120.0, 48.0));
-        log("resonant_spire: " + wyrms.size() + " Spire Wyrm(s) on the nest" + (wyrms.isEmpty() ? "" : ", asleep: " + wyrms.get(0).isAsleep()
-            + " at " + wyrms.get(0).blockPosition().toShortString()));
-        if (wyrms.isEmpty()) {
-            return;
-        }
-        net.minecraft.world.phys.Vec3 nest = wyrms.get(0).position();
-        lines.add(String.format(java.util.Locale.ROOT, "pt_wyrm_nest %.1f %.1f %.1f 0 0", nest.x, nest.y, nest.z));   // for the playtests
-        // On the nest, from the north-west, a little above it.
-        lines.add(String.format(java.util.Locale.ROOT, "wyrm_nest %.1f %.1f %.1f -45 %.1f", nest.x - 6.0, nest.y + 5.0, nest.z - 6.0,
-            Math.toDegrees(Math.atan2(5.0 + 1.62 - 0.5, Math.sqrt(72.0)))));
-        // Up the shaft from 30 blocks below the nest, and level with it from 22 blocks out.
-        lines.add(String.format(java.util.Locale.ROOT, "wyrm_shaft %.1f %.1f %.1f -45 -60", nest.x - 2.0, nest.y - 30.0, nest.z - 2.0));
-        lines.add(String.format(java.util.Locale.ROOT, "wyrm_flight %.1f %.1f %.1f -45 -8", nest.x - 16.0, nest.y + 4.0, nest.z - 16.0));
-        // The bell nearest the top, seen from inside the shaft (the bells hang at the ledges' inner
-        // edges), from just past the middle, a little above it.
-        BlockPos bell = null;
-        for (BlockPos p : BlockPos.betweenClosed(BlockPos.containing(nest).offset(-18, -40, -18), BlockPos.containing(nest).offset(18, 4, 18))) {
-            if (end.getBlockState(p).is(Blocks.BELL) && (bell == null || p.getY() > bell.getY())) {
-                bell = p.immutable();
-            }
-        }
-        if (bell != null) {
-            net.minecraft.world.phys.Vec3 ring = net.minecraft.world.phys.Vec3.atCenterOf(bell);
-            net.minecraft.world.phys.Vec3 out = new net.minecraft.world.phys.Vec3(ring.x - nest.x, 0, ring.z - nest.z).normalize();
-            net.minecraft.world.phys.Vec3 cam = new net.minecraft.world.phys.Vec3(nest.x, ring.y, nest.z).add(out.scale(-2.5)).add(0, 2.5, 0);
-            net.minecraft.world.phys.Vec3 d = ring.subtract(cam);
-            double yaw = Math.toDegrees(Math.atan2(-d.x, d.z));
-            double pitch = -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
-            lines.add(String.format(java.util.Locale.ROOT, "wyrm_bell %.1f %.1f %.1f %.1f %.1f", cam.x, cam.y - 1.62, cam.z, yaw, pitch));
-            log("resonant_spire: the highest bell at " + bell.toShortString());
-        }
-    }
-
+    // A viewpoint "structure_<name> x y z yaw pitch": `distance` blocks north-west of the found block and
+    // `height` above it, looking at a point `aimLift` above that block.
     private static void structureShot(List<String> lines, Map<String, BlockPos> structures, String name, double distance,
                                       double height, double aimLift) {
         BlockPos at = structures.get(name);
@@ -717,8 +673,7 @@ public final class WorldgenSurvey {
                                 new Wanted("solar_array", 'C', ModBlocks.COLLECTOR_PEDESTAL.get()),
                                 new Wanted("rift_maw", 'N', ModBlocks.MAW_THROAT.get()),
                                 new Wanted("remnant", 'C', Blocks.SHROOMLIGHT),
-                                new Wanted("constellation_maze", 'N', ModBlocks.STAR_BRIDGE.get()),
-                                new Wanted("resonant_spire", 'G', Blocks.BELL))) {
+                                new Wanted("constellation_maze", 'N', ModBlocks.STAR_BRIDGE.get()))) {
             Area area = areas.get(w.biome());
             BlockPos from = area != null ? area.centre : BlockPos.ZERO;
             net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tag = net.minecraft.tags.TagKey.create(

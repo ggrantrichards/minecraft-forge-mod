@@ -1374,7 +1374,7 @@ def structures_phase6():
     lang[f"item.{NS}.temporal_crystal"] = "Temporal Crystal"
     lang[f"item.{NS}.star_chart.marks_structure"] = "Marks a site: %s"
     for name, english in (("comet_crater", "Comet Crater"), ("wanderer_relay", "Wanderer Relay"), ("whalefall", "Whalefall"),
-                          ("shattered_observatory", "Shattered Observatory"), ("resonant_spire", "Resonant Spire"), ("solar_array", "Solar Array Ruins"),
+                          ("shattered_observatory", "Shattered Observatory"), ("solar_array", "Solar Array Ruins"),
                           ("rift_maw", "Rift Maw"), ("constellation_maze", "Constellation Maze"),
                           ("remnant", "The Remnant")):
         lang[f"structure.{NS}.{name}"] = english
