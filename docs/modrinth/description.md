@@ -4,10 +4,6 @@
 pale biome and becomes a sparse, mysterious sky of astral islands, each kind with its own life, its own
 light and its own secrets.
 
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ZUQVTpnqRTQ" title="The Astral End - Official Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-**[Watch the trailer on YouTube](https://youtu.be/ZUQVTpnqRTQ)**: filmed entirely in-game (before the beta.2 rework).
-
 > **Beta.** Expect changes before 1.0, including blocks and items that are renamed, reworked or
 > removed. Keep backups of worlds you care about.
 

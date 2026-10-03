@@ -7,7 +7,7 @@ into a sparse, mysterious network of astral islands. The full plan is in
 **Status:** phases 1-10 done. Mod ID: `astralend`. Phase 10 reworked the whole mod toward what a real
 Mojang End update would ship - see [Phase 10](#phase-10-the-rework) below, which also lists every rename.
 
-[![Fifteen seconds of the trailer, filmed in the game: the Spire Wyrm wakes. Click for the full trailer on YouTube.](docs/modrinth/teaser.webp)](https://youtu.be/ZUQVTpnqRTQ)
+[![Fifteen seconds of the trailer, filmed in the game. Click for the full trailer on YouTube.](docs/modrinth/teaser.webp)](https://youtu.be/ZUQVTpnqRTQ)
 
 **[Watch the trailer](https://youtu.be/ZUQVTpnqRTQ)**
 
@@ -91,10 +91,6 @@ templates turn up in End City treasure.
 **Music** for the astral biomes, all free to use - see [sounds/credits.txt](src/main/resources/assets/astralend/sounds/credits.txt):
 "Out There" by yd, "Ambient Relaxing Loop" and "Heavenly Loop" by isaiah658, "Observing the Star" by
 madeso (all CC0), and "Space Music" by HitCtrl (CC-BY 3.0).
-
-**The trailer's narration** is spoken by [Kokoro](https://huggingface.co/hexgrad/Kokoro-82M) (the
-Kokoro-82M voice model, Apache-2.0, run with [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx)),
-pitched down for the trailer; see [tools/trailer/narrate.py](tools/trailer/narrate.py).
 
 **Textures** of the commonest new blocks and their families (the End stones and their bricks, Chorus
 Moss, the chorus, lumine and nullwood woods, Chorus Bloom, Lumine Cap, Glimmer Crystal, Leviathan Bone,
@@ -422,7 +418,6 @@ Tufts**, **Nebula Tendrils** (climbable, glowing tips), **Shimmer Reeds** and **
 create (or first open) a world with this mod, because the mod changes how the End generates. It's
 normal for any mod or datapack that changes a dimension; click **I Know What I'm Doing!** and it
 won't ask again for that world.
-
 
 ### Phase 3: the other five biomes
 
