@@ -666,7 +666,7 @@ def terrain():
     df("region/belt", {"type": "minecraft:noise", "noise": "minecraft:temperature", "xz_scale": 0.3, "y_scale": 0.0})
     df("region/ruin", {"type": "minecraft:noise", "noise": "minecraft:ridge", "xz_scale": 0.05, "y_scale": 0.0})
     # Faster: patches a few hundred blocks across inside a territory, where it turns into its variant.
-    df("region/variant", {"type": "minecraft:noise", "noise": "minecraft:continentalness", "xz_scale": 0.5, "y_scale": 0.0})
+    df("region/variant", {"type": "minecraft:noise", "noise": "minecraft:continentalness", "xz_scale": 0.25, "y_scale": 0.0})
 
     # Weights (0..1) of each biome's terrain. They are 0 within 1,024 blocks of the centre, so the
     # main island and the gap around it are exactly vanilla.

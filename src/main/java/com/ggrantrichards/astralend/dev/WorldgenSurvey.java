@@ -254,7 +254,8 @@ public final class WorldgenSurvey {
                 failures.add(String.format("%s covers %.1f%% of the outer End (expected %.1f-%.0f%%)", info.name(), share,
                     info.minShare(), info.maxShare()));
             }
-            double minCoherence = 50;
+            // (Variants are patches inside their parents' territories, so they're allowed to be smaller.)
+            double minCoherence = info.symbol() == 'V' || info.symbol() == 'X' ? 35 : 50;
             boolean small = info.symbol() == 'C' || info.symbol() == 'E';   // the Eclipse is too small for the map's grid
             if (share > 0 && coherence < minCoherence && !small) {
                 failures.add(String.format("%s is scattered, not regions (coherence %.0f%%, expected %.0f%%+)", info.name(),
