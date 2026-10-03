@@ -91,6 +91,12 @@ templates turn up in End City treasure.
 "Out There" by yd, "Ambient Relaxing Loop" and "Heavenly Loop" by isaiah658, "Observing the Star" by
 madeso (all CC0), and "Space Music" by HitCtrl (CC-BY 3.0).
 
+**Textures** of the commonest new blocks (Pale End Stone, Sunscorched Stone, Chorus Moss, Chorus Stalk,
+Chorus Bloom, Lumine Cap, Glimmer Crystal, Leviathan Bone) are recoloured from vanilla's own (end stone,
+moss, crimson stem, cherry leaves, shroomlight, amethyst, bone block), so they sit right beside them in
+the game. Those textures stay Mojang's and aren't covered by the MIT license; see
+[tools/textures/retexture.py](tools/textures/retexture.py).
+
 ![The Chorus Thicket](docs/images/phase10/chorus_thicket.png)
 ![The Glimmering Crags](docs/images/phase10/glimmering_crags.png)
 ![A Resonant Spire, with the Spire Wyrm's boss bar](docs/images/phase10/resonant_spire.png)

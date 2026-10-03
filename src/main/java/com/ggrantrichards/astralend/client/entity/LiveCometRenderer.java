@@ -44,18 +44,13 @@ public class LiveCometRenderer extends MobRenderer<LiveComet, LiveCometRenderer.
     public static class State extends LivingEntityRenderState {
     }
 
-    // The rock tumbles slowly as it flies, pitched along its path, inside a coma of two turning shells of
-    // light. (Its tail is particles: see LiveComet.)
+    // The rock tumbles slowly as it flies, pitched along its path. (Its tail is particles: see LiveComet.)
     public static class Model extends EntityModel<State> {
         private final ModelPart comet;
-        private final ModelPart coma;
-        private final ModelPart comaOuter;
 
         public Model(ModelPart root) {
             super(root, RenderTypes::entityTranslucent);
             this.comet = root.getChild("comet");
-            this.coma = this.comet.getChild("coma");
-            this.comaOuter = this.comet.getChild("coma_outer");
         }
 
         @Override
@@ -64,10 +59,7 @@ public class LiveCometRenderer extends MobRenderer<LiveComet, LiveCometRenderer.
             float t = state.ageInTicks;
             this.comet.xRot += state.xRot * Mth.DEG_TO_RAD;
             this.comet.zRot += t * 0.03F;                       // the slow tumble
-            this.coma.xRot += t * 0.05F;                        // the coma's two shells turn against each other,
-            this.coma.yRot += t * 0.07F;                        // like an End Crystal's glass
-            this.comaOuter.xRot -= t * 0.04F + 0.6F;
-            this.comaOuter.yRot -= t * 0.03F + 0.4F;
+            this.comet.yRot += t * 0.02F;
         }
     }
 }

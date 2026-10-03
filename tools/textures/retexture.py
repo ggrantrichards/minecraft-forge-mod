@@ -1,105 +1,153 @@
-"""Phase 10 retexture: the commonest blocks redrawn closer to vanilla's look - soft, low contrast, a
-narrow tonal range, no bright specks - each after the vanilla block it sits beside:
+"""Phase 10 retexture: the commonest blocks made from vanilla's own textures. Each starts from the
+vanilla block it is kin to and keeps that block's pixel pattern exactly; only the colours change
+(a hue shift, or a gradient map onto a new ramp of tones).
 
-  Nightstone        blackstone's chunky rock, in dark violet
-  Chorus Moss       the moss block's soft mottle, in violet
-  Chorus Stalk      cherry and mangrove logs' calm bark furrows, pale magenta
-  Sunscorched Stone sandstone's soft, sun-bleached grain
-  Charred End Stone end stone's pitted look, scorched, with a few embers
-  Lumine Cap        shroomlight's glowing cells, in cool blue
-  Pale End Stone    end stone's pitted grain, bleached pale
+  Pale End Stone    end stone, bleached cool grey
+  Sunscorched Stone end stone (turned a quarter), sun-baked amber
+  Chorus Moss       moss block, in violet
+  Chorus Stalk      crimson stem (side and end), shifted to chorus magenta
+  Chorus Bloom      cherry leaves, shifted to chorus violet
+  Lumine Cap        shroomlight, in cool blue
+  Glimmer Crystal   amethyst block, in teal
+  Leviathan Bone    bone block (side and end), aged to a grey ivory
+  Nightstone        blackstone's chunky rock, in dark violet (drawn, kept)
+  Charred End Stone end stone's pits, scorched, two embers (drawn, kept)
+
+The vanilla textures are fetched once into tools/textures/.vanilla (git-ignored); they are Mojang's,
+and so are the recoloured results - see the credits in the README.
 
 Imported by phase10_textures (its TEXTURES list goes last, so these replace the older drawings)."""
-import random
+import colorsys
+import urllib.request
+from pathlib import Path
 
-from pixelart import SIZE, chunks, fbm, hexc, new, quantize, ramp
+from PIL import Image
 
+from pixelart import chunks, hexc, ramp
 
-def _mottle(seed, pal, octaves=((2, 0.5), (4, 0.3), (8, 0.2)), stretch_x=1.0, shares=None):
-    return quantize(fbm(seed, octaves, stretch_x), pal, shares)
-
-
-# Nightstone: rounded dark lumps with a violet cast, like blackstone.
-NIGHT = ramp("0c0a12", "4a405e", 6, hue_shift=0.02, sat_curve=0.06)
-
-
-def nightstone():
-    return chunks(4101, 14, NIGHT, base_index=2, light=1, dark=1)
+VANILLA_URL = "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.4/assets/minecraft/textures/block/{}.png"
+CACHE = Path(__file__).resolve().parent / ".vanilla"
 
 
-# Chorus Moss: soft violet mottle, a little lighter on top of the clumps, like the moss block.
-MOSS = ramp("3a2366", "9a78cc", 6, hue_shift=0.03, sat_curve=0.06)
+def vanilla(name):
+    """A vanilla block texture (the first frame, if it's animated)."""
+    path = CACHE / f"{name}.png"
+    if not path.exists():
+        CACHE.mkdir(exist_ok=True)
+        with urllib.request.urlopen(VANILLA_URL.format(name), timeout=30) as r:
+            path.write_bytes(r.read())
+    return Image.open(path).convert("RGBA").crop((0, 0, 16, 16))
 
 
-def chorus_moss():
-    img = _mottle(4201, MOSS[1:6], octaves=((8, 0.45), (16, 0.55)), shares=[1, 3, 4, 3, 1])
-    rnd = random.Random(4202)
-    px = img.load()
-    for _ in range(5):                       # a few faint pale tips, nothing bright
-        x, y = rnd.randrange(SIZE), rnd.randrange(SIZE)
-        px[x, y] = MOSS[5]
-    return img
+def shift(img, hue=0.0, sat=1.0, val=1.0, lift=0.0):
+    """Every pixel's hue turned by `hue` (0..1 = a full turn), saturation and value scaled, value lifted."""
+    out = img.copy()
+    px = out.load()
+    for y in range(16):
+        for x in range(16):
+            r, g, b, a = px[x, y]
+            h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+            h = (h + hue) % 1.0
+            s = min(1.0, s * sat)
+            v = min(1.0, max(0.0, v * val + lift))
+            r, g, b = colorsys.hsv_to_rgb(h, s, v)
+            px[x, y] = (round(r * 255), round(g * 255), round(b * 255), a)
+    return out
 
 
-# Chorus Stalk: pale magenta bark with long, soft furrows, like cherry and mangrove logs.
-STALK = ramp("5a2c62", "c79acc", 5, hue_shift=0.02, sat_curve=0.05)
+def gradient(img, dark, light):
+    """A gradient map: each pixel's brightness, stretched over the texture's own range, picks a tone
+    between `dark` and `light`. The pattern and the number of tones stay vanilla's."""
+    out = img.copy()
+    px = out.load()
+
+    def lum(p):
+        return 0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2]
+    ls = [lum(px[x, y]) for y in range(16) for x in range(16) if px[x, y][3]]
+    lo, hi = min(ls), max(ls)
+    d, l = hexc(dark), hexc(light)
+    for y in range(16):
+        for x in range(16):
+            p = px[x, y]
+            t = (lum(p) - lo) / (hi - lo) if hi > lo else 0.5
+            px[x, y] = tuple(round(d[i] + (l[i] - d[i]) * t) for i in range(3)) + (p[3],)
+    return out
 
 
-def chorus_stalk():
-    import hq
-    return hq.bark(4301, STALK[0:5])
-
-
-# Sunscorched Stone: pale, sun-bleached sandstone grain.
-SUN = ramp("b88a52", "f4dfae", 5, hue_shift=0.03, sat_curve=0.05)
+def pale_end_stone():
+    return gradient(vanilla("end_stone"), "a6a2b4", "e4e2ec")
 
 
 def sunscorched_stone():
-    img = _mottle(4401, SUN, octaves=((8, 0.5), (16, 0.5)), shares=[1, 3, 5, 3, 1])
+    return gradient(vanilla("end_stone").transpose(Image.Transpose.ROTATE_90), "b48448", "efcf8e")
+
+
+def chorus_moss():
+    return shift(vanilla("moss_block"), hue=0.55, sat=0.62, val=1.25)
+
+
+def chorus_stalk():
+    return shift(vanilla("crimson_stem"), hue=-0.12, sat=0.48, val=1.45)
+
+
+def chorus_stalk_top():
+    return shift(vanilla("crimson_stem_top"), hue=-0.12, sat=0.48, val=1.45)
+
+
+def chorus_bloom():
+    """Cherry leaves in chorus violet; the little green leaves become a deep chorus purple."""
+    img = shift(vanilla("cherry_leaves"), hue=-0.13, sat=1.0, val=0.92)
+    src = vanilla("cherry_leaves").load()
     px = img.load()
-    rnd = random.Random(4402)
-    x, y = rnd.randrange(SIZE), rnd.randrange(SIZE)
-    for i in range(7):                       # one hairline crack, wandering
-        px[x % SIZE, y % SIZE] = SUN[0]
-        x += 1
-        y += rnd.choice((-1, 0, 1))
+    for y in range(16):
+        for x in range(16):
+            r, g, b, a = src[x, y]
+            if a and g > r:   # a green leaf pixel
+                v = (r + g + b) / (3 * 255)
+                px[x, y] = (round(70 + 60 * v), round(36 + 30 * v), round(84 + 60 * v), a)
     return img
 
 
-# Charred End Stone: end stone's pitted grain, scorched dark, with a couple of embers.
-CHAR = ramp("1a1210", "6a5244", 5, hue_shift=-0.02, sat_curve=0.05)
+def lumine_cap():
+    return shift(vanilla("shroomlight"), hue=0.50, sat=0.62, val=0.92)
+
+
+def glimmer_crystal():
+    return shift(vanilla("amethyst_block"), hue=-0.27, sat=0.85, val=1.0)
+
+
+def leviathan_bone_side():
+    return gradient(vanilla("bone_block_side"), "aeaa9c", "e2dfd2")
+
+
+def leviathan_bone_top():
+    return gradient(vanilla("bone_block_top"), "9c988a", "e2dfd2")
+
+
+# ---- drawn, kept from the first pass
+def nightstone():
+    return chunks(4101, 14, ramp("0c0a12", "4a405e", 6, hue_shift=0.02, sat_curve=0.06), base_index=2, light=1, dark=1)
 
 
 def charred_end_stone():
-    img = chunks(4501, 18, CHAR, base_index=2, light=1, dark=1)
+    img = chunks(4501, 18, ramp("1a1210", "6a5244", 5, hue_shift=-0.02, sat_curve=0.05), base_index=2, light=1, dark=1)
     px = img.load()
     for (x, y) in ((4, 11), (12, 3)):
         px[x, y] = hexc("9a3a14")
     return img
 
 
-# Lumine Cap: shroomlight's glowing cells, in cool blue, brightest at their middles.
-CAP = ramp("1c2a6a", "c8f2ff", 7, hue_shift=-0.04, sat_curve=0.1)
-
-
-def lumine_cap():
-    return chunks(4601, 9, CAP, base_index=3, light=2, dark=2)
-
-
-# Pale End Stone: end stone's small pitted grain, bleached to a cool pale grey.
-PALE = ramp("8e8aa6", "eceaf6", 5, hue_shift=0.02, sat_curve=0.04)
-
-
-def pale_end_stone():
-    return chunks(4701, 22, PALE, base_index=2, light=1, dark=1)
-
-
 TEXTURES = [
     ("block/pale_end_stone.png", pale_end_stone),
-    ("block/nightstone.png", nightstone),
+    ("block/sunscorched_stone.png", sunscorched_stone),
     ("block/chorus_moss.png", chorus_moss),
     ("block/chorus_stalk.png", chorus_stalk),
-    ("block/sunscorched_stone.png", sunscorched_stone),
-    ("block/charred_end_stone.png", charred_end_stone),
+    ("block/chorus_stalk_top.png", chorus_stalk_top),
+    ("block/chorus_bloom.png", chorus_bloom),
     ("block/lumine_cap.png", lumine_cap),
+    ("block/glimmer_crystal.png", glimmer_crystal),
+    ("block/leviathan_bone_side.png", leviathan_bone_side),
+    ("block/leviathan_bone_top.png", leviathan_bone_top),
+    ("block/nightstone.png", nightstone),
+    ("block/charred_end_stone.png", charred_end_stone),
 ]

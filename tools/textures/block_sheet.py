@@ -43,10 +43,10 @@ def cube(top, side):
 
 
 def tiled(img, n=4, px=192):
-    o = Image.new("RGBA", (16 * n, 16 * n))
+    o = Image.new("RGBA", (16 * n, 16 * n), (34, 32, 42, 255))  # see-through pixels (leaves) show the page
     for x in range(n):
         for y in range(n):
-            o.paste(img, (x * 16, y * 16))
+            o.alpha_composite(img, (x * 16, y * 16))
     return o.resize((px, px), Image.NEAREST)
 
 

@@ -8,6 +8,7 @@ It reads the same model description as make_mobs.py and places parts the way Min
 here looks wrong in the game. The rest pose only - animations aren't simulated. Good for quick
 checks while designing; the in-game screenshots in CI are the final word.
 """
+import copy
 import math
 import sys
 from pathlib import Path
@@ -132,6 +133,21 @@ def render(mob, texture, yaw, pitch, size=260, glow=None, scale=None):
     return img
 
 
+def laid_out(mob):
+    """The Spire Wyrm's segments are placed in game along the path its head has flown (see
+    SpireWyrmRenderer), all at one pivot in the model; here they trail behind the head in a gentle S,
+    SEGMENT_LENGTH (1.5 blocks at scale 2.5 = 9.6 model pixels) apart."""
+    if mob.name != "spire_wyrm":
+        return mob
+    mob = copy.deepcopy(mob)
+    for part in mob.parts:
+        if part.name.startswith("seg"):
+            i = int(part.name[3:])
+            yaw = math.cos(i * 0.55) * 0.35
+            part.pose = (math.sin(i * 0.55) * 6, 8 + math.sin(i * 0.4) * 1.5, 9.6 * (i + 1), 0, yaw, 0)
+    return mob
+
+
 def main():
     wanted = sys.argv[1:]
     mobs = [m for m in make_mobs.MOBS if not wanted or m.name in wanted]
@@ -145,7 +161,7 @@ def main():
         glow_file = folder / f"{mob.name}_glow.png"
         glow = Image.open(glow_file).convert("RGBA") if glow_file.exists() else None
         for col, (yaw, pitch) in enumerate(views):
-            sheet.paste(render(mob, texture, yaw, pitch, size, glow), (col * size, row * (size + 18)))
+            sheet.paste(render(laid_out(mob), texture, yaw, pitch, size, glow), (col * size, row * (size + 18)))
         draw.text((6, row * (size + 18) + size + 2), mob.name, fill=(230, 230, 236))
     OUT.parent.mkdir(parents=True, exist_ok=True)
     sheet.save(OUT if not wanted else OUT.with_name("mob_models_" + "_".join(wanted) + ".png"))

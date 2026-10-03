@@ -336,14 +336,15 @@ BELL = [hexc("4fb3bd", 215), hexc("67c8cc", 215), hexc("84dbd8", 215), hexc("a8e
 
 
 def pollinator_bell(face, px, py, fw, fh, rnd):
-    """A translucent jelly bell: brightest at the crown, softly mottled, darker toward the rim."""
-    t = n()
+    """A translucent jelly bell: brightest at the crown, darker toward the rim, with the radial canals
+    of a jellyfish running down it in a darker line."""
     if face == "up":
-        return BELL[3 + (1 if t > 0.6 else 0)]
+        return BELL[4] if 2 <= px <= 3 and 2 <= py <= 3 else BELL[3]
     if face == "down":
         return hexc("2f7f8c", 200)
-    v = py / max(1, fh - 1)                       # 0 at the crown, 1 at the rim
-    i = int((1 - v) * 3.2 + t * 1.2)
+    i = 3 - py                                    # crown light, rim dark, in clean bands
+    if px in (1, fw - 2) and py >= 1:
+        i -= 1                                    # a canal
     return BELL[max(0, min(4, i))]
 
 
@@ -358,27 +359,57 @@ def pollinator_bell_glow(face, px, py, fw, fh, rnd):
 def pollinator_tendril(face, px, py, fw, fh, rnd):
     if face in ("up", "down"):
         return P_TENDRIL[0]
-    return rnd.choice(P_TENDRIL)
+    return P_TENDRIL[(py // 2) % 2]               # beaded, in two tones
 
 
 def pollinator_tendril_glow(face, px, py, fw, fh, rnd):
-    if face in ("north", "south", "east", "west") and py >= fh - 2:
-        return hexc("f2d8ff")
+    if face in ("north", "south", "east", "west") and py == fh - 1:
+        return hexc("f2d8ff")                      # a glowing tip
     return None
+
+
+def pollinator_rim(face, px, py, fw, fh, rnd):
+    if face == "down":
+        return hexc("2a5f73", 230)
+    if face == "up":
+        return P_RIM[1]
+    return P_RIM[0] if px % 3 == 2 else P_RIM[1]  # scalloped
+
+
+def pollinator_rim_glow(face, px, py, fw, fh, rnd):
+    if face in ("north", "south", "east", "west") and px % 3 == 0:
+        return hexc("b8f7ff")
+    return None
+
+
+POLLEN = [hexc("d98ad0"), hexc("f0b4e4"), hexc("ffe2a8")]
+
+
+def pollen(face, px, py, fw, fh, rnd):
+    """The sac of chorus pollen it carries between its tendrils: pink, with a gold dusting."""
+    if face == "up":
+        return POLLEN[1]
+    return POLLEN[2] if (px + py) % 3 == 0 else POLLEN[1] if py == 0 else POLLEN[0]
+
+
+def pollen_glow(face, px, py, fw, fh, rnd):
+    return POLLEN[2] if (px + py) % 3 == 0 else None
 
 
 POLLINATOR = Mob("pollinator", (32, 32), [
     Part("bell", (0, 17, 0), [
-        Box(0, 0, -3, -4, -3, 6, 4, 6, paint=pollinator_bell, glow=pollinator_bell_glow),
-        Box(0, 10, -3.5, 0, -3.5, 7, 1, 7, paint=speckled(P_RIM, bottom=hexc("2a5f73", 230)),
-            glow=lambda f, x, y, w, h, r: hexc("b8f7ff") if f in ("north", "south", "east", "west") and x % 2 == 0 else None),
-        Box(0, 18, -2, -5, -2, 4, 1, 4, paint=speckled([hexc("b9fff3", 220), hexc("a0f2e6", 220)])),
+        B(-3, -4, -3, 6, 4, 6, pollinator_bell, pollinator_bell_glow),
+        B(-3.5, 0, -3.5, 7, 1, 7, pollinator_rim, pollinator_rim_glow),
+        B(-2, -5, -2, 4, 1, 4, lambda f, x, y, w, h, r: BELL[4] if f == "up" and 1 <= x <= 2 and 1 <= y <= 2 else BELL[3]),
+        B(-1, 2, -1, 2, 2, 2, pollen, pollen_glow),                        # the pollen sac
+        B(-3, 1, -0.5, 1, 3, 1, pollinator_tendril, pollinator_tendril_glow, key="frill"),   # a fuller skirt
+        B(2, 1, -0.5, 1, 3, 1, pollinator_tendril, pollinator_tendril_glow, key="frill"),
     ], [
-        Part("tendril_1", (-1.5, 1, -1.5), [Box(24, 0, -0.5, 0, -0.5, 1, 6, 1, paint=pollinator_tendril, glow=pollinator_tendril_glow)]),
-        Part("tendril_2", (1.5, 1, -1.5), [Box(24, 0, -0.5, 0, -0.5, 1, 6, 1, paint=pollinator_tendril, glow=pollinator_tendril_glow)]),
-        Part("tendril_3", (-1.5, 1, 1.5), [Box(24, 0, -0.5, 0, -0.5, 1, 6, 1, paint=pollinator_tendril, glow=pollinator_tendril_glow)]),
-        Part("tendril_4", (1.5, 1, 1.5), [Box(24, 0, -0.5, 0, -0.5, 1, 6, 1, paint=pollinator_tendril, glow=pollinator_tendril_glow)]),
-        Part("tendril_5", (0, 1, 0), [Box(28, 0, -0.5, 0, -0.5, 1, 8, 1, paint=pollinator_tendril, glow=pollinator_tendril_glow)]),
+        Part("tendril_1", (-1.5, 1, -1.5), [B(-0.5, 0, -0.5, 1, 6, 1, pollinator_tendril, pollinator_tendril_glow, key="tendril")]),
+        Part("tendril_2", (1.5, 1, -1.5), [B(-0.5, 0, -0.5, 1, 6, 1, pollinator_tendril, pollinator_tendril_glow, key="tendril")]),
+        Part("tendril_3", (-1.5, 1, 1.5), [B(-0.5, 0, -0.5, 1, 6, 1, pollinator_tendril, pollinator_tendril_glow, key="tendril")]),
+        Part("tendril_4", (1.5, 1, 1.5), [B(-0.5, 0, -0.5, 1, 6, 1, pollinator_tendril, pollinator_tendril_glow, key="tendril")]),
+        Part("tendril_5", (0, 4, 0), [B(-0.5, 0, -0.5, 1, 6, 1, pollinator_tendril, pollinator_tendril_glow, key="tendril")]),
     ]),
 ], egg=(hexc("7fd9d0"), hexc("b48cf0")))
 
@@ -388,7 +419,7 @@ POLLINATOR = Mob("pollinator", (32, 32), [
 # panels with Void Crystal inlaid along the seam, one big glass lens, an End Rod finial tipped with a
 # void crystal, two small fins and a ring of purpur that spins around it.
 PURPUR = [hexc("3a2240"), hexc("5c3a63"), hexc("7d5486"), hexc("a079a8"), hexc("bf9cc4"), hexc("e0c8e2")]
-WORN = [hexc("b8b38a"), hexc("d4cf9e"), hexc("e8e4b8")]
+WORN = [hexc("a988ad"), hexc("b497b7"), hexc("c0a6c2")]   # worn pale, a shade or two off the purpur
 
 
 def purpur(face, px, py, fw, fh, rnd, panels=True):
@@ -404,7 +435,7 @@ def purpur(face, px, py, fw, fh, rnd, panels=True):
         i -= 1
     c = PURPUR[max(0, min(5, i))]
     if t > 0.75:
-        c = WORN[min(2, int((t - 0.75) * 12))]           # worn pale, like old End Stone
+        c = WORN[min(2, int((t - 0.75) * 12))]           # worn pale in patches
     if panels and face in ("north", "south", "east", "west") and fh >= 6 and py == fh // 2:
         c = PURPUR[0]                                     # the panel seam round its middle
     if panels and fw >= 6 and fh >= 6 and (px, py) in ((1, 1), (fw - 2, 1), (1, fh - 2), (fw - 2, fh - 2)):
@@ -481,7 +512,7 @@ WANDERER = Mob("void_wanderer", (64, 64), [
         Box(16, 30, -7, -0.5, -6, 1, 1, 12, paint=ring_bar),
         Box(16, 30, 6, -0.5, -6, 1, 1, 12, paint=ring_bar),
     ]),
-], egg=(hexc("a079a8"), hexc("e8e4b8")))
+], egg=(hexc("a079a8"), hexc("e0c8e2")))
 
 
 # ---- Umbral Stalker: a hunched brute of the Hollow Isless that walks on its knuckles, like a
@@ -518,7 +549,7 @@ def crystal_glow(face, px, py, fw, fh, rnd):
     return None
 
 
-BRUTE_PAL = {".": fur, "s": fur, "h": SH[3], "f": hide, "k": SOCKET, "E": VIO, "W": bone_hi, "C": hexc("5a36a8"),
+BRUTE_PAL = {".": fur, "s": fur, "h": SH[3], "f": hide, "H": HIDE[3], "k": SOCKET, "E": VIO, "W": bone_hi, "C": hexc("5a36a8"),
              "c": hexc("2c1d52"), "B": bone, "b": BONE[1]}
 BRUTE_CHEST = ["ssssssssssssss",
                "sshhhhsshhhhss",
@@ -543,8 +574,12 @@ BRUTE_HEAD = {"north": ["ssssssss",
                         "sffffffs"],
               **sides(["sssssss", "hhhhhhh", "ssssssf", "ssssssf", "sssssff", "ssssssW", "ssssssW", "sssssss"])}
 BRUTE_HEAD_GLOW = {"north": ["........", "........", "..E..E.."]}
-BRUTE_FIST = {"north": ["ssssss", "BBBBBB", "BbBBbB", "ffffff", "ffffff", "ffffff"],
-              "down": ["ffffff"] * 6, "up": ["ssssss"] * 6}
+# The fists it walks on: curled fingers seen from the front (two narrow, two broad), dark gaps between
+# them, the knuckles worn to a paler leathery pad where they touch the ground.
+BRUTE_FIST = {"north": ["ssssss", "ssssss", "fkffkf", "fkffkf", "HkHHkH", "HkHHkH"],
+              "down": ["HkHHkH", "fkffkf", "fkffkf", "ffffff", "ffffff", "ffffff"],
+              **sides(["ssssss", "ssssss", "sssfff", "sssfff", "ssffHH", "ssffHH"]),
+              "up": ["ssssss"] * 6}
 brute_glow_pal = {"E": VIO_HI, "C": VIO}
 
 
@@ -623,13 +658,13 @@ def leg(face, px, py, fw, fh, rnd):
 
 
 CINDER_MITE = Mob("cinder_mite", (64, 32), [
-    Part("head", (0, 21.5, -3.5), [
+    Part("head", (0, 21.5, -2), [
         Box(0, 0, -2, -1.5, -3, 4, 3, 3, paint=mite_head, glow=mite_eyes),
         Box(14, 0, -2, 0.5, -5, 1, 1, 2, paint=mandible),
         Box(14, 0, 1, 0.5, -5, 1, 1, 2, mirror=True, paint=mandible),
     ]),
     Part("thorax", (0, 21.5, -1), [Box(0, 6, -2.5, -2, -1, 5, 4, 3, paint=basalt, glow=ember_seams)]),
-    Part("abdomen", (0, 21.5, 2), [Box(0, 13, -3, -2.5, 0, 6, 5, 5, paint=basalt, glow=ember_seams)], [
+    Part("abdomen", (0, 21.5, 1), [Box(0, 13, -3, -2.5, 0, 6, 5, 5, paint=basalt, glow=ember_seams)], [
         Part("tail", (0, 0, 5), [
             Box(22, 13, -1.5, -1.5, 0, 3, 3, 3, paint=basalt, glow=ember_seams),
             Box(24, 0, -0.5, -1, 3, 1, 1, 2, paint=mandible),
@@ -952,58 +987,56 @@ WATCHER = Mob("watcher", (64, 64), [
 ], egg=(STONE[3], RUNE))
 
 
-# ---- Live Comet (Phase 7): a tumbling rock of comet ice with dark lumps of meteoric iron and
-# glowing cracks, trailing three translucent streamers of light behind it (the particle tail goes on
-# much further).
-COMET_ICE = [hexc("6f93b0"), hexc("9fc4dc"), hexc("c3dcec"), hexc("e6f2fa")]
-COMET_ROCK = [hexc("2c2f3d"), hexc("3a3f52"), hexc("505872")]
+# ---- Live Comet (Phase 7): a tumbling lump of dark meteoric rock with a crust of comet ice frozen
+# on it - thick on one side, chunks of it jutting out - and pale blue light glowing through a few
+# cracks in the rock. Its tail is particles (see LiveComet), like every trail in vanilla.
+COMET_ROCK = [hexc("24222c"), hexc("33303e"), hexc("444052"), hexc("58536a")]
+COMET_ICE = [hexc("6f9cc4"), hexc("8fb9dc"), hexc("b0d2ec"), hexc("d2e8f7")]
+
+
+def _ice_crust(face, px, py, fw, fh, t):
+    """Whether this pixel of the core is under the ice crust: the top and the front-left are iced over."""
+    if face == "up":
+        return t < 0.5
+    if face in ("north", "east"):
+        return py < fh * 0.2 + t * 3 - 1.5
+    return False
 
 
 def comet_rock(face, px, py, fw, fh, rnd):
     t = n()
-    if t > 0.64:
-        c = COMET_ROCK[min(2, int((t - 0.64) * 9))]                 # lumps of dark meteoric rock
-    else:
-        i = 1 + int(t * 3.4) + {"up": 1, "down": -1}.get(face, 0)
-        c = COMET_ICE[max(0, min(3, i))]
-    return c
+    if _ice_crust(face, px, py, fw, fh, t):
+        return comet_ice(face, px, py, fw, fh, rnd)
+    i = 1 + shade_flat(face) + (1 if t > 0.62 else 0) - (1 if t < 0.3 else 0)
+    return clamp(i, COMET_ROCK)
+
+
+def comet_ice(face, px, py, fw, fh, rnd):
+    i = 1 + shade_flat(face) + (1 if n() > 0.55 else 0)
+    if px == 0 or py == 0:
+        i += 1                                                     # a lit edge, like vanilla ice
+    return clamp(i, COMET_ICE)
 
 
 def comet_crack_glow(face, px, py, fw, fh, rnd):
     t = n()
-    if 0.56 < t < 0.6:
-        return hexc("bff4ff")                                       # light glowing through the cracks
-    if 0.6 <= t < 0.62:
-        return hexc("7fe0ff")
+    if not _ice_crust(face, px, py, fw, fh, t) and 0.41 < t < 0.43 and face != "up":
+        return hexc("aef2ff")                                      # light glowing through the cracks
     return None
 
 
-def coma(edge, fill):
-    """The comet's coma: a shell of frozen light around the head, like an End Crystal's glass. A
-    bright frame, a faint body and a few sparks in it."""
-    def f(face, px, py, fw, fh, rnd):
-        if px in (0, fw - 1) or py in (0, fh - 1):
-            return hexc("d4f3ff", edge)
-        if rnd.random() < 0.07:
-            return hexc("f2fcff", min(255, edge + 40))
-        return hexc("a8dcff", fill)
-    return f
-
-
 COMET = Mob("live_comet", (64, 64), [
-    # The tail is particles (see LiveComet), like every trail in vanilla.
     Part("comet", (0, 18, 0), [
-        B(-4, -4, -4, 8, 8, 8, comet_rock, comet_crack_glow),
-        B(-5, -3, -2, 1, 5, 4, comet_rock),
-        B(4, -2, -3, 1, 4, 5, comet_rock),
-        B(-2, -5, -3, 5, 1, 5, comet_rock),
-        B(-3, 4, -2, 6, 1, 4, comet_rock),
-        B(-2, -2, -5, 4, 4, 1, comet_rock, comet_crack_glow),
-    ], [
-        Part("coma", (0, 0, 0), [B(-4, -4, -4, 8, 8, 8, coma(150, 26), coma(170, 30), key="coma", inflate=2.0)]),
-        Part("coma_outer", (0, 0, 0), [B(-4, -4, -4, 8, 8, 8, coma(150, 26), coma(170, 30), key="coma", inflate=4.5)]),
+        B(-4, -4, -4, 8, 8, 8, comet_rock, comet_crack_glow),       # the rock
+        B(-5, -2, -3, 1, 5, 5, comet_rock, comet_crack_glow),       # its lumps
+        B(4, -1, -2, 1, 4, 4, comet_rock),
+        B(-3, 4, -3, 5, 1, 5, comet_rock),
+        B(-2, -1, 4, 5, 4, 1, comet_rock, comet_crack_glow),
+        B(-3, -5, -3, 5, 1, 4, comet_ice),                          # the ice: a crust on top
+        B(-6, -5, -4, 3, 3, 3, comet_ice),                          # and chunks jutting out
+        B(1, -7, -1, 2, 2, 2, comet_ice),
     ]),
-], egg=(hexc("c3dcec"), hexc("3a3f52")))
+], egg=(COMET_ROCK[2], COMET_ICE[2]))
 
 
 
