@@ -648,7 +648,7 @@ upgrading).
 - **Portal Lens** (a spyglass, a Void Wanderer's Cracked Lens, Void Crystal, a Temporal Crystal and two
   Chart Fragments): the key that wakes Wormhole Maws and attunes you to them (§10.1). *Its other planned
   powers (outlines, a Maw finder, reading Echo Logs) were cut* - one clear job per item.
-- **Maze Telescope**: the Constellation Mazes' own fixed telescopes (§10.2, §15).
+- ~~**Maze Telescope**~~: cut in Phase 11; the mazes are played with a vanilla spyglass (§15).
 - **Star Chart**: found in ruins or left by the Watcher; points toward a biome or structure.
 - **Star Compass** (Phase 9: a compass with four Starblooms round it): points to the End's central
   island, like a lodestone compass with no lodestone. Vanilla compasses spin in the End, so this is
@@ -1112,7 +1112,7 @@ This needs real composed music, as Phase 9 noted.
 
 | Question | Decision |
 |---|---|
-| Telescope | Minecraft 26.3 has one, but the Constellation Mazes use their own **Maze Telescope** block: each is fixed on a platform, says which constellation it's aimed at and where, and the maze watches where you look. (Looking through a vanilla telescope or spyglass while you do it works too, and makes it easier.) |
+| Telescope | Vanilla's **spyglass** does the job: in a Constellation Maze, raise one and hold a constellation in view and its bridges light. (There was a Maze Telescope block; it was cut in Phase 11 - it did what the spyglass already does.) |
 | Mod name and ID | **The Astral End**, mod ID `astralend`. The former `rubymod` project was renamed; its Ruby example content stays until Phase 1 replaces it. |
 | Flares | **Only in the Corona biome.** Unprotected players there get Flare Burn; cover, Sunshades, Flare Ward potions and the Radiant upgrade protect them. The vanilla End and all other biomes never burn. The Corona makes up for the risk with exclusive materials. |
 | Another hostile mob | **Yes: Cinder Mites**, Corona only. |

@@ -18,8 +18,8 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 // A star-bridge in a Constellation Maze. Dark, it's nothing at all: invisible, with nothing to stand
-// on or click (only a rare glint gives it away). When someone at a Maze Telescope finds the
-// matching constellation, every bridge of that constellation nearby lights up and is solid for 20
+// on or click (only a rare glint gives it away). When someone in the maze finds the
+// matching constellation through a spyglass, every bridge of that constellation nearby lights up and is solid for 20
 // seconds (see MazeScoping), then goes dark again.
 public class StarBridgeBlock extends Block {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;

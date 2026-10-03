@@ -215,7 +215,7 @@ public final class ModBlocks {
             .sound(SoundType.STONE).noOcclusion()
             .lightLevel(state -> state.getValue(CollectorPedestalBlock.HOLDING).charged() ? 10 : 0));
     // Phase 6 (structures): the Rift Maw (eye sockets, the dormant throat, and the woken wormhole)
-    // and the Constellation Maze (star-bridges and telescopes). Built into structures, so the parts
+    // and the Constellation Maze (star-bridges). Built into structures, so the parts
     // that make the puzzles work can't be broken, like an End Portal frame.
     public static final RegistryObject<Block> MAW_EYE = register("maw_eye", com.ggrantrichards.astralend.maw.MawEyeBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).instrument(NoteBlockInstrument.XYLOPHONE)
@@ -232,9 +232,6 @@ public final class ModBlocks {
             .noOcclusion().noLootTable().isValidSpawn((s, l, p, e) -> false)
             .isRedstoneConductor((s, l, p) -> false).isSuffocating((s, l, p) -> false)
             .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.maze.StarBridgeBlock.LIT) ? 10 : 0));
-    public static final RegistryObject<Block> MAZE_TELESCOPE = register("maze_telescope", com.ggrantrichards.astralend.maze.MazeTelescopeBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(-1.0F, 3600000.0F).sound(SoundType.COPPER)
-            .noOcclusion().noLootTable());
     // Phase 9: Chorus Moss carpet, like moss carpet.
     public static final RegistryObject<Block> CHORUS_MOSS_CARPET = register("chorus_moss_carpet", net.minecraft.world.level.block.CarpetBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.1F).sound(SoundType.MOSS_CARPET)

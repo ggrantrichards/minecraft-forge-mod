@@ -3,7 +3,6 @@ package com.ggrantrichards.astralend.maze;
 import com.ggrantrichards.astralend.AstralEnd;
 import com.ggrantrichards.astralend.ModBlocks;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
@@ -26,23 +25,23 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraftforge.event.TickEvent;
 
-// The Constellation Maze puzzle. Using a Maze Telescope starts a "sighting": for 30 seconds, while
-// you stay beside the telescope, the game watches where you look. Hold your gaze on its
-// constellation (within 9 degrees) for a second and a half, and every star-bridge of that
-// constellation within 48 blocks lights up for 20 seconds.
+// The Constellation Maze puzzle, played with a vanilla spyglass. Inside a maze, look through a
+// spyglass and the game watches where you look: hold a constellation in the middle of the view
+// (within 6 degrees) for a second and a half and every star-bridge of that constellation within 48
+// blocks lights up for 20 seconds. The bridge leading on from each platform answers to one
+// constellation; raise the spyglass there and you're told which, and roughly where in the sky.
 //
-// Mazes catch you, too: fall out of one and its starlight sets you back on the first platform
-// (beside the telescope aimed at the first constellation), slow-falling, instead of letting you drop
-// into the void.
+// Mazes catch you, too: fall out of one and its starlight sets you back on the first platform,
+// slow-falling, instead of letting you drop into the void.
 public final class MazeScoping {
-    private static final int SIGHTING_TICKS = 600;
     private static final int HOLD_TICKS = 30;
-    private static final double MAX_ANGLE = Math.toRadians(9.0);
+    private static final double MAX_ANGLE = Math.toRadians(6.0);
     private static final int REACH = 48;
     public static final ResourceKey<Structure> MAZE = ResourceKey.create(Registries.STRUCTURE,
         Identifier.fromNamespaceAndPath(AstralEnd.MODID, "constellation_maze"));
 
-    private record Sighting(BlockPos telescope, int constellation, long started, int[] held) {}
+    // Per player, while they look through a spyglass in a maze: the constellation in view and for how long.
+    private record Sighting(int[] constellation, int[] held, boolean[] hinted) {}
 
     private static final Map<UUID, Sighting> SIGHTINGS = new HashMap<>();
 
@@ -50,43 +49,53 @@ public final class MazeScoping {
         TickEvent.LevelTickEvent.Post.BUS.addListener(MazeScoping::onLevelTick);
     }
 
-    static void start(ServerPlayer player, BlockPos telescope, int constellation) {
-        SIGHTINGS.put(player.getUUID(), new Sighting(telescope.immutable(), constellation, player.level().getGameTime(), new int[1]));
-        Constellations.Constellation c = Constellations.get(constellation);
-        player.sendSystemMessage(Component.translatable("maze.astralend.aimed",
-            Component.translatable("maze.astralend.constellation." + c.name()), Component.translatable(Constellations.compassKey(c))));
-    }
-
     private static void onLevelTick(TickEvent.LevelTickEvent.Post event) {
         if (!(event.level() instanceof ServerLevel level) || level.dimension() != Level.END) {
             return;
         }
         long now = level.getGameTime();
-        Iterator<Map.Entry<UUID, Sighting>> it = SIGHTINGS.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<UUID, Sighting> entry = it.next();
-            Sighting s = entry.getValue();
-            if (!(level.getPlayerByUUID(entry.getKey()) instanceof ServerPlayer player)) {
+        for (ServerPlayer player : level.players()) {
+            if (!player.isScoping() || player.isSpectator()) {
+                SIGHTINGS.remove(player.getUUID());
                 continue;
             }
-            if (now - s.started() > SIGHTING_TICKS || player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(s.telescope())) > 25.0
-                || !level.getBlockState(s.telescope()).is(ModBlocks.MAZE_TELESCOPE.get())) {
-                it.remove();
+            Sighting s = SIGHTINGS.get(player.getUUID());
+            if (s == null) {
+                if (!level.structureManager().getStructureWithPieceAt(player.blockPosition(), holder -> holder.is(MAZE)).isValid()) {
+                    continue;
+                }
+                s = new Sighting(new int[] {-1}, new int[1], new boolean[1]);
+                SIGHTINGS.put(player.getUUID(), s);
+            }
+            if (!s.hinted()[0]) {
+                s.hinted()[0] = true;
+                hint(level, player);
+            }
+            int seen = -1;
+            for (int id = 0; id < Constellations.ALL.length; id++) {
+                double angle = Math.acos(Math.min(1.0, player.getLookAngle().dot(Constellations.get(id).direction())));
+                if (angle < MAX_ANGLE) {
+                    seen = id;
+                }
+            }
+            if (seen != s.constellation()[0]) {
+                s.constellation()[0] = seen;
+                s.held()[0] = 0;
+            }
+            if (seen < 0) {
                 continue;
             }
-            Constellations.Constellation c = Constellations.get(s.constellation());
-            double angle = Math.acos(Math.min(1.0, player.getLookAngle().dot(c.direction())));
-            s.held()[0] = angle < MAX_ANGLE ? s.held()[0] + 1 : Math.max(0, s.held()[0] - 2);
-            if (s.held()[0] > 0 && now % 10 == 0) {
-                player.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("maze.astralend.focusing",
-                    Component.translatable("maze.astralend.constellation." + c.name()))));
-            }
-            if (s.held()[0] >= HOLD_TICKS) {
-                int lit = lightBridges(level, s.telescope(), s.constellation());
-                level.playSound(null, s.telescope(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.5F, 0.7F);
+            Constellations.Constellation c = Constellations.get(seen);
+            if (++s.held()[0] < HOLD_TICKS) {
+                if (now % 10 == 0) {
+                    player.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("maze.astralend.focusing",
+                        Component.translatable("maze.astralend.constellation." + c.name()))));
+                }
+            } else if (s.held()[0] == HOLD_TICKS) {
+                int lit = lightBridges(level, player.blockPosition(), seen);
+                level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1.5F, 0.7F);
                 player.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable(
                     lit > 0 ? "maze.astralend.lit" : "maze.astralend.nothing", Component.translatable("maze.astralend.constellation." + c.name()))));
-                it.remove();
             }
         }
         if (now % 5 == 0) {
@@ -94,10 +103,31 @@ public final class MazeScoping {
         }
     }
 
-    // Lights every star-bridge of this constellation near the telescope. Returns how many.
-    public static int lightBridges(ServerLevel level, BlockPos telescope, int constellation) {
+    // The constellations the bridges starting near the player answer to (those still dark), and where
+    // each lies in the sky.
+    private static void hint(ServerLevel level, ServerPlayer player) {
+        boolean[] near = new boolean[Constellations.ALL.length];
+        BlockPos at = player.blockPosition();
+        for (BlockPos pos : BlockPos.betweenClosed(at.offset(-7, -3, -7), at.offset(7, 3, 7))) {
+            BlockState state = level.getBlockState(pos);
+            if (state.is(ModBlocks.STAR_BRIDGE.get()) && !state.getValue(StarBridgeBlock.LIT)) {
+                near[state.getValue(StarBridgeBlock.CONSTELLATION)] = true;
+            }
+        }
+        for (int id = 0; id < near.length; id++) {
+            if (near[id]) {
+                Constellations.Constellation c = Constellations.get(id);
+                player.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("maze.astralend.aimed",
+                    Component.translatable("maze.astralend.constellation." + c.name()), Component.translatable(Constellations.compassKey(c)))));
+                return;
+            }
+        }
+    }
+
+    // Lights every star-bridge of this constellation near where it was sighted from. Returns how many.
+    public static int lightBridges(ServerLevel level, BlockPos from, int constellation) {
         int count = 0;
-        for (BlockPos pos : BlockPos.betweenClosed(telescope.offset(-REACH, -24, -REACH), telescope.offset(REACH, 24, REACH))) {
+        for (BlockPos pos : BlockPos.betweenClosed(from.offset(-REACH, -24, -REACH), from.offset(REACH, 24, REACH))) {
             BlockState state = level.getBlockState(pos);
             if (state.is(ModBlocks.STAR_BRIDGE.get()) && state.getValue(StarBridgeBlock.CONSTELLATION) == constellation) {
                 StarBridgeBlock.light(level, pos.immutable(), state);
@@ -121,7 +151,7 @@ public final class MazeScoping {
             if (player.getY() > box.minY() + 14) {
                 continue;
             }
-            BlockPos start = firstTelescope(level, box);
+            BlockPos start = firstPlatform(level, box);
             if (start == null) {
                 continue;
             }
@@ -136,15 +166,16 @@ public final class MazeScoping {
         }
     }
 
-    // Beside the telescope aimed at the first constellation: a spot on that platform.
-    private static BlockPos firstTelescope(ServerLevel level, BoundingBox box) {
+    // The first platform: the lowest of the stars set into the platforms' floors (the maze climbs from
+    // its first platform to the dais).
+    private static BlockPos firstPlatform(ServerLevel level, BoundingBox box) {
+        BlockPos best = null;
         for (BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
-            BlockState state = level.getBlockState(pos);
-            if (state.is(ModBlocks.MAZE_TELESCOPE.get()) && state.getValue(MazeTelescopeBlock.CONSTELLATION) == 0) {
-                return pos.relative(state.getValue(MazeTelescopeBlock.FACING).getOpposite()).immutable();
+            if ((best == null || pos.getY() < best.getY()) && level.getBlockState(pos).is(ModBlocks.STAR_INLAY_OBSERVATORY_QUARTZ.get())) {
+                best = pos.immutable();
             }
         }
-        return null;
+        return best;
     }
 
     private MazeScoping() {}

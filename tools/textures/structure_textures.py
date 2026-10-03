@@ -157,46 +157,6 @@ def star_bridge():
     return img
 
 
-def telescope_tube():
-    """The Maze Telescope's tube: polished bronze, round (a bright line along the top, dark
-    underneath), with two dark rings and riveted collars at the ends."""
-    img = new()
-    bronze = [hexc("2e1f12"), hexc("5a3a1c"), hexc("8c5e2a"), hexc("bf8a3e"), hexc("e8be6c"), hexc("fff0c8")]
-    profile = [3, 4, 5, 4, 3, 3, 2, 2, 2, 2, 2, 1, 1, 1, 0, 0]       # top of the tube to its underside
-    for y in range(SIZE):
-        for x in range(SIZE):
-            tone = profile[y]
-            if x in (5, 10):                                          # the rings
-                tone = max(0, tone - 2)
-            elif x in (0, 15):                                        # the collars
-                tone = max(0, tone - 1)
-            put(img, x, y, bronze[tone])
-    for x in (0, 15):
-        for y in (3, 8, 12):
-            put(img, x, y, bronze[4])                                 # rivets
-    return img
-
-
-PORTAL_LENS = [
-    "................",
-    ".....oooooo.....",
-    "....obbBBbbo....",
-    "...obgghhggbo...",
-    "..obgghwhggbbo..",
-    "..obgghhgggdbo..",
-    "..obgggggggdbo..",
-    "..obggggggddbo..",
-    "..obgggggdddbo..",
-    "...obgggdddbo...",
-    "....obbbbbbo....",
-    ".....oooooHo....",
-    "..........oHo...",
-    "...........oHo..",
-    "............oo..",
-    "................",
-]
-
-
 def portal_lens():
     """The Portal Lens: a heavy bronze ring around a disc of violet glass with a star in it."""
     return from_map(PORTAL_LENS, {"o": hexc("2a1a0c"), "b": hexc("a8792e"), "B": hexc("e6be6c"),
@@ -210,7 +170,6 @@ TEXTURES += [
     ("block/maw_throat.png", maw_throat),
     ("block/wormhole.png", wormhole),
     ("block/star_bridge.png", star_bridge),
-    ("block/telescope_tube.png", telescope_tube),
     ("item/portal_lens.png", portal_lens),
 ]
 

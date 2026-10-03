@@ -521,31 +521,51 @@ public final class WorldgenSurvey {
             cam.getX(), cam.getY(), cam.getZ(), out.getOpposite().toYRot()));
     }
 
-    // A Constellation Maze: its four telescopes are there and each lights some bridges. Then a view of
-    // the whole maze with its bridges lit, from above its edge.
-    private static void testMaze(ServerLevel end, BlockPos telescope, List<String> failures) {
-        List<BlockPos> scopes = new ArrayList<>();
-        for (BlockPos p : BlockPos.betweenClosed(telescope.offset(-48, -12, -48), telescope.offset(48, 12, 48))) {
-            if (end.getBlockState(p).is(ModBlocks.MAZE_TELESCOPE.get())) {
-                scopes.add(p.immutable());
+    // A Constellation Maze: four platforms (the stars in their floors, where you stand to sight a
+    // constellation through a spyglass), bridges for all four constellations - each lighting when its
+    // constellation is sighted from its platform - and the spyglass in the barrel on the first. Then a
+    // view of the whole maze with its bridges lit, from above its edge.
+    private static void testMaze(ServerLevel end, BlockPos bridge, List<String> failures) {
+        List<BlockPos> spots = new ArrayList<>();
+        boolean spyglass = false;
+        for (BlockPos p : BlockPos.betweenClosed(bridge.offset(-48, -12, -48), bridge.offset(48, 12, 48))) {
+            var state = end.getBlockState(p);
+            // A platform's star: set in polished Nightstone (the dais's stars are in quartz).
+            if (state.is(ModBlocks.STAR_INLAY_OBSERVATORY_QUARTZ.get()) && end.getBlockState(p.east()).is(ModBlocks.POLISHED_NIGHTSTONE.get())
+                && end.getBlockState(p.west()).is(ModBlocks.POLISHED_NIGHTSTONE.get())) {
+                spots.add(p.immutable());
+            }
+            if (state.is(Blocks.BARREL) && end.getBlockEntity(p) instanceof net.minecraft.world.level.block.entity.BarrelBlockEntity barrel) {
+                for (int i = 0; i < barrel.getContainerSize(); i++) {
+                    spyglass |= barrel.getItem(i).is(net.minecraft.world.item.Items.SPYGLASS);
+                }
             }
         }
         StringBuilder counts = new StringBuilder();
         long x = 0, y = 0, z = 0;
-        for (BlockPos scope : scopes) {
-            int id = end.getBlockState(scope).getValue(com.ggrantrichards.astralend.maze.MazeTelescopeBlock.CONSTELLATION);
-            int lit = com.ggrantrichards.astralend.maze.MazeScoping.lightBridges(end, scope, id);
-            counts.append(' ').append(id).append(':').append(lit);
-            if (lit == 0) {
-                failures.add("constellation_maze: the telescope at " + scope.toShortString() + " lights no bridges");
+        int answered = 0;
+        for (BlockPos spot : spots) {
+            for (int id = 0; id < 4; id++) {
+                int lit = com.ggrantrichards.astralend.maze.MazeScoping.lightBridges(end, spot, id);
+                if (lit > 0) {
+                    answered |= 1 << id;
+                }
+                counts.append(' ').append(id).append(':').append(lit);
             }
-            x += scope.getX();
-            y += scope.getY();
-            z += scope.getZ();
+            counts.append(" |");
+            x += spot.getX();
+            y += spot.getY();
+            z += spot.getZ();
         }
-        log("constellation_maze: " + scopes.size() + " telescopes; bridges lit per constellation:" + counts);
-        if (scopes.size() != 4) {
-            failures.add("constellation_maze: expected 4 telescopes, found " + scopes.size());
+        log("constellation_maze: " + spots.size() + " platforms; spyglass in the barrel: " + spyglass + "; bridges lit per constellation:" + counts);
+        if (answered != 15) {
+            failures.add("constellation_maze: not every constellation has a bridge that lights");
+        }
+        if (!spyglass) {
+            failures.add("constellation_maze: no spyglass in the barrel on the first platform");
+        }
+        if (spots.size() != 4) {
+            failures.add("constellation_maze: expected 4 platforms, found " + spots.size());
             return;
         }
         BlockPos centre = new BlockPos((int) (x / 4), (int) (y / 4), (int) (z / 4));
@@ -622,7 +642,7 @@ public final class WorldgenSurvey {
                                 new Wanted("whalefall", 'A', Blocks.CHEST), new Wanted("shattered_observatory", 'N', Blocks.VAULT),
                                 new Wanted("solar_array", 'C', ModBlocks.COLLECTOR_PEDESTAL.get()),
                                 new Wanted("rift_maw", 'N', ModBlocks.MAW_THROAT.get()),
-                                new Wanted("constellation_maze", 'N', ModBlocks.MAZE_TELESCOPE.get()),
+                                new Wanted("constellation_maze", 'N', ModBlocks.STAR_BRIDGE.get()),
                                 new Wanted("resonant_spire", 'G', Blocks.BELL))) {
             Area area = areas.get(w.biome());
             BlockPos from = area != null ? area.centre : BlockPos.ZERO;

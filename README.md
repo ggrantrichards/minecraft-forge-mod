@@ -257,10 +257,10 @@ wormhole to add it to their own road. *Portal Lens: 3 Chart Fragments, a Void Cr
 Crystal and a spyglass.*
 
 **Constellation Mazes.** Platforms floating in the void round a central dais, joined by
-**star-bridges you can't see**. Use the telescope on a platform: it tells you which constellation it's
-aimed at and roughly where (four of them are drawn in the End's sky: the Leviathan, the Maw, the
-Wanderer and the Watcher). Hold your gaze on that constellation for a moment and its bridge lights
-up, solid, for 20 seconds. The last bridge leads to the dais and its chest: a Temporal Crystal and a
+**star-bridges you can't see**. Stand on a platform's star and raise a **spyglass** (there's one in a
+barrel on the first platform): you're told which constellation the way on answers to and roughly
+where (four of them are drawn in the End's sky: the Leviathan, the Maw, the Wanderer and the
+Watcher). Hold it in the spyglass for a moment and its bridge lights up, solid, for 20 seconds. The last bridge leads to the dais and its chest: a Temporal Crystal and a
 Star Chart that marks a Wormhole Maw. Fall, and the maze catches you and sets you back at the
 start.
 

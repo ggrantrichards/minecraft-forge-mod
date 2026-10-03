@@ -56,7 +56,7 @@ def _tex(name):
     return result
 
 
-ALIASES = {"maze_telescope": "telescope_tube", "maw_eye": "maw_eye"}
+ALIASES = {"maw_eye": "maw_eye"}
 
 
 def voxels(template, cut=None, turn=False):

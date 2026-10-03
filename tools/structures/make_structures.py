@@ -624,21 +624,26 @@ def bridge(t, a0, a1, bend, constellation):
 
 def constellation_maze(seed):
     """A ring of broken platforms floating in open void around a central dais, joined by star-bridges
-    that are invisible until lit. Each platform has a telescope aimed at one constellation; find it in
-    the sky and the bridge to the next platform lights for 20 seconds. The last bridge leads to the
+    that are invisible until lit. Each platform's way on answers to one constellation: find it in
+    the sky through a spyglass and the bridge to the next platform lights for 20 seconds (a barrel on
+    the first platform holds a spyglass). The last bridge leads to the
     dais and its chest. Fall, and the maze catches you (MazeScoping)."""
     S = 49
     t = Template(S, 44, S, seed)
     rnd = t.rnd
     c = S // 2
     stops = [(5, 28, c), (c, 30, 5), (S - 6, 32, c), (c, 34, S - 6)]
-    facings = ["east", "south", "west", "north"]
     for i, (x, y, z) in enumerate(stops):
         maze_platform(t, x, y, z, 3.2, rnd)
-        t.set(x, y + 1, z, a("maze_telescope") + f"[constellation={i},facing={facings[i]}]")
+        t.set(x, y, z, a("star_inlay_observatory_quartz"))      # where to stand and look up
         lx, lz = (x - 2, z + 2) if i % 2 == 0 else (x + 2, z - 2)
         t.set(lx, y + 1, lz, a("polished_nightstone_wall"))
         t.set(lx, y + 2, lz, a("null_lantern"))
+        if i == 0:
+            # A spyglass left at the start for whoever came without one.
+            bx, bz = (x - 2, z - 2)
+            t.set(bx, y + 1, bz, "minecraft:barrel[facing=up,open=false]", nbt={
+                "Items": nbt_list_compound({"Slot": Byte(13), "id": "minecraft:spyglass", "count": Int(1)})})
     # The dais.
     dy = 36
     maze_platform(t, c, dy, c, 5.4, rnd)
@@ -653,7 +658,7 @@ def constellation_maze(seed):
     t.set(c - 3, dy + 4, c - 3, a("null_lantern"))
     t.set(c + 3, dy + 4, c + 3, a("null_lantern"))
     chest(t, c, dy + 1, c, "constellation_maze", facing="west")
-    # The bridges, each answering to the constellation of the telescope it starts from.
+    # The bridges, each answering to one constellation (the one sighted from the platform it starts at).
     ends = stops + [(c, dy, c)]
     for i in range(4):
         (x0, y0, z0), (x1, y1, z1) = ends[i], ends[i + 1]
@@ -663,6 +668,11 @@ def constellation_maze(seed):
         ux, uz = (x1 - x0) / d, (z1 - z0) / d
         bridge(t, (x0 + ux * r0, y0, z0 + uz * r0), (x1 - ux * r1, y1, z1 - uz * r1), 5 if i % 2 == 0 else -5, i)
     return t
+
+
+def nbt_list_compound(*values):
+    import nbt as _nbt
+    return _nbt.List(list(values), _nbt.COMPOUND)
 
 
 def nbt_list_float(*values):

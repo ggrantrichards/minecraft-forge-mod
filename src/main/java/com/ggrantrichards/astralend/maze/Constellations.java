@@ -4,7 +4,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 // The four constellations of the Constellation Mazes, fixed in the End's sky (the sky renderer
-// draws them; a Maze Telescope points at one). Each has a centre in the sky, as a yaw and pitch the
+// draws them; you find them through a spyglass). Each has a centre in the sky, as a yaw and pitch the
 // way Minecraft measures a look (yaw 0 = south, 90 = west; pitch -90 = straight up), and its stars as
 // offsets in degrees from that centre (right, up), joined in order by the lines in `lines`.
 public final class Constellations {

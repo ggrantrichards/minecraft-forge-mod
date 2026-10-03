@@ -1391,26 +1391,6 @@ def structures_phase6():
         {"when": {"lit": "false"}, "apply": {"model": rid("block/star_bridge_dark")}},
         {"when": {"lit": "true"}, "apply": {"model": rid("block/star_bridge")}}]})
     lang[f"block.{NS}.star_bridge"] = "Star-Bridge"
-    # The Maze Telescope: a squat stone mount, a stone post, and the tube tilted up toward the sky.
-    tube = rid("block/telescope_tube")
-    block_model("maze_telescope", {
-        "parent": "minecraft:block/block", "ambientocclusion": False,
-        "textures": {"particle": tube, "tube": tube, "base": rid("block/polished_nightstone"), "lens": rid("block/astral_glass")},
-        "elements": [
-            {"from": [3, 0, 3], "to": [13, 2, 13], "faces": {d: {"texture": "#base"} for d in ("north", "south", "east", "west", "up", "down")}},
-            {"from": [7, 2, 7], "to": [9, 9, 9], "faces": {d: {"uv": [0, 0, 2, 7], "texture": "#tube"} for d in ("north", "south", "east", "west")}},
-            {"from": [6, 8, 1], "to": [10, 12, 15], "rotation": {"origin": [8, 10, 8], "axis": "x", "angle": 22.5},
-             "faces": {"north": {"uv": [4, 4, 12, 12], "texture": "#lens"}, "south": {"uv": [0, 12, 4, 16], "texture": "#tube"},
-                       "east": {"uv": [1, 0, 15, 4], "texture": "#tube"}, "west": {"uv": [1, 0, 15, 4], "texture": "#tube"},
-                       "up": {"uv": [6, 1, 10, 15], "texture": "#tube", "rotation": 90}, "down": {"uv": [6, 12, 10, 16], "texture": "#tube"}}},
-            {"from": [5.5, 7.5, 0], "to": [10.5, 12.5, 2], "rotation": {"origin": [8, 10, 8], "axis": "x", "angle": 22.5},
-             "faces": {d: {"uv": [0, 0, 16, 2], "texture": "#tube"} for d in ("east", "west", "up", "down")}
-             | {"north": {"uv": [5, 5, 11, 11], "texture": "#lens"}, "south": {"uv": [0, 0, 5, 5], "texture": "#tube"}}},
-        ]})
-    blockstate("maze_telescope", {"multipart": [
-        {"when": {"facing": f}, "apply": {"model": rid("block/maze_telescope"), "y": r}} for f, r in facings.items()]})
-    item_def("maze_telescope", rid("block/maze_telescope"))
-    lang[f"block.{NS}.maze_telescope"] = "Maze Telescope"
     # The Portal Lens.
     item_model("portal_lens", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("item/portal_lens")}})
     item_def("portal_lens", rid("item/portal_lens"))
@@ -1428,8 +1408,8 @@ def structures_phase6():
         "maw.astralend.nowhere": "The Maw has nowhere to send you. Wake another.",
         "maw.astralend.price": "The Maw wants an ender pearl, or four chorus fruit.",
         "maw.astralend.arrived": "The Maw spits you out.",
-        "maze.astralend.aimed": "The telescope is aimed at the %s, %s. Look there.",
-        "maze.astralend.focusing": "The stars of the %s grow clearer...",
+        "maze.astralend.aimed": "The way on from here answers to the %s, %s. Find it through your spyglass.",
+        "maze.astralend.focusing": "The stars of the %s grow clearer... hold steady",
         "maze.astralend.lit": "The %s blazes, and a bridge of light answers below!",
         "maze.astralend.nothing": "The %s shines, but nothing answers here.",
         "maze.astralend.caught": "The maze's starlight catches you.",
