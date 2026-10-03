@@ -53,6 +53,8 @@ import org.joml.Vector4f;
 //     structure, and close up the real one takes over), a far-off comet now and then, and very rarely
 //     something huge - a whale, a ring - drifting across;
 //   - in the Corona during a Sunstorm: the sky turns gold and sheets of light roll across it.
+//   - through a spyglass, anywhere: the stars and constellations the void hides (the Constellation
+//     Mazes are solved by sighting them).
 //
 // Nothing here is an entity or touches the world; it's all a few hundred quads a frame.
 public class AstralSkyRenderer extends SkyRenderer {
@@ -85,6 +87,7 @@ public class AstralSkyRenderer extends SkyRenderer {
     private Vec3 camera = Vec3.ZERO;
     private boolean inCorona;
     private float corona;     // 0..1: how much of the view round the camera is the Corona (eased)
+    private float scope;      // 0..1: looking through a spyglass (eased) - it shows the stars the void hides
     private float auroraStrength;
     private final float[] auroraTarget = new float[7];   // strength, then two colours (r, g, b)
     private final float[] aurora = new float[7];
@@ -142,6 +145,8 @@ public class AstralSkyRenderer extends SkyRenderer {
         }
         this.corona += (corona / weights - this.corona) * 0.03F;
         this.inCorona = this.corona > 0.5F;
+        var player = net.minecraft.client.Minecraft.getInstance().player;
+        this.scope += ((player != null && player.isScoping() ? 1.0F : 0.0F) - this.scope) * 0.15F;
         this.auroraStrength = this.aurora[0];
     }
 
@@ -180,9 +185,12 @@ public class AstralSkyRenderer extends SkyRenderer {
         // Everywhere else the sky is vanilla's; only now and then a void streak falls, far away.
         this.voidStreak(quads, 1.0F - 0.7F * this.corona);
         float sky = this.corona;     // how much of the astral sky shows: only over the Corona
+        float seen = Math.max(sky, this.scope);   // the stars and constellations: there too through a spyglass
         if (sky > 0.01F) {
             this.silhouette(quads, sky);
-            this.constellations(quads, sky * Mth.clamp(1.0F - 1.4F * coronaFlare, 0.0F, 1.0F));
+        }
+        if (seen > 0.01F) {
+            this.constellations(quads, seen * Mth.clamp(1.0F - 1.4F * coronaFlare, 0.0F, 1.0F));
         }
         if (this.auroraStrength > 0.01F) {
             quads.group(AURORA);
@@ -209,7 +217,7 @@ public class AstralSkyRenderer extends SkyRenderer {
                 this.draw(pass, quads.groups.get(i), view, white);
             }
             // The stars fade while the Corona's sky burns.
-            float starAlpha = this.corona * Mth.clamp(1.0F - 1.4F * coronaFlare, 0.0F, 1.0F);
+            float starAlpha = Math.max(this.corona, 0.7F * this.scope) * Mth.clamp(1.0F - 1.4F * coronaFlare, 0.0F, 1.0F);
             this.drawStars(pass, view, 0, this.fixedStarQuads, new Vector4f(1.0F, 1.0F, 1.0F, 0.75F * starAlpha));
             Matrix4f turning = new Matrix4f(view)
                 .rotate((float) Math.toRadians(23.0), 1.0F, 0.0F, 0.0F)

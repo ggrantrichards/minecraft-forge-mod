@@ -52,12 +52,5 @@ public final class Constellations {
         return centre.add(r.scale(Math.tan(Math.toRadians(right)))).add(u.scale(Math.tan(Math.toRadians(up)))).normalize();
     }
 
-    // "high in the north-east": where to look, in words (Minecraft's north is -z).
-    public static String compassKey(Constellation c) {
-        String[] names = {"south", "south_west", "west", "north_west", "north", "north_east", "east", "south_east"};
-        int index = Math.floorMod(Math.round(c.yaw() / 45.0F), 8);
-        return "maze.astralend.dir." + names[index];
-    }
-
     private Constellations() {}
 }

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -71,8 +70,7 @@ final class StarforgeSurvey {
             failures.add("starforge: an upgrade fits an item it shouldn't (or not one it should)");
         }
 
-        // ---- armour on a zombie: Stardust gravity and step, Radiant's room for a golden heart,
-        // Meteoric's Heat Shield, Temporal's Time Stretch
+        // ---- armour on a zombie: Stardust gravity and step, Radiant's room for a golden heart
         BlockPos at = standOn.offset(3, 0, 0);
         var zombie = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(end, EntitySpawnReason.COMMAND);
         zombie.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
@@ -92,24 +90,12 @@ final class StarforgeSurvey {
         if (lighter >= gravity * 0.95 || step < 1.0 || roomForHearts < 2.0F) {
             failures.add("starforge: Stardust armour should lower gravity and raise step height, Radiant should make room for golden hearts");
         }
-        zombie.setItemSlot(EquipmentSlot.FEET, Starforge.apply(new ItemStack(Items.DIAMOND_BOOTS), StarforgeUpgrade.METEORIC));
-        zombie.setItemSlot(EquipmentSlot.LEGS, Starforge.apply(new ItemStack(Items.DIAMOND_LEGGINGS), StarforgeUpgrade.METEORIC));
-        zombie.setItemSlot(EquipmentSlot.HEAD, Starforge.apply(new ItemStack(Items.DIAMOND_HELMET), StarforgeUpgrade.TEMPORAL));
-        zombie.setItemSlot(EquipmentSlot.CHEST, Starforge.apply(new ItemStack(Items.DIAMOND_CHESTPLATE), StarforgeUpgrade.TEMPORAL));
-        float before = zombie.getHealth();
-        zombie.hurtServer(end, end.damageSources().inFire(), 3.0F);
-        boolean shielded = zombie.getHealth() == before;
-        zombie.addEffect(new MobEffectInstance(MobEffects.SPEED, 200));
-        zombie.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 200));
-        StarforgeEffects.flush(true);
-        MobEffectInstance speed = zombie.getEffect(MobEffects.SPEED);
-        MobEffectInstance slowness = zombie.getEffect(MobEffects.SLOWNESS);
-        int speedTicks = speed == null ? 0 : speed.getDuration();
-        int poisonTicks = slowness == null ? 0 : slowness.getDuration();
-        log.accept(String.format("starforge: Meteoric x2 - fire did %s; Temporal x2 - Speed 200 -> %d ticks, Slowness 200 -> %d ticks",
-            shielded ? "nothing" : "damage", speedTicks, poisonTicks));
-        if (!shielded || Math.abs(speedTicks - 220) > 1 || Math.abs(poisonTicks - 180) > 1) {
-            failures.add("starforge: Heat Shield should stop fire damage, and Time Stretch make Speed last 220 ticks and Slowness 180");
+        // Heat Shield and Time Stretch were cut: Meteoric and Temporal no longer go on armour.
+        boolean cut = !StarforgeUpgrade.METEORIC.fits(new ItemStack(Items.DIAMOND_CHESTPLATE))
+            && !StarforgeUpgrade.TEMPORAL.fits(new ItemStack(Items.DIAMOND_HELMET));
+        log.accept("starforge: Meteoric and Temporal armour (Heat Shield, Time Stretch) cut: " + cut);
+        if (!cut) {
+            failures.add("starforge: Meteoric and Temporal should no longer fit armour");
         }
         zombie.removeAllEffects();
         zombie.setHealth(zombie.getMaxHealth());

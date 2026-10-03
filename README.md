@@ -26,7 +26,31 @@ changelog for each version.
 ## What's in the mod so far
 
 The sections below run newest first. Older ones describe things as they were at the time; Phase 10
-renamed or removed some of them.
+and the distillation renamed or removed some of them.
+
+### The distillation (in progress)
+
+The mod is being cut back to six ideas - void and emptiness, a restricted palette, displacement,
+silence and alienness, ruins without explanation, and finality. The full plan, in five phases, is
+[docs/DISTILLATION.md](docs/DISTILLATION.md). It's a beta without world compatibility: start a new world.
+
+**Phase 1, cuts and re-homing:**
+- **Out of the world, code kept:** the Resonant Spire and the Spire Wyrm (the Curator will take its place).
+- **Cut:** the Comet Wake biome, live comets and comet showers, the Cinder Mite, the Live Comet,
+  The Hollow, the Chorus and Lumine wood sets (Nullwood is the End's one wood; the Lumineshroom keeps
+  only its stem and hyphae), and the Starforge's Heat Shield and Time Stretch.
+- **Re-homed:** Comet Craters to the Ashen Barrens; Stardust to the Hollow Isles; Pollinators to the
+  Corona; the Chorus Thicket grows vanilla chorus.
+- **The sky is black again**, as vanilla's: stars, constellations, auroras and the Remnant show only
+  over the Corona (the Eclipse's burning half to be). Elsewhere, now and then, a pale **void streak**
+  falls down the far sky. A **spyglass** shows the stars the void hides, anywhere - that's how the
+  Constellation Mazes are solved.
+- **No words:** the Rift Maws, the mazes, Star Charts and Sunstorms no longer print messages. A Maw
+  with dark eyes knocks hollowly and its dark sockets smoke; one that turns you away growls, knocks or
+  snaps its jaw, by reason. In a maze, a thread of starlight rises toward the constellation you need,
+  and chimes climb while you hold it in view. A Star Chart sends a thread of starlight toward its
+  place, its note higher the nearer it is.
+- **Palette:** Glimmer Crystal is smoky grey violet instead of teal, and the Glimmering Crags' fog with it.
 
 ### Phase 11: polish
 
@@ -80,7 +104,7 @@ Heart, Shutters and Lamp, the Orrery Sentinel), and Comet Ice (comets bring vani
 
 - **Chorus Thicket**, the Nebula Fields' sister: chorus trees of pale, glassy **Chorus Wood** (a full
   wood set, regrown from **Chorus Sprouts**) crowned with Chorus Bloom, vanilla chorus between them.
-- **Glimmering Crags**: islands bristling with jagged Nightstone peaks grown through with teal
+- **Glimmering Crags**: islands bristling with jagged Nightstone peaks grown through with smoky violet
   **Glimmer Crystal**. **Void Crystal** grows only here now, in the very bottoms of the islands, with a
   Glimmer Cluster hanging under it to give it away.
 - The **Shattered Observatory** is a rare structure now, not a biome: the Cartographers' domed hall in a
@@ -210,9 +234,9 @@ Not elytra.
 | Upgrade | Material | Armour | Weapons | Tools |
 |---|---|---|---|---|
 | **Voidwalker** | Void Crystal + Umbral Membrane | **Boots, Rift Walker:** walk off an edge and tiles of rift form under your feet and a step ahead, cracking and crumbling a second later (over lava too, which comes back). **Chestplate, Void Recall:** right-click a **Rift Pearl** onto it; fall into the void and the pearl is spent to put you back on your last footing. | - | - |
-| **Meteoric** | Meteoric Iron Ingot | **Heat Shield:** no fire or lava damage for the first 2 seconds per piece; it recharges after 10 seconds out of the fire. | - | **Smelting:** mined blocks drop smelted (ore to ingots, sand to glass, logs to charcoal). Fortune works; Silk Touch wins. |
+| **Meteoric** | Meteoric Iron Ingot | ~~**Heat Shield**~~ (cut in the distillation) | - | **Smelting:** mined blocks drop smelted (ore to ingots, sand to glass, logs to charcoal). Fortune works; Silk Touch wins. |
 | **Stardust** | Stardust | **-5% Gravity** per piece; boots also **+0.5 Step Height** (real attributes, on the tooltip). | **Bows, crossbows, tridents:** shots fall 20% slower, so they fly about 25% further. | - |
-| **Temporal** | Temporal Crystal | **Time Stretch:** good effects last 10% longer per piece, bad ones wear off 10% sooner. | **Echo Strike:** a quarter of every melee hit lands again a second later, with a chime. | - |
+| **Temporal** | Temporal Crystal | ~~**Time Stretch**~~ (cut in the distillation) | **Echo Strike:** a quarter of every melee hit lands again a second later, with a chime. | - |
 | **Singularity** | Singularity Shard | **Lensing:** 10% chance per piece that a projectile bends around you. | **Swords:** a full sweep pulls the mobs around your target in toward it. | **Pull:** what you mine (and its experience) goes straight into your inventory. |
 | **Radiant** | Solarite Ingot + Charged Void Crystal | **Soak Light:** in bright light (13+) gain a golden heart every 20 s, up to one per piece (five times faster in a Corona flare). **2+ pieces:** no Flare Burn. | **Glow:** whatever you hit glows for 5 seconds. | - |
 

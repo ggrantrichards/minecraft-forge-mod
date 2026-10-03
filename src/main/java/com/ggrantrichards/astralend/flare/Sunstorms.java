@@ -11,12 +11,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.QuartPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -196,7 +193,7 @@ public class Sunstorms extends SavedData {
         this.syncAll(level, true);
     }
 
-    // Sounds and a line above the hotbar, only for players in the Corona; everyone else just sees the sky.
+    // Sounds only (no words), for players in the Corona; everyone else just sees the sky.
     private void announce(ServerLevel level, FlarePhase next) {
         for (ServerPlayer player : level.players()) {
             if (!isCorona(level, player.blockPosition())) {
@@ -204,15 +201,12 @@ public class Sunstorms extends SavedData {
             }
             switch (next) {
                 case WARNING -> {
-                    actionBar(player, Component.translatable("flare.astralend.warning").withStyle(ChatFormatting.GOLD));
                     level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_ACTIVATE, SoundSource.AMBIENT, 1.0F, 0.5F);
                 }
                 case FLARE -> {
-                    actionBar(player, Component.translatable("flare.astralend.flare").withStyle(ChatFormatting.RED));
                     level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.AMBIENT, 0.8F, 0.5F);
                 }
                 case AFTERGLOW -> {
-                    actionBar(player, Component.translatable("flare.astralend.afterglow").withStyle(ChatFormatting.YELLOW));
                     com.ggrantrichards.astralend.world.ModAdvancements.award(player, "weather_the_storm");
                     level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_DEACTIVATE, SoundSource.AMBIENT, 1.0F, 0.6F);
                 }
@@ -220,10 +214,6 @@ public class Sunstorms extends SavedData {
                 }
             }
         }
-    }
-
-    private static void actionBar(ServerPlayer player, Component message) {
-        player.connection.send(new ClientboundSetActionBarTextPacket(message));
     }
 
     private void syncAll(ServerLevel level, boolean force) {

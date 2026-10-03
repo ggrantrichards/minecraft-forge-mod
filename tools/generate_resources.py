@@ -1076,7 +1076,7 @@ def worldgen_phase3():
               features_step9=[rid("chorus_thicket_chorus"), rid("chorus_thicket_starblooms"), rid("chorus_thicket_carpet")],
               particle="minecraft:portal", particle_chance=0.006)
 
-    # ---- Glimmering Crags (Phase 10): jagged Nightstone peaks grown through with teal Glimmer Crystal.
+    # ---- Glimmering Crags (Phase 10): jagged Nightstone peaks grown through with smoky violet Glimmer Crystal.
     # Void Crystal grows here and only here: in the very bottoms of the islands.
     big_feature("glimmering_crags_spires", "glimmer_spire", count=2, heightmap="WORLD_SURFACE_WG")
     plant_patch("glimmering_crags_clusters", "glimmer_cluster", rarity=1, count=12, spread=6, on=[rid("nightstone")])
@@ -1085,10 +1085,10 @@ def worldgen_phase3():
         {"type": "minecraft:rarity_filter", "chance": 3}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
     placed("glimmering_crags_voidgel", {"feature": rid("voidgel_drip"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 2}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
-    end_biome("glimmering_crags", "Glimmering Crags", fog="#0f3a3c", water="#3fd6c4",
+    end_biome("glimmering_crags", "Glimmering Crags", fog="#1c1826", water="#7c7290",
               features_step4=[rid("glimmering_crags_spires")],
               features_step9=[rid("glimmering_crags_clusters"), rid("glimmering_crags_void_crystal"), rid("glimmering_crags_voidgel")],
-              particle="minecraft:glow", particle_chance=0.004)
+              particle="minecraft:white_ash", particle_chance=0.004)
 
 
 # ------------------------------------------------------------------ Phase 4: mobs
@@ -1172,11 +1172,6 @@ def mobs_phase4():
 
     # Star Chart messages
     lang[f"item.{NS}.star_chart.marks"] = "Marks a far-off region: %s"
-    lang[f"item.{NS}.star_chart.blank"] = "The chart is blank."
-    lang[f"item.{NS}.star_chart.direction"] = "The chart marks the %s, %s blocks %s of here."
-    for d, english in (("north", "north"), ("north_east", "north-east"), ("east", "east"), ("south_east", "south-east"),
-                       ("south", "south"), ("south_west", "south-west"), ("west", "west"), ("north_west", "north-west")):
-        lang[f"item.{NS}.star_chart.{d}"] = english
 
     # Advancements the mobs grant (see ModAdvancements.java).
     advancement("something_big_out_there", rid("drift_whale_spawn_egg"), "Something Big Out There", "See a Drift Whale")
@@ -1303,9 +1298,6 @@ def flares_phase5():
     lang[f"death.attack.{NS}.sunburn.player"] = "%1$s was burned by a Sunstorm while fighting %2$s"
 
     # What the Corona's players are told
-    lang["flare.astralend.warning"] = "The Remnant is brightening - get under cover!"
-    lang["flare.astralend.flare"] = "Sunstorm! Open sky burns."
-    lang["flare.astralend.afterglow"] = "The flare is passing. The Corona glows."
 
 
 def chest_loot(name, pools):
@@ -1380,27 +1372,10 @@ def structures_phase6():
     shapeless("portal_lens", "portal_lens", ["minecraft:spyglass", rid("cracked_lens"), rid("void_crystal"), rid("temporal_crystal"),
                                              rid("chart_fragment"), rid("chart_fragment")], category="equipment")
     lang.update({
-        "maw.astralend.eyes_dark": "The Maw's eyes are dark (%s of %s lit). Set Charged Void Crystals in them.",
-        "maw.astralend.woken": "The Maw groans open. Its throat is a road of stars.",
-        "maw.astralend.attuned": "The Maw knows you now.",
-        "maw.astralend.already": "This Maw already knows you.",
-        "maw.astralend.not_attuned": "The Maw doesn't know you. Use a Portal Lens on its throat.",
-        "maw.astralend.nowhere": "The Maw has nowhere to send you. Wake another.",
-        "maw.astralend.price": "The Maw wants an ender pearl, or four chorus fruit.",
-        "maw.astralend.arrived": "The Maw spits you out.",
-        "maze.astralend.aimed": "The way on from here answers to the %s, %s. Find it through your spyglass.",
-        "maze.astralend.focusing": "The stars of the %s grow clearer... hold steady",
-        "maze.astralend.lit": "The %s blazes, and a bridge of light answers below!",
-        "maze.astralend.nothing": "The %s shines, but nothing answers here.",
-        "maze.astralend.caught": "The maze's starlight catches you.",
         "maze.astralend.constellation.leviathan": "Leviathan",
         "maze.astralend.constellation.maw": "Maw",
         "maze.astralend.constellation.wanderer": "Wanderer",
         "maze.astralend.constellation.watcher": "Watcher",
-        "maze.astralend.dir.north": "high in the north", "maze.astralend.dir.north_east": "high in the north-east",
-        "maze.astralend.dir.east": "high in the east", "maze.astralend.dir.south_east": "high in the south-east",
-        "maze.astralend.dir.south": "high in the south", "maze.astralend.dir.south_west": "high in the south-west",
-        "maze.astralend.dir.west": "high in the west", "maze.astralend.dir.north_west": "high in the north-west",
     })
 
     # A crater's cache: what the comet brought, sometimes a Temporal Crystal, sometimes a chart.
@@ -1637,10 +1612,10 @@ def starforging_phase8():
         f"upgrade.{NS}.voidwalker": "Voidwalker", f"upgrade.{NS}.meteoric": "Meteoric", f"upgrade.{NS}.stardust": "Stardust",
         f"upgrade.{NS}.temporal": "Temporal", f"upgrade.{NS}.singularity": "Singularity", f"upgrade.{NS}.radiant": "Radiant",
         f"upgrade.{NS}.effect.rift_walker": "Rift Walker", f"upgrade.{NS}.effect.void_recall": "Void Recall",
-        f"upgrade.{NS}.effect.heat_shield": "Heat Shield", f"upgrade.{NS}.effect.smelting": "Smelting",
+        f"upgrade.{NS}.effect.smelting": "Smelting",
         f"upgrade.{NS}.effect.light_step": "Lighter Gravity", f"upgrade.{NS}.effect.light_step_boots": "Lighter Gravity, Step Up",
         f"upgrade.{NS}.effect.flatter_shots": "Flatter Shots",
-        f"upgrade.{NS}.effect.time_stretch": "Time Stretch", f"upgrade.{NS}.effect.echo_strike": "Echo Strike",
+        f"upgrade.{NS}.effect.echo_strike": "Echo Strike",
         f"upgrade.{NS}.effect.lensing": "Lensing", f"upgrade.{NS}.effect.sweep_pull": "Sweep Pull", f"upgrade.{NS}.effect.pull": "Pull",
         f"upgrade.{NS}.effect.soak_light": "Soak Light", f"upgrade.{NS}.effect.glow": "Glow",
     })

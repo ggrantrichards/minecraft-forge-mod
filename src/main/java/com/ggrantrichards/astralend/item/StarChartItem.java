@@ -9,13 +9,17 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -26,11 +30,13 @@ import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.phys.Vec3;
 
 // A Star Chart, given by the Watcher or found in ruins. It marks a place in the End for you to
 // find: the nearest of a structure picked at random (a crater, a relay, a whalefall...), or, if none
 // is in reach, the nearest region of a far-off biome. Charts found in chests start out unread and
-// fill in the first time they're used in the End. Use one to see which way to go and how far.
+// fill in the first time they're used in the End. Use one and a thread of starlight points the way;
+// the chime is higher the nearer the place is.
 public class StarChartItem extends Item {
     // Each destination is a structure tag holding just that structure (data/astralend/tags/worldgen/structure).
     private static final List<String> STRUCTURES = List.of("comet_crater", "wanderer_relay", "whalefall",
@@ -96,33 +102,32 @@ public class StarChartItem extends Item {
         if (data == null || !data.copyTag().contains("TargetX")) {
             // An unread chart from a chest: it only makes sense under the End's sky.
             if (level.dimension() != Level.END || !(level instanceof ServerLevel server)) {
-                player.sendSystemMessage(Component.translatable("item.astralend.star_chart.blank"));
+                level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.6F);
                 return InteractionResult.SUCCESS;
             }
             mark(server, player.blockPosition(), chart);
             data = chart.get(DataComponents.CUSTOM_DATA);
             if (data == null || !data.copyTag().contains("TargetX")) {
-                player.sendSystemMessage(Component.translatable("item.astralend.star_chart.blank"));
+                level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.6F);
                 return InteractionResult.SUCCESS;
             }
         }
+        // No words: a thread of starlight runs from your eyes toward the place, rising as it goes, and
+        // the nearer the place, the brighter the note.
         CompoundTag tag = data.copyTag();
-        Component target = tag.contains("Structure")
-            ? structureName(tag.getStringOr("Structure", "comet_crater"))
-            : biomeName(tag.getStringOr("Biome", "nebula_fields"));
-        int dx = tag.getIntOr("TargetX", 0) - player.getBlockX();
-        int dz = tag.getIntOr("TargetZ", 0) - player.getBlockZ();
-        int distance = (int) Math.sqrt((double) dx * dx + (double) dz * dz);
-        player.sendSystemMessage(Component.translatable("item.astralend.star_chart.direction",
-            target, distance, Component.translatable(compass(dx, dz))));
+        double dx = tag.getIntOr("TargetX", 0) + 0.5 - player.getX();
+        double dz = tag.getIntOr("TargetZ", 0) + 0.5 - player.getZ();
+        double distance = Math.sqrt(dx * dx + dz * dz);
+        if (level instanceof ServerLevel server && distance > 1.0) {
+            Vec3 dir = new Vec3(dx / distance, 0.12, dz / distance).normalize();
+            Vec3 eye = player.getEyePosition();
+            for (int k = 2; k <= 28; k++) {
+                Vec3 p = eye.add(dir.scale(k * 0.6));
+                server.sendParticles(ParticleTypes.END_ROD, p.x, p.y, p.z, 1, 0.02, 0.02, 0.02, 0.0);
+            }
+        }
+        float pitch = (float) Mth.clamp(1.6 - distance / 1500.0, 0.6, 1.6);
+        level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.0F, pitch);
         return InteractionResult.SUCCESS;
-    }
-
-    // "north", "north-east"... for a horizontal offset (Minecraft's north is -z).
-    private static String compass(int dx, int dz) {
-        String[] names = {"south", "south_west", "west", "north_west", "north", "north_east", "east", "south_east"};
-        double angle = Math.toDegrees(Math.atan2(-dx, dz));  // 0 = south, 90 = west
-        int index = (int) Math.round(((angle % 360) + 360) % 360 / 45.0) % 8;
-        return "item.astralend.star_chart." + names[index];
     }
 }

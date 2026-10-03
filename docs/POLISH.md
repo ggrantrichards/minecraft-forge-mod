@@ -23,15 +23,14 @@ World generation
 - [x] Rift Maw: four eye sockets, wakes when lit, its throat becomes a wormhole with an exit to stand on.
 - [x] Constellation Maze: four platforms, every constellation's bridge lights, a spyglass in the barrel.
 - [x] The Remnant: a heart, a hollow chamber, glowing fissures and a crust, high over the Corona.
-- [x] Resonant Spire: the Wyrm is asleep on its nest.
+- [x] ~~Resonant Spire: the Wyrm is asleep on its nest.~~ Out of the world in the distillation (code kept).
 
 Mechanics
 - [x] Every spawn egg, used the way a player uses it, gives its mob, still there 2 s later (the Stalker visible).
 - [x] A hand-built End portal lights when its frames face in, and doesn't when they face out (vanilla's rule).
-- [x] The Spire Wyrm fight: a minute against a stand-in player - it must wake, circle, wind up and dive,
-      lie grounded, wind up and breathe, and never leave its spire (<= 28 blocks) or sink below the platform.
+- [x] ~~The Spire Wyrm fight~~ - retired with the Spire in the distillation; the Curator's fight replaces it (phase 5).
 - [x] Lodestar, Drift Whale (health, flees), Umbral Stalker (fears fire), Upwelling (gravity, Slow Falling
-      after), End Chimes, Voidgel, Chorus Moss, Starforge upgrades, low gravity, comets.
+      after), End Chimes, Voidgel, Chorus Moss, Starforge upgrades, low gravity.
 
 To add
 - [ ] Chorus Thicket: share of the biome under trees (groves, not a carpet) - between 25% and 60%.
@@ -55,7 +54,6 @@ For each picture: does it read as finished vanilla content at a glance? Look for
 | Scene | What a player does | What must hold |
 |---|---|---|
 | `whale_ride` | mount a Drift Whale, fly forward, turn, climb, third person | seated on its back, clear view, smooth turning, no jitter |
-| `wyrm_fight` | step onto a spire's top in survival | it wakes on the nest, fights on and over the platform, can be hit, never vanishes or teleports |
 | `corona_drop` | teleport high over the Corona and fall | land on real ground; the Remnant is a place in the sky, not a colour |
 | `upwelling` | drink Upwelling under a ledge, walk, turn, jump | flip upside down, stand on the underside, controls follow the screen, drop off cleanly |
 | `biome_border` | fly out across a biome's edge | sky and fog shift over 10-15 blocks; ground and plants interlock |
@@ -87,9 +85,9 @@ From the user's play and the checks above. Done ones are kept for the record.
 From BetterEnd's wiki (biomes and mobs). Not to copy - to match the level of finish.
 
 1. **One strong idea per biome**, visible from a distance: geysers (Sulphur Springs), tiered lakes
-   (Megalake), glowing lantern trees (Lantern Woods). *Ours:* Nebula Fields (giant Lumineshrooms, oases),
+   (Megalake), glowing lantern trees (Lantern Woods). *Ours:* Nebula Fields (oases),
    Chorus Thicket (groves), Corona (the Remnant overhead, spires, fissures), Glimmering Crags (crystal
-   spikes, the Spire), Comet Wake (ice spires, live comets), Hollow Isles (undersides), Ashen Barrens (auroras).
+   spikes), Hollow Isles (the one forest, undersides), Ashen Barrens (craters; the leviathan graveyard to come).
 2. **Living water**: lakes with glowing fish, jellyfish and dragonflies. *Ours:* oases are new; they need life.
 3. **Ambient life in the air** in every biome: fireflies, spores, moths. *Ours:* every biome has ambient
    particles; Pollinators and Void Rays fly. Add an ambient sound loop per biome.

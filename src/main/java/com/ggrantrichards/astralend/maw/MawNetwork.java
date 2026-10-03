@@ -16,8 +16,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -99,6 +97,7 @@ public class MawNetwork extends SavedData {
         int lit = 0;
         int sockets = 0;
         long eyeX = 0, eyeZ = 0;
+        List<BlockPos> dark = new ArrayList<>();
         for (BlockPos p : BlockPos.betweenClosed(pos.offset(-44, -24, -44), pos.offset(44, 32, 44))) {     // the eyes are high on the cranium
             BlockState state = level.getBlockState(p);
             if (state.is(ModBlocks.MAW_EYE.get())) {
@@ -107,13 +106,18 @@ public class MawNetwork extends SavedData {
                 eyeZ += p.getZ();
                 if (state.getValue(MawEyeBlock.LIT)) {
                     lit++;
+                } else {
+                    dark.add(p.immutable());
                 }
             }
         }
         if (lit < 4) {
             if (player != null) {
-                player.connection.send(new ClientboundSetActionBarTextPacket(
-                    Component.translatable("maw.astralend.eyes_dark", lit, Math.max(4, sockets))));
+                // No words: the throat gives a hollow knock, and every dark socket breathes out smoke.
+                level.playSound(null, pos, SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 1.5F, 0.5F);
+                for (BlockPos eye : dark) {
+                    level.sendParticles(ParticleTypes.LARGE_SMOKE, eye.getX() + 0.5, eye.getY() + 0.5, eye.getZ() + 0.5, 12, 0.4, 0.4, 0.4, 0.02);
+                }
             }
             return null;
         }
@@ -156,7 +160,6 @@ public class MawNetwork extends SavedData {
         network.maws.add(maw);
         if (player != null) {
             network.learn(player, maw);
-            player.sendSystemMessage(Component.translatable("maw.astralend.woken"));
             com.ggrantrichards.astralend.world.ModAdvancements.award(player, "say_ahh");
         }
         network.setDirty();
@@ -176,10 +179,9 @@ public class MawNetwork extends SavedData {
         }
         if (network.learn(player, maw)) {
             network.setDirty();
-            player.sendSystemMessage(Component.translatable("maw.astralend.attuned"));
             level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.5F, 0.5F);
         } else {
-            player.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("maw.astralend.already")));
+            level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 1.0F, 1.4F);
         }
     }
 
@@ -260,11 +262,11 @@ public class MawNetwork extends SavedData {
             }
         }
         if (there == null) {
-            spit(player, here, index < 0 ? "maw.astralend.not_attuned" : "maw.astralend.nowhere");
+            spit(player, here, index < 0 ? Refusal.STRANGER : Refusal.NOWHERE);
             return;
         }
         if (!player.isCreative() && !pay(player.getInventory())) {
-            spit(player, here, "maw.astralend.price");
+            spit(player, here, Refusal.UNPAID);
             return;
         }
         level.sendParticles(ParticleTypes.REVERSE_PORTAL, player.getX(), player.getY() + 1, player.getZ(), 60, 0.5, 1.0, 0.5, 0.1);
@@ -279,15 +281,29 @@ public class MawNetwork extends SavedData {
         level.playSound(null, there.exit(), SoundEvents.ENDER_DRAGON_FLAP, SoundSource.PLAYERS, 2.0F, 0.6F);
         level.playSound(null, there.exit(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0F, 0.6F);
         level.sendParticles(ParticleTypes.REVERSE_PORTAL, to.x, to.y + 1, to.z, 80, 0.6, 1.0, 0.6, 0.2);
-        player.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("maw.astralend.arrived")));
     }
 
-    // Turned away: pushed back out of the mouth, with the reason.
-    private static void spit(ServerPlayer player, Maw maw, String reason) {
+    // Why a Maw turns you away. There are no words: each has its own sound, and you learn them.
+    private enum Refusal { STRANGER, NOWHERE, UNPAID }
+
+    // Turned away: pushed back out of the mouth. A stranger gets a growl and smoke; a Maw with no other
+    // Maw to send you to, a hollow empty knock; one that wants its fare, a hungry snap of the jaw.
+    private static void spit(ServerPlayer player, Maw maw, Refusal reason) {
         Direction out = maw.direction();
         player.setDeltaMovement(out.getStepX() * 0.8, 0.35, out.getStepZ() * 0.8);
         player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket(player));
-        player.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable(reason)));
+        ServerLevel level = (ServerLevel) player.level();
+        switch (reason) {
+            case STRANGER -> {
+                level.playSound(null, player.blockPosition(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 0.6F, 0.5F);
+                level.sendParticles(ParticleTypes.LARGE_SMOKE, player.getX(), player.getY() + 1, player.getZ(), 20, 0.5, 0.6, 0.5, 0.03);
+            }
+            case NOWHERE -> {
+                level.playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 1.2F, 0.6F);
+                level.sendParticles(ParticleTypes.REVERSE_PORTAL, player.getX(), player.getY() + 1, player.getZ(), 20, 0.5, 0.6, 0.5, 0.02);
+            }
+            case UNPAID -> level.playSound(null, player.blockPosition(), SoundEvents.EVOKER_FANGS_ATTACK, SoundSource.BLOCKS, 1.0F, 0.6F);
+        }
     }
 
     // The fare: an ender pearl, or else four chorus fruit.

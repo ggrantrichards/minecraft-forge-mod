@@ -13,18 +13,15 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -53,7 +50,6 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.level.BlockEvent;
 
@@ -62,14 +58,12 @@ import net.minecraftforge.event.level.BlockEvent;
 //
 //   Voidwalker   boots: Rift Walker - tiles of rift under your feet over a drop, gone in a second.
 //                chestplate: Void Recall - a Rift Pearl brings you back from the void, once.
-//   Meteoric     armour: Heat Shield - 1 s per piece of no fire damage; resets after 10 s out of fire.
-//                tools: Smelting (StarforgeLoot).
+//   Meteoric     tools: Smelting (StarforgeLoot).
 // These stack per piece, but stay small: a full set is a nudge, not a new tier of armour.
 //
 //   Stardust     armour: lower gravity, boots step up (attribute modifiers, see Starforge.apply).
 //                bows, crossbows, tridents: projectiles fall 20% slower, so they fly ~25% further.
-//   Temporal     armour: Time Stretch - good effects last 5% longer per piece, bad ones 5% shorter.
-//                melee weapons: Echo Strike - a tenth of every hit lands again a second later.
+//   Temporal     melee weapons: Echo Strike - a tenth of every hit lands again a second later.
 //   Singularity  armour: Lensing - 5% per piece that a projectile curves around you.
 //                swords: a full sweep pulls nearby mobs toward your target. tools: Pull (StarforgeLoot).
 //   Radiant      armour: Soak Light - in bright light, half a golden heart every 30 s, up to half a
@@ -83,7 +77,6 @@ public final class StarforgeEffects {
         TickEvent.ServerTickEvent.Post.BUS.addListener(StarforgeEffects::onServerTick);
         LivingAttackEvent.BUS.addListener((Predicate<LivingAttackEvent>) StarforgeEffects::onAttacked);
         LivingDamageEvent.BUS.addListener((Predicate<LivingDamageEvent>) StarforgeEffects::onDamage);
-        MobEffectEvent.Added.BUS.addListener(StarforgeEffects::onEffectAdded);
         ProjectileImpactEvent.BUS.addListener(StarforgeEffects::onProjectileImpact);
         EntityJoinLevelEvent.BUS.addListener(StarforgeEffects::onEntityJoin);
         AttackEntityEvent.BUS.addListener((Predicate<AttackEntityEvent>) StarforgeEffects::onAttackEntity);
@@ -190,25 +183,6 @@ public final class StarforgeEffects {
         return true;
     }
 
-    // ------------------------------------------------------------------ Meteoric: Heat Shield
-
-    // entity -> {first fire damage of this exposure, last fire damage}
-    private static final Map<UUID, long[]> HEAT = new HashMap<>();
-
-    private static boolean heatShield(LivingEntity entity, DamageSource source) {
-        int pieces = Starforge.pieces(entity, StarforgeUpgrade.METEORIC);
-        if (pieces == 0 || !source.is(DamageTypeTags.IS_FIRE)) {
-            return false;
-        }
-        long now = entity.level().getGameTime();
-        long[] t = HEAT.computeIfAbsent(entity.getUUID(), id -> new long[] {now, now});
-        if (now - t[1] > 200) {
-            t[0] = now;       // 10 seconds out of the fire: the shield is whole again
-        }
-        t[1] = now;
-        return now - t[0] < 20L * pieces;
-    }
-
     // ------------------------------------------------------------------ Radiant: Soak Light
 
     private static void soakLight(ServerLevel level, ServerPlayer player, PlayerState s) {
@@ -239,7 +213,7 @@ public final class StarforgeEffects {
 
     // ------------------------------------------------------------------ damage
 
-    // Before damage: Void Recall and Heat Shield can cancel it outright.
+    // Before damage: Void Recall can cancel it outright.
     private static boolean onAttacked(LivingAttackEvent event) {
         LivingEntity entity = event.getEntity();
         if (entity.level().isClientSide()) {
@@ -249,7 +223,7 @@ public final class StarforgeEffects {
         if (source.is(DamageTypes.FELL_OUT_OF_WORLD) && entity instanceof ServerPlayer player && voidRecall(player)) {
             return true;
         }
-        return heatShield(entity, source);
+        return false;
     }
 
     private static final List<Echo> ECHOES = new ArrayList<>();
@@ -291,42 +265,6 @@ public final class StarforgeEffects {
         e.level().sendParticles(ParticleTypes.ENCHANTED_HIT, c.x, c.y, c.z, 12, 0.3, 0.4, 0.3, 0.2);
         e.level().sendParticles(ParticleTypes.END_ROD, c.x, c.y, c.z, 4, 0.1, 0.1, 0.1, 0.05);
         e.level().playSound(null, e.target().blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.0F, 0.6F);
-    }
-
-    // ------------------------------------------------------------------ Temporal: Time Stretch
-
-    private record Stretch(LivingEntity entity, MobEffectInstance effect) {}
-
-    private static final List<Stretch> STRETCHES = new ArrayList<>();
-    private static boolean stretching;
-
-    private static void onEffectAdded(MobEffectEvent.Added event) {
-        LivingEntity entity = event.getEntity();
-        MobEffectInstance effect = event.getEffectInstance();
-        if (stretching || entity.level().isClientSide() || event.getOldEffectInstance() != null || effect.isAmbient()
-            || effect.isInfiniteDuration() || effect.getDuration() < 20 || Starforge.pieces(entity, StarforgeUpgrade.TEMPORAL) == 0) {
-            return;
-        }
-        STRETCHES.add(new Stretch(entity, effect));   // applied at the end of the tick, once the effect is in
-    }
-
-    private static void stretch(Stretch s) {
-        LivingEntity entity = s.entity();
-        Holder<MobEffect> type = s.effect().getEffect();
-        MobEffectInstance now = entity.getEffect(type);
-        int pieces = Starforge.pieces(entity, StarforgeUpgrade.TEMPORAL);
-        if (now == null || !entity.isAlive() || pieces == 0) {
-            return;
-        }
-        boolean good = type.value().isBeneficial();
-        float scale = good ? 1.0F + 0.05F * pieces : 1.0F - 0.05F * pieces;
-        stretching = true;
-        try {
-            entity.removeEffect(type);
-            entity.addEffect(now.withScaledDuration(scale));
-        } finally {
-            stretching = false;
-        }
     }
 
     // ------------------------------------------------------------------ Singularity
@@ -434,7 +372,7 @@ public final class StarforgeEffects {
 
     // ------------------------------------------------------------------ the end of each tick
 
-    // Echoes that are due (or all of them, for the survey), and effects waiting to be stretched.
+    // Echoes that are due (or all of them, for the survey).
     public static void flush(boolean allEchoesNow) {
         for (Iterator<Echo> it = new ArrayList<>(ECHOES).iterator(); it.hasNext(); ) {
             Echo e = it.next();
@@ -442,11 +380,6 @@ public final class StarforgeEffects {
                 ECHOES.remove(e);
                 echo(e);
             }
-        }
-        if (!STRETCHES.isEmpty()) {
-            List<Stretch> todo = new ArrayList<>(STRETCHES);
-            STRETCHES.clear();
-            todo.forEach(StarforgeEffects::stretch);
         }
     }
 
@@ -466,7 +399,6 @@ public final class StarforgeEffects {
         BROKEN.removeIf(b -> b.level().getGameTime() - b.at() > 2);
         if (event.server().getTickCount() % 1200 == 0) {
             PLAYERS.keySet().removeIf(id -> event.server().getPlayerList().getPlayer(id) == null);
-            HEAT.entrySet().removeIf(e -> event.server().overworld().getGameTime() - e.getValue()[1] > 1200);
         }
     }
 

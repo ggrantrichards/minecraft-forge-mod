@@ -276,13 +276,13 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).instrument(NoteBlockInstrument.BASEDRUM)
             .requiresCorrectToolForDrops().strength(3.5F).sound(SoundType.LODESTONE).lightLevel(state -> 4));
 
-    // ---- Phase 10: the Glimmering Crags. Teal crystal grown through the Nightstone peaks. ----
+    // ---- Phase 10: the Glimmering Crags. Smoky violet crystal grown through the Nightstone peaks. ----
     public static final RegistryObject<Block> GLIMMER_CRYSTAL = register("glimmer_crystal", Block::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).strength(1.5F).sound(SoundType.AMETHYST)
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_PURPLE).strength(1.5F).sound(SoundType.AMETHYST)
             .requiresCorrectToolForDrops().lightLevel(state -> 6));
     public static final RegistryObject<Block> GLIMMER_CLUSTER = register("glimmer_cluster",
         p -> new net.minecraft.world.level.block.AmethystClusterBlock(7.0F, 3.0F, p),
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).forceSolidOn().noOcclusion().strength(1.5F)
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_PURPLE).forceSolidOn().noOcclusion().strength(1.5F)
             .sound(SoundType.AMETHYST_CLUSTER).lightLevel(state -> 5).pushReaction(PushReaction.POPPED));
 
     // ---- Phase 10: Voidgel - jelly from the undersides of the islands. It bounces you like slime and

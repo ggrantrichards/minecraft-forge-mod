@@ -66,9 +66,9 @@ public enum StarforgeUpgrade implements StringRepresentable {
             EquipmentSlot slot = Starforge.slotOf(stack);
             return switch (this) {
                 case VOIDWALKER -> slot == EquipmentSlot.FEET ? "rift_walker" : slot == EquipmentSlot.CHEST ? "void_recall" : null;
-                case METEORIC -> "heat_shield";
+                case METEORIC -> null;          // Heat Shield was cut (the distillation)
                 case STARDUST -> slot == EquipmentSlot.FEET ? "light_step_boots" : "light_step";
-                case TEMPORAL -> "time_stretch";
+                case TEMPORAL -> null;          // so was Time Stretch
                 case SINGULARITY -> "lensing";
                 case RADIANT -> "soak_light";
             };

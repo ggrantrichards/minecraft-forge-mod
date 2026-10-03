@@ -8,7 +8,7 @@ vanilla block it is kin to and keeps that block's pixel pattern exactly; only th
   Chorus Stalk      crimson stem (side and end), shifted to chorus magenta
   Chorus Bloom      cherry leaves, shifted to chorus violet
   Lumine Cap        shroomlight, in cool blue
-  Glimmer Crystal   amethyst block, in teal
+  Glimmer Crystal   amethyst block, gone smoky grey violet
   Leviathan Bone    bone block (side and end), aged to a grey ivory
   Nightstone        blackstone's chunky rock, in dark violet (drawn, kept)
   Charred End Stone end stone's pits, scorched, two embers (drawn, kept)
@@ -181,8 +181,13 @@ def lumine_cap():
     return shift(vanilla("shroomlight"), hue=0.50, sat=0.62, val=0.92)
 
 
+# Glimmer Crystal: amethyst gone smoky - a dull grey violet, so it reads as part of the End's restricted
+# palette and leaves the vivid violet to Void Crystal.
+SMOKY = ("2a2434", "4e4660", "7c7290", "b4aac6")
+
+
 def glimmer_crystal():
-    return shift(vanilla("amethyst_block"), hue=-0.27, sat=0.85, val=1.0)
+    return gradient(vanilla("amethyst_block"), *SMOKY)
 
 
 def leviathan_bone_side():
@@ -292,7 +297,7 @@ def void_crystal_block():
 
 
 def glimmer_cluster():
-    return shift(vanilla("amethyst_cluster"), hue=-0.27, sat=0.85, val=1.0)
+    return gradient(vanilla("amethyst_cluster"), *SMOKY)
 
 
 def whalelight_scale():
