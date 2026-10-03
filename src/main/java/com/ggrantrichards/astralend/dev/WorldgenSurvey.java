@@ -583,10 +583,10 @@ public final class WorldgenSurvey {
             }
         }
         if (bell != null) {
-            net.minecraft.world.phys.Vec3 at = net.minecraft.world.phys.Vec3.atCenterOf(bell);
-            net.minecraft.world.phys.Vec3 out = new net.minecraft.world.phys.Vec3(at.x - nest.x, 0, at.z - nest.z).normalize();
-            net.minecraft.world.phys.Vec3 cam = at.add(out.scale(9.0)).add(0, 2.0, 0);
-            net.minecraft.world.phys.Vec3 d = at.subtract(cam);
+            net.minecraft.world.phys.Vec3 ring = net.minecraft.world.phys.Vec3.atCenterOf(bell);
+            net.minecraft.world.phys.Vec3 out = new net.minecraft.world.phys.Vec3(ring.x - nest.x, 0, ring.z - nest.z).normalize();
+            net.minecraft.world.phys.Vec3 cam = ring.add(out.scale(9.0)).add(0, 2.0, 0);
+            net.minecraft.world.phys.Vec3 d = ring.subtract(cam);
             double yaw = Math.toDegrees(Math.atan2(-d.x, d.z));
             double pitch = -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
             lines.add(String.format(java.util.Locale.ROOT, "wyrm_bell %.1f %.1f %.1f %.1f %.1f", cam.x, cam.y - 1.62, cam.z, yaw, pitch));
