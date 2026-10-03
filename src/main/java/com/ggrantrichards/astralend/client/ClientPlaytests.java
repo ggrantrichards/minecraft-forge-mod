@@ -100,6 +100,12 @@ public final class ClientPlaytests {
         if (ticks < 0) {
             return;       // settling: chunks loading round the new place
         }
+        // A safety net: anyone falling out of the world is put back where the scene began.
+        if (minecraft.player.getY() < minecraft.level.getMinY() - 10 && ticks % 20 == 0) {
+            LOGGER.warn(TAG + "{} fell out of the world at tick {}", test.name(), ticks);
+            start(minecraft, server, index);
+            return;
+        }
         try {
             play(minecraft, server, test, ticks);
         } catch (RuntimeException e) {
@@ -188,7 +194,12 @@ public final class ClientPlaytests {
                     // A ledge to hang from: a 9x9 roof of Nightstone 6 blocks over the Nebula Fields.
                     ClientScreenshots.Shot s = shot("nebula_fields");
                     BlockPos ground = s != null ? BlockPos.containing(s.x(), s.y(), s.z()) : new BlockPos(0, 80, 400);
+                    end.getChunkAt(ground);                          // loaded first, or the heightmap is empty
                     ground = end.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, ground);
+                    if (ground.getY() <= end.getMinY() + 1) {
+                        ground = new BlockPos(ground.getX(), 80, ground.getZ());
+                        end.setBlockAndUpdate(ground.below(), com.ggrantrichards.astralend.ModBlocks.NIGHTSTONE.get().defaultBlockState());
+                    }
                     for (BlockPos p : BlockPos.betweenClosed(ground.offset(-4, 6, -4), ground.offset(4, 6, 4))) {
                         end.setBlockAndUpdate(p, com.ggrantrichards.astralend.ModBlocks.NIGHTSTONE.get().defaultBlockState());
                     }
