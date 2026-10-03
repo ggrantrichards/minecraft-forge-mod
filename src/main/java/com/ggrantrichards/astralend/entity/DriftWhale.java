@@ -77,7 +77,8 @@ public class DriftWhale extends Mob implements ItemSteerable {
         return Mob.createMobAttributes()
             .add(Attributes.MAX_HEALTH, 400.0)
             .add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
-            .add(Attributes.FOLLOW_RANGE, 64.0);
+            .add(Attributes.FOLLOW_RANGE, 64.0)
+            .add(Attributes.CAMERA_DISTANCE, 11.0);     // riding in third person, the camera stands clear of its body
     }
 
     @Override

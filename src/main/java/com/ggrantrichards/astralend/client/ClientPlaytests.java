@@ -65,7 +65,7 @@ public final class ClientPlaytests {
     private static int ticks;
     private static int waiting;
     private static boolean done;
-    private static Entity subject;    // on the server: the whale or the Wyrm under test
+    private static volatile Entity subject;    // on the server: the whale or the Wyrm under test
 
     public static void register() {
         if (Boolean.getBoolean("astralend.playtests")) {
@@ -260,6 +260,14 @@ public final class ClientPlaytests {
                 }
             }
             case "wyrm_fight" -> {
+                if (subject == null && t % 20 == 1) {
+                    // Found once the spire's chunks have loaded round the player.
+                    server.execute(() -> {
+                        ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+                        p.level().getEntitiesOfClass(SpireWyrm.class, p.getBoundingBox().inflate(48)).stream().findFirst()
+                            .ifPresent(w -> subject = w);
+                    });
+                }
                 Entity w = subject != null ? minecraft.level.getEntity(subject.getId()) : null;
                 if (w != null) {
                     Vec3 d = w.position().add(0, 1, 0).subtract(player.getEyePosition());
