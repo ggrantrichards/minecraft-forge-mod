@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set +e
 exec > >(tee /tmp/probe.txt) 2>&1
-MJ=$(find .gradle ~/.gradle -name 'minecraft*26.3*.jar' 2>/dev/null | grep -v sources | head -5)
+MJ=$(find .gradle ~/.gradle -name '*.jar' 2>/dev/null | grep -i '26.3' | grep -v sources | head -40)
+for j in $MJ; do unzip -l "$j" 2>/dev/null | grep -q 'worldgen/biome/basalt_deltas.json' && echo "has data: $j"; done
 echo "jars: $MJ"
 for j in $MJ $(find .gradle/mavenizer/repo -name 'forge-26.3-*.jar' ! -name '*sources*' | head -1); do
   if unzip -l "$j" | grep -q "data/minecraft/worldgen/biome/basalt_deltas.json"; then
