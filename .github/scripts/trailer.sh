@@ -49,4 +49,6 @@ ls run/screenshots/trailer/*.png > /dev/null 2>&1 || { echo "::error::no frames 
 JAR=$(find .gradle/mavenizer/repo -name 'client-extra*.jar' | head -1)
 unzip -p "$JAR" assets/minecraft/textures/font/ascii.png > /tmp/ascii.png
 python3 tools/trailer/compose.py run/screenshots/trailer /tmp/ascii.png trailer
+# and the README's moving teaser: fifteen seconds of the Spire Wyrm waking
+python3 tools/trailer/teaser.py trailer/the_astral_end_trailer.mp4 trailer/teaser.webp || true
 ls -la trailer

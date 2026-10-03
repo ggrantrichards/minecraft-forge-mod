@@ -114,6 +114,7 @@ jobs:
         if: always() && hashFiles('trailer/*.mp4') != ''
         run: |
           mkdir -p /tmp/trailer && cp -r trailer/the_astral_end_trailer.mp4 trailer/poster.png trailer/stills /tmp/trailer/
+          cp trailer/teaser.webp /tmp/trailer/ 2>/dev/null || true
           grep "AstralEnd trailer" trailer.log | sed 's/.*\[AstralEnd trailer\] //' > /tmp/trailer/filming.txt || true
           cd /tmp/trailer
           printf "# The Astral End - trailer\n\nFrom commit ${GITHUB_SHA::7} on ${GITHUB_REF_NAME}.\n\n![](poster.png)\n\n[Watch it](the_astral_end_trailer.mp4)\n" > README.md
