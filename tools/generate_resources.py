@@ -1089,7 +1089,7 @@ def worldgen_phase3():
         {"type": "minecraft:environment_scan", "direction_of_search": "up", "max_steps": 16,
          "target_condition": {"type": "minecraft:matching_blocks", "blocks": [rid("nullwood_leaves")]},
          "allowed_search_condition": {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"}},
-        {"type": "minecraft:random_offset", "xz_spread": 0, "y_spread": -1},
+        {"type": "minecraft:offset", "x": 0, "y": -1, "z": 0},
     ]})
     end_biome("deep_hollows", "Deep Hollows", fog="#150f26", water="#241a44",
               features_step4=[rid("hollow_isles_upwells")],
