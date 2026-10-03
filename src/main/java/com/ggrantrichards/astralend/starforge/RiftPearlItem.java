@@ -20,7 +20,7 @@ public class RiftPearlItem extends Item {
     @Override
     public boolean overrideStackedOnOther(ItemStack self, Slot slot, ClickAction action, Player player) {
         ItemStack target = slot.getItem();
-        if (action != ClickAction.SECONDARY || !Starforge.has(target, StarforgeUpgrade.VOIDWALKER)
+        if (action != ClickAction.SECONDARY || !Starforge.has(target, StarforgeUpgrade.VOID_RECALL)
             || Starforge.slotOf(target) != net.minecraft.world.entity.EquipmentSlot.CHEST || target.has(Starforge.RIFT_PEARL.get())
             || !slot.allowModification(player)) {
             return false;

@@ -1,7 +1,6 @@
 {
   "replace": false,
   "entries": [
-    "astralend:starforge_tools",
     "astralend:end_city_templates"
   ]
 }

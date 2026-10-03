@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "astralend:purpur_brick_wall_from_purpur_bricks_stonecutting"
+      }
+    },
+    "has_purpur_bricks": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:purpur_bricks"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_purpur_bricks"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "astralend:purpur_brick_wall_from_purpur_bricks_stonecutting"
+    ]
+  }
+}

@@ -37,6 +37,8 @@ STONE_FAMILIES = [
     ("polished_sunscorched_stone", "Polished Sunscorched Stone", True),
     ("sunscorched_stone_bricks", "Sunscorched Stone Bricks", True),
     ("observatory_quartz", "Observatory Quartz", True),
+    # The distillation: what the Leviathan's builders laid
+    ("purpur_bricks", "Purpur Bricks", True),
 ]
 SIMPLE_CUBES = [
     ("chiseled_nightstone", "Chiseled Nightstone"),
@@ -97,7 +99,7 @@ ITEMS = [
 ]
 
 PLURAL = {"nightstone_bricks": "nightstone_brick", "pale_end_stone_bricks": "pale_end_stone_brick",
-          "sunscorched_stone_bricks": "sunscorched_stone_brick"}  # "bricks" -> "brick_stairs", like vanilla
+          "sunscorched_stone_bricks": "sunscorched_stone_brick", "purpur_bricks": "purpur_brick"}  # "bricks" -> "brick_stairs", like vanilla
 
 
 def variant_id(base, kind):
@@ -744,11 +746,8 @@ def terrain():
     for biome in ("nebula_fields", "chorus_thicket", "hollow_isles", "ashen_barrens", "glimmering_crags",
                   "shattered_crags"):
         shaped = lerp(rid(f"terrain/weight/{biome}"), shaped, rid(f"terrain/{biome}"))
-    # The Eclipse: one great disc of land in a ring of void, over everything else (EclipseDensity.java
-    # works out where each one is, from the same nebula noise the biome source reads).
-    df("terrain/eclipse_weight", {"type": rid("eclipse"), "nebula": nebula, "hills": hills, "output": "weight"})
-    df("terrain/eclipse", {"type": rid("eclipse"), "nebula": nebula, "hills": hills, "output": "shape"})
-    shaped = lerp(rid("terrain/eclipse_weight"), shaped, rid("terrain/eclipse"))
+    # (The Eclipse's island isn't here: 26.3's compiled density functions can't be extended, so it's
+    # built by a feature instead - EclipseTerrainFeature, added to every End biome below.)
     df("terrain/shaped", shaped)
 
 
@@ -957,7 +956,7 @@ MOB_SPAWNS = {
 
 
 # Endermen live where the End is alive; the dead Ashen Barrens and the sun-scorched Corona have none.
-NO_ENDERMEN = ("ashen_barrens", "corona", "eclipse")
+NO_ENDERMEN = ("corona", "eclipse")   # (in the Ashen Barrens they stand at the edges: EclipseLife)
 
 
 def mob_spawns(biome):
@@ -1050,10 +1049,14 @@ def worldgen_phase3():
     java_feature("comet_core")
     surface_feature("ashen_barrens_comet_cores", "comet_core", rarity=8)
     big_feature("ashen_barrens_craters", "crater", rarity=7, heightmap="WORLD_SURFACE_WG")
+    # Memory Moss: pale patches that remember what stood there.
+    java_feature("memory_moss")
+    surface_feature("ashen_barrens_memory_moss", "memory_moss", rarity=3)
     end_biome("ashen_barrens", "Ashen Barrens", fog="#1b2329", water="#5a7e80",
               features_step4=[rid("aurora_ribcages"), rid("aurora_standing_stones"), rid("aurora_leviathan_ribs"),
                               rid("ashen_barrens_craters"), rid("ashen_barrens_comet_cores")],
-              features_step9=[rid("aurora_shimmer_reeds"), rid("aurora_shimmer_grass"), rid("ashen_barrens_withered_lumineshrooms")],
+              features_step9=[rid("ashen_barrens_memory_moss"), rid("aurora_shimmer_reeds"), rid("aurora_shimmer_grass"),
+                              rid("ashen_barrens_withered_lumineshrooms")],
               particle="minecraft:white_ash", particle_chance=0.012)
 
 
@@ -1073,16 +1076,19 @@ def worldgen_phase3():
     java_feature("stardust_underhang")
     placed("hollow_isles_stardust_underhangs", {"feature": rid("stardust_underhang"), "placement": [
         {"type": "minecraft:count", "count": 2}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
+    # Mimic Plants: a few in the Hollow Isles, more in the Deep Hollows.
+    plant_patch("hollow_isles_mimic_plants", "mimic_plant", rarity=4, count=3, spread=5, on=[rid("nightstone")])
     end_biome("hollow_isles", "Hollow Isles", fog="#2c2150", water="#3a2a66",
               features_step4=[rid("hollow_isles_upwells")],
               features_step7=[rid("hollow_isles_stardust_veins")],
-              features_step9=[rid("hollow_isles_nullwood_trees"), "minecraft:chorus_plant", rid("hollow_isles_voidgel"),
+              features_step9=[rid("hollow_isles_nullwood_trees"), rid("hollow_isles_mimic_plants"), "minecraft:chorus_plant", rid("hollow_isles_voidgel"),
                               rid("hollow_isles_stardust_underhangs")],
               particle="minecraft:reverse_portal", particle_chance=0.002)
 
     # ---- Deep Hollows (the Hollow Isles' variant): the forest closes in. Nullwood twice as thick, Hollow
     # Vines hanging from it to the ground, darker fog, almost no light.
     big_feature("deep_hollows_nullwood_trees", "nullwood_tree", count=7)
+    plant_patch("deep_hollows_mimic_plants", "mimic_plant", rarity=1, count=5, spread=6, on=[rid("nightstone")])
     feature("hollow_vines", {
         "type": "minecraft:block_column",
         "allowed_placement": {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
@@ -1110,11 +1116,18 @@ def worldgen_phase3():
     ]})
     end_biome("deep_hollows", "Deep Hollows", fog="#150f26", water="#241a44",
               features_step4=[rid("hollow_isles_upwells")],
-              features_step9=[rid("deep_hollows_nullwood_trees"), rid("deep_hollows_vines"), rid("hollow_isles_voidgel")],
+              features_step9=[rid("deep_hollows_nullwood_trees"), rid("deep_hollows_vines"), rid("deep_hollows_mimic_plants"),
+                              rid("hollow_isles_voidgel")],
               particle="minecraft:reverse_portal", particle_chance=0.004)
 
     # ---- The Corona: Sunscorched Stone over Charred End Stone; Solarite; adapted and dead life
     # (the Eclipse's hell half since the distillation; its landmarks run in both halves)
+    # The Eclipse's island, built before anything else in every End biome (a Forge biome modifier adds it;
+    # it does nothing outside an Eclipse).
+    java_feature("eclipse_terrain")
+    placed("eclipse_terrain", {"feature": rid("eclipse_terrain"), "placement": []})
+    write(RES / "data" / NS / "forge" / "biome_modifier" / "eclipse_terrain.json", {
+        "type": "forge:add_features", "biomes": "#minecraft:is_end", "features": rid("eclipse_terrain"), "step": "raw_generation"})
     java_feature("eclipse_landmarks")
     placed("eclipse_landmarks", {"feature": rid("eclipse_landmarks"), "placement": []})
     ore("solarite_surface_vein", "solarite_ore", rid("sunscorched_stone"), size=8)
@@ -1267,7 +1280,7 @@ def mobs_phase4():
     entity_loot("pollinator", [])
     entity_loot("void_ray", [])
     # A Drift Whale never fights back; killing one gets you a few scales, and nothing else.
-    entity_loot("drift_whale", [player_kill_drop("whalelight_scale", 3, looting=False)])
+    entity_loot("drift_whale", [])   # Whalelight Scales are only shed by tamed whales (DriftWhale)
     entity_loot("watcher", [])
     entity_loot("void_wanderer", [player_kill_drop("cracked_lens", 1, looting=False)])
     entity_loot("umbral_stalker", [player_kill_drop("umbral_membrane", 1)])
@@ -1579,7 +1592,7 @@ def structures_phase6():
 
 # ------------------------------------------------------------------ Phase 8: Starforging
 
-UPGRADES = ("voidwalker", "meteoric", "stardust", "temporal", "singularity", "radiant")
+UPGRADES = ("void_recall", "echo_strike", "lensing", "radiant", "rift_walker")   # the distillation's five
 
 # The vanilla items an upgrade can go on, with the kind of accent they get (tools/textures/
 # starforge_textures.py draws one accent per kind) and the model whose display transforms it shares.
@@ -1662,7 +1675,7 @@ def starforging_phase8():
 
     # ---- the items
     for name, english in (("starforge_template", "Starforge Template"), ("starforge_alloy", "Starforge Alloy"),
-                          ("rift_pearl", "Rift Pearl")):
+                          ("rift_pearl", "Rift Pearl"), ("curators_core", "Curator's Core")):
         item_model(name, {"parent": "minecraft:item/generated", "textures": {"layer0": rid(f"item/{name}")}})
         item_def(name, rid(f"item/{name}"))
         lang[f"item.{NS}.{name}"] = english
@@ -1673,7 +1686,8 @@ def starforging_phase8():
     })
     # Alloy like a Netherite Ingot: crafted, not forged.
     # Dragon's Breath binds it: the alloy needs the dragon beaten (and its breath bottled) first.
-    shapeless("starforge_alloy", "starforge_alloy", [rid("void_crystal"), rid("meteoric_iron_ingot"), rid("meteoric_iron_ingot"),
+    # (The distillation made it a little cheaper: one Meteoric Iron Ingot, not two.)
+    shapeless("starforge_alloy", "starforge_alloy", [rid("void_crystal"), rid("meteoric_iron_ingot"),
                                                      "minecraft:dragon_breath", rid("glowing_spores")])
     # Templates copy like smithing templates.
     shaped("starforge_template", "starforge_template", ["DTD", "DQD", "DDD"],
@@ -1710,32 +1724,26 @@ def starforging_phase8():
             "type": "minecraft:select", "property": "minecraft:component", "component": rid("starforge_upgrade"),
             "cases": cases, "fallback": base}})
 
-    # ---- Smelting and Pull: one global loot modifier
-    write(DATA / "loot_modifiers" / "starforge_tools.json", {"type": rid("starforge_tools"), "conditions": []})
-    # (listed in global_loot_modifiers.json by mechanics_phase10)
 
     # ---- words
     lang.update({
         f"container.{NS}.astral_forge": "Astral Forge",
-        f"container.{NS}.astral_forge.error": "This upgrade can't go on that item (or it already has it)",
+        f"container.{NS}.astral_forge.error": "This upgrade can't go on that item (or it already has it), or its "
+                                              "constellation hasn't been sighted from the Eclipse",
         f"container.{NS}.astral_forge.slot.0": "Add a Starforge Template",
         f"container.{NS}.astral_forge.slot.1": "Add diamond or netherite armor, weapon or tool, or a bow, crossbow, trident or mace",
         f"container.{NS}.astral_forge.slot.2": "Add Starforge Alloy",
-        f"container.{NS}.astral_forge.slot.3": "Add the upgrade's material: Void Crystal and Umbral Membrane, Meteoric Iron, "
-                                                 "Stardust, a Temporal Crystal, a Abyss Shard, or Solarite and a Charged Void Crystal",
-        f"container.{NS}.astral_forge.slot.4": "Voidwalker and Radiant take a second material here",
+        f"container.{NS}.astral_forge.slot.3": "Add the upgrade's rare material: a Curator's Core, a Rift Pearl, a Cracked "
+                                                 "Lens, a Bottled Flare or a Whalelight Scale",
+        f"container.{NS}.astral_forge.slot.4": "(the material can go here instead)",
         f"upgrade.{NS}.header": "Starforged:",
         f"upgrade.{NS}.line": "%s: %s",
         f"upgrade.{NS}.pearl_loaded": "Holds a Rift Pearl",
         f"upgrade.{NS}.pearl_empty": "No Rift Pearl (right-click one onto it)",
-        f"upgrade.{NS}.voidwalker": "Voidwalker", f"upgrade.{NS}.meteoric": "Meteoric", f"upgrade.{NS}.stardust": "Stardust",
-        f"upgrade.{NS}.temporal": "Temporal", f"upgrade.{NS}.singularity": "Singularity", f"upgrade.{NS}.radiant": "Radiant",
-        f"upgrade.{NS}.effect.rift_walker": "Rift Walker", f"upgrade.{NS}.effect.void_recall": "Void Recall",
-        f"upgrade.{NS}.effect.smelting": "Smelting",
-        f"upgrade.{NS}.effect.light_step": "Lighter Gravity", f"upgrade.{NS}.effect.light_step_boots": "Lighter Gravity, Step Up",
-        f"upgrade.{NS}.effect.flatter_shots": "Flatter Shots",
-        f"upgrade.{NS}.effect.echo_strike": "Echo Strike",
-        f"upgrade.{NS}.effect.lensing": "Lensing", f"upgrade.{NS}.effect.sweep_pull": "Sweep Pull", f"upgrade.{NS}.effect.pull": "Pull",
+        f"upgrade.{NS}.void_recall": "Void Recall", f"upgrade.{NS}.echo_strike": "Echo Strike", f"upgrade.{NS}.lensing": "Lensing",
+        f"upgrade.{NS}.radiant": "Radiant", f"upgrade.{NS}.rift_walker": "Rift Walker",
+        f"upgrade.{NS}.effect.rift_walker": "Tiles of Rift", f"upgrade.{NS}.effect.void_recall": "Back from the Void",
+        f"upgrade.{NS}.effect.echo_strike": "A Second Blow", f"upgrade.{NS}.effect.lensing": "Projectiles Curve Away",
         f"upgrade.{NS}.effect.soak_light": "Soak Light", f"upgrade.{NS}.effect.glow": "Glow",
     })
     advancement("starforged", rid("starforge_template"), "Forged in Starlight", "Forge a Starforge upgrade onto a piece of gear")
@@ -1873,7 +1881,7 @@ def mechanics_phase10():
         "type": rid("add_item"), "item": rid("starforge_template"), "chance": 0.2,
         "conditions": [{"type": "forge:loot_table_id", "loot_table_id": "minecraft:chests/end_city_treasure"}]})
     write(RES / "data" / "forge" / "loot_modifiers" / "global_loot_modifiers.json",
-          {"replace": False, "entries": [rid("starforge_tools"), rid("end_city_templates")]})
+          {"replace": False, "entries": [rid("end_city_templates")]})
 
 
 
@@ -2009,6 +2017,8 @@ def content_phase10():
         sounds[f"ambient.{biome}.loop"] = {"sounds": [{"name": rid(f"ambient/{biome}/loop"), "stream": True, "volume": 0.6}]}
         sounds[f"ambient.{biome}.additions"] = {"sounds": [{"name": rid(f"ambient/{biome}/additions{i}"), "volume": 0.5}
                                                           for i in range(1, 4)]}
+    # The void hum, near island edges (client/VoidHum.java).
+    sounds["ambient.void_hum"] = {"sounds": [{"name": rid("ambient/void_hum"), "stream": True}]}
     # The Spire Wyrm's voice (tools/sounds/wyrm_sounds.py): each sound and how many variants it has.
     for name, count in {"roar": 2, "ambient": 3, "hurt": 3, "death": 1, "charge": 2, "breath": 2, "slam": 2, "snore": 2}.items():
         sounds[f"entity.spire_wyrm.{name}"] = {"subtitle": f"subtitles.{NS}.entity.spire_wyrm.{name}",
@@ -2065,6 +2075,57 @@ def distillation_blocks():
         {"type": "minecraft:item", "name": "minecraft:end_stone"}]}]}])
     for t in ("minecraft:mineable/shovel", f"{NS}:astral_soil", "minecraft:dirt", "minecraft:supports_vegetation"):
         tag("block", t, rid("living_turf"))
+    # Purpur bricks from purpur blocks; a purpur wall, like vanilla's other stone walls.
+    shaped("purpur_bricks", "purpur_bricks", ["##", "##"], {"#": "minecraft:purpur_block"}, count=4)
+    tex = "minecraft:block/purpur_block"
+    parts = [{"apply": {"model": rid("block/purpur_wall_post")}, "when": {"up": "true"}}]
+    for height, model in (("low", "purpur_wall_side"), ("tall", "purpur_wall_side_tall")):
+        for side, y in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+            apply = {"model": rid(f"block/{model}"), "uvlock": True}
+            if y:
+                apply["y"] = y
+            parts.append({"apply": apply, "when": {side: height}})
+    blockstate("purpur_wall", {"multipart": parts})
+    for suffix, parent in (("_post", "template_wall_post"), ("_side", "template_wall_side"),
+                           ("_side_tall", "template_wall_side_tall"), ("_inventory", "wall_inventory")):
+        block_model("purpur_wall" + suffix, {"parent": f"minecraft:block/{parent}", "textures": {"wall": tex}})
+    item_def("purpur_wall", rid("block/purpur_wall_inventory"))
+    lang[f"block.{NS}.purpur_wall"] = "Purpur Wall"
+    drop_self("purpur_wall")
+    for t in ("minecraft:mineable/pickaxe", "minecraft:walls"):
+        tag("block", t, rid("purpur_wall"))
+    tag("item", "minecraft:walls", rid("purpur_wall"))
+    shaped("purpur_wall", "purpur_wall", ["###", "###"], {"#": "minecraft:purpur_block"}, count=6, category="misc")
+
+    # Memory Moss (eaten, it's Remembering) and the Mimic Plant.
+    blockstate("memory_moss", {"variants": {f"echo={i}": {"model": rid("block/memory_moss")} for i in range(4)}})
+    block_model("memory_moss", {"parent": "minecraft:block/cube_all", "textures": {"all": rid("block/memory_moss")}})
+    item_def("memory_moss", rid("block/memory_moss"))
+    lang[f"block.{NS}.memory_moss"] = "Memory Moss"
+    lang[f"item.{NS}.memory_moss"] = "Memory Moss"
+    drop_self("memory_moss")
+    for t in ("minecraft:mineable/hoe", f"{NS}:astral_soil"):
+        tag("block", t, rid("memory_moss"))
+    cross_plant("mimic_plant")
+    lang[f"block.{NS}.mimic_plant"] = "Mimic Plant"
+    drop_self("mimic_plant")
+    lang[f"effect.{NS}.remembering"] = "Remembering"
+    # Endermen carry the End's softer ground about, as they do grass and sand in the Overworld.
+    for block in ("chorus_moss", "memory_moss", "living_turf", "lumineshroom", "starbloom", "mimic_plant"):
+        tag("block", "minecraft:enderman_holdable", rid(block))
+
+    # Advancements of the distillation's systems (granted from code).
+    advancement("anchored", rid("lodestar"), "Anchored", "Bind yourself to a Lodestar in the End")
+    advancement("sung_home", "minecraft:note_block", "Sung Home", "Tame a Drift Whale by song: Remembering, a note block, and Chorus Fruit",
+                parent=f"{NS}:end/whale_song", frame="goal")
+    for name, english in (("leviathan", "the Leviathan"), ("maw", "the Maw"), ("watcher", "the Watcher"), ("remnant", "the Remnant"),
+                          ("whale", "the Whale")):
+        advancement(f"sighted_{name}", "minecraft:spyglass", f"Sighted: {english[4:]}",
+                    f"From the Eclipse, find {english} through a spyglass")
+    # Where the Watcher leads you: the remains of leviathans (the Leviathan itself, from phase 5).
+    for structure in ("whalefall", "rift_maw"):
+        tag("worldgen/structure", f"{NS}:leviathan_remains", rid(structure))
+
     # Breathcomb: four stages of its breath, dim to bright.
     blockstate("breathcomb", {"variants": {f"breath={i}": {"model": rid(f"block/breathcomb_{i}")} for i in range(4)}})
     for i in range(4):
@@ -2110,7 +2171,7 @@ def main():
     for folder in (ASSETS / "blockstates", ASSETS / "models", ASSETS / "items", DATA / "loot_table",
                    RES / "assets" / "minecraft" / "items", DATA / "loot_modifiers", RES / "data" / "forge",
                    DATA / "recipe", RES / "data" / NS / "tags", MC_DATA / "tags", DATA / "worldgen",
-                   MC_DATA / "dimension", DATA / "advancement"):
+                   MC_DATA / "dimension", DATA / "advancement", DATA / "forge"):
         shutil.rmtree(folder, ignore_errors=True)
 
     family_variants = {}
@@ -2376,7 +2437,7 @@ def main():
     # not from the block's shape. The other motion tags include it. Every solid block of the mod
     # belongs in it, like vanilla's stone, glass, stairs, slabs and walls; plants, vines, carpets
     # and crops don't (vanilla leaves out grass and moss carpet too).
-    not_solid = {"lumineshroom", "starbloom", "astral_vine", "astral_vine_plant", "hollow_vines", "hollow_vines_plant", "comet_cress", "shimmer_grass",
+    not_solid = {"mimic_plant", "lumineshroom", "starbloom", "astral_vine", "astral_vine_plant", "hollow_vines", "hollow_vines_plant", "comet_cress", "shimmer_grass",
                  "flarebloom", "sunscale_lichen", "ashen_lumineshroom", "petrified_astral_vine", "nebula_tufts",
                  "nebula_tendril", "nebula_tendril_plant", "nullwood_leaves", "nullwood_sapling", "shimmer_reed",
                  "null_lantern", "glimmer_cluster", "end_chimes"}

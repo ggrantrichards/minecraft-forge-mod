@@ -5,7 +5,7 @@
     "component": "astralend:starforge_upgrade",
     "cases": [
       {
-        "when": "voidwalker",
+        "when": "void_recall",
         "model": {
           "type": "minecraft:composite",
           "models": [
@@ -44,13 +44,13 @@
             },
             {
               "type": "minecraft:model",
-              "model": "astralend:item/starforge/bow_voidwalker"
+              "model": "astralend:item/starforge/bow_void_recall"
             }
           ]
         }
       },
       {
-        "when": "meteoric",
+        "when": "echo_strike",
         "model": {
           "type": "minecraft:composite",
           "models": [
@@ -89,13 +89,13 @@
             },
             {
               "type": "minecraft:model",
-              "model": "astralend:item/starforge/bow_meteoric"
+              "model": "astralend:item/starforge/bow_echo_strike"
             }
           ]
         }
       },
       {
-        "when": "stardust",
+        "when": "lensing",
         "model": {
           "type": "minecraft:composite",
           "models": [
@@ -134,97 +134,7 @@
             },
             {
               "type": "minecraft:model",
-              "model": "astralend:item/starforge/bow_stardust"
-            }
-          ]
-        }
-      },
-      {
-        "when": "temporal",
-        "model": {
-          "type": "minecraft:composite",
-          "models": [
-            {
-              "type": "minecraft:condition",
-              "property": "minecraft:using_item",
-              "on_false": {
-                "type": "minecraft:model",
-                "model": "minecraft:item/bow"
-              },
-              "on_true": {
-                "type": "minecraft:range_dispatch",
-                "property": "minecraft:use_duration",
-                "scale": 0.05,
-                "entries": [
-                  {
-                    "model": {
-                      "type": "minecraft:model",
-                      "model": "minecraft:item/bow_pulling_1"
-                    },
-                    "threshold": 0.65
-                  },
-                  {
-                    "model": {
-                      "type": "minecraft:model",
-                      "model": "minecraft:item/bow_pulling_2"
-                    },
-                    "threshold": 0.9
-                  }
-                ],
-                "fallback": {
-                  "type": "minecraft:model",
-                  "model": "minecraft:item/bow_pulling_0"
-                }
-              }
-            },
-            {
-              "type": "minecraft:model",
-              "model": "astralend:item/starforge/bow_temporal"
-            }
-          ]
-        }
-      },
-      {
-        "when": "singularity",
-        "model": {
-          "type": "minecraft:composite",
-          "models": [
-            {
-              "type": "minecraft:condition",
-              "property": "minecraft:using_item",
-              "on_false": {
-                "type": "minecraft:model",
-                "model": "minecraft:item/bow"
-              },
-              "on_true": {
-                "type": "minecraft:range_dispatch",
-                "property": "minecraft:use_duration",
-                "scale": 0.05,
-                "entries": [
-                  {
-                    "model": {
-                      "type": "minecraft:model",
-                      "model": "minecraft:item/bow_pulling_1"
-                    },
-                    "threshold": 0.65
-                  },
-                  {
-                    "model": {
-                      "type": "minecraft:model",
-                      "model": "minecraft:item/bow_pulling_2"
-                    },
-                    "threshold": 0.9
-                  }
-                ],
-                "fallback": {
-                  "type": "minecraft:model",
-                  "model": "minecraft:item/bow_pulling_0"
-                }
-              }
-            },
-            {
-              "type": "minecraft:model",
-              "model": "astralend:item/starforge/bow_singularity"
+              "model": "astralend:item/starforge/bow_lensing"
             }
           ]
         }
@@ -270,6 +180,51 @@
             {
               "type": "minecraft:model",
               "model": "astralend:item/starforge/bow_radiant"
+            }
+          ]
+        }
+      },
+      {
+        "when": "rift_walker",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:condition",
+              "property": "minecraft:using_item",
+              "on_false": {
+                "type": "minecraft:model",
+                "model": "minecraft:item/bow"
+              },
+              "on_true": {
+                "type": "minecraft:range_dispatch",
+                "property": "minecraft:use_duration",
+                "scale": 0.05,
+                "entries": [
+                  {
+                    "model": {
+                      "type": "minecraft:model",
+                      "model": "minecraft:item/bow_pulling_1"
+                    },
+                    "threshold": 0.65
+                  },
+                  {
+                    "model": {
+                      "type": "minecraft:model",
+                      "model": "minecraft:item/bow_pulling_2"
+                    },
+                    "threshold": 0.9
+                  }
+                ],
+                "fallback": {
+                  "type": "minecraft:model",
+                  "model": "minecraft:item/bow_pulling_0"
+                }
+              }
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/bow_rift_walker"
             }
           ]
         }

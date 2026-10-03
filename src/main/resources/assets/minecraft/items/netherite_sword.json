@@ -5,7 +5,7 @@
     "component": "astralend:starforge_upgrade",
     "cases": [
       {
-        "when": "voidwalker",
+        "when": "void_recall",
         "model": {
           "type": "minecraft:composite",
           "models": [
@@ -15,13 +15,13 @@
             },
             {
               "type": "minecraft:model",
-              "model": "astralend:item/starforge/sword_voidwalker"
+              "model": "astralend:item/starforge/sword_void_recall"
             }
           ]
         }
       },
       {
-        "when": "meteoric",
+        "when": "echo_strike",
         "model": {
           "type": "minecraft:composite",
           "models": [
@@ -31,13 +31,13 @@
             },
             {
               "type": "minecraft:model",
-              "model": "astralend:item/starforge/sword_meteoric"
+              "model": "astralend:item/starforge/sword_echo_strike"
             }
           ]
         }
       },
       {
-        "when": "stardust",
+        "when": "lensing",
         "model": {
           "type": "minecraft:composite",
           "models": [
@@ -47,39 +47,7 @@
             },
             {
               "type": "minecraft:model",
-              "model": "astralend:item/starforge/sword_stardust"
-            }
-          ]
-        }
-      },
-      {
-        "when": "temporal",
-        "model": {
-          "type": "minecraft:composite",
-          "models": [
-            {
-              "type": "minecraft:model",
-              "model": "minecraft:item/netherite_sword"
-            },
-            {
-              "type": "minecraft:model",
-              "model": "astralend:item/starforge/sword_temporal"
-            }
-          ]
-        }
-      },
-      {
-        "when": "singularity",
-        "model": {
-          "type": "minecraft:composite",
-          "models": [
-            {
-              "type": "minecraft:model",
-              "model": "minecraft:item/netherite_sword"
-            },
-            {
-              "type": "minecraft:model",
-              "model": "astralend:item/starforge/sword_singularity"
+              "model": "astralend:item/starforge/sword_lensing"
             }
           ]
         }
@@ -96,6 +64,22 @@
             {
               "type": "minecraft:model",
               "model": "astralend:item/starforge/sword_radiant"
+            }
+          ]
+        }
+      },
+      {
+        "when": "rift_walker",
+        "model": {
+          "type": "minecraft:composite",
+          "models": [
+            {
+              "type": "minecraft:model",
+              "model": "minecraft:item/netherite_sword"
+            },
+            {
+              "type": "minecraft:model",
+              "model": "astralend:item/starforge/sword_rift_walker"
             }
           ]
         }

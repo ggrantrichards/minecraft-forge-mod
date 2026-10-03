@@ -23,8 +23,8 @@ public class AstralForgeScreen extends ItemCombinerScreen<AstralForgeMenu> {
     private static final List<Identifier> BASE_ICONS = List.of(vanilla("helmet"), vanilla("sword"), vanilla("chestplate"), vanilla("pickaxe"),
         vanilla("leggings"), vanilla("axe"), vanilla("boots"), sprite("bow"), vanilla("shovel"), sprite("trident"), vanilla("hoe"));
     private static final List<Identifier> ALLOY_ICONS = List.of(vanilla("ingot"));
-    private static final List<Identifier> MATERIAL_ICONS = List.of(sprite("void_crystal"), vanilla("ingot"), sprite("stardust"),
-        sprite("temporal_crystal"), sprite("abyss_shard"), sprite("solarite"));
+    private static final List<Identifier> MATERIAL_ICONS = List.of(sprite("curators_core"), sprite("rift_pearl"), sprite("cracked_lens"),
+        sprite("bottled_flare"), sprite("whalelight_scale"));
     private static final int ERROR_X = 100;
     private static final int ERROR_Y = 46;
 
@@ -59,16 +59,8 @@ public class AstralForgeScreen extends ItemCombinerScreen<AstralForgeMenu> {
         this.material2Icon.tick(this.partnerIcons());
     }
 
+    // (Every upgrade takes a single material now; the second slot only takes it instead of the first.)
     private List<Identifier> partnerIcons() {
-        ItemStack first = this.menu.getSlot(AstralForgeMenu.MATERIAL).getItem();
-        for (StarforgeUpgrade upgrade : StarforgeUpgrade.values()) {
-            if (upgrade.materials().size() == 2 && first.is(upgrade.materials().get(0))) {
-                return List.of(upgrade == StarforgeUpgrade.VOIDWALKER ? sprite("umbral_membrane") : sprite("void_crystal"));
-            }
-            if (upgrade.materials().size() == 2 && first.is(upgrade.materials().get(1))) {
-                return List.of(upgrade == StarforgeUpgrade.VOIDWALKER ? sprite("void_crystal") : sprite("solarite"));
-            }
-        }
         return List.of();
     }
 
@@ -86,6 +78,38 @@ public class AstralForgeScreen extends ItemCombinerScreen<AstralForgeMenu> {
         this.alloyIcon.extractRenderState(this.menu, graphics, a, this.leftPos, this.topPos);
         this.materialIcon.extractRenderState(this.menu, graphics, a, this.leftPos, this.topPos);
         this.material2Icon.extractRenderState(this.menu, graphics, a, this.leftPos, this.topPos);
+        this.extractConstellation(graphics);
+    }
+
+    // The forge draws the upgrade's constellation while you forge: its stars, joined, in the upgrade's
+    // colour, in the space over the result slot.
+    private void extractConstellation(GuiGraphicsExtractor graphics) {
+        StarforgeUpgrade upgrade = this.menu.upgrade();
+        if (upgrade == null) {
+            return;
+        }
+        int index = com.ggrantrichards.astralend.maze.Constellations.byName(upgrade.constellation());
+        if (index < 0) {
+            return;
+        }
+        var c = com.ggrantrichards.astralend.maze.Constellations.get(index);
+        int cx = this.leftPos + 143, cy = this.topPos + 26;
+        int colour = 0xFF000000 | upgrade.colour();
+        int dim = 0x88000000 | upgrade.colour();
+        for (int[] line : c.lines()) {
+            float[] p = c.stars()[line[0]], q = c.stars()[line[1]];
+            for (int k = 1; k < 8; k++) {
+                float t = k / 8.0F;
+                int x = cx + Math.round((p[0] + (q[0] - p[0]) * t) * 1.1F);
+                int y = cy - Math.round((p[1] + (q[1] - p[1]) * t) * 1.1F);
+                graphics.fill(x, y, x + 1, y + 1, dim);
+            }
+        }
+        for (float[] star : c.stars()) {
+            int x = cx + Math.round(star[0] * 1.1F), y = cy - Math.round(star[1] * 1.1F);
+            graphics.fill(x - 1, y, x + 2, y + 1, colour);
+            graphics.fill(x, y - 1, x + 1, y + 2, colour);
+        }
     }
 
     @Override

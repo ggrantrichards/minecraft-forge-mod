@@ -43,6 +43,9 @@ public final class ModItems {
     public static final RegistryObject<Item> CHARGED_VOID_CRYSTAL = register("charged_void_crystal", Item::new,
         new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON));
     public static final RegistryObject<Item> FLARE_BOTTLE = register("flare_bottle", Item::new, new Item.Properties().stacksTo(16));
+    // The Curator's Core: what's left of the Curator when it falls (the distillation; Void Recall's material).
+    public static final RegistryObject<Item> CURATORS_CORE = register("curators_core", Item::new,
+        new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.EPIC).fireResistant());
     public static final RegistryObject<Item> BOTTLED_FLARE = register("bottled_flare", Item::new,
         new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.UNCOMMON));
     // Phase 10: steers a Drift Whale.
@@ -85,6 +88,16 @@ public final class ModItems {
         new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON));
     public static final RegistryObject<Item> RIFT_PEARL = register("rift_pearl", com.ggrantrichards.astralend.starforge.RiftPearlItem::new,
         new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.EPIC));
+
+    // Memory Moss: placed, it's moss; eaten, it brings on Remembering (a minute and a half).
+    public static final RegistryObject<Item> MEMORY_MOSS = ITEMS.register("memory_moss",
+        () -> new BlockItem(ModBlocks.MEMORY_MOSS.get(), new Item.Properties()
+            .setId(ITEMS.key("memory_moss"))
+            .useBlockDescriptionPrefix()
+            .food(new FoodProperties.Builder().nutrition(1).saturationModifier(0.1F).alwaysEdible().build(),
+                net.minecraft.world.item.component.Consumables.defaultFood().onConsume(
+                    new net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect(
+                        new net.minecraft.world.effect.MobEffectInstance(ModEffects.remembering(), 1800))).build())));
 
     // The distillation: the Hushback's fleece, and its meat.
     public static final RegistryObject<Item> HUSHFLEECE = simple("hushfleece");

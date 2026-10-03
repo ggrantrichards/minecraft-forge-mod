@@ -52,6 +52,18 @@ public class EndChimesBlock extends BaseEntityBlock {
             : super.updateShape(state, level, ticks, pos, direction, neighbourPos, neighbour, random);
     }
 
+    // Struck by hand, they ring too - and go still. (In a Leviathan's reliquary, that's how the
+    // Curator's teleports are stopped: see Curator.)
+    @Override
+    protected net.minecraft.world.InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
+                                                                  net.minecraft.world.entity.player.Player player,
+                                                                  net.minecraft.world.phys.BlockHitResult hit) {
+        if (level instanceof net.minecraft.server.level.ServerLevel server && level.getBlockEntity(pos) instanceof EndChimesBlockEntity chime) {
+            chime.ring(server);
+        }
+        return net.minecraft.world.InteractionResult.SUCCESS;
+    }
+
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         if (random.nextInt(60) == 0) {

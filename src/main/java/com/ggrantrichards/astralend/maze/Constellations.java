@@ -3,8 +3,10 @@ package com.ggrantrichards.astralend.maze;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
-// The four constellations of the Constellation Mazes, fixed in the End's sky (the sky renderer
-// draws them; you find them through a spyglass). Each has a centre in the sky, as a yaw and pitch the
+// The constellations, fixed in the End's sky (the sky renderer draws them over the Eclipse; anywhere
+// else you find them through a spyglass). The first four answer the Constellation Mazes' bridges;
+// five of them - the Leviathan, the Maw, the Watcher, the Remnant and the Whale - are the Starforge's,
+// each sighted from the Eclipse before its upgrade can be forged. Each has a centre in the sky, as a yaw and pitch the
 // way Minecraft measures a look (yaw 0 = south, 90 = west; pitch -90 = straight up), and its stars as
 // offsets in degrees from that centre (right, up), joined in order by the lines in `lines`.
 public final class Constellations {
@@ -32,7 +34,24 @@ public final class Constellations {
         new Constellation("watcher", 135.0F, -46.0F,
             new float[][] {{0, 10}, {0, 4}, {-5, 2}, {5, 2}, {0, -3}, {-3, -10}, {3, -10}},
             new int[][] {{0, 1}, {1, 2}, {1, 3}, {1, 4}, {4, 5}, {4, 6}}),
+        // The Remnant: a broken ring round a burning heart, high overhead.
+        new Constellation("remnant", 0.0F, -70.0F,
+            new float[][] {{0, 0}, {0, 7}, {6, 4}, {7, -2}, {3, -7}, {-4, -6}, {-7, 0}},
+            new int[][] {{1, 2}, {2, 3}, {3, 4}, {5, 6}, {6, 1}}),
+        // The Whale: a long arc of back, a fluke, and its little eye.
+        new Constellation("whale", 180.0F, -30.0F,
+            new float[][] {{-12, 0}, {-6, 4}, {1, 5}, {8, 3}, {12, -1}, {15, 3}, {15, -5}, {-8, 1}},
+            new int[][] {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {4, 6}}),
     };
+
+    public static int byName(String name) {
+        for (int i = 0; i < ALL.length; i++) {
+            if (ALL[i].name().equals(name)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     public static Constellation get(int id) {
         return ALL[Math.floorMod(id, ALL.length)];

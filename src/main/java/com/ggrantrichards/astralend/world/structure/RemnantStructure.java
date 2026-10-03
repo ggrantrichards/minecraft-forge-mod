@@ -22,7 +22,7 @@ public class RemnantStructure extends Structure {
     }
 
     // Where the Remnant of the Eclipse nearest this spot hangs (its chunk's middle), or null.
-    public static BlockPos anchor(net.minecraft.world.level.levelgen.DensityFunction nebula, double x, double z, int rings) {
+    public static BlockPos anchor(net.minecraft.world.level.biome.Climate.Sampler nebula, double x, double z, int rings) {
         EclipseLayout.Eclipse e = EclipseLayout.nearest(x, z, nebula, rings);
         if (e == null) {
             return null;
@@ -36,7 +36,7 @@ public class RemnantStructure extends Structure {
     protected Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
         int cx = context.chunkPos().getMiddleBlockX();
         int cz = context.chunkPos().getMiddleBlockZ();
-        BlockPos anchor = anchor(context.randomState().sampler().temperature(), cx, cz, 0);
+        BlockPos anchor = anchor(context.randomState().sampler(), cx, cz, 0);
         if (anchor == null || anchor.getX() != cx || anchor.getZ() != cz) {
             return Optional.empty();
         }

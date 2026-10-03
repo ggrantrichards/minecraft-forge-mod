@@ -12,13 +12,12 @@ from PIL import Image
 from pixelart import from_map, hexc
 
 # Darkest to lightest; index 0 is the outline-ish shadow, 4 the glint.
-UPGRADES = {
-    "voidwalker": ["2a1660", "4a2aa8", "7a56f0", "a98cff", "e0d4ff"],
-    "meteoric": ["4a1208", "8a2410", "c8401c", "f07a3c", "ffc890"],
-    "stardust": ["1c3a66", "2f66b0", "5fa4f0", "a8d4ff", "f0f8ff"],
-    "temporal": ["4a2406", "8a4a10", "c87a22", "eea650", "ffe0a8"],
-    "singularity": ["400a3a", "7a1470", "c02aa8", "ee62d4", "ffc8f2"],
+UPGRADES = {   # the distillation's five
+    "void_recall": ["2a1660", "4a2aa8", "7a56f0", "a98cff", "e0d4ff"],
+    "echo_strike": ["4a2406", "8a4a10", "c87a22", "eea650", "ffe0a8"],
+    "lensing": ["400a3a", "7a1470", "c02aa8", "ee62d4", "ffc8f2"],
     "radiant": ["8a6a10", "d0a818", "f8dc40", "fff8a0", "ffffff"],
+    "rift_walker": ["103a50", "1e6a8a", "3aa4d0", "7ad8ff", "dcf6ff"],
 }
 
 # ------------------------------------------------------------------ item accents (16x16 masks)
@@ -543,114 +542,6 @@ SLOT_ICONS = {
         "a.a.............",
         "aa..............",
     ],
-    "void_crystal": [
-        "................",
-        "................",
-        "........a.......",
-        ".......a.a......",
-        "......a...a.....",
-        ".....a.....a....",
-        "....a.......a...",
-        "...a.........a..",
-        "....a.......a...",
-        ".....a.....a....",
-        "......a...a.....",
-        ".......a.a......",
-        "........a.......",
-        "................",
-        "................",
-        "................",
-    ],
-    "umbral_membrane": [
-        "................",
-        "................",
-        "..a..........a..",
-        "..aa........aa..",
-        "..a.a......a.a..",
-        "..a..aaaaaa..a..",
-        "..a..........a..",
-        "...a........a...",
-        "...a........a...",
-        "....a......a....",
-        "....a..aa..a....",
-        ".....aa..aa.....",
-        "................",
-        "................",
-        "................",
-        "................",
-    ],
-    "stardust": [
-        "................",
-        "................",
-        "..........a.....",
-        ".........a.a....",
-        "..a.......a.....",
-        ".a.a............",
-        "..a.....a.......",
-        ".......a.a......",
-        "........a.......",
-        "...a........a...",
-        "..a.a......a.a..",
-        "...a........a...",
-        "......a.........",
-        ".....a.a........",
-        "......a.........",
-        "................",
-    ],
-    "temporal_crystal": [
-        "................",
-        "....aaaaaaaa....",
-        "....a......a....",
-        ".....a....a.....",
-        "......a..a......",
-        ".......aa.......",
-        ".......aa.......",
-        "......a..a......",
-        ".....a....a.....",
-        "....a......a....",
-        "....a......a....",
-        "....aaaaaaaa....",
-        "................",
-        "................",
-        "................",
-        "................",
-    ],
-    "abyss_shard": [
-        "................",
-        "................",
-        "........a.......",
-        ".......a.a......",
-        "......a...a.....",
-        ".....a.....a....",
-        ".....a.....a....",
-        "....a.......a...",
-        "....a.......a...",
-        "....a.......a...",
-        ".....a.....a....",
-        ".....a.....a....",
-        "......a...a.....",
-        ".......aaa......",
-        "................",
-        "................",
-    ],
-    "solarite": [
-        "................",
-        "................",
-        "................",
-        "........aaaa....",
-        "......aa....a...",
-        "....aa.......a..",
-        "...a.........a..",
-        "..a.........a...",
-        "..a.......aa....",
-        "...a....aa......",
-        "....aaaa........",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-    ],
 }
 
 
@@ -659,6 +550,34 @@ def slot_icon(name):
 
 
 TEXTURES += [(f"gui/sprites/container/slot/{name}.png", (lambda n=name: slot_icon(n))) for name in SLOT_ICONS]
+
+
+def silhouette(texture):
+    """A slot icon from an item's own texture: its shape, in the slot icons' grey."""
+    src = Image.open(ASSETS / texture).convert("RGBA").crop((0, 0, 16, 16))
+    out = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for y in range(16):
+        for x in range(16):
+            if src.getpixel((x, y))[3] > 40:
+                out.putpixel((x, y), hexc("555555"))
+    return out
+
+
+def scale_icon():
+    """The Whalelight Scale (a block): a diamond-shaped scale outline."""
+    out = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for y in range(16):
+        for x in range(16):
+            d = abs(x - 7.5) + abs(y - 7.5)
+            if d <= 6.5 and (d >= 5.0 or (x + y) % 4 == 0):
+                out.putpixel((x, y), hexc("555555"))
+    return out
+
+
+# The distillation's rare materials, one per upgrade.
+TEXTURES += [(f"gui/sprites/container/slot/{name}.png", (lambda n=name: silhouette(f"item/{n}.png")))
+             for name in ("curators_core", "rift_pearl", "cracked_lens", "bottled_flare")]
+TEXTURES += [("gui/sprites/container/slot/whalelight_scale.png", scale_icon)]
 
 
 def _slot(img, x, y, size=18):

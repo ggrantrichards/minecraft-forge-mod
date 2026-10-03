@@ -1,7 +1,6 @@
 package com.ggrantrichards.astralend.world.feature;
 
 import com.ggrantrichards.astralend.ModBlocks;
-import com.ggrantrichards.astralend.world.EclipseDensity;
 import com.ggrantrichards.astralend.world.EclipseLayout;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
@@ -10,20 +9,19 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
 
 // The Eclipse's landmarks, each built by whichever chunk it falls in (placed once in every chunk):
 //   - the Wellspring, the heart of the heaven half: a round lake whose floor is Astral Glass over the
-//     open hole the terrain leaves (EclipseDensity) - swim in it and look down past your feet into the
+//     open hole the terrain leaves (EclipseTerrainFeature) - swim in it and look down past your feet into the
 //     void. Its rim is built up to hold the water; reeds of Lumineshroom and Breathcomb ring it;
 //   - the seeds: one burnt Solarite spire standing in the heaven half's dot of hell, and one small
 //     living pool in the hell half's dot of heaven;
 //   - three springs on the heaven half's rim, spilling off the edge into the void.
 public record EclipseLandmarksFeature() implements Feature {
     public static final MapCodec<EclipseLandmarksFeature> CODEC = MapCodec.unit(EclipseLandmarksFeature::new);
-    private static final int WATER_TOP = (int) EclipseDensity.TOP - 1;   // the Wellspring's surface
+    private static final int WATER_TOP = (int) EclipseTerrainFeature.TOP - 1;   // the Wellspring's surface
     private static final int GLASS_Y = WATER_TOP - 5;
 
     @Override
@@ -33,7 +31,7 @@ public record EclipseLandmarksFeature() implements Feature {
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
-        DensityFunction nebula = level.getLevel().getChunkSource().randomState().sampler().temperature();
+        var nebula = level.getLevel().getChunkSource().randomState().sampler();
         int x0 = origin.getX() & ~15, z0 = origin.getZ() & ~15;
         EclipseLayout.Eclipse e = EclipseLayout.at(x0 + 8, z0 + 8, nebula);
         if (e == null || e.distance(x0 + 8, z0 + 8) > EclipseLayout.RADIUS + 24) {

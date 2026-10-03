@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "echo=0": {
+      "model": "astralend:block/memory_moss"
+    },
+    "echo=1": {
+      "model": "astralend:block/memory_moss"
+    },
+    "echo=2": {
+      "model": "astralend:block/memory_moss"
+    },
+    "echo=3": {
+      "model": "astralend:block/memory_moss"
+    }
+  }
+}

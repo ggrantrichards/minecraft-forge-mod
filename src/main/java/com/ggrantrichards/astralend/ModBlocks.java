@@ -276,7 +276,7 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).instrument(NoteBlockInstrument.BASEDRUM)
             .requiresCorrectToolForDrops().strength(25.0F, 600.0F).sound(SoundType.SCULK_CATALYST).lightLevel(state -> 2));
 
-    // ---- Phase 10: the Lodestar keeps comets from landing near it (LodestarBlockEntity) ----
+    // ---- The Lodestar: the End's respawn point (the distillation; LodestarBlock) ----
     public static final RegistryObject<Block> LODESTAR = register("lodestar", com.ggrantrichards.astralend.block.LodestarBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).instrument(NoteBlockInstrument.BASEDRUM)
             .requiresCorrectToolForDrops().strength(3.5F).sound(SoundType.LODESTONE).lightLevel(state -> 4));
@@ -305,6 +305,23 @@ public final class ModBlocks {
     // ================================================================ Phase 3.5: the biome worlds
 
     // ---- Giant Lumineshrooms (like the Nether's huge fungi) ----
+    // ---- The distillation: purpur bricks (the Leviathan's builders laid them), and a purpur wall.
+    public static final RegistryObject<Block> PURPUR_BRICKS = register("purpur_bricks", Block::new,
+        () -> BlockBehaviour.Properties.ofLegacyCopy(net.minecraft.world.level.block.Blocks.PURPUR_BLOCK));
+    public static final RegistryObject<Block> PURPUR_BRICK_STAIRS = stairs("purpur_brick_stairs", PURPUR_BRICKS);
+    public static final RegistryObject<Block> PURPUR_BRICK_SLAB = slab("purpur_brick_slab", PURPUR_BRICKS);
+    public static final RegistryObject<Block> PURPUR_BRICK_WALL = wall("purpur_brick_wall", PURPUR_BRICKS);
+    public static final RegistryObject<Block> PURPUR_WALL = register("purpur_wall", WallBlock::new,
+        () -> BlockBehaviour.Properties.ofLegacyCopy(net.minecraft.world.level.block.Blocks.PURPUR_BLOCK).forceSolidOn());
+
+    // ---- The distillation: Memory Moss (the Ashen Barrens) and the Mimic Plant (the Hollow Isles).
+    public static final RegistryObject<Block> MEMORY_MOSS = registerNoItem("memory_moss", com.ggrantrichards.astralend.block.MemoryMossBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(0.1F).sound(SoundType.MOSS));
+    public static final RegistryObject<Block> MIMIC_PLANT = register("mimic_plant",
+        p -> new com.ggrantrichards.astralend.block.MimicPlantBlock(Block.column(12.0, 0.0, 13.0), ASTRAL_SOIL, p),
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).noCollision().instabreak().randomTicks()
+            .sound(SoundType.AZALEA).offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.POPPED));
+
     // ---- The distillation: the Eclipse's heaven half. Living Turf, its ground (the only green in the
     // End), and Breathcomb, whose light swells and fades over five minutes.
     public static final RegistryObject<Block> LIVING_TURF = register("living_turf", Block::new,

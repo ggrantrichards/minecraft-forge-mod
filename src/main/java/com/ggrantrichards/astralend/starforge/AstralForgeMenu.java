@@ -17,8 +17,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
 // The Astral Forge's menu: like a smithing table's, with two more slots. In a row: the Starforge
-// Template, the item, the Starforge Alloy, and the upgrade's material (one or two items); the result
-// on the right.
+// Template, the item, the Starforge Alloy, and the upgrade's rare material; the result on the right.
+// It forges only if the upgrade's constellation has been sighted from the Eclipse.
 public class AstralForgeMenu extends ItemCombinerMenu {
     public static final int TEMPLATE = 0;
     public static final int BASE = 1;
@@ -62,8 +62,11 @@ public class AstralForgeMenu extends ItemCombinerMenu {
         ItemStack alloy = this.inputSlots.getItem(ALLOY);
         StarforgeUpgrade upgrade = this.upgrade();
         ItemStack result = ItemStack.EMPTY;
+        // (The constellation must have been sighted from the Eclipse; only the server knows.)
+        boolean sighted = upgrade != null && (!(this.player instanceof net.minecraft.server.level.ServerPlayer server)
+            || com.ggrantrichards.astralend.world.ModAdvancements.has(server, "sighted_" + upgrade.constellation()));
         if (template.is(ModItems.STARFORGE_TEMPLATE.get()) && alloy.is(ModItems.STARFORGE_ALLOY.get()) && upgrade != null
-            && upgrade.fits(base) && Starforge.get(base) != upgrade) {
+            && upgrade.fits(base) && Starforge.get(base) != upgrade && sighted) {
             result = Starforge.apply(base, upgrade);
         }
         this.resultSlots.setItem(0, result);

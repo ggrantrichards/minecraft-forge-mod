@@ -38,6 +38,9 @@ public final class ModSounds {
         }
     }
 
+    // The distillation: the low drone near an island's edge (client/VoidHum).
+    public static final RegistryObject<SoundEvent> VOID_HUM = music("ambient.void_hum");
+
     private static RegistryObject<SoundEvent> music(String name) {
         return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AstralEnd.MODID, name)));
     }

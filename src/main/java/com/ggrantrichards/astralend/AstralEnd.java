@@ -44,7 +44,6 @@ public final class AstralEnd {
         ModEffects.POTIONS.register(modBusGroup);
         ModWorldgen.BIOME_SOURCES.register(modBusGroup);
         ModWorldgen.FEATURE_TYPES.register(modBusGroup);
-        ModWorldgen.DENSITY_FUNCTION_TYPES.register(modBusGroup);
         ModWorldgen.STRUCTURE_TYPES.register(modBusGroup);
         ModWorldgen.STRUCTURE_PIECES.register(modBusGroup);
         com.ggrantrichards.astralend.starforge.Starforge.COMPONENTS.register(modBusGroup);   // Phase 8: Starforging
@@ -63,6 +62,8 @@ public final class AstralEnd {
         com.ggrantrichards.astralend.maw.MawNetwork.register();
         com.ggrantrichards.astralend.maze.MazeScoping.register();
         com.ggrantrichards.astralend.world.EclipseLife.register();   // Endermen panic in the Eclipse
+        com.ggrantrichards.astralend.world.WhaleSong.register();     // singing to Drift Whales
+        com.ggrantrichards.astralend.world.LodestarBindings.register();   // respawning at a Lodestar in the End
         com.ggrantrichards.astralend.starforge.Starforge.register();          // upgrade tooltips
         com.ggrantrichards.astralend.starforge.StarforgeEffects.register();   // what the upgrades do
         FlareCommand.register();
@@ -72,6 +73,7 @@ public final class AstralEnd {
             ClientScreenshots.register();    // does nothing unless started with -Dastralend.screenshots=true
             com.ggrantrichards.astralend.client.ClientTrailer.register();   // nor this, without -Dastralend.trailer=true
             com.ggrantrichards.astralend.client.ClientPlaytests.register(); // nor this, without -Dastralend.playtests=true
+            com.ggrantrichards.astralend.client.VoidHum.register();   // the drone near an island's edge
             AstralSky.register();            // the End's sky: stars, auroras, the Remnant, flares
             com.ggrantrichards.astralend.client.UpsideDown.register();      // Upwelling: the view, controls and bodies turned over
             com.ggrantrichards.astralend.client.starforge.StarforgeClient.register(modBusGroup);  // the Forge's screen, armour accents

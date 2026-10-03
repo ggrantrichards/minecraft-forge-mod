@@ -1,6 +1,0 @@
-{
-  "type": "astralend:eclipse",
-  "nebula": "astralend:region/nebula",
-  "hills": "astralend:terrain/hills",
-  "output": "shape"
-}

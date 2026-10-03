@@ -29,7 +29,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraft.world.entity.monster.warden.Warden;
@@ -40,37 +39,28 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.level.BlockEvent;
 
-// What the six Starforge upgrades do (docs/END_UPDATE.md, section 9.3). Each one is a vanilla-sized
-// effect that works in every dimension:
+// What the five Starforge upgrades do (docs/DISTILLATION.md, "Starforging"). Each is a vanilla-sized
+// effect that works in every dimension, and a sidegrade, not a new tier:
 //
-//   Voidwalker   boots: Rift Walker - tiles of rift under your feet over a drop, gone in a second.
-//                chestplate: Void Recall - a Rift Pearl brings you back from the void, once.
-//   Meteoric     tools: Smelting (StarforgeLoot).
-// These stack per piece, but stay small: a full set is a nudge, not a new tier of armour.
+//   Void Recall   chestplate: load a Rift Pearl into it; fall into the void and the pearl is spent to
+//                 put you back on your last footing.
+//   Rift Walker   boots: tiles of rift under your feet over a drop, gone in a second.
+//   Lensing       helmet, leggings: 10% per piece that a projectile curves around you.
+//   Echo Strike   melee weapons: a tenth of every hit lands again a second later.
+//   Radiant       armour: Soak Light - in bright light, half a golden heart every 30 s, up to half a
+//                 heart per piece; 2+ pieces and Sunburn can't touch you. Weapons: targets glow for 5 s.
 //
-//   Stardust     armour: lower gravity, boots step up (attribute modifiers, see Starforge.apply).
-//                bows, crossbows, tridents: projectiles fall 20% slower, so they fly ~25% further.
-//   Temporal     melee weapons: Echo Strike - a tenth of every hit lands again a second later.
-//   Singularity  armour: Lensing - 5% per piece that a projectile curves around you.
-//                swords: a full sweep pulls nearby mobs toward your target. tools: Pull (StarforgeLoot).
-//   Radiant      armour: Soak Light - in bright light, half a golden heart every 30 s, up to half a
-//                heart per piece; 2+ pieces and Sunburn can't touch you. weapons: targets glow for 5 s.
-//
-// Rift Pearls drop from every boss: the Ender Dragon, the Wither, the Warden, Elder Guardians (and
-// the Spire Wyrm, in its loot table).
+// Rift Pearls drop from every boss: the Ender Dragon, the Wither, the Warden, Elder Guardians - and
+// a Rift Maw gives one up when it's first woken.
 public final class StarforgeEffects {
     public static void register() {
         TickEvent.PlayerTickEvent.Post.BUS.addListener(StarforgeEffects::onPlayerTick);
@@ -78,9 +68,6 @@ public final class StarforgeEffects {
         LivingAttackEvent.BUS.addListener((Predicate<LivingAttackEvent>) StarforgeEffects::onAttacked);
         LivingDamageEvent.BUS.addListener((Predicate<LivingDamageEvent>) StarforgeEffects::onDamage);
         ProjectileImpactEvent.BUS.addListener(StarforgeEffects::onProjectileImpact);
-        EntityJoinLevelEvent.BUS.addListener(StarforgeEffects::onEntityJoin);
-        AttackEntityEvent.BUS.addListener((Predicate<AttackEntityEvent>) StarforgeEffects::onAttackEntity);
-        BlockEvent.BreakEvent.BUS.addListener((Predicate<BlockEvent.BreakEvent>) StarforgeEffects::onBreak);
         LivingDropsEvent.BUS.addListener((Predicate<LivingDropsEvent>) StarforgeEffects::onDrops);
         LivingDeathEvent.BUS.addListener((Predicate<LivingDeathEvent>) StarforgeEffects::onDeath);
     }
@@ -112,7 +99,7 @@ public final class StarforgeEffects {
         if (player.onGround() && !level.getBlockState(under).is(ModBlocks.RIFT_TILE.get()) && level.getBlockState(under).isSolid()) {
             s.footing = GlobalPos.of(level.dimension(), under.above());
         }
-        if (Starforge.wearing(player, EquipmentSlot.FEET, StarforgeUpgrade.VOIDWALKER)) {
+        if (Starforge.wearing(player, EquipmentSlot.FEET, StarforgeUpgrade.RIFT_WALKER)) {
             riftWalk(level, player, moved);
         }
         if (player.tickCount % 20 == 0) {
@@ -161,7 +148,7 @@ public final class StarforgeEffects {
     // your last footing instead.
     private static boolean voidRecall(ServerPlayer player) {
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
-        if (!Starforge.has(chest, StarforgeUpgrade.VOIDWALKER) || !chest.has(Starforge.RIFT_PEARL.get())) {
+        if (!Starforge.has(chest, StarforgeUpgrade.VOID_RECALL) || !chest.has(Starforge.RIFT_PEARL.get())) {
             return false;
         }
         PlayerState s = state(player);
@@ -242,7 +229,7 @@ public final class StarforgeEffects {
         ItemStack weapon = direct == player ? player.getMainHandItem()
             : direct instanceof AbstractArrow arrow && arrow.getWeaponItem() != null ? arrow.getWeaponItem() : ItemStack.EMPTY;
         StarforgeUpgrade upgrade = Starforge.get(weapon);
-        if (upgrade == StarforgeUpgrade.TEMPORAL && direct == player && weapon.is(Starforge.MELEE) && event.getAmount() > 0.0F) {
+        if (upgrade == StarforgeUpgrade.ECHO_STRIKE && direct == player && weapon.is(Starforge.MELEE) && event.getAmount() > 0.0F) {
             ECHOES.add(new Echo(level, target, player, event.getAmount() * 0.1F, level.getGameTime() + 20));
         }
         if (upgrade == StarforgeUpgrade.RADIANT && (weapon.is(Starforge.MELEE) || weapon.is(Starforge.RANGED))) {
@@ -267,7 +254,7 @@ public final class StarforgeEffects {
         e.level().playSound(null, e.target().blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.0F, 0.6F);
     }
 
-    // ------------------------------------------------------------------ Singularity
+    // ------------------------------------------------------------------ Lensing
 
     // Lensing: an incoming projectile, now and then, bends around you.
     private static void onProjectileImpact(ProjectileImpactEvent event) {
@@ -276,8 +263,8 @@ public final class StarforgeEffects {
             || !(projectile.level() instanceof ServerLevel level) || projectile.getOwner() == target) {
             return;
         }
-        int pieces = Starforge.pieces(target, StarforgeUpgrade.SINGULARITY);
-        if (pieces == 0 || level.getRandom().nextFloat() >= 0.05F * pieces) {
+        int pieces = Starforge.pieces(target, StarforgeUpgrade.LENSING);
+        if (pieces == 0 || level.getRandom().nextFloat() >= 0.1F * pieces) {
             return;
         }
         event.setImpactResult(ProjectileImpactEvent.ImpactResult.SKIP_ENTITY);
@@ -289,64 +276,7 @@ public final class StarforgeEffects {
         level.playSound(null, target.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.5F, 1.8F);
     }
 
-    // A full sweep with a Singularity sword pulls the mobs around your target in toward it.
-    private static boolean onAttackEntity(AttackEntityEvent event) {
-        Player player = event.getEntity();
-        Entity target = event.getTarget();
-        if (!(player.level() instanceof ServerLevel level) || !Starforge.holding(player, StarforgeUpgrade.SINGULARITY)
-            || !player.getMainHandItem().is(net.minecraft.tags.ItemTags.SWORDS) || player.getAttackStrengthScale(0.5F) < 0.9F
-            || !player.onGround() || player.isSprinting()) {
-            return false;
-        }
-        AABB around = target.getBoundingBox().inflate(3.0, 0.5, 3.0);
-        for (LivingEntity mob : level.getEntitiesOfClass(LivingEntity.class, around,
-                e -> e != player && e != target && !(e instanceof ArmorStand) && !player.isAlliedTo(e) && e.isAlive())) {
-            Vec3 pull = target.position().subtract(mob.position());
-            double d = pull.horizontalDistance();
-            if (d < 1.0) {
-                continue;
-            }
-            Vec3 push = new Vec3(pull.x / d, 0, pull.z / d).scale(Math.min(0.6, 0.25 + d * 0.08));
-            mob.push(push.x, 0.1, push.z);
-            level.sendParticles(ParticleTypes.REVERSE_PORTAL, mob.getX(), mob.getY() + mob.getBbHeight() * 0.5, mob.getZ(), 8, 0.2, 0.3, 0.2, 0.02);
-        }
-        return false;
-    }
-
     // ------------------------------------------------------------------ projectiles and drops
-
-    // Stardust bows, crossbows and tridents: their projectiles are tracked, and lifted a little each tick.
-    private static final List<Projectile> FLATTER = new ArrayList<>();
-
-    // Where a Singularity tool just broke a block, and who for: experience from it flies to them.
-    private record Broken(ServerLevel level, BlockPos pos, Player player, long at) {}
-
-    private static final List<Broken> BROKEN = new ArrayList<>();
-
-    private static void onEntityJoin(EntityJoinLevelEvent event) {
-        if (!(event.getLevel() instanceof ServerLevel level)) {
-            return;
-        }
-        Entity entity = event.getEntity();
-        if (entity instanceof AbstractArrow arrow && arrow.getWeaponItem() != null
-                && Starforge.has(arrow.getWeaponItem(), StarforgeUpgrade.STARDUST)) {
-            FLATTER.add(arrow);
-        } else if (entity instanceof net.minecraft.world.entity.ExperienceOrb orb) {
-            for (Broken b : BROKEN) {
-                if (b.level() == level && b.pos().closerToCenterThan(orb.position(), 1.5) && b.player().isAlive()) {
-                    orb.setPos(b.player().getX(), b.player().getY() + 0.5, b.player().getZ());
-                    break;
-                }
-            }
-        }
-    }
-
-    private static boolean onBreak(BlockEvent.BreakEvent event) {
-        if (event.getLevel() instanceof ServerLevel level && Starforge.holding(event.getPlayer(), StarforgeUpgrade.SINGULARITY)) {
-            BROKEN.add(new Broken(level, event.getPos(), event.getPlayer(), level.getGameTime()));
-        }
-        return false;
-    }
 
     // Rift Pearls from the bosses that leave a body behind (the Dragon is handled in onDeath).
     private static boolean onDrops(LivingDropsEvent event) {
@@ -385,18 +315,6 @@ public final class StarforgeEffects {
 
     private static void onServerTick(TickEvent.ServerTickEvent.Post event) {
         flush(false);
-        for (Iterator<Projectile> it = FLATTER.iterator(); it.hasNext(); ) {
-            Projectile p = it.next();
-            if (p.isRemoved()) {
-                it.remove();
-                continue;
-            }
-            Vec3 v = p.getDeltaMovement();
-            if (v.lengthSqr() > 1.0E-4 && !p.onGround()) {
-                p.setDeltaMovement(v.add(0, p.getGravity() * 0.2, 0));
-            }
-        }
-        BROKEN.removeIf(b -> b.level().getGameTime() - b.at() > 2);
         if (event.server().getTickCount() % 1200 == 0) {
             PLAYERS.keySet().removeIf(id -> event.server().getPlayerList().getPlayer(id) == null);
         }

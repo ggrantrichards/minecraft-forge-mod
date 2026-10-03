@@ -1,16 +1,16 @@
 package com.ggrantrichards.astralend.world;
 
-import net.minecraft.world.level.levelgen.DensityFunction;
+import net.minecraft.world.level.biome.Climate;
 
 // Where the Eclipses are, and the shape of each. Shared by the biome source (which half of an Eclipse a
-// spot is in), the terrain (EclipseDensity: the Eclipse's island), the Remnant (which hangs over each
+// spot is in), the terrain (EclipseTerrainFeature: the Eclipse's island), the Remnant (which hangs over each
 // Eclipse's hell half), the Eclipse's features and the Sunstorms.
 //
 // The outer End is cut into cells CELL blocks square; three cells in four hold one Eclipse, a disc
 // RADIUS blocks across the middle, at a spot and turn of its own. What decides is the "nebula" region
 // noise (the noise router's temperature slot), read at a fixed point of each cell: it's seeded with
-// the world, so every world has its own Eclipses, and the biome source and the terrain - which see
-// the same noise - always agree.
+// the world, so every world has its own Eclipses, and everything that asks - which all read the
+// same noise through the same Climate.Sampler - always agrees.
 //
 // Each Eclipse is a yin-yang, in its own frame (u, v), a unit disc:
 //   - the heaven half: u > 0, plus the disc of radius 1/2 round (0, 1/2), minus that round (0, -1/2);
@@ -76,12 +76,12 @@ public final class EclipseLayout {
     }
 
     // The Eclipse of the cell holding this spot, or null if that cell has none.
-    public static Eclipse at(double x, double z, DensityFunction nebula) {
+    public static Eclipse at(double x, double z, Climate.Sampler nebula) {
         return inCell(Math.floorDiv((long) Math.floor(x), CELL), Math.floorDiv((long) Math.floor(z), CELL), nebula);
     }
 
-    public static Eclipse inCell(long i, long j, DensityFunction nebula) {
-        double n = nebula.compute(new DensityFunction.SinglePointContext((int) (i * CELL + CELL / 3), 0, (int) (j * CELL + 2 * CELL / 3)));
+    public static Eclipse inCell(long i, long j, Climate.Sampler nebula) {
+        double n = nebula.temperature().sampleValue((int) (i * CELL + CELL / 3), 0, (int) (j * CELL + 2 * CELL / 3));
         long h = mix(i * 0x9E3779B97F4A7C15L ^ j * 0xC2B2AE3D27D4EB4FL ^ Double.doubleToLongBits(n));
         if (unit(h) > CHANCE) {
             return null;
@@ -95,7 +95,7 @@ public final class EclipseLayout {
     }
 
     // The nearest Eclipse's centre to a spot, searching cells out to `rings` away; null if none.
-    public static Eclipse nearest(double x, double z, DensityFunction nebula, int rings) {
+    public static Eclipse nearest(double x, double z, Climate.Sampler nebula, int rings) {
         long ci = Math.floorDiv((long) Math.floor(x), CELL), cj = Math.floorDiv((long) Math.floor(z), CELL);
         Eclipse best = null;
         double bestD = Double.MAX_VALUE;

@@ -219,6 +219,17 @@ BIOMES = {
 }
 
 
+def void_hum():
+    """Near an island's edge: a low drone with a slow beat, and a faint high whine over it."""
+    rnd = np.random.default_rng(7)
+    n = (LOOP_SECONDS + 2) * RATE
+    t = np.arange(n) / RATE
+    drone = np.sin(2 * np.pi * 36.0 * t) + 0.7 * np.sin(2 * np.pi * 36.7 * t) + 0.35 * np.sin(2 * np.pi * 72.4 * t)
+    air = low(rnd.normal(0, 1, n), 160) * 1.6 * slow(rnd, n, 0.1, 0.6)
+    whine = np.sin(2 * np.pi * 1410.0 * t) * 0.012 * slow(rnd, n, 0.07, 0.9)
+    return seamless(drone * 0.5 + air + whine)
+
+
 def write_ogg(x, path, peak_db):
     b, a = signal.butter(2, 30 / (RATE / 2), "high")
     x = signal.lfilter(b, a, x)
@@ -235,6 +246,9 @@ def write_ogg(x, path, peak_db):
 
 
 def main(only=()):
+    if not only or "void_hum" in only:
+        write_ogg(void_hum(), OUT / "void_hum.ogg", -8.0)
+        print("wrote void_hum")
     for i, (biome, (loop, addition)) in enumerate(BIOMES.items()):
         if only and biome not in only:
             continue

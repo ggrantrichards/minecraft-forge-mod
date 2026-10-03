@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/mace",
-  "textures": {
-    "layer0": "astralend:item/starforge/mace_stardust"
-  }
-}

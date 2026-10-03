@@ -41,7 +41,7 @@ public final class MazeScoping {
         Identifier.fromNamespaceAndPath(AstralEnd.MODID, "constellation_maze"));
 
     // Per player, while they look through a spyglass in a maze: the constellation in view and for how long.
-    private record Sighting(int[] constellation, int[] held, boolean[] hinted) {}
+    private record Sighting(int[] constellation, int[] held, boolean[] hinted, boolean eclipse) {}
 
     private static final Map<UUID, Sighting> SIGHTINGS = new HashMap<>();
 
@@ -61,10 +61,13 @@ public final class MazeScoping {
             }
             Sighting s = SIGHTINGS.get(player.getUUID());
             if (s == null) {
-                if (!level.structureManager().getStructureWithPieceAt(player.blockPosition(), holder -> holder.is(MAZE)).isValid()) {
+                // In a maze, sighting lights bridges; from the Eclipse, it marks the constellation as
+                // seen (the Starforge needs it).
+                boolean eclipse = level.getBiome(player.blockPosition()).is(ECLIPSE);
+                if (!eclipse && !level.structureManager().getStructureWithPieceAt(player.blockPosition(), holder -> holder.is(MAZE)).isValid()) {
                     continue;
                 }
-                s = new Sighting(new int[] {-1}, new int[1], new boolean[1]);
+                s = new Sighting(new int[] {-1}, new int[1], new boolean[] {eclipse}, eclipse);
                 SIGHTINGS.put(player.getUUID(), s);
             }
             if (!s.hinted()[0]) {
@@ -92,6 +95,8 @@ public final class MazeScoping {
                     level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 0.8F,
                         0.6F + 0.4F * s.held()[0] / HOLD_TICKS);
                 }
+            } else if (s.held()[0] == HOLD_TICKS && s.eclipse()) {
+                sight(level, player, c);
             } else if (s.held()[0] == HOLD_TICKS) {
                 int lit = lightBridges(level, player.blockPosition(), seen);
                 if (lit > 0) {
@@ -106,6 +111,23 @@ public final class MazeScoping {
             catchFallers(level);
         }
     }
+
+    // A constellation sighted from the Eclipse: a resonant chord, starlight streaming up toward it, and
+    // it's known from now on (an advancement, "sighted_<name>", which the Astral Forge checks).
+    private static void sight(ServerLevel level, ServerPlayer player, Constellations.Constellation c) {
+        level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1.5F, 0.9F);
+        level.playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.8F, 1.4F);
+        Vec3 dir = c.direction();
+        Vec3 eye = player.getEyePosition();
+        for (int k = 3; k <= 30; k++) {
+            Vec3 p = eye.add(dir.scale(k * 0.8));
+            level.sendParticles(ParticleTypes.END_ROD, p.x, p.y, p.z, 2, 0.05, 0.05, 0.05, 0.01);
+        }
+        com.ggrantrichards.astralend.world.ModAdvancements.award(player, "sighted_" + c.name());
+    }
+
+    public static final net.minecraft.tags.TagKey<net.minecraft.world.level.biome.Biome> ECLIPSE = net.minecraft.tags.TagKey.create(
+        Registries.BIOME, Identifier.fromNamespaceAndPath(AstralEnd.MODID, "eclipse"));
 
     // The constellations the bridges starting near the player answer to (those still dark), and where
     // each lies in the sky.

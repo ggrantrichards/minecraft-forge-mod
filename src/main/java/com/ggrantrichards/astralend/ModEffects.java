@@ -31,6 +31,14 @@ public final class ModEffects {
     public static final RegistryObject<Potion> LONG_UPWELLING_POTION = POTIONS.register("long_upwelling",
         () -> new Potion("upwelling", new MobEffectInstance(upwelling(), 900)));     // 45 seconds
 
+    // Remembering (the distillation): from eating Memory Moss. While it lasts you can sing to a Drift
+    // Whale - play a note block near one and it turns and sings back (DriftWhale).
+    public static final RegistryObject<MobEffect> REMEMBERING = EFFECTS.register("remembering", () -> new WardEffect(0xC8C0DC));
+
+    public static Holder<MobEffect> remembering() {
+        return REMEMBERING.getHolder().orElseThrow();
+    }
+
     public static Holder<MobEffect> upwelling() {
         return UPWELLING.getHolder().orElseThrow();
     }

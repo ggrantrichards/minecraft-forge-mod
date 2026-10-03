@@ -20,5 +20,14 @@ public final class ModAdvancements {
         }
     }
 
+    public static boolean has(ServerPlayer player, String name) {
+        MinecraftServer server = player.level().getServer();
+        if (server == null) {
+            return false;
+        }
+        AdvancementHolder advancement = server.getAdvancements().get(Identifier.fromNamespaceAndPath(AstralEnd.MODID, "end/" + name));
+        return advancement != null && player.getAdvancements().getOrStartProgress(advancement).isDone();
+    }
+
     private ModAdvancements() {}
 }

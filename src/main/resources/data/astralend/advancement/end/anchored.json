@@ -1,0 +1,28 @@
+{
+  "parent": "minecraft:end/root",
+  "display": {
+    "icon": {
+      "id": "astralend:lodestar"
+    },
+    "title": {
+      "translate": "advancements.astralend.anchored.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.anchored.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

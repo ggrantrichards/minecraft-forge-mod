@@ -167,6 +167,11 @@ public class MawNetwork extends SavedData {
         level.playSound(null, centre, SoundEvents.END_PORTAL_SPAWN, SoundSource.BLOCKS, 2.0F, 0.6F);
         level.sendParticles(ParticleTypes.REVERSE_PORTAL, centre.getX() + 0.5, centre.getY() + 0.5, centre.getZ() + 0.5,
             200, 3.0, 3.0, 3.0, 0.2);
+        // Woken, it gives up one Rift Pearl - Echo Strike's material - from its throat to the exit.
+        net.minecraft.world.entity.item.ItemEntity pearl = new net.minecraft.world.entity.item.ItemEntity(level,
+            exit.getX() + 0.5, exit.getY() + 1.0, exit.getZ() + 0.5, new net.minecraft.world.item.ItemStack(com.ggrantrichards.astralend.ModItems.RIFT_PEARL.get()));
+        pearl.setNoPickUpDelay();
+        level.addFreshEntity(pearl);
         return maw;
     }
 

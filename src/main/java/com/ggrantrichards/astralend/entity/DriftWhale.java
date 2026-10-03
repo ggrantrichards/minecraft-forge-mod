@@ -40,16 +40,20 @@ import org.jspecify.annotations.Nullable;
 // Drift Whale: a huge, translucent whale that swims slowly through the void, the last small
 // descendant of the Star Leviathans.
 //
-// It follows long, lazy paths and never touches ground, and now and then it drifts down to graze on
-// chorus. When a player comes close it turns toward them, slows down and hums. It never fights back:
-// hurt it and it flees, and it takes a great deal of hurting. Feed it Chorus Fruit and it heals and
-// hums. Use a Chorus Flower on a Stick on it to climb on: holding the stick, you steer (it swims
-// where you look; jump to rise), and using the stick makes it surge ahead for a while. Without the
-// stick in hand it carries you along its own way. A whale that has been ridden stays.
+// Whales travel in pods of three to five: one leads, the rest keep station on it, and now and then a
+// pod's leader heads for the nearest Eclipse - follow a pod and it may take you there. It never
+// touches ground; now and then it drifts down to graze on chorus. When a player comes close it turns
+// toward them, slows down and hums. It never fights back: hurt it and it flees.
+//
+// Taming is by song. Eat Memory Moss (Remembering), then play a note block near a whale: it turns
+// toward the music and sings back, and for half a minute it will take Chorus Fruit from you - feed
+// it then, and it's yours. A tamed whale can be ridden with a Chorus Flower on a Stick (holding the
+// stick, you steer: it swims where you look, jump to rise, use the stick to surge), stays forever,
+// and sometimes sheds a glowing Whalelight Scale when it hums - the only way to get one.
 //
 // Its rewards are an advancement chain, which can't be farmed: see one (Something Big Out There), be
-// near while it hums (Whale Song), follow one for a minute while flying (Tagalong), ride one (Whale
-// Rider). Very rarely it sheds a glowing Whalelight Scale as it hums.
+// near while it hums (Whale Song), follow one for a minute while flying (Tagalong), tame one (Sung
+// Home), ride one (Whale Rider).
 public class DriftWhale extends Mob implements ItemSteerable {
     private static final EntityDataAccessor<Boolean> DATA_HUMMING = SynchedEntityData.defineId(DriftWhale.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_BOOST_TIME = SynchedEntityData.defineId(DriftWhale.class, EntityDataSerializers.INT);
@@ -67,6 +71,11 @@ public class DriftWhale extends Mob implements ItemSteerable {
     private @Nullable Vec3 fleeFrom;
     private @Nullable BlockPos grazing;
     private int grazeTicks;
+    private @Nullable UUID leader;          // the pod's leader, if this whale follows one
+    private @Nullable Vec3 station;         // where it keeps, relative to its leader
+    private @Nullable UUID owner;           // tamed by song
+    private @Nullable UUID singer;          // who sang to it, for a short while after
+    private int listening;
 
     public DriftWhale(EntityType<? extends DriftWhale> type, Level level) {
         super(type, level);
@@ -86,6 +95,46 @@ public class DriftWhale extends Mob implements ItemSteerable {
         super.defineSynchedData(builder);
         builder.define(DATA_HUMMING, false);
         builder.define(DATA_BOOST_TIME, 0);
+    }
+
+    public boolean isTamed() {
+        return this.owner != null;
+    }
+
+    // A pod member: keeps station on its leader.
+    public void follow(DriftWhale leader, Vec3 station) {
+        this.leader = leader.getUUID();
+        this.station = station;
+    }
+
+    // A note block played near it by someone Remembering: it turns toward the music and sings back,
+    // and for half a minute takes Chorus Fruit from them.
+    public void hearSong(ServerLevel level, Player singer, BlockPos noteBlock) {
+        if (this.isTamed() || this.fleeTicks > 0) {
+            return;
+        }
+        this.singer = singer.getUUID();
+        this.listening = 600;
+        this.faceDirection(Vec3.atCenterOf(noteBlock).subtract(this.position()), 30.0F);
+        this.humCooldown = 0;
+        this.hum(level);
+        level.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.NOTE_BLOCK_CHIME.value(), this.getSoundSource(), 3.0F, 0.5F);
+        level.sendParticles(ParticleTypes.NOTE, this.getX(), this.getY() + 3.0, this.getZ(), 6, 1.5, 0.5, 1.5, 1.0);
+    }
+
+    // Fed Chorus Fruit by whoever sang to it, while it still listens: it's theirs. True if tamed.
+    public boolean tryTame(ServerLevel level, Player player) {
+        if (this.isTamed() || this.listening <= 0 || !player.getUUID().equals(this.singer)) {
+            return false;
+        }
+        this.owner = player.getUUID();
+        this.leader = null;
+        this.setPersistenceRequired();
+        level.sendParticles(ParticleTypes.HEART, this.getX(), this.getY() + 3.0, this.getZ(), 10, 2.0, 1.0, 2.0, 0.0);
+        if (player instanceof ServerPlayer serverPlayer) {
+            ModAdvancements.award(serverPlayer, "sung_home");
+        }
+        return true;
     }
 
     public boolean isHumming() {
@@ -132,6 +181,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
             if (!this.level().isClientSide() && this.level() instanceof ServerLevel level) {
                 this.heal(20.0F);
                 stack.consume(1, player);
+                this.tryTame(level, player);
                 this.playSound(SoundEvents.GENERIC_EAT.value(), 1.5F, 0.5F);
                 level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, Items.CHORUS_FRUIT),
                     this.getX(), this.getY() + 1.0, this.getZ(), 12, 0.6, 0.4, 0.6, 0.05);
@@ -140,7 +190,8 @@ public class DriftWhale extends Mob implements ItemSteerable {
             }
             return InteractionResult.SUCCESS;
         }
-        if (stack.getItem() instanceof ChorusFlowerOnAStickItem && !this.isVehicle() && !player.isSecondaryUseActive()) {
+        if (stack.getItem() instanceof ChorusFlowerOnAStickItem && !this.isVehicle() && !player.isSecondaryUseActive()
+                && player.getUUID().equals(this.owner)) {
             if (!this.level().isClientSide()) {
                 player.startRiding(this);
                 this.setPersistenceRequired();
@@ -234,6 +285,9 @@ public class DriftWhale extends Mob implements ItemSteerable {
         if (this.humTicks > 0 && --this.humTicks == 0) {
             this.entityData.set(DATA_HUMMING, false);
         }
+        if (this.listening > 0 && --this.listening == 0) {
+            this.singer = null;
+        }
         if (this.getControllingPassenger() != null) {
             return;   // the rider steers
         }
@@ -250,6 +304,8 @@ public class DriftWhale extends Mob implements ItemSteerable {
             this.faceDirection(velocity, 4.0F);
         } else if (this.grazing != null) {
             velocity = this.graze(level);
+        } else if (this.leader != null && this.station != null && this.followLeader(level) != null) {
+            velocity = this.followLeader(level);
         } else if (near != null) {
             // Turn toward the player and slow down.
             Vec3 toPlayer = near.getEyePosition().subtract(this.position().add(0.0, 1.0, 0.0));
@@ -258,7 +314,10 @@ public class DriftWhale extends Mob implements ItemSteerable {
             this.hum(level);
         } else {
             if (this.target == null || this.position().distanceToSqr(this.target) < 36.0 || this.horizontalCollision || this.random.nextInt(1200) == 0) {
-                this.target = this.pickTarget(level);
+                this.target = this.random.nextInt(5) == 0 ? this.towardEclipse(level) : null;
+                if (this.target == null) {
+                    this.target = this.pickTarget(level);
+                }
                 if (this.random.nextInt(4) == 0) {
                     this.grazing = this.findChorus(level);
                     this.grazeTicks = 0;
@@ -269,6 +328,18 @@ public class DriftWhale extends Mob implements ItemSteerable {
             this.faceDirection(velocity, 1.0F);
         }
         this.setDeltaMovement(this.getDeltaMovement().scale(0.9).add(velocity.scale(0.1)));
+    }
+
+    // Keeps station on its pod's leader; null if the leader is gone (then it swims its own way).
+    private @Nullable Vec3 followLeader(ServerLevel level) {
+        if (!(level.getEntity(this.leader) instanceof DriftWhale lead) || !lead.isAlive() || lead.distanceToSqr(this) > 160.0 * 160.0) {
+            this.leader = null;
+            return null;
+        }
+        Vec3 to = lead.position().add(this.station).subtract(this.position());
+        Vec3 velocity = to.lengthSqr() > 4.0 ? to.normalize().scale(Math.min(CRUISE_SPEED * 1.6, to.length() * 0.02)) : Vec3.ZERO;
+        this.faceDirection(to.lengthSqr() > 4.0 ? to : lead.getLookAngle(), 1.5F);
+        return velocity;
     }
 
     // ---- grazing: it drifts down over a chorus plant and nibbles at it for a while (it leaves the
@@ -318,6 +389,22 @@ public class DriftWhale extends Mob implements ItemSteerable {
         this.yHeadRot = this.getYRot();
     }
 
+    // Migration: a point 60 blocks along the way to the nearest Eclipse (if one is within 2,500 blocks),
+    // high enough to clear the land.
+    private @Nullable Vec3 towardEclipse(ServerLevel level) {
+        var eclipse = com.ggrantrichards.astralend.world.EclipseLayout.nearest(this.getX(), this.getZ(),
+            level.getChunkSource().randomState().sampler(), 1);
+        if (eclipse == null) {
+            return null;
+        }
+        Vec3 to = new Vec3(eclipse.x() - this.getX(), 0.0, eclipse.z() - this.getZ());
+        if (to.lengthSqr() > 2500.0 * 2500.0 || to.lengthSqr() < 40.0 * 40.0) {
+            return null;
+        }
+        Vec3 p = this.position().add(to.normalize().scale(60.0));
+        return new Vec3(p.x, Mth.clamp(Math.max(this.getY(), 90.0), 20.0, 140.0), p.z);
+    }
+
     // A point far off in open air: 40-90 blocks away, at a similar height, with room to fit.
     private @Nullable Vec3 pickTarget(ServerLevel level) {
         for (int attempt = 0; attempt < 12; attempt++) {
@@ -344,7 +431,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
         for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, this.getBoundingBox().inflate(16.0))) {
             ModAdvancements.award(player, "whale_song");
         }
-        if (this.random.nextInt(25) == 0) {
+        if (this.isTamed() && this.random.nextInt(8) == 0) {
             this.spawnAtLocation(level, new ItemStack(ModBlocks.WHALELIGHT_SCALE.get()), 0.5F);
         }
     }
@@ -362,6 +449,21 @@ public class DriftWhale extends Mob implements ItemSteerable {
                 ModAdvancements.award(player, "tagalong");
             }
         }
+    }
+
+    @Override
+    protected void addAdditionalSaveData(net.minecraft.world.level.storage.ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        if (this.owner != null) {
+            output.putString("Owner", this.owner.toString());
+        }
+    }
+
+    @Override
+    protected void readAdditionalSaveData(net.minecraft.world.level.storage.ValueInput input) {
+        super.readAdditionalSaveData(input);
+        String owner = input.getStringOr("Owner", "");
+        this.owner = owner.isEmpty() ? null : UUID.fromString(owner);
     }
 
     @Override

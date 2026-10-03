@@ -31,11 +31,11 @@ final class StarforgeShots {
         player.onUpdateAbilities();
         if (style.contains("armor")) {
             // Every piece a different upgrade, so all their accents show.
-            player.setItemSlot(EquipmentSlot.HEAD, up(Items.NETHERITE_HELMET, StarforgeUpgrade.RADIANT));
-            player.setItemSlot(EquipmentSlot.CHEST, up(Items.DIAMOND_CHESTPLATE, StarforgeUpgrade.SINGULARITY));
-            player.setItemSlot(EquipmentSlot.LEGS, up(Items.NETHERITE_LEGGINGS, StarforgeUpgrade.STARDUST));
-            player.setItemSlot(EquipmentSlot.FEET, up(Items.DIAMOND_BOOTS, StarforgeUpgrade.VOIDWALKER));
-            player.setItemSlot(EquipmentSlot.MAINHAND, up(Items.DIAMOND_SWORD, StarforgeUpgrade.TEMPORAL));
+            player.setItemSlot(EquipmentSlot.HEAD, up(Items.NETHERITE_HELMET, StarforgeUpgrade.LENSING));
+            player.setItemSlot(EquipmentSlot.CHEST, up(Items.DIAMOND_CHESTPLATE, StarforgeUpgrade.VOID_RECALL));
+            player.setItemSlot(EquipmentSlot.LEGS, up(Items.NETHERITE_LEGGINGS, StarforgeUpgrade.RADIANT));
+            player.setItemSlot(EquipmentSlot.FEET, up(Items.DIAMOND_BOOTS, StarforgeUpgrade.RIFT_WALKER));
+            player.setItemSlot(EquipmentSlot.MAINHAND, up(Items.DIAMOND_SWORD, StarforgeUpgrade.ECHO_STRIKE));
         }
         if (style.contains("rift")) {
             // A path of rift tiles behind the player, older (more cracked) further back; time stands
@@ -59,27 +59,24 @@ final class StarforgeShots {
             // A hotbar and inventory of upgraded gear, every accent on show.
             int slot = 0;
             for (ItemStack stack : new ItemStack[] {
-                    up(Items.DIAMOND_SWORD, StarforgeUpgrade.TEMPORAL), up(Items.NETHERITE_PICKAXE, StarforgeUpgrade.METEORIC),
-                    up(Items.BOW, StarforgeUpgrade.STARDUST), up(Items.DIAMOND_AXE, StarforgeUpgrade.RADIANT),
-                    up(Items.NETHERITE_SWORD, StarforgeUpgrade.SINGULARITY), up(Items.DIAMOND_BOOTS, StarforgeUpgrade.VOIDWALKER),
-                    up(Items.TRIDENT, StarforgeUpgrade.TEMPORAL), up(Items.CROSSBOW, StarforgeUpgrade.RADIANT),
-                    up(Items.DIAMOND_SHOVEL, StarforgeUpgrade.SINGULARITY),
-                    up(Items.NETHERITE_HELMET, StarforgeUpgrade.RADIANT), pearl(up(Items.NETHERITE_CHESTPLATE, StarforgeUpgrade.VOIDWALKER)),
-                    up(Items.DIAMOND_LEGGINGS, StarforgeUpgrade.STARDUST), up(Items.NETHERITE_BOOTS, StarforgeUpgrade.METEORIC),
-                    up(Items.MACE, StarforgeUpgrade.RADIANT), up(Items.DIAMOND_HOE, StarforgeUpgrade.METEORIC),
+                    up(Items.DIAMOND_SWORD, StarforgeUpgrade.ECHO_STRIKE), up(Items.BOW, StarforgeUpgrade.RADIANT),
+                    up(Items.NETHERITE_SWORD, StarforgeUpgrade.RADIANT), up(Items.DIAMOND_BOOTS, StarforgeUpgrade.RIFT_WALKER),
+                    up(Items.TRIDENT, StarforgeUpgrade.ECHO_STRIKE), up(Items.NETHERITE_HELMET, StarforgeUpgrade.LENSING),
+                    pearl(up(Items.NETHERITE_CHESTPLATE, StarforgeUpgrade.VOID_RECALL)), up(Items.DIAMOND_LEGGINGS, StarforgeUpgrade.LENSING),
+                    up(Items.MACE, StarforgeUpgrade.ECHO_STRIKE),
                     new ItemStack(ModItems.STARFORGE_TEMPLATE.get(), 3), new ItemStack(ModItems.STARFORGE_ALLOY.get(), 5),
-                    new ItemStack(ModItems.RIFT_PEARL.get()), new ItemStack(ModItems.TEMPORAL_CRYSTAL.get(), 2),
-                    new ItemStack(ModItems.ABYSS_SHARD.get(), 4), new ItemStack(ModItems.VOID_CRYSTAL.get(), 12)}) {
+                    new ItemStack(ModItems.RIFT_PEARL.get()), new ItemStack(ModItems.CRACKED_LENS.get(), 2),
+                    new ItemStack(ModItems.CURATORS_CORE.get()), new ItemStack(ModItems.BOTTLED_FLARE.get(), 3)}) {
                 player.getInventory().setItem(slot++, stack);
             }
+            com.ggrantrichards.astralend.world.ModAdvancements.award(player, "sighted_remnant");   // Radiant's constellation
             player.openMenu(new SimpleMenuProvider((id, inventory, p) -> new AstralForgeMenu(id, inventory, ContainerLevelAccess.create(end, forge)),
                 Component.translatable("container.astralend.astral_forge")));
             if (player.containerMenu instanceof AstralForgeMenu menu) {
                 menu.getSlot(AstralForgeMenu.TEMPLATE).set(new ItemStack(ModItems.STARFORGE_TEMPLATE.get()));
                 menu.getSlot(AstralForgeMenu.BASE).set(new ItemStack(Items.DIAMOND_CHESTPLATE));
                 menu.getSlot(AstralForgeMenu.ALLOY).set(new ItemStack(ModItems.STARFORGE_ALLOY.get()));
-                menu.getSlot(AstralForgeMenu.MATERIAL).set(new ItemStack(ModItems.SOLARITE_INGOT.get()));
-                menu.getSlot(AstralForgeMenu.MATERIAL_2).set(new ItemStack(ModItems.CHARGED_VOID_CRYSTAL.get()));
+                menu.getSlot(AstralForgeMenu.MATERIAL).set(new ItemStack(ModItems.BOTTLED_FLARE.get()));
                 menu.broadcastChanges();
             }
         }

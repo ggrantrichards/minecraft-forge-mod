@@ -34,7 +34,7 @@ public final class Starforge {
     // The upgrade on an item. Saved with it and sent to clients (the accent and tooltip need it).
     public static final RegistryObject<DataComponentType<StarforgeUpgrade>> UPGRADE = COMPONENTS.register("starforge_upgrade",
         () -> DataComponentType.<StarforgeUpgrade>builder().persistent(StarforgeUpgrade.CODEC).networkSynchronized(StarforgeUpgrade.STREAM_CODEC).build());
-    // A Voidwalker chestplate holding a Rift Pearl, ready for Void Recall.
+    // A Void Recall chestplate holding a Rift Pearl, ready to bring you back from the void.
     public static final RegistryObject<DataComponentType<Unit>> RIFT_PEARL = COMPONENTS.register("rift_pearl",
         () -> DataComponentType.<Unit>builder().persistent(Unit.CODEC).networkSynchronized(Unit.STREAM_CODEC).build());
 
@@ -86,7 +86,7 @@ public final class Starforge {
 
     // The item with an upgrade forged onto it. Any upgrade it had is replaced, along with the
     // attribute modifiers that came with it. (A Rift Pearl in a chestplate stays put, so it's there
-    // again if Voidwalker goes back on.)
+    // again if Void Recall goes back on.)
     public static ItemStack apply(ItemStack base, StarforgeUpgrade upgrade) {
         ItemStack result = base.copyWithCount(1);
         result.set(UPGRADE.get(), upgrade);
@@ -103,14 +103,7 @@ public final class Starforge {
             EquipmentSlotGroup group = EquipmentSlotGroup.bySlot(slot);
             // One id per slot, so pieces on different slots add up (like vanilla's armour.<slot>).
             Identifier id = Identifier.fromNamespaceAndPath(AstralEnd.MODID, "starforge." + slot.getName());
-            if (upgrade == StarforgeUpgrade.STARDUST) {
-                modifiers = modifiers.withModifierAdded(Attributes.GRAVITY,
-                    new AttributeModifier(id, -0.05, AttributeModifier.Operation.ADD_MULTIPLIED_BASE), group);
-                if (slot == EquipmentSlot.FEET) {
-                    modifiers = modifiers.withModifierAdded(Attributes.STEP_HEIGHT,
-                        new AttributeModifier(id, 0.5, AttributeModifier.Operation.ADD_VALUE), group);
-                }
-            } else if (upgrade == StarforgeUpgrade.RADIANT) {
+            if (upgrade == StarforgeUpgrade.RADIANT) {
                 // Room for the half heart Soak Light gives.
                 modifiers = modifiers.withModifierAdded(Attributes.MAX_ABSORPTION,
                     new AttributeModifier(id, 1.0, AttributeModifier.Operation.ADD_VALUE), group);
@@ -135,7 +128,7 @@ public final class Starforge {
         lines.add(CommonComponents.space().append(effect == null ? name
             : Component.translatable("upgrade.astralend.line", name, Component.translatable("upgrade.astralend.effect." + effect)))
             .withColor(upgrade.colour()));
-        if (upgrade == StarforgeUpgrade.VOIDWALKER && "void_recall".equals(effect)) {
+        if (upgrade == StarforgeUpgrade.VOID_RECALL && "void_recall".equals(effect)) {
             lines.add(CommonComponents.space().append(Component.translatable(stack.has(RIFT_PEARL.get())
                 ? "upgrade.astralend.pearl_loaded" : "upgrade.astralend.pearl_empty")).withStyle(ChatFormatting.DARK_GRAY));
         }

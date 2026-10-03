@@ -24,7 +24,7 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -37,7 +37,7 @@ import org.jspecify.annotations.Nullable;
 // its face a sheet of something like silvered glass. It never comes straight at you. Now and then it
 // throws a sound you know - a chest opening, a door, footsteps, a sheep - from somewhere near the
 // island's edge, to draw you over; when you stand at an edge with it close, it lunges, and its blow
-// throws you outward. It hunts endermen (which is why they won't stay in the Eclipse). It doesn't
+// throws you outward. It craves Memory Moss (hold some and it follows you, and won't strike). It hunts endermen (which is why they won't stay in the Eclipse). It doesn't
 // burn, doesn't despawn in daylight - there is none - and doesn't follow you off the Eclipse.
 public class MirrorWretch extends Monster {
     private static final List<SoundEvent> LURES = List.of(SoundEvents.CHEST_OPEN, SoundEvents.WOODEN_DOOR_OPEN,
@@ -62,25 +62,35 @@ public class MirrorWretch extends Monster {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
+        // It craves Memory Moss: hold some, and it follows you instead of striking.
+        this.goalSelector.addGoal(1, new net.minecraft.world.entity.ai.goal.TemptGoal(this, 1.0, MirrorWretch::isMoss, false));
         this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.2, false) {
             @Override
             public boolean canUse() {
                 // Players only when they stand at an edge (endermen always).
-                return super.canUse() && (!(MirrorWretch.this.getTarget() instanceof Player p) || atEdge(MirrorWretch.this.level(), p));
+                return super.canUse() && (!(MirrorWretch.this.getTarget() instanceof Player p) || (atEdge(MirrorWretch.this.level(), p) && !holdingMoss(p)));
             }
 
             @Override
             public boolean canContinueToUse() {
                 return super.canContinueToUse()
-                    && (!(MirrorWretch.this.getTarget() instanceof Player p) || atEdge(MirrorWretch.this.level(), p));
+                    && (!(MirrorWretch.this.getTarget() instanceof Player p) || (atEdge(MirrorWretch.this.level(), p) && !holdingMoss(p)));
             }
         });
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.7));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 16.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, EnderMan.class, true));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Enderman.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, false));
+    }
+
+    static boolean isMoss(net.minecraft.world.item.ItemStack stack) {
+        return stack.is(com.ggrantrichards.astralend.ModBlocks.MEMORY_MOSS.get().asItem());
+    }
+
+    static boolean holdingMoss(Player player) {
+        return isMoss(player.getMainHandItem()) || isMoss(player.getOffhandItem());
     }
 
     // Within two blocks of a drop into the void.

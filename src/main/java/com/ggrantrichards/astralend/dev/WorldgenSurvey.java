@@ -271,7 +271,7 @@ public final class WorldgenSurvey {
         // ---- Generate an area of each astral biome and count what's there ----
         // The Eclipse's two halves are surveyed at known spots of the nearest one: over the heart of its
         // hell half (under the Remnant), and in its heaven half beside the Wellspring.
-        EclipseLayout.Eclipse eclipse = EclipseLayout.nearest(0, 0, randomState.sampler().temperature(), 3);
+        EclipseLayout.Eclipse eclipse = EclipseLayout.nearest(0, 0, randomState.sampler(), 3);
         if (eclipse == null) {
             failures.add("no Eclipse within 3 cells of the centre");
         } else {
@@ -312,6 +312,7 @@ public final class WorldgenSurvey {
             PolishSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log);         // Phase 9
             MechanicsSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log);      // Phase 10
             MechanicsSurvey.checkContent(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
+            MechanicsSurvey.checkSystems(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkSpawnEggs(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkHandBuiltPortal(end, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkWyrmFight(end, failures, WorldgenSurvey::log);
@@ -491,7 +492,7 @@ public final class WorldgenSurvey {
     // Where the Remnant nearest `from` starts, as /locate would report it (its chunk's corner).
     private static BlockPos remnantStart(ServerLevel end, BlockPos from) {
         BlockPos anchor = com.ggrantrichards.astralend.world.structure.RemnantStructure.anchor(
-            end.getChunkSource().randomState().sampler().temperature(), from.getX(), from.getZ(), 3);
+            end.getChunkSource().randomState().sampler(), from.getX(), from.getZ(), 3);
         return anchor == null ? null : new BlockPos(anchor.getX() - 8, 64, anchor.getZ() - 8);
     }
 
@@ -1161,6 +1162,7 @@ public final class WorldgenSurvey {
         atLeast(area, ModBlocks.SHIMMER_GRASS.get(), 15, failures);
         atLeast(area, ModBlocks.SHIMMER_REED.get(), 1, failures);
         atLeast(area, ModBlocks.PALE_END_STONE_BRICKS.get(), 0.05, failures);  // standing stones
+        atLeast(area, ModBlocks.MEMORY_MOSS.get(), 0.5, failures);
         // Flat shelves: most of the land should be topped at the same height.
         int flat = 0;
         for (int y = 52; y <= 55; y++) {
@@ -1239,6 +1241,7 @@ public final class WorldgenSurvey {
         replacesEndStone(area, ModBlocks.NIGHTSTONE.get(), failures);
         atLeast(area, ModBlocks.NULLWOOD.log().get(), 25, failures);
         atLeast(area, ModBlocks.HOLLOW_VINES_PLANT.get(), 3, failures);
+        atLeast(area, ModBlocks.MIMIC_PLANT.get(), 0.3, failures);
     }
 
     // The Crags' variant: fragments, mostly void between them.

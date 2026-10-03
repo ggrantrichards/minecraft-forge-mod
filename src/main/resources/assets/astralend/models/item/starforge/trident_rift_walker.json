@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/trident",
+  "textures": {
+    "layer0": "astralend:item/starforge/trident_rift_walker"
+  }
+}

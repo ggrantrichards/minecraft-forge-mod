@@ -74,6 +74,34 @@ public class EndChimesBlockEntity extends BlockEntity {
         return stopped;
     }
 
+    // Rung by hand: it goes still for 10 seconds (nothing teleports near it).
+    public void ring(ServerLevel level) {
+        this.stillUntil = level.getGameTime() + STILL_TICKS;
+        level.playSound(null, this.worldPosition, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 2.0F, 0.7F);
+        level.playSound(null, this.worldPosition, SoundEvents.BELL_RESONATE, SoundSource.BLOCKS, 0.6F, 1.4F);
+    }
+
+    // Is a still (recently rung) chime within `range` of `at`? Asks only; rings nothing.
+    public static boolean stillNear(ServerLevel level, Vec3 at, double range) {
+        long now = level.getGameTime();
+        synchronized (LOADED) {
+            Set<EndChimesBlockEntity> set = LOADED.get(level.dimension());
+            if (set == null) {
+                return false;
+            }
+            for (EndChimesBlockEntity chime : set) {
+                if (!chime.isRemoved() && now < chime.stillUntil && Vec3.atCenterOf(chime.worldPosition).distanceToSqr(at) <= range * range) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isStill(long now) {
+        return now < this.stillUntil;
+    }
+
     // True if a chime near `from` or `to` is still from ringing (the teleport is stopped); otherwise
     // the nearest chime in range, if any, rings and goes still.
     public static boolean stillsTeleport(ServerLevel level, Vec3 from, Vec3 to) {

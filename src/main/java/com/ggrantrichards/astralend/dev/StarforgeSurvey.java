@@ -13,11 +13,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
@@ -32,76 +30,68 @@ final class StarforgeSurvey {
             net.minecraft.server.level.ClientInformation.createDefault());
         player.snapTo(standOn.getX() + 0.5, standOn.getY(), standOn.getZ() + 0.5, 0.0F, 0.0F);
 
-        // ---- the Astral Forge: Radiant onto a diamond chestplate
+        // ---- the Astral Forge: Radiant onto a diamond chestplate - refused until its constellation, the
+        // Remnant, has been sighted from the Eclipse; then forged
         AstralForgeMenu menu = new AstralForgeMenu(1, player.getInventory(), ContainerLevelAccess.NULL);
         menu.getSlot(AstralForgeMenu.TEMPLATE).set(new ItemStack(ModItems.STARFORGE_TEMPLATE.get(), 2));
         menu.getSlot(AstralForgeMenu.BASE).set(new ItemStack(Items.DIAMOND_CHESTPLATE));
         menu.getSlot(AstralForgeMenu.ALLOY).set(new ItemStack(ModItems.STARFORGE_ALLOY.get()));
-        menu.getSlot(AstralForgeMenu.MATERIAL).set(new ItemStack(ModItems.CHARGED_VOID_CRYSTAL.get()));
-        menu.getSlot(AstralForgeMenu.MATERIAL_2).set(new ItemStack(ModItems.SOLARITE_INGOT.get()));
+        menu.getSlot(AstralForgeMenu.MATERIAL).set(new ItemStack(ModItems.BOTTLED_FLARE.get()));
+        boolean unsighted = menu.getSlot(AstralForgeMenu.RESULT).getItem().isEmpty();
+        com.ggrantrichards.astralend.world.ModAdvancements.award(player, "sighted_remnant");
+        menu.slotsChanged(menu.getSlot(AstralForgeMenu.BASE).container);
         ItemStack result = menu.getSlot(AstralForgeMenu.RESULT).getItem();
         boolean forged = Starforge.get(result) == StarforgeUpgrade.RADIANT && result.is(Items.DIAMOND_CHESTPLATE);
         if (forged) {
             menu.getSlot(AstralForgeMenu.RESULT).onTake(player, result.copy());
         }
         boolean used = menu.getSlot(AstralForgeMenu.TEMPLATE).getItem().getCount() == 1 && !menu.getSlot(AstralForgeMenu.BASE).hasItem()
-            && !menu.getSlot(AstralForgeMenu.ALLOY).hasItem() && !menu.getSlot(AstralForgeMenu.MATERIAL_2).hasItem();
-        // The wrong material for the item: Voidwalker doesn't go on a sword.
-        menu.getSlot(AstralForgeMenu.BASE).set(new ItemStack(Items.DIAMOND_SWORD));
+            && !menu.getSlot(AstralForgeMenu.ALLOY).hasItem() && !menu.getSlot(AstralForgeMenu.MATERIAL).hasItem();
+        // The wrong material for the item: Echo Strike (a Rift Pearl) doesn't go on a chestplate.
+        com.ggrantrichards.astralend.world.ModAdvancements.award(player, "sighted_maw");
+        menu.getSlot(AstralForgeMenu.BASE).set(new ItemStack(Items.DIAMOND_CHESTPLATE));
         menu.getSlot(AstralForgeMenu.ALLOY).set(new ItemStack(ModItems.STARFORGE_ALLOY.get()));
-        menu.getSlot(AstralForgeMenu.MATERIAL).set(new ItemStack(ModItems.VOID_CRYSTAL.get()));
-        menu.getSlot(AstralForgeMenu.MATERIAL_2).set(new ItemStack(ModItems.UMBRAL_MEMBRANE.get()));
+        menu.getSlot(AstralForgeMenu.MATERIAL).set(new ItemStack(ModItems.RIFT_PEARL.get()));
         boolean refused = menu.getSlot(AstralForgeMenu.RESULT).getItem().isEmpty() && menu.hasError();
-        log.accept(String.format("starforge: the Astral Forge made %s (Radiant: %s), used its inputs: %s; refused Voidwalker on a sword: %s",
-            result.getHoverName().getString(), forged, used, refused));
-        if (!forged || !used || !refused) {
-            failures.add("starforge: the Astral Forge should forge Radiant onto a chestplate, use up its inputs, and refuse Voidwalker on a sword");
+        log.accept(String.format("starforge: unsighted, the Forge made nothing: %s; sighted, it made %s (Radiant: %s), used its inputs: %s; "
+            + "refused Echo Strike on a chestplate: %s", unsighted, result.getHoverName().getString(), forged, used, refused));
+        if (!unsighted || !forged || !used || !refused) {
+            failures.add("starforge: the Astral Forge should need the constellation sighted, then forge Radiant onto a chestplate, "
+                + "use up its inputs, and refuse Echo Strike on a chestplate");
         }
         player.getInventory().clearContent();
 
-        // ---- what fits where
-        boolean fitsRight = StarforgeUpgrade.VOIDWALKER.fits(new ItemStack(Items.NETHERITE_BOOTS))
-            && !StarforgeUpgrade.VOIDWALKER.fits(new ItemStack(Items.NETHERITE_HELMET))
-            && StarforgeUpgrade.METEORIC.fits(new ItemStack(Items.DIAMOND_PICKAXE)) && !StarforgeUpgrade.METEORIC.fits(new ItemStack(Items.BOW))
-            && StarforgeUpgrade.STARDUST.fits(new ItemStack(Items.CROSSBOW)) && StarforgeUpgrade.SINGULARITY.fits(new ItemStack(Items.DIAMOND_SWORD))
-            && !StarforgeUpgrade.TEMPORAL.fits(new ItemStack(Items.DIAMOND_SHOVEL)) && !StarforgeUpgrade.RADIANT.fits(new ItemStack(Items.IRON_SWORD));
+        // ---- what fits where: one upgrade per item, each on its own kind of item
+        boolean fitsRight = StarforgeUpgrade.RIFT_WALKER.fits(new ItemStack(Items.NETHERITE_BOOTS))
+            && !StarforgeUpgrade.RIFT_WALKER.fits(new ItemStack(Items.NETHERITE_HELMET))
+            && StarforgeUpgrade.VOID_RECALL.fits(new ItemStack(Items.DIAMOND_CHESTPLATE)) && !StarforgeUpgrade.VOID_RECALL.fits(new ItemStack(Items.DIAMOND_SWORD))
+            && StarforgeUpgrade.LENSING.fits(new ItemStack(Items.DIAMOND_HELMET)) && !StarforgeUpgrade.LENSING.fits(new ItemStack(Items.DIAMOND_BOOTS))
+            && StarforgeUpgrade.ECHO_STRIKE.fits(new ItemStack(Items.DIAMOND_SWORD)) && !StarforgeUpgrade.ECHO_STRIKE.fits(new ItemStack(Items.DIAMOND_PICKAXE))
+            && StarforgeUpgrade.RADIANT.fits(new ItemStack(Items.BOW)) && !StarforgeUpgrade.RADIANT.fits(new ItemStack(Items.IRON_SWORD));
         log.accept("starforge: upgrades fit the right items: " + fitsRight);
         if (!fitsRight) {
             failures.add("starforge: an upgrade fits an item it shouldn't (or not one it should)");
         }
 
-        // ---- armour on a zombie: Stardust gravity and step, Radiant's room for a golden heart
+        // ---- armour on a zombie: Radiant's room for a golden heart
         BlockPos at = standOn.offset(3, 0, 0);
         var zombie = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(end, EntitySpawnReason.COMMAND);
         zombie.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
         zombie.setNoAi(true);
         end.addFreshEntity(zombie);
-        double gravity = zombie.getAttributeValue(Attributes.GRAVITY);
-        zombie.setItemSlot(EquipmentSlot.FEET, Starforge.apply(new ItemStack(Items.DIAMOND_BOOTS), StarforgeUpgrade.STARDUST));
-        zombie.setItemSlot(EquipmentSlot.LEGS, Starforge.apply(new ItemStack(Items.DIAMOND_LEGGINGS), StarforgeUpgrade.STARDUST));
         zombie.setItemSlot(EquipmentSlot.HEAD, Starforge.apply(new ItemStack(Items.DIAMOND_HELMET), StarforgeUpgrade.RADIANT));
         zombie.setItemSlot(EquipmentSlot.CHEST, Starforge.apply(new ItemStack(Items.DIAMOND_CHESTPLATE), StarforgeUpgrade.RADIANT));
         zombie.tick();   // equipment changes apply their attribute modifiers on a tick
-        double lighter = zombie.getAttributeValue(Attributes.GRAVITY);
-        double step = zombie.getAttributeValue(Attributes.STEP_HEIGHT);
         float roomForHearts = zombie.getMaxAbsorption();
-        log.accept(String.format("starforge: Stardust x2 - gravity %.4f -> %.4f, step height %.2f; Radiant x2 - room for %.0f absorption",
-            gravity, lighter, step, roomForHearts));
-        if (lighter >= gravity * 0.95 || step < 1.0 || roomForHearts < 2.0F) {
-            failures.add("starforge: Stardust armour should lower gravity and raise step height, Radiant should make room for golden hearts");
-        }
-        // Heat Shield and Time Stretch were cut: Meteoric and Temporal no longer go on armour.
-        boolean cut = !StarforgeUpgrade.METEORIC.fits(new ItemStack(Items.DIAMOND_CHESTPLATE))
-            && !StarforgeUpgrade.TEMPORAL.fits(new ItemStack(Items.DIAMOND_HELMET));
-        log.accept("starforge: Meteoric and Temporal armour (Heat Shield, Time Stretch) cut: " + cut);
-        if (!cut) {
-            failures.add("starforge: Meteoric and Temporal should no longer fit armour");
+        log.accept(String.format("starforge: Radiant x2 - room for %.0f absorption", roomForHearts));
+        if (roomForHearts < 2.0F) {
+            failures.add("starforge: Radiant armour should make room for golden hearts");
         }
         zombie.removeAllEffects();
         zombie.setHealth(zombie.getMaxHealth());
 
         // ---- weapons, held by the fake player: Echo Strike and Glow
-        player.setItemSlot(EquipmentSlot.MAINHAND, Starforge.apply(new ItemStack(Items.DIAMOND_SWORD), StarforgeUpgrade.TEMPORAL));
+        player.setItemSlot(EquipmentSlot.MAINHAND, Starforge.apply(new ItemStack(Items.DIAMOND_SWORD), StarforgeUpgrade.ECHO_STRIKE));
         float full = zombie.getHealth();
         zombie.hurtServer(end, end.damageSources().playerAttack(player), 4.0F);
         float afterHit = zombie.getHealth();
@@ -119,26 +109,6 @@ final class StarforgeSurvey {
         }
         zombie.discard();
 
-        // ---- tools, used by the fake player: Smelting and Pull
-        BlockPos ore = standOn.offset(-3, 2, 0);
-        end.setBlock(ore, Blocks.IRON_ORE.defaultBlockState(), 3);
-        ItemStack meteoricPick = Starforge.apply(new ItemStack(Items.DIAMOND_PICKAXE), StarforgeUpgrade.METEORIC);
-        player.setItemSlot(EquipmentSlot.MAINHAND, meteoricPick);
-        List<ItemStack> smelted = Block.getDrops(end.getBlockState(ore), end, ore, null, player, meteoricPick);
-        end.setBlock(ore, ModBlocks.METEORIC_IRON_ORE.get().defaultBlockState(), 3);
-        List<ItemStack> smeltedMeteoric = Block.getDrops(end.getBlockState(ore), end, ore, null, player, meteoricPick);
-        ItemStack singularityPick = Starforge.apply(new ItemStack(Items.DIAMOND_PICKAXE), StarforgeUpgrade.SINGULARITY);
-        player.setItemSlot(EquipmentSlot.MAINHAND, singularityPick);
-        end.setBlock(ore, Blocks.STONE.defaultBlockState(), 3);
-        List<ItemStack> pulled = Block.getDrops(end.getBlockState(ore), end, ore, null, player, singularityPick);
-        boolean inPocket = player.getInventory().countItem(Items.COBBLESTONE) > 0;
-        end.setBlock(ore, Blocks.AIR.defaultBlockState(), 3);
-        log.accept(String.format("starforge: Smelting - iron ore gave %s, meteoric iron ore gave %s; Pull - drops on the ground %d, cobblestone in the inventory %s",
-            smelted, smeltedMeteoric, pulled.size(), inPocket));
-        if (smelted.isEmpty() || !smelted.get(0).is(Items.IRON_INGOT) || smeltedMeteoric.isEmpty()
-            || !smeltedMeteoric.get(0).is(ModItems.METEORIC_IRON_INGOT.get()) || !pulled.isEmpty() || !inPocket) {
-            failures.add("starforge: a Meteoric pickaxe should smelt what it mines, and a Singularity pickaxe pull it into the inventory");
-        }
         player.getInventory().clearContent();
 
         // ---- Rift Walker: walking off into the air lays tiles of rift ahead

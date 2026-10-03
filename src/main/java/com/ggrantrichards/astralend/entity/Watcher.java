@@ -19,13 +19,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-// The Watcher: a floating stone sentinel with one great eye, at the edge of sight on the Shattered
-// Observatory's islands. It hangs in the air, perfectly still but for the shards circling it.
+// The Watcher: a floating stone sentinel with one great eye, seen only at the edge of sight - over the
+// Ashen Barrens, and among the Shattered Observatory's ruins. It hangs in the air, perfectly still
+// but for the shards circling it.
 //
-// It appears only when you're alone, only far away, and only for a few seconds. Come close and it
-// is simply gone. Look at it through a spyglass and it vanishes too - but a Star Chart appears in
-// your inventory, and you get the advancement "Something Looks Back". It never attacks and can't
-// be reached. When it goes, it comes apart into starlight with a crystal chime. (MobSpawning decides where and when it appears.)
+// It appears only when you're alone, only far away, and only for a while. Look straight at it and it
+// fades - but it turns up again a little later, further on, always on the way toward the nearest
+// leviathan's remains: keep it in the corner of your eye and it leads you there. Come close and it is
+// simply gone. Catch it in a spyglass and a Star Chart appears in your inventory (and you get "Something
+// Looks Back"). It never attacks and can't be reached. (MobSpawning decides where and when it appears.)
 public class Watcher extends Mob {
     public static final int LIFETIME = 240;
     private static final double TOO_CLOSE = 24.0;
@@ -72,7 +74,13 @@ public class Watcher extends Mob {
             return;
         }
         for (ServerPlayer player : level.players()) {
-            if (player.isScoping() && this.isLookedAtBy(player)) {
+            if (!player.isScoping() && this.isLookedAtBy(player, 0.9985)) {
+                // Looked at straight on: it fades, and will turn up again further along.
+                com.ggrantrichards.astralend.world.MobSpawning.watcherSeen(player);
+                this.vanish(level);
+                return;
+            }
+            if (player.isScoping() && this.isLookedAtBy(player, 0.997)) {
                 player.getInventory().add(StarChartItem.create(level, this.blockPosition()));
                 ModAdvancements.award(player, "something_looks_back");
                 level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.6F);
@@ -82,11 +90,11 @@ public class Watcher extends Mob {
         }
     }
 
-    private boolean isLookedAtBy(Player player) {
+    private boolean isLookedAtBy(Player player, double within) {
         Vec3 view = player.getViewVector(1.0F).normalize();
         Vec3 to = this.position().add(0.0, this.getBbHeight() * 0.6, 0.0).subtract(player.getEyePosition());
         double distance = to.length();
-        return distance < 160.0 && view.dot(to.normalize()) > 0.997 && player.hasLineOfSight(this);
+        return distance < 160.0 && view.dot(to.normalize()) > within && player.hasLineOfSight(this);
     }
 
     private void vanish(ServerLevel level) {

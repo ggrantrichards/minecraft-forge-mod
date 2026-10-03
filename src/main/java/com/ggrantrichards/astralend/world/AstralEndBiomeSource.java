@@ -111,7 +111,7 @@ public class AstralEndBiomeSource extends BiomeSource {
         int warpedX = blockX + (int) Math.round(warp(blockX, blockZ, 0x51ED));
         int warpedZ = blockZ + (int) Math.round(warp(blockX, blockZ, 0x7A3B));
         // The rare Eclipse comes first: its heaven half, or its hell half (the Corona).
-        EclipseLayout.Eclipse e = EclipseLayout.at(warpedX, warpedZ, sampler.temperature());
+        EclipseLayout.Eclipse e = EclipseLayout.at(warpedX, warpedZ, sampler);
         if (e != null) {
             switch (e.part(warpedX, warpedZ)) {
                 case HEAVEN: return this.eclipse;
@@ -143,7 +143,7 @@ public class AstralEndBiomeSource extends BiomeSource {
     }
 
     // A smooth offset in blocks: two octaves of value noise (about 40 and 12 blocks across).
-    static double warp(int x, int z, int salt) {
+    public static double warp(int x, int z, int salt) {
         return valueNoise(x / 40.0, z / 40.0, salt) * 10.0 + valueNoise(x / 12.0, z / 12.0, salt * 31) * 4.0;
     }
 

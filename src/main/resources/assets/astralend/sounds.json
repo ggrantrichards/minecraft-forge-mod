@@ -264,6 +264,14 @@
       }
     ]
   },
+  "ambient.void_hum": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/void_hum",
+        "stream": true
+      }
+    ]
+  },
   "entity.spire_wyrm.roar": {
     "subtitle": "subtitles.astralend.entity.spire_wyrm.roar",
     "sounds": [

@@ -14,16 +14,17 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-// The six Starforge upgrades (docs/END_UPDATE.md, section 9). Each does one thing per kind of item,
-// shown on its tooltip like an enchantment, and leaves a colour accent on the item (see
+// The Starforge's five upgrades (the distillation; docs/DISTILLATION.md, "Starforging"). One per
+// item, all sidegrades: none is simply better, none a new tier. Each answers to a constellation, which
+// you must first sight through a spyglass from the Eclipse, and needs one rare material from
+// somewhere else - so every upgrade is a journey. Each leaves a colour accent on the item (see
 // tools/textures/starforge_textures.py, which uses the same colours).
 public enum StarforgeUpgrade implements StringRepresentable {
-    VOIDWALKER("voidwalker", 0xA98CFF, () -> List.of(ModItems.VOID_CRYSTAL.get(), ModItems.UMBRAL_MEMBRANE.get())),
-    METEORIC("meteoric", 0xF07A3C, () -> List.of(ModItems.METEORIC_IRON_INGOT.get())),
-    STARDUST("stardust", 0xA8D4FF, () -> List.of(ModBlocks.STARDUST_BLOCK.get().asItem())),
-    TEMPORAL("temporal", 0xEEA650, () -> List.of(ModItems.TEMPORAL_CRYSTAL.get())),
-    SINGULARITY("singularity", 0xEE62D4, () -> List.of(ModItems.ABYSS_SHARD.get())),
-    RADIANT("radiant", 0xFFF07A, () -> List.of(ModItems.SOLARITE_INGOT.get(), ModItems.CHARGED_VOID_CRYSTAL.get()));
+    VOID_RECALL("void_recall", 0xA98CFF, "leviathan", () -> List.of(ModItems.CURATORS_CORE.get())),
+    ECHO_STRIKE("echo_strike", 0xEEA650, "maw", () -> List.of(ModItems.RIFT_PEARL.get())),
+    LENSING("lensing", 0xEE62D4, "watcher", () -> List.of(ModItems.CRACKED_LENS.get())),
+    RADIANT("radiant", 0xFFF07A, "remnant", () -> List.of(ModItems.BOTTLED_FLARE.get())),
+    RIFT_WALKER("rift_walker", 0x7AD8FF, "whale", () -> List.of(ModBlocks.WHALELIGHT_SCALE.get().asItem()));
 
     public static final Codec<StarforgeUpgrade> CODEC = StringRepresentable.fromEnum(StarforgeUpgrade::values);
     public static final StreamCodec<ByteBuf, StarforgeUpgrade> STREAM_CODEC = ByteBufCodecs.idMapper(
@@ -31,12 +32,19 @@ public enum StarforgeUpgrade implements StringRepresentable {
 
     private final String name;
     private final int colour;
+    private final String constellation;
     private final Supplier<List<Item>> materials;
 
-    StarforgeUpgrade(String name, int colour, Supplier<List<Item>> materials) {
+    StarforgeUpgrade(String name, int colour, String constellation, Supplier<List<Item>> materials) {
         this.name = name;
         this.colour = colour;
+        this.constellation = constellation;
         this.materials = materials;
+    }
+
+    // The constellation that must have been sighted from the Eclipse (maze.Constellations).
+    public String constellation() {
+        return this.constellation;
     }
 
     @Override
@@ -59,27 +67,23 @@ public enum StarforgeUpgrade implements StringRepresentable {
         return this.effect(stack, kind) != null;
     }
 
-    // The one thing this upgrade does on this item ("rift_walker", "smelting"...), or null if it
-    // doesn't fit. Used for the tooltip line and to decide what fits.
+    // The one thing this upgrade does on this item, or null if it doesn't fit. Used for the tooltip
+    // line and to decide what fits.
     public String effect(ItemStack stack, Kind kind) {
         if (kind.armour) {
             EquipmentSlot slot = Starforge.slotOf(stack);
             return switch (this) {
-                case VOIDWALKER -> slot == EquipmentSlot.FEET ? "rift_walker" : slot == EquipmentSlot.CHEST ? "void_recall" : null;
-                case METEORIC -> null;          // Heat Shield was cut (the distillation)
-                case STARDUST -> slot == EquipmentSlot.FEET ? "light_step_boots" : "light_step";
-                case TEMPORAL -> null;          // so was Time Stretch
-                case SINGULARITY -> "lensing";
+                case VOID_RECALL -> slot == EquipmentSlot.CHEST ? "void_recall" : null;
+                case RIFT_WALKER -> slot == EquipmentSlot.FEET ? "rift_walker" : null;
+                case LENSING -> slot == EquipmentSlot.HEAD || slot == EquipmentSlot.LEGS ? "lensing" : null;
                 case RADIANT -> "soak_light";
+                case ECHO_STRIKE -> null;
             };
         }
         return switch (this) {
-            case VOIDWALKER -> null;
-            case METEORIC -> kind.tool ? "smelting" : null;
-            case STARDUST -> kind.ranged ? "flatter_shots" : null;
-            case TEMPORAL -> kind.melee ? "echo_strike" : null;
-            case SINGULARITY -> kind.tool ? "pull" : kind.sword ? "sweep_pull" : null;
+            case ECHO_STRIKE -> kind.melee ? "echo_strike" : null;
             case RADIANT -> kind.melee || kind.ranged ? "glow" : null;
+            default -> null;
         };
     }
 

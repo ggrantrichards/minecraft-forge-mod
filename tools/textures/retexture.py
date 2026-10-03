@@ -287,6 +287,25 @@ def hushback_flank(cooked):
                             *(("4a2e24", "8a5a40", "c8946a", "e8c8a0") if cooked else ("6a4a58", "b08494", "dcb8c4", "f0e4ea")))
 
 
+def curators_core():
+    """What's left of the Curator: a heart of the sea gone obsidian-black, a violet slit of light in it."""
+    return gradient(vanilla("heart_of_the_sea", "item"), "0c0814", "2a1a44", "6a3cc4", "d8b8ff")
+
+
+def memory_moss():
+    """Pale grey-violet moss: vanilla's moss block, drained of its green."""
+    return gradient(vanilla("moss_block"), "6e6a7c", "9a96aa", "c4c0d2", "e0dcea")
+
+
+def mimic_plant():
+    """A dark shrub: vanilla's fern, near black, a little violet at the tips."""
+    return gradient(vanilla("fern"), "0c0a12", "1e1a2c", "3a3254", "5c5080")
+
+
+def purpur_bricks():
+    return gradient(vanilla("stone_bricks"), "5e3e68", "8c6494", "ae86b4", "c8a6cc")
+
+
 def nullwood_leaves():
     return gradient(vanilla("dark_oak_leaves"), "160f2a", "33265e", "6a54b0")
 
@@ -413,6 +432,10 @@ TEXTURES = [
     ("block/hollow_vines.png", hollow_vines("weeping_vines")),
     ("block/living_turf_top.png", living_turf_top),
     ("item/hushfleece.png", hushfleece),
+    ("block/memory_moss.png", memory_moss),
+    ("block/mimic_plant.png", mimic_plant),
+    ("block/purpur_bricks.png", purpur_bricks),
+    ("item/curators_core.png", curators_core),
     ("item/hushback_flank.png", hushback_flank(False)),
     ("item/cooked_hushback_flank.png", hushback_flank(True)),
     ("block/living_turf_side.png", living_turf_side),

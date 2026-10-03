@@ -1,7 +1,6 @@
 package com.ggrantrichards.astralend.dev;
 
 import com.ggrantrichards.astralend.ModBlocks;
-import com.ggrantrichards.astralend.block.LodestarBlockEntity;
 import com.ggrantrichards.astralend.entity.DriftWhale;
 import com.ggrantrichards.astralend.entity.ModEntities;
 import com.ggrantrichards.astralend.entity.UmbralStalker;
@@ -13,20 +12,24 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
-// The survey's Phase 10 checks: a Lodestar keeps comets off the ground near it (and only near it),
+// The survey's Phase 10 checks: a Lodestar sends you back to it (the End's respawn point),
 // a Drift Whale can be hurt (and runs), and fire frightens an Umbral Stalker.
 final class MechanicsSurvey {
     static void check(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
-        // ---- the Lodestar
+        // ---- the Lodestar: used in the End, it holds you; die there and you're sent back to it
         BlockPos at = standOn.above(3);
         end.setBlockAndUpdate(at, ModBlocks.LODESTAR.get().defaultBlockState());
-        boolean near = LodestarBlockEntity.guards(end, Vec3.atCenterOf(at).add(30, 0, 0));
-        boolean far = LodestarBlockEntity.guards(end, Vec3.atCenterOf(at).add(80, 0, 0));
+        net.minecraft.server.level.ServerPlayer holder = standIn(end);
+        com.ggrantrichards.astralend.world.LodestarBindings.get(end).bind(holder, at);
+        holder.snapTo(standOn.getX() + 40.5, standOn.getY() + 30, standOn.getZ() + 0.5, 0.0F, 0.0F);
+        boolean sent = com.ggrantrichards.astralend.world.LodestarBindings.sendBack(holder);
+        boolean beside = holder.blockPosition().distSqr(at) < 9.0;
         end.setBlockAndUpdate(at, Blocks.AIR.defaultBlockState());
-        boolean gone = LodestarBlockEntity.guards(end, Vec3.atCenterOf(at));
-        log.accept(String.format("mechanics: Lodestar guards 30 blocks away: %s, 80 away: %s, once broken: %s", near, far, gone));
-        if (!near || far || gone) {
-            failures.add("mechanics: a Lodestar should keep comets off the ground within 48 blocks, and only while it stands");
+        boolean gone = com.ggrantrichards.astralend.world.LodestarBindings.sendBack(holder);
+        log.accept(String.format("mechanics: Lodestar sends you back: %s, beside it: %s (at %s); once broken: %s", sent, beside,
+            holder.blockPosition().toShortString(), gone));
+        if (!sent || !beside || gone) {
+            failures.add("mechanics: a Lodestar should send a player back to stand beside it, and only while it stands");
         }
 
         // ---- the Drift Whale: killable, and it flees
@@ -242,6 +245,40 @@ final class MechanicsSurvey {
     }
 
     // Batch C: Upwelling turns gravity around, End Chimes still a second teleport, Voidgel bounces.
+    // The distillation's systems: Memory Moss remembers when trodden or brushed, it's edible
+    // (Remembering), and a Drift Whale sung to by someone takes Chorus Fruit from them alone - tamed.
+    static void checkSystems(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
+        BlockPos moss = standOn.above(4);
+        end.setBlockAndUpdate(moss, ModBlocks.MEMORY_MOSS.get().defaultBlockState());
+        com.ggrantrichards.astralend.block.MemoryMossBlock.remember(end, moss, end.getBlockState(moss));
+        int echo = end.getBlockState(moss).getValue(com.ggrantrichards.astralend.block.MemoryMossBlock.ECHO);
+        end.setBlockAndUpdate(moss, Blocks.AIR.defaultBlockState());
+        boolean edible = new net.minecraft.world.item.ItemStack(ModBlocks.MEMORY_MOSS.get()).has(net.minecraft.core.component.DataComponents.FOOD);
+        log.accept("systems: Memory Moss remembers (echo " + echo + "), edible: " + edible);
+        if (echo != 3 || !edible) {
+            failures.add("systems: Memory Moss should start remembering when disturbed, and be edible");
+        }
+        DriftWhale whale = ModEntities.DRIFT_WHALE.get().create(end, EntitySpawnReason.COMMAND);
+        if (whale != null) {
+            whale.snapTo(standOn.getX() + 0.5, standOn.getY() + 14.0, standOn.getZ() + 0.5, 0.0F, 0.0F);
+            end.addFreshEntity(whale);
+            net.minecraft.server.level.ServerPlayer singer = standIn(end);
+            boolean early = whale.tryTame(end, singer);
+            whale.hearSong(end, singer, standOn);
+            net.minecraft.server.level.ServerPlayer other = new net.minecraft.server.level.ServerPlayer(end.getServer(), end,
+                new com.mojang.authlib.GameProfile(java.util.UUID.nameUUIDFromBytes("astralend-other".getBytes()), "AstralOther"),
+                net.minecraft.server.level.ClientInformation.createDefault());
+            boolean stranger = whale.tryTame(end, other);
+            boolean tamed = whale.tryTame(end, singer) && whale.isTamed();
+            log.accept(String.format("systems: Drift Whale - fed before any song tames it: %s; fed by someone else: %s; sung to and fed: %s",
+                early, stranger, tamed));
+            if (early || stranger || !tamed) {
+                failures.add("systems: a Drift Whale should be tamed only by Chorus Fruit from whoever just sang to it");
+            }
+            whale.discard();
+        }
+    }
+
     static void checkContent(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
         var mite = ModEntities.POLLINATOR.get().create(end, EntitySpawnReason.COMMAND);
         if (mite != null) {

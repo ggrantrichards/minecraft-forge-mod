@@ -1,7 +1,6 @@
 package com.ggrantrichards.astralend;
 
 import com.ggrantrichards.astralend.block.CollectorPedestalBlockEntity;
-import com.ggrantrichards.astralend.block.LodestarBlockEntity;
 import com.ggrantrichards.astralend.block.UpwellCoreBlockEntity;
 import java.util.Set;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -21,10 +20,6 @@ public final class ModBlockEntities {
     public static final RegistryObject<BlockEntityType<CollectorPedestalBlockEntity>> COLLECTOR_PEDESTAL =
         BLOCK_ENTITIES.register("collector_pedestal",
             () -> new BlockEntityType<>(CollectorPedestalBlockEntity::new, Set.of(ModBlocks.COLLECTOR_PEDESTAL.get())));
-
-    public static final RegistryObject<BlockEntityType<LodestarBlockEntity>> LODESTAR =
-        BLOCK_ENTITIES.register("lodestar",
-            () -> new BlockEntityType<>(LodestarBlockEntity::new, Set.of(ModBlocks.LODESTAR.get())));
 
     public static final RegistryObject<BlockEntityType<com.ggrantrichards.astralend.block.EndChimesBlockEntity>> END_CHIMES =
         BLOCK_ENTITIES.register("end_chimes",
