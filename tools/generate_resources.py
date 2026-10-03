@@ -2039,10 +2039,7 @@ def content_phase10():
     item_model(disc, {"parent": "minecraft:item/generated", "textures": {"layer0": rid(f"item/{disc}")}})
     item_def(disc, rid(f"item/{disc}"))
     lang[f"item.{NS}.{disc}"] = "Music Disc"
-    advancement("wyrmslayer", rid("resonant_key"), "Wyrmslayer", "Defeat a Spire Wyrm atop its Resonant Spire",
-                parent=rid("end/astral_horizons"), frame="challenge", criteria={"wyrm": killed(rid("spire_wyrm"))})
-    advancement("ring_out", "minecraft:bell", "Ring Out", "Stun a Spire Wyrm with the ringing of a bell",
-                parent=rid("end/wyrmslayer"))
+    # (Wyrmslayer and Ring Out went with the Spire Wyrm, out of the world since the distillation.)
     advancement("still_air", rid("end_chimes"), "Still the Air", "Hang End Chimes, and stop an Enderman's teleport with them",
                 parent=rid("end/astral_horizons"))
 
@@ -2161,6 +2158,8 @@ def distillation_blocks():
                 parent=f"{NS}:end/leviathan", frame="challenge", criteria={"killed": killed(rid("curator"))})
     advancement("keeper_of_the_egg", "minecraft:dragon_egg", "Keeper of the Egg",
                 "Set the dragon egg on the pedestal in a Leviathan's skull", parent=f"{NS}:end/curator", frame="challenge")
+    advancement("led_by_the_watcher", rid("watcher_spawn_egg"), "Led", "Follow a Watcher to the remains of a leviathan",
+                parent=f"{NS}:end/something_looks_back")
     advancement("wellspring", "minecraft:water_bucket", "Wellspring", "Swim in the waters of an Eclipse",
                 criteria={"swam": {"trigger": "minecraft:location", "conditions": {"player": {
                     "type": "minecraft:entity_properties", "entity": "this",

@@ -64,6 +64,12 @@ public final class MobSpawning {
             // The Watcher: over the Ashen Barrens and round the Shattered Observatory, only when you're
             // alone - and soon again after you've looked straight at one, further along the way.
             boolean recent = level.getGameTime() - RECENT.getOrDefault(player.getUUID(), -10000L) < 1200;
+            // Arriving where the Watchers were leading, with one seen in the last five minutes.
+            BlockPos led = GUIDE.get(player.getUUID());
+            if (led != null && level.getGameTime() - RECENT.getOrDefault(player.getUUID(), -10000L) < 6000
+                && led.distSqr(player.blockPosition().atY(led.getY())) < 80.0 * 80.0) {
+                com.ggrantrichards.astralend.world.ModAdvancements.award(player, "led_by_the_watcher");
+            }
             int watcherChance = recent ? 1 : biome.is(ModBiomes.ASHEN_BARRENS) ? 5 : 12;
             if (random.nextInt(watcherChance) == 0 && isOuterEnd(player) && none(level, player, Watcher.class, 256)
                 && level.players().stream().noneMatch(other -> other != player && other.distanceToSqr(player) < 96.0 * 96.0)) {

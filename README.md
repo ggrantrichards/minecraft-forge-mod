@@ -28,7 +28,7 @@ changelog for each version.
 The sections below run newest first. Older ones describe things as they were at the time; Phase 10
 and the distillation renamed or removed some of them.
 
-### The distillation (in progress)
+### The distillation
 
 The mod is being cut back to six ideas - void and emptiness, a restricted palette, displacement,
 silence and alienness, ruins without explanation, and finality. The full plan, in five phases, is
@@ -51,6 +51,77 @@ silence and alienness, ruins without explanation, and finality. The full plan, i
   and chimes climb while you hold it in view. A Star Chart sends a thread of starlight toward its
   place, its note higher the nearer it is.
 - **Palette:** Glimmer Crystal is smoky grey violet instead of teal, and the Glimmering Crags' fog with it.
+
+**Phase 2, sparseness and caves:**
+- **More void:** the outer islands are smaller with wider gaps between them.
+- **The Glimmering Crags' root caves:** chambers under the peaks where the old forest's roots rotted
+  out, each with tapering tunnels, Void Crystal ore and glimmer clusters. The **Umbral Stalker** lives
+  only in them now.
+- **Two variants**, patches inside their parent biome:
+  - **Deep Hollows**, in the Hollow Isles. It has hanging Hollow Vines and Mimic Plants.
+  - **Shattered Crags**, in the Glimmering Crags. It is split into shards with Void Rays in the gaps.
+
+**Phase 3, the Eclipse:** one disc of land 360 blocks across, in a ring of empty void. It's rare: about
+three in every four 4096-block cells of the outer End hold one, and never within 1700 blocks of the
+centre.
+- **A yin-yang:** a heaven half of Living Turf and Breathcomb (blocks that glow with a slow breath)
+  and a hell half of Sunscorched Stone. Each half holds a seed of the other: a burnt spire in heaven
+  and a small living pool in hell.
+- **The Wellspring:** a round hole through the heaven half, holding water on a glass floor over the
+  void.
+- **Over the hell half:** the **Remnant**, a dead star's cinder, and the Sunstorms.
+- **Only over an Eclipse** do the sky's stars, constellations and auroras show without a spyglass.
+  Constellations sighted from here unlock Starforge upgrades.
+- **Its mobs:**
+  - the **Hushback**, a see-through grazer whose herd blinks away when one is hurt; it gives fleece
+    and meat;
+  - the **Hydragrip**, otter-like; it hunts endermites and gives a pearl;
+  - the **Mirror Wretch**, which prowls the border between the halves, throws familiar sounds from the
+    void's edge to lure you, and hunts endermen. Endermen that wander in scream and flee.
+
+**Phase 4, systems:**
+- **Memory Moss** (Ashen Barrens) replays pale afterimages of what passed over it. Eating it gives
+  *Remembering*.
+- **Mimic Plants** (Hollow Isles, Deep Hollows) repeat sounds made near them.
+- **Drift Whales** travel in pods of three to five that drift toward the nearest Eclipse.
+  - To tame one by song, eat Memory Moss and play a note block near it, then feed it chorus.
+  - Only its owner can ride it. A tamed whale sheds Whalelight Scales.
+- **The Watcher** leads you. Look straight at one and it fades; the next appears soon, farther along
+  the way to leviathan remains.
+- **Starforging:** five sidegrades, one per item: Void Recall, Echo Strike, Lensing, Radiant and Rift
+  Walker. Each needs its constellation sighted from the Eclipse, and a rare material from somewhere
+  else.
+- **The Lodestar** is the End's respawn point. Use one in the End, and if you die in the End you wake
+  beside it.
+- **Also new:**
+  - purpur bricks and walls;
+  - a low **void hum** near island edges;
+  - endermen in the Ashen Barrens, standing at the edges facing the void.
+
+**Phase 5, the Leviathan and the Curator:**
+- **The Leviathan:** a Star Leviathan's whole skeleton, 320 blocks from tail to chin, lying
+  diagonally over the void near the small islands and barrens. Someone built a citadel on it:
+  - a purpur hall along the spine, with towers rising from the vertebrae;
+  - a cathedral inside the ribcage, with Astral Glass between the ribs;
+  - a captured island chained into the jaw;
+  - in the skull, the reliquary.
+
+  Shulkers guard the towers, Void Wanderers walk the hall, and **Hollowbacks** (hostile, hollowed-out
+  Hushbacks) roam the cathedral.
+- **The Curator** keeps the reliquary. It is a 4.5-block obsidian construct, dormant until you come
+  near. The fight:
+  - it teleports away from arrows and strikes where it reappears;
+  - ring one of the four End Chimes pylons and nothing can teleport near it, so the Curator smashes
+    rung pylons first;
+  - its slam lifts everyone nearby, which is deadly over the floor's gaps into the void;
+  - break its line of sight and it swaps places with you;
+  - water staggers it.
+
+  It drops the **Curator's Core**, which Void Recall needs.
+- **The egg pedestal:** set the dragon egg on the pedestal in the skull. The skull's eyes light, and
+  the Watchers come to look.
+- **Advancements:** The Leviathan, The Collection Closes, Keeper of the Egg, Wellspring and Led.
+  Wyrmslayer and Ring Out are gone with the Spire Wyrm.
 
 ### Phase 11: polish
 

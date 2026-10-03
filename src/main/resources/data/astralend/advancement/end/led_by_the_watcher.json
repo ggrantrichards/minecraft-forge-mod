@@ -1,14 +1,14 @@
 {
-  "parent": "astralend:end/wyrmslayer",
+  "parent": "astralend:end/something_looks_back",
   "display": {
     "icon": {
-      "id": "minecraft:bell"
+      "id": "astralend:watcher_spawn_egg"
     },
     "title": {
-      "translate": "advancements.astralend.ring_out.title"
+      "translate": "advancements.astralend.led_by_the_watcher.title"
     },
     "description": {
-      "translate": "advancements.astralend.ring_out.description"
+      "translate": "advancements.astralend.led_by_the_watcher.description"
     },
     "frame": "task",
     "hidden": false,

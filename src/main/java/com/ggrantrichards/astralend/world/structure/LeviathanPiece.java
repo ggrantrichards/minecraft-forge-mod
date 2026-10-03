@@ -41,8 +41,8 @@ import net.minecraft.world.level.storage.loot.LootTable;
 //     eye sockets set with Maw Eyes in rims of crying obsidian; the lower jaw, its teeth, and in it a
 //     captured island, chained shut with obsidian;
 //   - what was built over it: a hall of purpur along the spine, walled in End Stone bricks with
-//     violet windows and lit with End Rods; four towers rising from the vertebrae; the ribcage closed
-//     into a cathedral with magenta glass between the ribs and a purpur floor; and in the skull the
+//     Astral Glass windows and lit with End Rods; four towers rising from the vertebrae; the ribcage closed
+//     into a cathedral with Astral Glass between the ribs and a purpur floor; and in the skull the
 //     reliquary - a floor broken by gaps into the void, four End Chimes pylons, the egg pedestal, and
 //     the Curator, dormant;
 //   - its garrison: shulkers on the towers, Void Wanderers in the hall, Hollowbacks in the cathedral.
@@ -211,7 +211,7 @@ public class LeviathanPiece extends StructurePiece {
                 return bone;
             }
             if (Math.abs(d - RIB_R) <= 0.6 && w >= RIB_FROM && w <= RIB_TO) {
-                return Blocks.MAGENTA_STAINED_GLASS.defaultBlockState();
+                return ModBlocks.ASTRAL_GLASS.get().defaultBlockState();
             }
             if (d < RIB_R - 0.6 && w > RIB_FROM && w < RIB_TO) {
                 double floor = sv - 20;
@@ -224,7 +224,7 @@ public class LeviathanPiece extends StructurePiece {
         return null;
     }
 
-    // The hall: a purpur floor, End Stone brick walls with violet windows, a purpur roof hung with End Rods.
+    // The hall: a purpur floor, End Stone brick walls with Astral Glass windows, a purpur roof hung with End Rods.
     private BlockState hallAt(double u, double h, double w) {
         int iw = Mth.floor(w);
         if (h < 6) {
@@ -235,7 +235,7 @@ public class LeviathanPiece extends StructurePiece {
         }
         if (Math.abs(u) > 3.5) {
             boolean window = Math.floorMod(iw, 6) >= 2 && Math.floorMod(iw, 6) <= 3 && h >= 7 && h < 9;
-            return window ? Blocks.PURPLE_STAINED_GLASS.defaultBlockState() : Blocks.END_STONE_BRICKS.defaultBlockState();
+            return window ? ModBlocks.ASTRAL_GLASS.get().defaultBlockState() : Blocks.END_STONE_BRICKS.defaultBlockState();
         }
         return Blocks.AIR.defaultBlockState();
     }
@@ -258,7 +258,7 @@ public class LeviathanPiece extends StructurePiece {
             if (door) {
                 return Blocks.AIR.defaultBlockState();
             }
-            return window ? Blocks.PURPLE_STAINED_GLASS.defaultBlockState() : Blocks.PURPUR_PILLAR.defaultBlockState();
+            return window ? ModBlocks.ASTRAL_GLASS.get().defaultBlockState() : Blocks.PURPUR_PILLAR.defaultBlockState();
         }
         boolean shaft = Math.abs(u - 2.6) < 0.9 && Math.abs(dw) < 0.9;   // the ladder's shaft, by the wall
         if (h < 6 || Math.floorMod(Mth.floor(h), 8) == 5 && h > 8 && !shaft) {
