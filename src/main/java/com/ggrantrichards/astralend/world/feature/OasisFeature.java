@@ -15,7 +15,8 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 // An oasis of the Nebula Fields: a pond of still water sunk into the Chorus Moss - an irregular
 // shape a few blocks across, shallow at the edges and deeper in the middle - with Shimmer Reeds and
 // Lumineshrooms crowding its banks and Starblooms among them. Only on flat ground: a pond needs a
-// level rim all the way round. (Within 7 blocks of its origin, inside the chunks a feature may touch.)
+// level rim all the way round. Sea pickles glow on the bed and lily pads float on top.
+// (Within 7 blocks of its origin, inside the chunks a feature may touch.)
 public record OasisFeature() implements Feature {
     public static final MapCodec<OasisFeature> CODEC = MapCodec.unit(OasisFeature::new);
 
@@ -64,6 +65,15 @@ public record OasisFeature() implements Feature {
                     Build.force(level, top.below(depth), bed);
                 } else if (random.nextInt(2) == 0) {
                     Build.force(level, top.below(depth), bed);
+                }
+                // Life in it: sea pickles glowing on the bed of the deep middle, lily pads on top.
+                if (depth >= 2 && random.nextInt(7) == 0) {
+                    Build.force(level, top.below(depth - 1), Blocks.SEA_PICKLE.defaultBlockState()
+                        .setValue(net.minecraft.world.level.block.SeaPickleBlock.PICKLES, 1 + random.nextInt(4))
+                        .setValue(net.minecraft.world.level.block.SeaPickleBlock.WATERLOGGED, true));
+                } else if (depth >= 2 && random.nextInt(10) == 0 && level.getBlockState(top.above()).isAir()) {
+                    Build.force(level, top.above(), Blocks.LILY_PAD.defaultBlockState());
+                    continue;
                 }
                 // Nothing left floating over the pond.
                 for (int up = 1; up <= 3; up++) {
