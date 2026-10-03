@@ -276,19 +276,6 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).instrument(NoteBlockInstrument.BASEDRUM)
             .requiresCorrectToolForDrops().strength(3.5F).sound(SoundType.LODESTONE).lightLevel(state -> 4));
 
-    // ---- Phase 10: the Chorus Thicket. Chorus trees of pale, glassy Chorus Wood, crowned with
-    // Chorus Bloom; Chorus Sprouts grow them back. ----
-    public static final WoodSet CHORUS = woodSet("chorus", "stalk", "wood", MapColor.COLOR_MAGENTA, MapColor.TERRACOTTA_WHITE,
-        SoundType.CHERRY_WOOD, BlockSetType.CHERRY, WoodType.CHERRY);
-    public static final RegistryObject<Block> CHORUS_BLOOM = register("chorus_bloom", p -> new TintedParticleLeavesBlock(0.01F, p),
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(0.2F).randomTicks().sound(SoundType.CHERRY_LEAVES)
-            .noOcclusion().lightLevel(state -> 3).isValidSpawn((state, level, pos, type) -> false).isSuffocating((state, level, pos) -> false)
-            .isViewBlocking((state, level, pos, aabb) -> false).pushReaction(PushReaction.POPPED)
-            .isRedstoneConductor((state, level, pos) -> false));
-    public static final RegistryObject<Block> CHORUS_SPROUT = register("chorus_sprout", com.ggrantrichards.astralend.block.ChorusSproutBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).noCollision().instabreak().sound(SoundType.CHERRY_SAPLING)
-            .pushReaction(PushReaction.POPPED).randomTicks());
-
     // ---- Phase 10: the Glimmering Crags. Teal crystal grown through the Nightstone peaks. ----
     public static final RegistryObject<Block> GLIMMER_CRYSTAL = register("glimmer_crystal", Block::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).strength(1.5F).sound(SoundType.AMETHYST)
@@ -312,12 +299,18 @@ public final class ModBlocks {
 
     // ================================================================ Phase 3.5: the biome worlds
 
-    // ---- Nebula Fields: giant Lumineshrooms and their wood (like the Nether's huge fungi) ----
+    // ---- Giant Lumineshrooms (like the Nether's huge fungi) ----
     public static final RegistryObject<Block> LUMINE_CAP = register("lumine_cap", Block::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).instrument(NoteBlockInstrument.BASS).strength(1.0F)
             .sound(SoundType.SHROOMLIGHT).lightLevel(state -> 12));
-    public static final WoodSet LUMINE = woodSet("lumine", "stem", "hyphae", MapColor.COLOR_LIGHT_BLUE, MapColor.COLOR_PURPLE,
-        SoundType.STEM, BlockSetType.CRIMSON, WoodType.CRIMSON);
+    // Their stems, like vanilla's huge mushrooms: a stem and its all-bark hyphae, but no planks (the
+    // distillation: Nullwood is the End's one wood).
+    public static final RegistryObject<Block> LUMINE_STEM = register("lumine_stem", RotatedPillarBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).instrument(NoteBlockInstrument.BASS).strength(2.0F)
+            .sound(SoundType.STEM));
+    public static final RegistryObject<Block> LUMINE_HYPHAE = register("lumine_hyphae", RotatedPillarBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).instrument(NoteBlockInstrument.BASS).strength(2.0F)
+            .sound(SoundType.STEM));
     public static final RegistryObject<Block> NEBULA_TUFTS = register("nebula_tufts",
         p -> new EndPlantBlock(Block.column(12.0, 0.0, 10.0), ASTRAL_SOIL, p),
         () -> plant(MapColor.COLOR_PURPLE, SoundType.GRASS).replaceable().offsetType(BlockBehaviour.OffsetType.XZ));

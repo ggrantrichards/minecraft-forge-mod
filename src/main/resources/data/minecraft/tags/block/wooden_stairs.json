@@ -1,8 +1,6 @@
 {
   "replace": false,
   "values": [
-    "astralend:chorus_stairs",
-    "astralend:lumine_stairs",
     "astralend:nullwood_stairs"
   ]
 }

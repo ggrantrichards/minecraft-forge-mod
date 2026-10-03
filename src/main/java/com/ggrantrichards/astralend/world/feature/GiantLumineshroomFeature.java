@@ -39,7 +39,7 @@ public record GiantLumineshroomFeature() implements Feature {
         if (!Build.clear(level, origin, height + 3)) {
             return false;
         }
-        BlockState stem = ModBlocks.LUMINE.log().get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, Direction.Axis.Y);
+        BlockState stem = ModBlocks.LUMINE_STEM.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, Direction.Axis.Y);
         int size = thick ? 2 : 1;
         for (int y = 0; y < height; y++) {
             for (int dx = 0; dx < size; dx++) {

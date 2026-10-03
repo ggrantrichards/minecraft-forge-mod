@@ -15,8 +15,6 @@ BLOCKS = [  # (name, top texture, side texture, where, vanilla kin)
     ("Pale End Stone", "pale_end_stone", "pale_end_stone", "Ashen Barrens", "end stone"),
     ("Charred End Stone", "charred_end_stone", "charred_end_stone", "Comet Wake, the Corona", "end stone, scorched"),
     ("Sunscorched Stone", "sunscorched_stone", "sunscorched_stone", "The Corona", "sandstone"),
-    ("Chorus Stalk", "chorus_stalk_top", "chorus_stalk", "Chorus Thicket", "cherry / mangrove log"),
-    ("Chorus Bloom", "chorus_bloom", "chorus_bloom", "Chorus Thicket", "cherry leaves"),
     ("Lumine Cap", "lumine_cap", "lumine_cap", "Nebula Fields", "shroomlight"),
     ("Glimmer Crystal", "glimmer_crystal", "glimmer_crystal", "Glimmering Crags, Resonant Spires", "amethyst block"),
     ("Leviathan Bone", "leviathan_bone_top", "leviathan_bone_side", "The Whalefall", "bone block"),

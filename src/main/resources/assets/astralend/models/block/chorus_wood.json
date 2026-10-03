@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_column",
-  "textures": {
-    "end": "astralend:block/chorus_stalk",
-    "side": "astralend:block/chorus_stalk"
-  }
-}

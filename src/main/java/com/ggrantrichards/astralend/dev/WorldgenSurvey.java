@@ -1007,7 +1007,7 @@ public final class WorldgenSurvey {
             return;
         }
         landCoverage(area, 45, failures);
-        atLeast(area, ModBlocks.LUMINE.log().get(), 2, failures);       // giant Lumineshroom stems
+        atLeast(area, ModBlocks.LUMINE_STEM.get(), 2, failures);       // giant Lumineshroom stemss
         atLeast(area, ModBlocks.LUMINE_CAP.get(), 8, failures);
         atLeast(area, ModBlocks.NEBULA_TUFTS.get(), 20, failures);
         atLeast(area, ModBlocks.NEBULA_TENDRIL.get(), 1, failures);
@@ -1056,21 +1056,18 @@ public final class WorldgenSurvey {
         }
     }
 
-    // Phase 10: chorus trees over Chorus Moss, and vanilla chorus between them.
+    // The distillation: tangled thickets of vanilla chorus over Chorus Moss, in groves with clearings.
     private static void checkThicket(Area area, List<String> failures) {
         if (!enoughLand(area, failures)) {
             return;
         }
-        atLeast(area, ModBlocks.CHORUS.log().get(), 6, failures);
-        atLeast(area, ModBlocks.CHORUS_BLOOM.get(), 20, failures);
-        atLeast(area, Blocks.CHORUS_PLANT, 1, failures);
+        atLeast(area, Blocks.CHORUS_PLANT, 20, failures);
         atLeast(area, ModBlocks.CHORUS_MOSS.get(), 40, failures);
-        // Groves, not a carpet: between a quarter and two thirds of the ground under a canopy.
-        int canopy = area.firsts(ModBlocks.CHORUS_BLOOM.get()) + area.firsts(ModBlocks.CHORUS.log().get());
-        double share = 100.0 * canopy / Math.max(1, area.landColumnsIn);
-        log(String.format("Chorus Thicket: %.0f%% of its land under trees", share));
-        if (share < 20 || share > 66) {
-            failures.add(String.format("Chorus Thicket: %.0f%% of its land is under trees (expected groves and clearings, 20-66%%)", share));
+        int tangle = area.firsts(Blocks.CHORUS_PLANT) + area.firsts(Blocks.CHORUS_FLOWER);
+        double share = 100.0 * tangle / Math.max(1, area.landColumnsIn);
+        log(String.format("Chorus Tangle: %.0f%% of its land under chorus", share));
+        if (share < 8 || share > 66) {
+            failures.add(String.format("Chorus Tangle: %.0f%% of its land is under chorus (expected thickets and clearings, 8-66%%)", share));
         }
     }
 

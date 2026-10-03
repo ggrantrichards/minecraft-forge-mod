@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
-// Right-clicking the mod's logs, stems, wood and hyphae with an axe strips them, like vanilla's.
+// Right-clicking Nullwood logs and wood with an axe strips them, like vanilla's.
 public final class WoodStripping {
     private static Map<Block, Block> stripped;
 
@@ -28,12 +28,8 @@ public final class WoodStripping {
     private static Map<Block, Block> table() {
         if (stripped == null) {
             stripped = Map.of(
-                ModBlocks.LUMINE.log().get(), ModBlocks.LUMINE.strippedLog().get(),
-                ModBlocks.LUMINE.wood().get(), ModBlocks.LUMINE.strippedWood().get(),
                 ModBlocks.NULLWOOD.log().get(), ModBlocks.NULLWOOD.strippedLog().get(),
-                ModBlocks.NULLWOOD.wood().get(), ModBlocks.NULLWOOD.strippedWood().get(),
-                ModBlocks.CHORUS.log().get(), ModBlocks.CHORUS.strippedLog().get(),
-                ModBlocks.CHORUS.wood().get(), ModBlocks.CHORUS.strippedWood().get());
+                ModBlocks.NULLWOOD.wood().get(), ModBlocks.NULLWOOD.strippedWood().get());
         }
         return stripped;
     }

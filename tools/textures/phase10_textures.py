@@ -255,17 +255,6 @@ def end_chimes():
 
 
 TEXTURES += [
-    ("block/chorus_stalk.png", chorus_stalk),
-    ("block/chorus_stalk_top.png", chorus_stalk_top),
-    ("block/stripped_chorus_stalk.png", stripped_chorus_stalk),
-    ("block/stripped_chorus_stalk_top.png", stripped_chorus_stalk_top),
-    ("block/chorus_planks.png", chorus_planks),
-    ("block/chorus_bloom.png", chorus_bloom),
-    ("block/chorus_door_top.png", lambda: _door(1)),
-    ("block/chorus_door_bottom.png", lambda: _door(0)),
-    ("item/chorus_door.png", chorus_door_item),
-    ("block/chorus_trapdoor.png", chorus_trapdoor),
-    ("block/chorus_sprout.png", chorus_sprout),
     ("block/glimmer_crystal.png", glimmer_crystal),
     ("block/glimmer_cluster.png", glimmer_cluster),
     ("block/voidgel.png", voidgel),

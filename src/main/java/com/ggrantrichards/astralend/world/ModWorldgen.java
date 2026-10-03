@@ -43,7 +43,6 @@ public final class ModWorldgen {
         FEATURE_TYPES.register("crater", () -> CraterFeature.CODEC);
         FEATURE_TYPES.register("petrified_stalk", () -> PetrifiedStalkFeature.CODEC);
         // Phase 10
-        FEATURE_TYPES.register("chorus_tree", () -> com.ggrantrichards.astralend.world.feature.ChorusTreeFeature.CODEC);
         FEATURE_TYPES.register("glimmer_spire", () -> com.ggrantrichards.astralend.world.feature.GlimmerSpireFeature.CODEC);
         // Phase 11
         FEATURE_TYPES.register("solarite_spire", () -> com.ggrantrichards.astralend.world.feature.SolariteSpireFeature.CODEC);

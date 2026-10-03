@@ -281,7 +281,7 @@ public class WhalefallPiece extends StructurePiece {
 
     private void hut(WorldGenLevel level, BoundingBox chunk, RandomSource rnd, int cu, int v, int cw) {
         BlockState wall = ModBlocks.PALE_END_STONE_BRICKS.get().defaultBlockState();
-        BlockState roof = ModBlocks.CHORUS.planks().get().defaultBlockState();
+        BlockState roof = ModBlocks.NULLWOOD.planks().get().defaultBlockState();
         for (int u = -3; u <= 3; u++) {
             for (int w = -3; w <= 3; w++) {
                 for (int h = 0; h <= 5; h++) {

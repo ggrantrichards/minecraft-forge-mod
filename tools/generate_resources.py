@@ -70,7 +70,7 @@ CROSS_PLANTS = [
     ("lumineshroom", "Lumineshroom"), ("starbloom", "Starbloom"),
     ("shimmer_grass", "Shimmer Grass"), ("ashen_lumineshroom", "Ashen Lumineshroom"),
     ("petrified_astral_vine", "Petrified Astral Vine"),
-    ("nebula_tufts", "Nebula Tufts"), ("nullwood_sapling", "Nullwood Sapling"), ("chorus_sprout", "Chorus Sprout"),
+    ("nebula_tufts", "Nebula Tufts"), ("nullwood_sapling", "Nullwood Sapling")
 ]
 ITEMS = [
     ("void_crystal", "Void Crystal"),
@@ -298,10 +298,9 @@ def stone_family(base, english, texture=None, with_wall=True, stem=None, tool="p
 #
 # (name, log word, wood word, English name, English log, English wood). Mushroom wood uses "stem" and
 # "hyphae", like vanilla's crimson and warped wood. Must match the woodSet(...) calls in ModBlocks.java.
+# The End's one wood (the distillation cut the Chorus and Lumine sets).
 WOOD_SETS = [
-    ("lumine", "stem", "hyphae", "Lumine", "Lumine Stem", "Lumine Hyphae"),
     ("nullwood", "log", "wood", "Nullwood", "Nullwood Log", "Nullwood"),
-    ("chorus", "stalk", "wood", "Chorus", "Chorus Stalk", "Chorus Wood"),
 ]
 
 FACING_Y = {"north": 0, "east": 90, "south": 180, "west": 270}
@@ -1064,21 +1063,17 @@ def worldgen_phase3():
               particle="minecraft:white_ash", particle_chance=0.03)
 
 
-    # ---- Chorus Thicket (Phase 10): the Nebula Fields' sister. Chorus trees crowded on Chorus Moss,
-    # vanilla chorus between them, and the Endermen who eat it.
-    # Dense groves of chorus trees with clearings between them (a lone tree now and then).
-    big_feature("chorus_thicket_trees", "chorus_tree", groves=(0.15, 0, 7))
-    big_feature("chorus_thicket_lone_trees", "chorus_tree", rarity=3)
-    plant_patch("chorus_thicket_sprouts", "chorus_sprout", rarity=3, count=6, spread=5)
+    # ---- Chorus Thicket (the distillation's Chorus Tangle): tangled thickets of vanilla chorus on Chorus
+    # Moss, in groves with clearings between - hard to cross, easy to fall from. No trees: the Hollow
+    # Isles' Nullwood is the End's only forest.
     plant_patch("chorus_thicket_starblooms", "starbloom", rarity=2, count=16, spread=6)
     ground_cover("chorus_thicket_carpet", "chorus_moss_carpet", 20, on=[rid("chorus_moss")])
     placed("chorus_thicket_chorus", {"feature": "minecraft:chorus_plant", "placement": [
-        {"type": "minecraft:count", "count": {"type": "minecraft:uniform", "min_inclusive": 2, "max_inclusive": 6}},
+        {"type": "minecraft:noise_threshold_count", "noise_level": 0.1, "below_noise": 1, "above_noise": 14},
         {"type": "minecraft:in_square"}, {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"},
         {"type": "minecraft:biome"}]})
-    end_biome("chorus_thicket", "Chorus Thicket", fog="#3a1c3e", water="#c06ad0",
-              features_step9=[rid("chorus_thicket_trees"), rid("chorus_thicket_lone_trees"), rid("chorus_thicket_chorus"), rid("chorus_thicket_sprouts"),
-                              rid("chorus_thicket_starblooms"), rid("chorus_thicket_carpet")],
+    end_biome("chorus_thicket", "Chorus Tangle", fog="#3a1c3e", water="#c06ad0",
+              features_step9=[rid("chorus_thicket_chorus"), rid("chorus_thicket_starblooms"), rid("chorus_thicket_carpet")],
               particle="minecraft:portal", particle_chance=0.006)
 
     # ---- Glimmering Crags (Phase 10): jagged Nightstone peaks grown through with teal Glimmer Crystal.
@@ -1790,34 +1785,6 @@ def mechanics_phase10():
 def content_phase10():
     """Phase 10, batch C: the Chorus Thicket's wood and bloom, the Glimmering Crags' crystal, Voidgel
     and End Chimes. (The wood set itself is in WOOD_SETS.)"""
-    # Chorus Bloom: leaves. Shears or Silk Touch keep them; otherwise Chorus Sprouts, sticks and now
-    # and then a Chorus Fruit.
-    blockstate("chorus_bloom", {"variants": {"": {"model": rid("block/chorus_bloom")}}})
-    block_model("chorus_bloom", {"parent": "minecraft:block/leaves", "textures": {"all": rid("block/chorus_bloom")}})
-    item_def("chorus_bloom", rid("block/chorus_bloom"))
-    lang[f"block.{NS}.chorus_bloom"] = "Chorus Bloom"
-    keep = {"type": "minecraft:any_of", "terms": ["minecraft:tool/can_shear", "minecraft:tool/can_silk_touch"]}
-    loot("chorus_bloom", [
-        {"entries": [{"type": "minecraft:alternatives", "children": [
-            {"type": "minecraft:item", "condition": keep, "name": rid("chorus_bloom")},
-            {"type": "minecraft:item", "condition": {"type": "minecraft:all_of", "terms": [
-                {"type": "minecraft:survives_explosion"},
-                {"type": "minecraft:table_bonus", "chances": [0.05, 0.0625, 0.083333336, 0.1], "enchantment": "minecraft:fortune"}]},
-             "name": rid("chorus_sprout")}]}], "rolls": 1},
-        {"condition": {"type": "minecraft:inverted", "term": keep}, "entries": [{
-            "type": "minecraft:item",
-            "condition": {"type": "minecraft:table_bonus", "chances": [0.03, 0.04, 0.05, 0.08], "enchantment": "minecraft:fortune"},
-            "name": "minecraft:chorus_fruit"}], "rolls": 1},
-    ])
-    drop_self("chorus_sprout")
-    for kind in ("block", "item"):
-        tag(kind, "minecraft:leaves", rid("chorus_bloom"))
-        tag(kind, "minecraft:saplings", rid("chorus_sprout"))
-        for log in ("chorus_stalk", "chorus_wood", "stripped_chorus_stalk", "stripped_chorus_wood"):
-            tag(kind, f"{NS}:chorus_logs", rid(log))
-        tag(kind, "minecraft:logs_that_burn", f"#{NS}:chorus_logs")
-    tag("block", "minecraft:mineable/hoe", rid("chorus_bloom"))
-
     # Glimmer Crystal and Glimmer Clusters (they point the way they grow, like amethyst clusters).
     cube("glimmer_crystal")
     lang[f"block.{NS}.glimmer_crystal"] = "Glimmer Crystal"
@@ -2038,6 +2005,20 @@ def main():
 
     for spec in WOOD_SETS:
         wood_set(*spec)
+    # Giant Lumineshroom stems: a stem and its all-bark hyphae, like vanilla's mushroom stems.
+    for name, english, end in (("lumine_stem", "Lumine Stem", "lumine_stem_top"), ("lumine_hyphae", "Lumine Hyphae", "lumine_stem")):
+        blockstate(name, {"variants": {
+            "axis=x": {"model": rid(f"block/{name}"), "x": 90, "y": 90},
+            "axis=y": {"model": rid(f"block/{name}")},
+            "axis=z": {"model": rid(f"block/{name}"), "x": 90},
+        }})
+        block_model(name, {"parent": "minecraft:block/cube_column",
+                           "textures": {"end": rid(f"block/{end}"), "side": rid("block/lumine_stem")}})
+        item_def(name, rid(f"block/{name}"))
+        lang[f"block.{NS}.{name}"] = english
+        drop_self(name)
+        tag("block", "minecraft:mineable/axe", rid(name))
+    shaped("lumine_hyphae", "lumine_hyphae", ["SS", "SS"], {"S": rid("lumine_stem")}, count=3, category="building")
 
     for name, english in CROSS_PLANTS:
         cross_plant(name)
@@ -2241,7 +2222,7 @@ def main():
     not_solid = {"lumineshroom", "starbloom", "astral_vine", "astral_vine_plant", "comet_cress", "shimmer_grass",
                  "flarebloom", "sunscale_lichen", "ashen_lumineshroom", "petrified_astral_vine", "nebula_tufts",
                  "nebula_tendril", "nebula_tendril_plant", "nullwood_leaves", "nullwood_sapling", "shimmer_reed",
-                 "null_lantern", "chorus_bloom", "chorus_sprout", "glimmer_cluster", "end_chimes"}
+                 "null_lantern", "glimmer_cluster", "end_chimes"}
     solid = sorted(set(re.findall(r'\b(?:register|registerNoItem|stairs|slab|wall)\("([a-z0-9_]+)"',
                                   (ROOT / "src/main/java/com/ggrantrichards/astralend/ModBlocks.java").read_text()))
                    - not_solid - {"name"})
