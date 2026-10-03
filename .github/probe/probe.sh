@@ -1,13 +1,31 @@
 #!/usr/bin/env bash
 set +e
 exec > >(tee /tmp/probe.txt) 2>&1
-SRC=$(find .gradle/mavenizer/repo -name '*-sources.jar' -size +1M | head -1)
-mkdir -p /tmp/src && unzip -qo "$SRC" -d /tmp/src && cd /tmp/src
-F=net/minecraft/world/level/levelgen/structure/StructurePiece.java
-grep -n "protected StructurePiece(\|public abstract\|protected abstract\|public void postProcess\|abstract void postProcess\|placeBlock(\|getBlock(\|createChest\|protected final void addAdditionalSaveData\|getBoundingBox()" $F | head -30
-cat net/minecraft/world/level/levelgen/structure/pieces/StructurePieceType.java | head -60 | grep -n "interface\|Context\|load\|StructurePieceType "
-F=$(find . -name EndCityStructure.java | head -1); sed -n 1,80p $F | grep -n "findGenerationPoint\|GenerationStub\|generatePieces\|StructurePiecesBuilder\|addPiece"
-F=$(find . -name ScatteredFeaturePiece.java | head -1); sed -n 1,80p $F
-grep -n "STRUCTURE_PIECE" net/minecraft/core/registries/Registries.java
-F=$(find . -name StructurePieceSerializationContext.java | head -1); grep -n "record\|public" $F | head -5
+mkdir -p /tmp/music && cd /tmp/music
+for page in space-music-out-there outer-space-loop heavenly-loop ambient-relaxing-loop cc0-space-music space-music-2 loopable-dungeon-ambience; do
+  echo "===== $page"
+  curl -sL "https://opengameart.org/content/$page" -o "$page.html"
+  python3 - "$page.html" <<'PY'
+import re, sys, html
+t = open(sys.argv[1], encoding="utf-8", errors="replace").read()
+title = re.search(r"<title>(.*?)</title>", t, re.S)
+print("TITLE:", html.unescape(title.group(1)).strip() if title else "?")
+a = re.search(r'field-name-author-submitter.*?<a[^>]*>(.*?)</a>', t, re.S)
+print("SUBMITTER:", html.unescape(a.group(1)).strip() if a else "?")
+for m in re.findall(r'field-name-field-art-licenses.*?</div>\s*</div>\s*</div>', t, re.S)[:1]:
+    print("LICENSES:", sorted(set(re.findall(r'title="([^"]+)"', m))))
+body = re.search(r'field-name-body.*?<div class="field-item[^"]*">(.*?)</div>', t, re.S)
+if body:
+    txt = re.sub(r"<[^>]+>", " ", body.group(1))
+    print("BODY:", " ".join(html.unescape(txt).split())[:700])
+for f in sorted(set(re.findall(r'https://opengameart\.org/sites/default/files/[^"\']+\.(?:ogg|mp3|wav|flac)', t))):
+    print("FILE:", f)
+PY
+done
+mkdir -p files
+for f in $(grep -h -o 'https://opengameart\.org/sites/default/files/[^"'"'"']*\.ogg' *.html | sort -u | head -12); do
+  curl -sL "$f" -o "files/$(basename "$f")"
+done
+ls -la files
+cd "$GITHUB_WORKSPACE"
 exit 0
