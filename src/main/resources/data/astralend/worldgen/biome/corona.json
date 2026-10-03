@@ -4,18 +4,12 @@
       "argument": {
         "spawn_costs": {},
         "spawns_by_category": {
-          "monster": [
-            {
-              "type": "astralend:cinder_mite",
-              "count": 4,
-              "weight": 8
-            }
-          ],
+          "monster": [],
           "creature": [
             {
-              "type": "astralend:void_ray",
+              "type": "astralend:pollinator",
               "count": 3,
-              "weight": 10
+              "weight": 12
             }
           ]
         }

@@ -38,7 +38,6 @@ public final class ModItems {
     public static final RegistryObject<Item> ABYSS_SHARD = simple("abyss_shard");
     public static final RegistryObject<Item> UMBRAL_MEMBRANE = simple("umbral_membrane");
     public static final RegistryObject<Item> RAY_FILM = simple("ray_film");
-    public static final RegistryObject<Item> CINDER = simple("cinder");
     // Phase 5: Sunstorms
     public static final RegistryObject<Item> FLARE_POLLEN = simple("flare_pollen");
     public static final RegistryObject<Item> CHARGED_VOID_CRYSTAL = register("charged_void_crystal", Item::new,
@@ -76,7 +75,6 @@ public final class ModItems {
     public static final RegistryObject<Item> PORTAL_LENS = register("portal_lens", Item::new,
         new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON));
     // Phase 7: caught from a live comet's tail.
-    public static final RegistryObject<Item> STARDUST_MOTE = simple("stardust_mote");
     public static final RegistryObject<Item> TEMPORAL_CRYSTAL = register("temporal_crystal", Item::new,
         new Item.Properties().rarity(net.minecraft.world.item.Rarity.RARE));
 
@@ -105,12 +103,9 @@ public final class ModItems {
     public static final RegistryObject<Item> POLLINATOR_SPAWN_EGG = spawnEgg("pollinator", ModEntities.POLLINATOR);
     public static final RegistryObject<Item> VOID_WANDERER_SPAWN_EGG = spawnEgg("void_wanderer", ModEntities.VOID_WANDERER);
     public static final RegistryObject<Item> UMBRAL_STALKER_SPAWN_EGG = spawnEgg("umbral_stalker", ModEntities.UMBRAL_STALKER);
-    public static final RegistryObject<Item> CINDER_MITE_SPAWN_EGG = spawnEgg("cinder_mite", ModEntities.CINDER_MITE);
     public static final RegistryObject<Item> VOID_RAY_SPAWN_EGG = spawnEgg("void_ray", ModEntities.VOID_RAY);
-    public static final RegistryObject<Item> HOLLOW_SPAWN_EGG = spawnEgg("hollow", ModEntities.HOLLOW);
     public static final RegistryObject<Item> DRIFT_WHALE_SPAWN_EGG = spawnEgg("drift_whale", ModEntities.DRIFT_WHALE);
     public static final RegistryObject<Item> WATCHER_SPAWN_EGG = spawnEgg("watcher", ModEntities.WATCHER);
-    public static final RegistryObject<Item> LIVE_COMET_SPAWN_EGG = spawnEgg("live_comet", ModEntities.LIVE_COMET);
     public static final RegistryObject<Item> SPIRE_WYRM_SPAWN_EGG = spawnEgg("spire_wyrm", ModEntities.SPIRE_WYRM);
 
     private static net.minecraft.tags.TagKey<net.minecraft.world.level.block.entity.BannerPattern> patternTag(String name) {

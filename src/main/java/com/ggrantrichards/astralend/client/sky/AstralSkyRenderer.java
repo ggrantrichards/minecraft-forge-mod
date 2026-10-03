@@ -49,7 +49,7 @@ import org.joml.Vector4f;
 //   - a starfield in two layers: one fixed, one turning so slowly (once in 40 minutes) you only notice
 //     after a while;
 //   - auroras: slow curtains of light, strongest over the Ashen Barrens (green and gold), faint violet
-//     over the Nebula Fields, icy over the Comet Wake; none in the Hollow Isles;
+//     over the Nebula Fields; none in the Hollow Isles;
 //   - the Remnant, the cinder of the collapsed star, hanging over the nearest Corona (the server tells us
 //     where; it's a real structure, and close up the real one takes over). It brightens before a
 //     Sunstorm and blazes during one;
@@ -158,8 +158,6 @@ public class AstralSkyRenderer extends SkyRenderer {
             set(t, 0.45F, 0.95F, 0.5F, 1.0F, 1.0F, 0.75F, 0.95F);
         } else if (biome.is(ModBiomes.GLIMMERING_CRAGS)) {
             set(t, 0.7F, 0.25F, 1.0F, 0.85F, 0.5F, 1.0F, 0.9F);
-        } else if (biome.is(ModBiomes.COMET_WAKE)) {
-            set(t, 0.4F, 0.55F, 0.9F, 1.0F, 0.8F, 0.95F, 1.0F);
         } else if (biome.is(ModBiomes.HOLLOW_ISLES) || biome.is(ModBiomes.CORONA)) {
             set(t, 0.0F, 0.12F, 0.65F, 0.5F, 1.0F, 0.5F, 0.8F);
         } else {

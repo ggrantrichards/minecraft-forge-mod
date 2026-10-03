@@ -24,11 +24,7 @@ public final class FlareCommand {
                             }
                             return builder.buildFuture();
                         })
-                        .executes(context -> set(context.getSource(), StringArgumentType.getString(context, "phase")))))
-                // Phase 7: call a live comet past you (or down onto an island near you).
-                .then(Commands.literal("comet")
-                    .executes(context -> comet(context.getSource(), false))
-                    .then(Commands.literal("landfall").executes(context -> comet(context.getSource(), true))))));
+                        .executes(context -> set(context.getSource(), StringArgumentType.getString(context, "phase")))))));
     }
 
     private static ServerLevel end(CommandSourceStack source) {
@@ -59,21 +55,6 @@ public final class FlareCommand {
         }
         Sunstorms.get(end).setPhase(end, phase, end.getRandom());
         source.sendSuccess(() -> Component.literal("Sunstorms: now " + name.toLowerCase(Locale.ROOT)), true);
-        return 1;
-    }
-
-    private static int comet(CommandSourceStack source, boolean landfall) {
-        ServerLevel end = end(source);
-        if (end == null || source.getLevel() != end) {
-            source.sendFailure(Component.literal("Comets only fly in the End."));
-            return 0;
-        }
-        var comet = com.ggrantrichards.astralend.comet.CometShowers.send(end, source.getPosition(), end.getRandom(), landfall);
-        if (comet == null) {
-            source.sendFailure(Component.literal("No comet could be sent."));
-            return 0;
-        }
-        source.sendSuccess(() -> Component.literal(comet.isLandfall() ? "A comet is coming down nearby." : "A comet is passing by."), true);
         return 1;
     }
 

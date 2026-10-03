@@ -2,7 +2,6 @@ package com.ggrantrichards.astralend.world;
 
 import com.ggrantrichards.astralend.AstralEnd;
 import com.ggrantrichards.astralend.ModItems;
-import com.ggrantrichards.astralend.entity.Hollow;
 import com.ggrantrichards.astralend.entity.DriftWhale;
 import com.ggrantrichards.astralend.entity.ModEntities;
 import com.ggrantrichards.astralend.entity.Watcher;
@@ -27,12 +26,11 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.minecraftforge.fml.LogicalSide;
 
-// Places the three mobs that must never crowd a player: the Drift Whale, the Watcher and the
-// Hollow. Biome spawn lists can't promise "at most one near you", so these are placed
-// here instead, checked for each player in the End a few times a minute.
+// Places the mobs that must never crowd a player: the Drift Whale and the Watcher. Biome spawn
+// lists can't promise "at most one near you", so these are placed here instead, checked for each
+// player in the End a few times a minute.
 //
-// Also: Cinder (from Cinder Mites) burns in a furnace for as long as it takes to smelt 4 items, and
-// a Bottled Flare for 120.
+// Also: a Bottled Flare burns in a furnace for as long as it takes to smelt 120 items.
 public final class MobSpawning {
     private static final int CHECK_EVERY = 200;  // ticks
     public static final ResourceKey<Structure> OBSERVATORY = ResourceKey.create(Registries.STRUCTURE,
@@ -41,9 +39,7 @@ public final class MobSpawning {
     public static void register() {
         TickEvent.LevelTickEvent.Post.BUS.addListener(MobSpawning::onLevelTick);
         FurnaceFuelBurnTimeEvent.BUS.addListener(event -> {
-            if (event.getItemStack().is(ModItems.CINDER.get())) {
-                event.setBurnTime(800);
-            } else if (event.getItemStack().is(ModItems.BOTTLED_FLARE.get())) {
+            if (event.getItemStack().is(ModItems.BOTTLED_FLARE.get())) {
                 event.setBurnTime(24000);   // a captured Sunstorm: 120 items, more than a lava bucket
             }
         });
@@ -69,11 +65,6 @@ public final class MobSpawning {
             if (random.nextInt(12) == 0 && isOuterEnd(player) && none(level, player, Watcher.class, 256)
                 && level.players().stream().noneMatch(other -> other != player && other.distanceToSqr(player) < 96.0 * 96.0)) {
                 spawnWatcher(level, player, random);
-            }
-            // the Hollow: in the Hollow Isles and Comet Wake, one at a time.
-            if ((biome.is(ModBiomes.HOLLOW_ISLES) || biome.is(ModBiomes.COMET_WAKE)) && random.nextInt(9) == 0
-                && none(level, player, Hollow.class, 96)) {
-                spawnGuardian(level, player, random);
             }
         }
     }
@@ -112,19 +103,6 @@ public final class MobSpawning {
                 continue;
             }
             if (trySpawn(level, ModEntities.WATCHER.get(), x + 0.5, y, z + 0.5)) {
-                return;
-            }
-        }
-    }
-
-    private static void spawnGuardian(ServerLevel level, ServerPlayer player, RandomSource random) {
-        for (int attempt = 0; attempt < 8; attempt++) {
-            double angle = random.nextDouble() * Math.PI * 2;
-            double distance = 14.0 + random.nextDouble() * 12.0;
-            double x = player.getX() + Math.cos(angle) * distance;
-            double z = player.getZ() + Math.sin(angle) * distance;
-            double y = player.getY() + 2.0 + random.nextDouble() * 4.0;
-            if (trySpawn(level, ModEntities.HOLLOW.get(), x, y, z)) {
                 return;
             }
         }

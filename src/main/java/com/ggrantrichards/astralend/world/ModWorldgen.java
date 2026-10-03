@@ -2,7 +2,6 @@ package com.ggrantrichards.astralend.world;
 
 import com.ggrantrichards.astralend.AstralEnd;
 import com.ggrantrichards.astralend.world.feature.CometCoreFeature;
-import com.ggrantrichards.astralend.world.feature.CometIceSpireFeature;
 import com.ggrantrichards.astralend.world.feature.CraterFeature;
 import com.ggrantrichards.astralend.world.feature.GiantLumineshroomFeature;
 import com.ggrantrichards.astralend.world.feature.LeviathanRibcageFeature;
@@ -41,7 +40,6 @@ public final class ModWorldgen {
         FEATURE_TYPES.register("tendril_underside", () -> TendrilUndersideFeature.CODEC);
         FEATURE_TYPES.register("nullwood_tree", () -> NullwoodTreeFeature.CODEC);
         FEATURE_TYPES.register("leviathan_ribcage", () -> LeviathanRibcageFeature.CODEC);
-        FEATURE_TYPES.register("comet_ice_spire", () -> CometIceSpireFeature.CODEC);
         FEATURE_TYPES.register("crater", () -> CraterFeature.CODEC);
         FEATURE_TYPES.register("petrified_stalk", () -> PetrifiedStalkFeature.CODEC);
         // Phase 10

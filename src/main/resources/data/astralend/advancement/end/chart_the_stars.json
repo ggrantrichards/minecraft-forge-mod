@@ -44,20 +44,6 @@
         }
       }
     },
-    "comet_wake": {
-      "trigger": "minecraft:location",
-      "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "biomes": "astralend:comet_wake"
-            }
-          }
-        }
-      }
-    },
     "hollow_isles": {
       "trigger": "minecraft:location",
       "conditions": {
@@ -121,9 +107,6 @@
     ],
     [
       "ashen_barrens"
-    ],
-    [
-      "comet_wake"
     ],
     [
       "hollow_isles"

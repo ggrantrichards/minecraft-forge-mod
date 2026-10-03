@@ -36,7 +36,7 @@ public class StarChartItem extends Item {
     private static final List<String> STRUCTURES = List.of("comet_crater", "wanderer_relay", "whalefall",
         "shattered_observatory", "solar_array", "rift_maw", "constellation_maze");
     private static final List<ResourceKey<Biome>> DESTINATIONS = List.of(ModBiomes.NEBULA_FIELDS, ModBiomes.ASHEN_BARRENS,
-        ModBiomes.COMET_WAKE, ModBiomes.HOLLOW_ISLES, ModBiomes.CORONA, ModBiomes.CHORUS_THICKET, ModBiomes.GLIMMERING_CRAGS);
+        ModBiomes.HOLLOW_ISLES, ModBiomes.CORONA, ModBiomes.CHORUS_THICKET, ModBiomes.GLIMMERING_CRAGS);
 
     public StarChartItem(Item.Properties properties) {
         super(properties);

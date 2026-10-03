@@ -23,7 +23,7 @@ public record CraterFeature() implements Feature {
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
         BlockPos centre = origin.below();
-        if (!level.getBlockState(centre).is(ModBlocks.CHARRED_END_STONE.get())) {
+        if (!level.getBlockState(centre).is(ModBlocks.CHARRED_END_STONE.get()) && !level.getBlockState(centre).is(ModBlocks.PALE_END_STONE.get())) {
             return false;
         }
         int radius = 5 + random.nextInt(5);

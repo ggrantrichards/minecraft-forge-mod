@@ -18,7 +18,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 // The mobs of the End. Where each one spawns is in its biome's JSON (natural spawns), except the
-// Drift Whale, the Watcher and the Hollow, which MobSpawning places by hand so that
+// Drift Whale and the Watcher, which MobSpawning places by hand so that
 // there is never more than one near a player.
 public final class ModEntities {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, AstralEnd.MODID);
@@ -32,15 +32,9 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<UmbralStalker>> UMBRAL_STALKER = ENTITY_TYPES.register("umbral_stalker",
         () -> EntityType.Builder.of(UmbralStalker::new, MobCategory.MONSTER).sized(1.4F, 2.2F).eyeHeight(1.5F)
             .clientTrackingRange(8).build(ENTITY_TYPES.key("umbral_stalker")));
-    public static final RegistryObject<EntityType<CinderMite>> CINDER_MITE = ENTITY_TYPES.register("cinder_mite",
-        () -> EntityType.Builder.of(CinderMite::new, MobCategory.MONSTER).sized(0.6F, 0.35F).eyeHeight(0.2F).fireImmune()
-            .clientTrackingRange(8).build(ENTITY_TYPES.key("cinder_mite")));
     public static final RegistryObject<EntityType<VoidRay>> VOID_RAY = ENTITY_TYPES.register("void_ray",
         () -> EntityType.Builder.of(VoidRay::new, MobCategory.CREATURE).sized(1.3F, 0.35F).eyeHeight(0.2F).fireImmune()
             .clientTrackingRange(10).build(ENTITY_TYPES.key("void_ray")));
-    public static final RegistryObject<EntityType<Hollow>> HOLLOW = ENTITY_TYPES.register("hollow",
-        () -> EntityType.Builder.of(Hollow::new, MobCategory.MONSTER).sized(0.9F, 0.9F).eyeHeight(0.45F).fireImmune()
-            .clientTrackingRange(10).build(ENTITY_TYPES.key("hollow")));
     public static final RegistryObject<EntityType<DriftWhale>> DRIFT_WHALE = ENTITY_TYPES.register("drift_whale",
         () -> EntityType.Builder.of(DriftWhale::new, MobCategory.AMBIENT).sized(2.6F, 2.3F).eyeHeight(1.2F).fireImmune()
             .passengerAttachments(3.3F)    // the rider sits on its back (drawn 3.3 blocks up), not inside it
@@ -50,9 +44,6 @@ public final class ModEntities {
             .clientTrackingRange(16).build(ENTITY_TYPES.key("watcher")));
 
     // Phase 7: live comets. Seen from far off and moved every tick, so they're tracked far and often.
-    public static final RegistryObject<EntityType<com.ggrantrichards.astralend.comet.LiveComet>> LIVE_COMET = ENTITY_TYPES.register("live_comet",
-        () -> EntityType.Builder.of(com.ggrantrichards.astralend.comet.LiveComet::new, MobCategory.MISC).sized(2.2F, 2.2F).eyeHeight(1.1F)
-            .fireImmune().clientTrackingRange(16).updateInterval(1).build(ENTITY_TYPES.key("live_comet")));
 
     // Phase 10: the Spire Wyrm, mini-boss of the Resonant Spires. A long body, seen from far off.
     public static final RegistryObject<EntityType<SpireWyrm>> SPIRE_WYRM = ENTITY_TYPES.register("spire_wyrm",
@@ -64,12 +55,9 @@ public final class ModEntities {
             event.put(POLLINATOR.get(), EndPollinator.createAttributes().build());
             event.put(VOID_WANDERER.get(), VoidWanderer.createAttributes().build());
             event.put(UMBRAL_STALKER.get(), UmbralStalker.createAttributes().build());
-            event.put(CINDER_MITE.get(), CinderMite.createAttributes().build());
             event.put(VOID_RAY.get(), VoidRay.createAttributes().build());
-            event.put(HOLLOW.get(), Hollow.createAttributes().build());
             event.put(DRIFT_WHALE.get(), DriftWhale.createAttributes().build());
             event.put(WATCHER.get(), Watcher.createAttributes().build());
-            event.put(LIVE_COMET.get(), com.ggrantrichards.astralend.comet.LiveComet.createAttributes().build());
             event.put(SPIRE_WYRM.get(), SpireWyrm.createAttributes().build());
         });
         SpawnPlacementRegisterEvent.BUS.addListener(event -> {
@@ -78,7 +66,6 @@ public final class ModEntities {
             event.register(POLLINATOR.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::onAstralSoil, replace);
             event.register(VOID_WANDERER.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::onSolidGround, replace);
             event.register(UMBRAL_STALKER.get(), SpawnPlacementTypes.ON_GROUND, ground, Monster::checkMonsterSpawnRules, replace);
-            event.register(CINDER_MITE.get(), SpawnPlacementTypes.ON_GROUND, ground, CinderMite::checkCinderMiteSpawnRules, replace);
             event.register(VOID_RAY.get(), SpawnPlacementTypes.ON_GROUND, ground, VoidRay::checkVoidRaySpawnRules, replace);
         });
     }

@@ -180,7 +180,6 @@ BIOMES = {
     "nebula_fields": (loop_nebula, chime),
     "chorus_thicket": (loop_thicket, pop),
     "ashen_barrens": (loop_ashen, ash),
-    "comet_wake": (loop_comet, creak),
     "hollow_isles": (loop_hollow, moan),
     "corona": (loop_corona, fizz),
     "glimmering_crags": (loop_crags, chime),

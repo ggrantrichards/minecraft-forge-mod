@@ -114,31 +114,6 @@
       }
     ]
   },
-  "ambient.comet_wake.loop": {
-    "sounds": [
-      {
-        "name": "astralend:ambient/comet_wake/loop",
-        "stream": true,
-        "volume": 0.6
-      }
-    ]
-  },
-  "ambient.comet_wake.additions": {
-    "sounds": [
-      {
-        "name": "astralend:ambient/comet_wake/additions1",
-        "volume": 0.5
-      },
-      {
-        "name": "astralend:ambient/comet_wake/additions2",
-        "volume": 0.5
-      },
-      {
-        "name": "astralend:ambient/comet_wake/additions3",
-        "volume": 0.5
-      }
-    ]
-  },
   "ambient.hollow_isles.loop": {
     "sounds": [
       {

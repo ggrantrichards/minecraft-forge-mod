@@ -29,7 +29,6 @@ public class AstralEndBiomeSource extends BiomeSource {
                 RegistryOps.retrieveElement(Biomes.END_BARRENS),
                 RegistryOps.retrieveElement(ModBiomes.NEBULA_FIELDS),
                 RegistryOps.retrieveElement(ModBiomes.ASHEN_BARRENS),
-                RegistryOps.retrieveElement(ModBiomes.COMET_WAKE),
                 RegistryOps.retrieveElement(ModBiomes.HOLLOW_ISLES),
                 RegistryOps.retrieveElement(ModBiomes.CORONA),
                 RegistryOps.retrieveElement(ModBiomes.CHORUS_THICKET),
@@ -48,7 +47,6 @@ public class AstralEndBiomeSource extends BiomeSource {
     private final Holder<Biome> barrens;
     private final Holder<Biome> nebulaFields;
     private final Holder<Biome> ashenBarrens;
-    private final Holder<Biome> cometWake;
     private final Holder<Biome> hollowIsles;
     private final Holder<Biome> corona;
     private final Holder<Biome> chorusThicket;
@@ -56,7 +54,7 @@ public class AstralEndBiomeSource extends BiomeSource {
 
     private AstralEndBiomeSource(Holder<Biome> end, Holder<Biome> highlands, Holder<Biome> midlands,
                                  Holder<Biome> islands, Holder<Biome> barrens, Holder<Biome> nebulaFields,
-                                 Holder<Biome> ashenBarrens, Holder<Biome> cometWake, Holder<Biome> hollowIsles,
+                                 Holder<Biome> ashenBarrens, Holder<Biome> hollowIsles,
                                  Holder<Biome> corona, Holder<Biome> chorusThicket, Holder<Biome> glimmeringCrags) {
         this.end = end;
         this.highlands = highlands;
@@ -65,7 +63,6 @@ public class AstralEndBiomeSource extends BiomeSource {
         this.barrens = barrens;
         this.nebulaFields = nebulaFields;
         this.ashenBarrens = ashenBarrens;
-        this.cometWake = cometWake;
         this.hollowIsles = hollowIsles;
         this.corona = corona;
         this.chorusThicket = chorusThicket;
@@ -75,7 +72,7 @@ public class AstralEndBiomeSource extends BiomeSource {
     @Override
     protected Stream<Holder<Biome>> collectPossibleBiomes() {
         return Stream.of(this.end, this.highlands, this.midlands, this.islands, this.barrens, this.nebulaFields,
-            this.ashenBarrens, this.cometWake, this.hollowIsles, this.corona, this.chorusThicket,
+            this.ashenBarrens, this.hollowIsles, this.corona, this.chorusThicket,
             this.glimmeringCrags);
     }
 
@@ -106,7 +103,6 @@ public class AstralEndBiomeSource extends BiomeSource {
         switch (region(sampler, warpedX, warpedZ)) {
             case NEBULA_FIELDS: return this.nebulaFields;
             case ASHEN_BARRENS: return this.ashenBarrens;
-            case COMET_WAKE: return this.cometWake;
             case HOLLOW_ISLES: return this.hollowIsles;
             case CORONA: return this.corona;
             case CHORUS_THICKET: return this.chorusThicket;

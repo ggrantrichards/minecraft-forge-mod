@@ -64,7 +64,6 @@ public final class WorldgenSurvey {
         new BiomeInfo(ModBiomes.CHORUS_THICKET, 'T', "Chorus Thicket", 2, 25, 3),
         new BiomeInfo(ModBiomes.GLIMMERING_CRAGS, 'G', "Glimmering Crags", 1, 15, 3),
         new BiomeInfo(ModBiomes.ASHEN_BARRENS, 'A', "Ashen Barrens", 3, 25, 3),
-        new BiomeInfo(ModBiomes.COMET_WAKE, 'W', "Comet Wake", 3, 25, 3),
         new BiomeInfo(ModBiomes.HOLLOW_ISLES, 'D', "Hollow Isles", 2, 20, 3),
         new BiomeInfo(ModBiomes.CORONA, 'C', "The Corona", 2, 20, 3));
 
@@ -192,7 +191,7 @@ public final class WorldgenSurvey {
         // ---- Biome map ----
         log("Biome map of the End, " + (2 * MAP_RADIUS) + " x " + (2 * MAP_RADIUS) + " blocks, north up, one character = "
             + MAP_STEP + " blocks:");
-        log("  O central island   N Nebula Fields   A Ashen Barrens   W Comet Wake   D Hollow Isles   "
+        log("  O central island   N Nebula Fields   A Ashen Barrens   D Hollow Isles   "
             + "C The Corona   T Chorus Thicket   G Glimmering Crags   H/M/B/s vanilla Highlands/Midlands/Barrens/Small Islands");
         Map<Character, Integer> outerCounts = new HashMap<>();
         Map<Character, Integer> runs = new HashMap<>();
@@ -287,7 +286,6 @@ public final class WorldgenSurvey {
             }
         }
         Map<String, BlockPos> structures = checkStructures(areas, end, failures);
-        checkComets(areas.get('W'), end, failures);
         if (areas.get('N') != null && areas.get('N').standOn != null) {
             EXTRA_SHOTS.addAll(StarforgeSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log));   // Phase 8
             PolishSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log);         // Phase 9
@@ -300,7 +298,6 @@ public final class WorldgenSurvey {
         writeViewpoints(areas, end, structures);
         checkNebula(areas.get('N'), failures);
         checkAurora(areas.get('A'), failures);
-        checkCometWake(areas.get('W'), failures);
         checkHollowIsles(areas.get('D'), end, failures);
         checkCorona(areas.get('C'), failures);
         checkThicket(areas.get('T'), failures);
@@ -315,8 +312,7 @@ public final class WorldgenSurvey {
         record Home(net.minecraft.world.entity.EntityType<?> type, char biome) {}
         List<Home> homes = List.of(
             new Home(ModEntities.POLLINATOR.get(), 'N'), new Home(ModEntities.VOID_WANDERER.get(), 'D'),
-            new Home(ModEntities.UMBRAL_STALKER.get(), 'D'), new Home(ModEntities.CINDER_MITE.get(), 'C'),
-            new Home(ModEntities.VOID_RAY.get(), 'C'), new Home(ModEntities.HOLLOW.get(), 'W'),
+            new Home(ModEntities.UMBRAL_STALKER.get(), 'D'), new Home(ModEntities.VOID_RAY.get(), 'C'),
             new Home(ModEntities.DRIFT_WHALE.get(), 'A'), new Home(ModEntities.WATCHER.get(), 'N'),
             new Home(ModEntities.SPIRE_WYRM.get(), 'G'));
         for (Home home : homes) {
@@ -391,17 +387,14 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('D'), end, "void_wanderer", 2.6, 1.2, 1.7);
         mobShot(lines, areas.get('D'), end, "umbral_stalker angled", 5.5, 0.0, 1.9);
         mobShot(lines, areas.get('D'), end, "umbral_stalker lit,angled", 5.5, 0.0, 1.9);
-        mobShot(lines, areas.get('C'), end, "cinder_mite", 1.5, 0.0, 0.7);
         mobShot(lines, areas.get('C'), end, "void_ray", 3.0, 0.0, 1.6);
-        mobShot(lines, areas.get('W'), end, "hollow", 3.0, 1.6, 2.0);
         mobShot(lines, areas.get('A'), end, "drift_whale side", 11.0, 7.0, 7.5);
         mobShot(lines, areas.get('N'), end, "watcher", 6.5, 0.5, 2.6);
         mobShot(lines, areas.get('G'), end, "spire_wyrm", 16.0, 6.0, 5.0);
-        mobShot(lines, areas.get('W'), end, "live_comet side", 14.0, 14.0, 4.0);
         // Phase 5: the sky and Sunstorms.
         skyShot(lines, areas.get('A'), "sky_ashen_barrens", -45.0F, -32.0F, null, "flare=calm");
         skyShot(lines, areas.get('N'), "sky_nebula_fields", -45.0F, -32.0F, null, "flare=calm");
-        skyShot(lines, areas.get('W'), "sky_remnant_far", 0.0F, -6.0F, end, "flare=warning");
+        skyShot(lines, areas.get('A'), "sky_remnant_far", 0.0F, -6.0F, end, "flare=warning");
         skyShot(lines, areas.get('C'), "sky_corona_flare", -45.0F, -18.0F, null, "flare=flare");
         mobShot(lines, areas.get('C'), end, "display flare=flare", 5.5, 0.0, 2.6);
         // Phase 6: each structure, from above and to the north-west of the block the survey found in it.
@@ -420,72 +413,6 @@ public final class WorldgenSurvey {
         } catch (java.io.IOException e) {
             LOGGER.error(TAG + "couldn't write viewpoints", e);
         }
-    }
-
-    // Phase 7: a live comet can be sent (and set on its arc), loses chunks when hit, and its landfall
-    // crater stays small. Then a view of a comet in profile, and of a fresh landfall crater.
-    private static void checkComets(Area area, ServerLevel end, List<String> failures) {
-        if (area == null || area.standOn == null) {
-            return;
-        }
-        var near = net.minecraft.world.phys.Vec3.atBottomCenterOf(area.standOn);
-        var comet = com.ggrantrichards.astralend.comet.CometShowers.send(end, near, end.getRandom(), true);
-        if (comet == null) {
-            failures.add("live comet: couldn't be sent");
-            return;
-        }
-        BlockPos from = comet.blockPosition();
-        // The hit: brought overhead first, where the chunks are loaded and ticking.
-        comet.snapTo(near.x, near.y + 6.0, near.z, 0.0F, 0.0F);
-        var around = new net.minecraft.world.phys.AABB(near, near).inflate(8.0);
-        int itemsBefore = end.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, around).size();
-        comet.knockChunk(end);
-        int itemsAfter = end.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, around).size();
-        log(String.format("live comet: sent from %s, landfall %s; a hit knocked off %d chunk(s)", from.toShortString(),
-            comet.isLandfall(), itemsAfter - itemsBefore));
-        comet.discard();
-        BlockPos target = flatSite(end, area.standOn.offset(9, 0, 9));
-        int changed = com.ggrantrichards.astralend.comet.CometImpact.strike(end, target, end.getRandom(), null);
-        log(String.format("live comet: landfall at %s changed %d blocks (at most %d)", target.toShortString(), changed,
-            com.ggrantrichards.astralend.comet.CometImpact.MAX_BLOCKS));
-        if (itemsAfter <= itemsBefore || changed > com.ggrantrichards.astralend.comet.CometImpact.MAX_BLOCKS) {
-            failures.add("live comet: a hit should knock off a chunk, and a landfall change at most 40 blocks");
-        }
-        double d = 7.0 / Math.sqrt(2.0);
-        // (The client opens this same world, so the shot shows the crater just made, loot and all.)
-        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_comet_landfall %.1f %d %.1f -45 46.0",
-            target.getX() + 0.5 - d, target.getY() + 6, target.getZ() + 0.5 - d));
-    }
-
-    // Somewhere near `around` with level ground for a crater (and not on a blue ice spire).
-    private static BlockPos flatSite(ServerLevel end, BlockPos around) {
-        BlockPos best = null;
-        int bestSpread = Integer.MAX_VALUE;
-        for (int r = 0; r <= 24 && bestSpread > 1; r += 3) {
-            for (int ox = -r; ox <= r; ox += 3) {
-                for (int oz = -r; oz <= r; oz += 3) {
-                    if (Math.max(Math.abs(ox), Math.abs(oz)) != r) {
-                        continue;
-                    }
-                    int x = around.getX() + ox, z = around.getZ() + oz;
-                    int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-                    for (int dx = -4; dx <= 4; dx++) {
-                        for (int dz = -4; dz <= 4; dz++) {
-                            int h = end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x + dx, z + dz);
-                            min = Math.min(min, h);
-                            max = Math.max(max, h);
-                        }
-                    }
-                    BlockPos top = new BlockPos(x, end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, z);
-                    if (max - min < bestSpread && min > end.getMinY() + 1 && !end.getBlockState(top).is(Blocks.BLUE_ICE)) {
-                        bestSpread = max - min;
-                        best = top;
-                    }
-                }
-            }
-        }
-        return best != null ? best
-            : new BlockPos(around.getX(), end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, around.getX(), around.getZ()) - 1, around.getZ());
     }
 
     // Extra screenshot lines worked out by the structure tests (they need the structure's layout).
@@ -668,7 +595,7 @@ public final class WorldgenSurvey {
     private static Map<String, BlockPos> checkStructures(Map<Character, Area> areas, ServerLevel end, List<String> failures) {
         Map<String, BlockPos> found = new LinkedHashMap<>();
         record Wanted(String name, char biome, Block marker) {}
-        for (Wanted w : List.of(new Wanted("comet_crater", 'W', Blocks.CHEST), new Wanted("wanderer_relay", 'D', ModBlocks.VOID_CRYSTAL_BLOCK.get()),
+        for (Wanted w : List.of(new Wanted("comet_crater", 'A', Blocks.CHEST), new Wanted("wanderer_relay", 'D', ModBlocks.VOID_CRYSTAL_BLOCK.get()),
                                 new Wanted("whalefall", 'A', Blocks.CHEST), new Wanted("shattered_observatory", 'N', Blocks.VAULT),
                                 new Wanted("solar_array", 'C', ModBlocks.COLLECTOR_PEDESTAL.get()),
                                 new Wanted("rift_maw", 'N', ModBlocks.MAW_THROAT.get()),
@@ -1129,17 +1056,6 @@ public final class WorldgenSurvey {
         }
     }
 
-    private static void checkCometWake(Area area, List<String> failures) {
-        if (!enoughLand(area, failures)) {
-            return;
-        }
-        replacesEndStone(area, ModBlocks.CHARRED_END_STONE.get(), failures);
-        atLeast(area, ModBlocks.STARDUST_BLOCK.get(), 1, failures);
-        atLeast(area, Blocks.BLUE_ICE, 0.5, failures);
-        atLeast(area, ModBlocks.METEORIC_IRON_ORE.get(), 0.02, failures);   // comet cores
-        atLeast(area, ModBlocks.COMET_CRESS.get(), 0.2, failures);
-    }
-
     // Phase 10: chorus trees over Chorus Moss, and vanilla chorus between them.
     private static void checkThicket(Area area, List<String> failures) {
         if (!enoughLand(area, failures)) {
@@ -1305,7 +1221,6 @@ public final class WorldgenSurvey {
     private static char symbol(Holder<Biome> biome) {
         if (biome.is(ModBiomes.NEBULA_FIELDS)) return 'N';
         if (biome.is(ModBiomes.ASHEN_BARRENS)) return 'A';
-        if (biome.is(ModBiomes.COMET_WAKE)) return 'W';
         if (biome.is(ModBiomes.HOLLOW_ISLES)) return 'D';
         if (biome.is(ModBiomes.CORONA)) return 'C';
         if (biome.is(ModBiomes.CHORUS_THICKET)) return 'T';

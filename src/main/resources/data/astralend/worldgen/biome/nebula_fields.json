@@ -13,9 +13,9 @@
           ],
           "creature": [
             {
-              "type": "astralend:pollinator",
-              "count": 3,
-              "weight": 12
+              "type": "astralend:void_wanderer",
+              "count": 1,
+              "weight": 4
             }
           ]
         }

@@ -77,12 +77,15 @@
     ],
     [],
     [],
-    [],
+    [
+      "astralend:hollow_isles_stardust_veins"
+    ],
     [],
     [
       "astralend:hollow_isles_nullwood_trees",
       "minecraft:chorus_plant",
-      "astralend:hollow_isles_voidgel"
+      "astralend:hollow_isles_voidgel",
+      "astralend:hollow_isles_stardust_underhangs"
     ]
   ],
   "has_precipitation": false,

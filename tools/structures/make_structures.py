@@ -750,7 +750,7 @@ def structure_json(name, height, heightmap, spawn_overrides, adaptation, ground)
 STRUCTURES = [
     dict(name="comet_crater", variants=[lambda: comet_crater(11, False), lambda: comet_crater(12, False),
                                         lambda: comet_crater(13, True)],
-         biomes=[a("comet_wake")], spread=(9, 3, 61829341), height={"absolute": -8}, heightmap="WORLD_SURFACE_WG",
+         biomes=[a("ashen_barrens")], spread=(16, 6, 61829341), height={"absolute": -8}, heightmap="WORLD_SURFACE_WG",
          spawns=None, adaptation="beard_thin", ground=(16, 4096, 12)),
     # Relays float out over the void, so they want open space (or low ground) under them.
     dict(name="wanderer_relay", variants=[lambda: wanderer_relay(21)],
@@ -859,7 +859,7 @@ def write_data():
     write_json(DATA / "tags/worldgen/biome/has_structure/remnant.json", {"values": [a("corona")]})
     write_json(DATA / "tags/worldgen/biome/has_structure/whalefall.json", {"values": [
         "minecraft:small_end_islands", "minecraft:end_barrens", "minecraft:end_midlands", "minecraft:end_highlands",
-        a("nebula_fields"), a("chorus_thicket"), a("ashen_barrens"), a("comet_wake"), a("hollow_isles"), a("corona"),
+        a("nebula_fields"), a("chorus_thicket"), a("ashen_barrens"), a("hollow_isles"), a("corona"),
         a("glimmering_crags")]})
 
 

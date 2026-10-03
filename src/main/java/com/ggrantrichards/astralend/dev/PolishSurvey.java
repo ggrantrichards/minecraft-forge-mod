@@ -33,7 +33,7 @@ final class PolishSurvey {
         var advancements = end.getServer().getAdvancements();
         int found = 0;
         String[] names = {"end/astral_horizons", "end/chart_the_stars", "end/head_to_toe", "end/something_looks_back",
-                          "end/into_the_hollow", "recipes/building_blocks/polished_nightstone", "recipes/misc/glowing_stew"};
+                          "end/say_ahh", "recipes/building_blocks/polished_nightstone", "recipes/misc/glowing_stew"};
         for (String name : names) {
             if (advancements.get(Identifier.fromNamespaceAndPath(AstralEnd.MODID, name)) != null) {
                 found++;

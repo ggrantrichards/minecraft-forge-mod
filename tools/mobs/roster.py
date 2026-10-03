@@ -13,8 +13,8 @@ from preview_mobs import laid_out, render
 
 ROOT = Path(__file__).resolve().parents[2]
 NAMES = {"pollinator": "End Pollinator", "void_wanderer": "Void Wanderer", "umbral_stalker": "Umbral Stalker",
-         "cinder_mite": "Cinder Mite", "void_ray": "Void Ray", "hollow": "The Hollow", "drift_whale": "Drift Whale",
-         "watcher": "The Watcher", "live_comet": "Live Comet", "spire_wyrm": "Spire Wyrm"}
+         "void_ray": "Void Ray", "drift_whale": "Drift Whale",
+         "watcher": "The Watcher", "spire_wyrm": "Spire Wyrm"}
 CELL = 360
 BG = (30, 30, 38, 255)
 

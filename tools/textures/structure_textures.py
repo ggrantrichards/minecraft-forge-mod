@@ -207,4 +207,3 @@ def stardust_mote():
                            "w": hexc("dcd4ff"), "y": hexc("fff4c8")})
 
 
-TEXTURES += [("item/stardust_mote.png", stardust_mote)]

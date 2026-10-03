@@ -56,12 +56,11 @@ public final class AstralEnd {
         com.ggrantrichards.astralend.block.EndChimesBlockEntity.register();
         WoodStripping.register();
         ModEntities.register();   // mob attributes and where they may spawn
-        MobSpawning.register();   // Drift Whales, the Watcher and the Hollow
+        MobSpawning.register();   // Drift Whales and the Watcher
         FlareNetwork.register();  // Phase 5: Sunstorms - the timer, its effects, and syncing it to clients
         Sunstorms.register();
         com.ggrantrichards.astralend.maw.MawNetwork.register();
         com.ggrantrichards.astralend.maze.MazeScoping.register();
-        com.ggrantrichards.astralend.comet.CometShowers.register();
         com.ggrantrichards.astralend.starforge.Starforge.register();          // upgrade tooltips
         com.ggrantrichards.astralend.starforge.StarforgeEffects.register();   // what the upgrades do
         FlareCommand.register();

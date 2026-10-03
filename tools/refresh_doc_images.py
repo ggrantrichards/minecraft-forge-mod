@@ -17,9 +17,9 @@ SIZE = (854, 480)
 
 # docs picture -> the screenshot it comes from (astralend-<name>.png on the ci-screenshots branch)
 PICTURES = {
-    **{f"screens/{b}": b for b in ("nebula_fields", "ashen_barrens", "comet_wake", "corona", "hollow_isles")},
+    **{f"screens/{b}": b for b in ("nebula_fields", "ashen_barrens", "corona", "hollow_isles")},
     "screens/shattered_observatory": "structure_shattered_observatory",
-    **{f"mobs/{m}": f"mob_{m}" for m in ("cinder_mite", "hollow", "pollinator", "umbral_stalker_lit", "void_ray",
+    **{f"mobs/{m}": f"mob_{m}" for m in ("pollinator", "umbral_stalker_lit", "void_ray",
                                           "void_wanderer", "watcher")},
     "mobs/drift_whale": "mob_drift_whale_side",
     "mobs/umbral_stalker": "mob_umbral_stalker_angled",

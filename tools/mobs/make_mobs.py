@@ -1150,7 +1150,12 @@ SPIRE_WYRM = Mob("spire_wyrm", (128, 64), [
     ]),
 ] + [wyrm_segment(i, small=i >= 10) for i in range(12)], egg=(WYRM[2], WYRM_CRYSTAL[1]))
 
-MOBS = [POLLINATOR, WANDERER, STALKER, CINDER_MITE, VOID_RAY, GUARDIAN, WHALE, WATCHER, COMET, SPIRE_WYRM]
+MOBS = [POLLINATOR, WANDERER, STALKER, VOID_RAY, WHALE, WATCHER, SPIRE_WYRM]
+# Cut by the distillation (their definitions stay above, unused): the Cinder Mite, the Hollow and the
+# Live Comet. Each mob's texture is painted from a seed fixed by its place in the original list, so
+# cutting some doesn't repaint the rest.
+SEED_INDEX = {"pollinator": 0, "void_wanderer": 1, "umbral_stalker": 2, "cinder_mite": 3, "void_ray": 4, "hollow": 5,
+              "drift_whale": 6, "watcher": 7, "live_comet": 8, "spire_wyrm": 9}
 for _mob in MOBS:
     auto_uv(_mob)          # boxes drawn without a texture position get one
 
@@ -1196,8 +1201,8 @@ def egg(base, spots):
 def main():
     write_java(MOBS)
     out = []
-    for i, mob in enumerate(MOBS):
-        img, glow = paint_mob(mob, 1000 + i * 17)
+    for mob in MOBS:
+        img, glow = paint_mob(mob, 1000 + SEED_INDEX[mob.name] * 17)
         folder = TEX / "entity" / mob.name
         folder.mkdir(parents=True, exist_ok=True)
         img.save(folder / f"{mob.name}.png")

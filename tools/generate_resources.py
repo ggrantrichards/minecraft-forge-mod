@@ -87,7 +87,6 @@ ITEMS = [
     ("abyss_shard", "Abyss Shard"),
     ("umbral_membrane", "Umbral Membrane"),
     ("ray_film", "Ray Film"),
-    ("cinder", "Cinder"),
     ("star_chart", "Star Chart"),
     ("upwell_mote", "Upwell Mote"),
     ("resonant_key", "Resonant Key"),
@@ -673,11 +672,10 @@ def terrain():
     middle = mul(ramp(nebula, REGION_COLD), not_nebula)
     raw = {
         "ashen_barrens": mul(cold, ramp(belt, REGION_COLD_BELT)),
-        "comet_wake": mul(cold, ramp(mul(belt, -1.0), REGION_COLD_BELT)),
         "hollow_isles": mul(middle, ramp(belt, REGION_MID_BELT)),
         "corona": mul(middle, ramp(mul(belt, -1.0), REGION_MID_BELT)),
     }
-    vanilla_share = sub(sub(sub(sub(not_nebula, raw["ashen_barrens"]), raw["comet_wake"]), raw["hollow_isles"]), raw["corona"])
+    vanilla_share = sub(sub(sub(not_nebula, raw["ashen_barrens"]), raw["hollow_isles"]), raw["corona"])
     raw["glimmering_crags"] = mul(vanilla_share, ramp(ruin, REGION_CRAGS))
     thicket = ramp(mul(belt, -1.0), REGION_THICKET)
     raw["nebula_fields"] = mul(ramp(nebula, REGION_NEBULA), sub(1.0, thicket))
@@ -708,12 +706,6 @@ def terrain():
                    add(y_line(0, -54.5 * 0.25, 128, (128 - 54.5) * 0.25), mul(shelf_islands, 0.25)))
     df("terrain/ashen_barrens", dmax(shelves, landmass(54.5, depth_from(add(mask, 0.05), 40.0, 10.0))))
 
-    # Comet Wake: broad scorched islands, plus a river of small floating debris between y=30 and 70.
-    band = dmin(y_line(30, 0.0, 45, 1.0), y_line(55, 1.0, 70, 0.0))
-    debris = sub(add(mul({"type": "minecraft:noise", "noise": "minecraft:ridge", "xz_scale": 4.0, "y_scale": 4.0}, 3.0), -1.7),
-                 mul(sub(1.0, band), 5.0))
-    df("terrain/comet_wake", dmax(dmax(vanilla, debris), landmass(add(58.0, mul(hills, 3.0)), depth_from(add(mask, -0.02), 100.0, 36.0))))
-
     # Hollow Isles: ring archipelagos. Land follows a band along the mask's contour, which traces
     # broken rings and arcs around empty centres; vanilla islands are hollowed out the same way.
     ring = clamp(mul(sub(0.1, {"type": "minecraft:abs", "input": add(mask, -0.18)}), 200.0), 0.0, 30.0)
@@ -734,7 +726,7 @@ def terrain():
                                                           add(depth_from(add(mask, 0.04), 110.0, 40.0), mul(peaks, 0.6)))))
 
     shaped = vanilla
-    for biome in ("nebula_fields", "chorus_thicket", "corona", "hollow_isles", "comet_wake", "ashen_barrens", "glimmering_crags"):
+    for biome in ("nebula_fields", "chorus_thicket", "corona", "hollow_isles", "ashen_barrens", "glimmering_crags"):
         shaped = lerp(rid(f"terrain/weight/{biome}"), shaped, rid(f"terrain/{biome}"))
     df("terrain/shaped", shaped)
 
@@ -784,7 +776,6 @@ def worldgen():
         in_biome("glimmering_crags", block("nightstone")),
         # Whole islands of a different stone:
         in_biome("ashen_barrens", block("pale_end_stone")),
-        in_biome("comet_wake", block("charred_end_stone")),
         in_biome("hollow_isles", block("nightstone")),
         # The Corona: a bleached crust of Sunscorched Stone over Charred End Stone.
         in_biome("corona", {"type": "minecraft:sequence", "sequence": [
@@ -858,9 +849,6 @@ def worldgen():
     tag("worldgen/biome", f"{NS}:low_gravity", rid("nebula_fields"))
     # Phase 9: data-pack switches for the two events (empty a tag to turn its event off).
     tag("worldgen/biome", f"{NS}:sunstorms", rid("corona"))
-    for comet_biome in ("nebula_fields", "ashen_barrens", "comet_wake", "hollow_isles", "corona", "chorus_thicket", "glimmering_crags",
-                        "minecraft:end_highlands", "minecraft:end_midlands", "minecraft:end_barrens", "minecraft:small_end_islands"):
-        tag("worldgen/biome", f"{NS}:live_comets", comet_biome if ":" in comet_biome else rid(comet_biome))
     # Biomes where Upwell Cores flip gravity. Empty this tag in a datapack to turn it off.
     tag("worldgen/biome", f"{NS}:upwells", rid("hollow_isles"))
     # Chorus grows in the living astral biomes too: on Chorus Moss and Nightstone as on End Stone.
@@ -920,13 +908,14 @@ def java_feature(name):
     feature(name, {"type": rid(name)})
 
 
-# Phase 4 mobs, by biome and spawn category (on top of the End's Endermen). The Drift Whale, the
-# Watcher and the Hollow aren't here: MobSpawning.java places them one at a time.
+# Mobs by biome and spawn category (on top of the End's Endermen). The Drift Whale and the Watcher
+# aren't here: MobSpawning.java places them one at a time. (The distillation: Pollinators live only
+# where the Eclipse will be - the Corona for now - and Void Rays over the Glimmering Crags.)
 MOB_SPAWNS = {
-    "nebula_fields": {"creature": [("pollinator", 12, 3)]},
-    "chorus_thicket": {"creature": [("pollinator", 8, 2)]},
+    "nebula_fields": {"creature": [("void_wanderer", 4, 1)]},
     "hollow_isles": {"monster": [("umbral_stalker", 4, 1)], "creature": [("void_wanderer", 4, 1)]},
-    "corona": {"monster": [("cinder_mite", 8, 4)], "creature": [("void_ray", 10, 3)]},
+    "glimmering_crags": {"creature": [("void_ray", 8, 3)]},
+    "corona": {"creature": [("pollinator", 12, 3)]},
 }
 
 
@@ -946,7 +935,7 @@ def mob_spawns(biome):
 # The Ashen Barrens keep the End's own music: the dead country gets nothing new.
 BIOME_MUSIC = {"nebula_fields": "music.nebula_fields", "chorus_thicket": "music.chorus_thicket",
                "glimmering_crags": "music.glimmering_crags", "hollow_isles": "music.outer_end",
-               "comet_wake": "music.outer_end", "corona": "music.outer_end"}
+               "corona": "music.outer_end"}
 
 
 def background_music(biome):
@@ -1017,30 +1006,17 @@ def worldgen_phase3():
             air, {"type": "minecraft:matching_blocks", "blocks": [rid("pale_end_stone")], "offset": [0, -1, 0]}]}},
         {"type": "minecraft:biome"},
     ]})
+    # The impact sites (the distillation moved them here when the Comet Wake was cut): old craters, and
+    # comet cores with Meteoric Iron at their hearts. Whatever fell, fell long ago.
+    java_feature("comet_core")
+    surface_feature("ashen_barrens_comet_cores", "comet_core", rarity=8)
+    big_feature("ashen_barrens_craters", "crater", rarity=7, heightmap="WORLD_SURFACE_WG")
     end_biome("ashen_barrens", "Ashen Barrens", fog="#1b2329", water="#5a7e80",
-              features_step4=[rid("aurora_ribcages"), rid("aurora_standing_stones"), rid("aurora_leviathan_ribs")],
+              features_step4=[rid("aurora_ribcages"), rid("aurora_standing_stones"), rid("aurora_leviathan_ribs"),
+                              rid("ashen_barrens_craters"), rid("ashen_barrens_comet_cores")],
               features_step9=[rid("aurora_shimmer_reeds"), rid("aurora_shimmer_grass"), rid("ashen_barrens_withered_lumineshrooms")],
               particle="minecraft:white_ash", particle_chance=0.012)
 
-    # ---- Comet Wake: Charred End Stone, Stardust veins, blue ice, Comet Cores, Comet Cress
-    ore("stardust_vein", "stardust_block", rid("charred_end_stone"), size=14)
-    placed_ore("comet_wake_stardust_veins", "stardust_vein", count=7, min_y=20, max_y=80)
-    feature("comet_ice_shard", {"type": "minecraft:block_blob",
-                                "can_place_on": {"type": "minecraft:matching_blocks", "blocks": [rid("charred_end_stone")]},
-                                "state": "minecraft:blue_ice"})
-    surface_feature("comet_wake_ice_shards", "comet_ice_shard", rarity=5)
-    java_feature("comet_core")
-    surface_feature("comet_wake_comet_cores", "comet_core", rarity=6)
-    big_feature("comet_wake_craters", "crater", rarity=5, heightmap="WORLD_SURFACE_WG")
-    big_feature("comet_wake_ice_spires", "comet_ice_spire", rarity=3, heightmap="WORLD_SURFACE_WG")
-    java_feature("stardust_underhang")
-    placed("comet_wake_stardust_underhangs", {"feature": rid("stardust_underhang"), "placement": [
-        {"type": "minecraft:count", "count": 3}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
-    end_biome("comet_wake", "Comet Wake", fog="#2d2533", water="#8f7fb0",
-              features_step4=[rid("comet_wake_craters"), rid("comet_wake_comet_cores"), rid("comet_wake_ice_spires"),
-                              rid("comet_wake_ice_shards")],
-              features_step7=[rid("comet_wake_stardust_veins")],
-              features_step9=[rid("comet_wake_stardust_underhangs")], particle="minecraft:ash", particle_chance=0.01)
 
     # ---- Hollow Isles: Nightstone rings, Void Crystal Ore, Upwells
     # (Void Crystal grows only under the Glimmering Crags now.) Voidgel drips from the undersides.
@@ -1051,9 +1027,18 @@ def worldgen_phase3():
     placed("hollow_isles_upwells", {"feature": rid("upwell"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 3}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
     big_feature("hollow_isles_nullwood_trees", "nullwood_tree", count=3)
+    # Stardust, which falls upward, in the islands and hanging under them (moved here from the cut
+    # Comet Wake, with the Comet Cress that grows from it).
+    ore("stardust_vein", "stardust_block", rid("nightstone"), size=12)
+    placed_ore("hollow_isles_stardust_veins", "stardust_vein", count=4, min_y=20, max_y=80)
+    java_feature("stardust_underhang")
+    placed("hollow_isles_stardust_underhangs", {"feature": rid("stardust_underhang"), "placement": [
+        {"type": "minecraft:count", "count": 2}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
     end_biome("hollow_isles", "Hollow Isles", fog="#2c2150", water="#3a2a66",
               features_step4=[rid("hollow_isles_upwells")],
-              features_step9=[rid("hollow_isles_nullwood_trees"), "minecraft:chorus_plant", rid("hollow_isles_voidgel")],
+              features_step7=[rid("hollow_isles_stardust_veins")],
+              features_step9=[rid("hollow_isles_nullwood_trees"), "minecraft:chorus_plant", rid("hollow_isles_voidgel"),
+                              rid("hollow_isles_stardust_underhangs")],
               particle="minecraft:reverse_portal", particle_chance=0.002)
 
     # ---- The Corona: Sunscorched Stone over Charred End Stone; Solarite; adapted and dead life
@@ -1117,12 +1102,9 @@ MOBS = [
     ("pollinator", "End Pollinator"),
     ("void_wanderer", "Void Wanderer"),
     ("umbral_stalker", "Umbral Stalker"),
-    ("cinder_mite", "Cinder Mite"),
     ("void_ray", "Void Ray"),
-    ("hollow", "The Hollow"),
     ("drift_whale", "Drift Whale"),
     ("watcher", "The Watcher"),
-    ("live_comet", "Live Comet"),
     ("spire_wyrm", "Spire Wyrm"),
 ]
 
@@ -1173,18 +1155,11 @@ def mobs_phase4():
     # A Drift Whale never fights back; killing one gets you a few scales, and nothing else.
     entity_loot("drift_whale", [player_kill_drop("whalelight_scale", 3, looting=False)])
     entity_loot("watcher", [])
-    entity_loot("live_comet", [])   # what it gives, it gives while it flies (see LiveComet)
     entity_loot("void_wanderer", [player_kill_drop("cracked_lens", 1, looting=False)])
     entity_loot("umbral_stalker", [player_kill_drop("umbral_membrane", 1)])
-    entity_loot("hollow", [{"condition": {"type": "minecraft:killed_by_player"}, "rolls": 1,
-                                         "entries": [{"type": "minecraft:item", "name": rid("abyss_shard")}]}])
-    entity_loot("cinder_mite", [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("cinder"), "modifier": [
-        {"type": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 0, "max": 2}},
-        {"type": "minecraft:enchanted_count_increase", "count": {"type": "minecraft:uniform", "min": 0.0, "max": 1.0},
-         "enchantment": "minecraft:looting"}]}]}])
 
     # Flying and floating mobs don't take fall damage.
-    for mob in ("pollinator", "void_wanderer", "void_ray", "hollow", "drift_whale", "watcher", "live_comet"):
+    for mob in ("pollinator", "void_wanderer", "void_ray", "drift_whale", "watcher"):
         tag("entity_type", "minecraft:fall_damage_immune", rid(mob))
 
     # What End Pollinators visit (and spread when they pollinate it).
@@ -1433,14 +1408,6 @@ def structures_phase6():
         "maze.astralend.dir.west": "high in the west", "maze.astralend.dir.north_west": "high in the north-west",
     })
 
-    # ---- Phase 7: live comets
-    item_model("stardust_mote", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("item/stardust_mote")}})
-    item_def("stardust_mote", rid("item/stardust_mote"))
-    lang[f"item.{NS}.stardust_mote"] = "Stardust Mote"
-    shapeless("stardust_block_from_motes", "stardust_block", [rid("stardust_mote")] * 4, category="building")
-    advancement("catch_a_falling_star", rid("stardust_mote"), "Catch a Falling Star",
-                "Glide through a live comet's tail with an elytra and catch a Stardust Mote")
-
     # A crater's cache: what the comet brought, sometimes a Temporal Crystal, sometimes a chart.
     chest_loot("comet_crater", [
         {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
@@ -1474,7 +1441,8 @@ def structures_phase6():
         {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
             entry("void_crystal", 4, (1, 4)), entry("chart_fragment", 3, (1, 2)), entry("leviathan_bone_block", 3, (2, 6)),
             entry("whalelight_scale", 3, (1, 4)), entry("minecraft:ender_pearl", 3, (1, 3)), entry("minecraft:spyglass", 1),
-            entry("minecraft:map", 2), entry("minecraft:soul_lantern", 2, (1, 2)), entry("glowing_spores", 2, (2, 5))]},
+            entry("minecraft:map", 2), entry("minecraft:soul_lantern", 2, (1, 2)), entry("glowing_spores", 2, (2, 5)),
+            entry("abyss_shard", 2, (1, 2))]},     # (until Starforging is reworked: the Hollow that dropped these is cut)
         chance("star_chart", 0.35),
         chance("temporal_crystal", 0.15),
     ])
@@ -1720,12 +1688,9 @@ def round_out_phase9():
     lang[f"item.{NS}.star_compass.points"] = "Points to the End's central island"
     shaped("star_compass", "star_compass", [" S ", "SCS", " S "], {"S": rid("starbloom"), "C": "minecraft:compass"}, category="equipment")
 
-    # Cinder, besides burning: like blaze powder, it makes fire charges.
-    write(DATA / "recipe" / "fire_charge_from_cinder.json", {"type": "minecraft:crafting_shapeless", "category": "misc",
-        "ingredients": [rid("cinder"), "minecraft:gunpowder"], "result": {"count": 2, "id": "minecraft:fire_charge"}})
 
 
-ASTRAL_BIOMES = ("nebula_fields", "ashen_barrens", "comet_wake", "hollow_isles", "corona", "chorus_thicket", "glimmering_crags")
+ASTRAL_BIOMES = ("nebula_fields", "ashen_barrens", "hollow_isles", "corona", "chorus_thicket", "glimmering_crags")
 
 
 def has_item(item):
@@ -1755,8 +1720,6 @@ def advancements_phase9():
     # Materials
     advancement("falling_upward", rid("stardust_block"), "Falling Upward", "Pick up Stardust, the sand that falls up",
                 parent=root, criteria={"stardust": has_item(rid("stardust_block"))})
-    advancement("catch_a_falling_star", rid("stardust_mote"), "Catch a Falling Star",
-                "Glide through a live comet's tail with an elytra and catch a Stardust Mote", parent=rid("end/falling_upward"))
     advancement("iron_from_the_sky", rid("meteoric_iron_ingot"), "Iron From the Sky", "Smelt a Meteoric Iron Ingot",
                 parent=root, criteria={"ingot": has_item(rid("meteoric_iron_ingot"))})
     advancement("starforged", rid("starforge_template"), "Forged in Starlight", "Forge a Starforge upgrade onto a piece of gear",
@@ -1782,8 +1745,6 @@ def advancements_phase9():
                 parent=rid("end/weather_the_storm"))
     advancement("bottled_sunlight", rid("bottled_flare"), "Bottled Sunlight", "Fill a Flare Bottle with a Sunstorm",
                 parent=rid("end/weather_the_storm"), criteria={"bottle": has_item(rid("bottled_flare"))})
-    advancement("into_the_hollow", rid("abyss_shard"), "Into the Hollow", "Defeat the Hollow",
-                parent=root, frame="goal", criteria={"guardian": killed(rid("hollow"))})
     # The Drift Whales
     advancement("something_big_out_there", rid("whalelight_scale"), "Something Big Out There", "See a Drift Whale", parent=root)
     advancement("whale_song", rid("whalelight_scale"), "Whale Song", "Be close to a Drift Whale while it hums",
@@ -1981,7 +1942,7 @@ def content_phase10():
               "music.glimmering_crags": "music/space_music", "music.outer_end": "music/out_there",
               "music_disc.observing_the_star": "records/observing_the_star"}
     sounds = {event: {"sounds": [{"name": rid(path), "stream": True}]} for event, path in tracks.items()}
-    for biome in ("nebula_fields", "chorus_thicket", "ashen_barrens", "comet_wake", "hollow_isles", "corona", "glimmering_crags"):
+    for biome in ("nebula_fields", "chorus_thicket", "ashen_barrens", "hollow_isles", "corona", "glimmering_crags"):
         sounds[f"ambient.{biome}.loop"] = {"sounds": [{"name": rid(f"ambient/{biome}/loop"), "stream": True, "volume": 0.6}]}
         sounds[f"ambient.{biome}.additions"] = {"sounds": [{"name": rid(f"ambient/{biome}/additions{i}"), "volume": 0.5}
                                                           for i in range(1, 4)]}

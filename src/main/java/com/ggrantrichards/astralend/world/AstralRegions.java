@@ -7,7 +7,7 @@ package com.ggrantrichards.astralend.world;
 //  - "nebula" noise (the noise router's temperature slot): above NEBULA -> Nebula Fields, except
 //    where the belt noise is low (below -THICKET): its sister, the Chorus Thicket.
 //  - "belt" noise (the vegetation slot) splits the rest of the outer End:
-//        nebula noise low  (< COLD):  belt high -> Ashen Barrens,  belt low -> Comet Wake
+//        nebula noise low  (< COLD):  belt high -> Ashen Barrens (belt low stays vanilla)
 //        nebula noise middle:         belt high -> Hollow Isles, belt low -> the Corona
 //    and between those, vanilla's Highlands/Midlands/Barrens/Small Islands.
 //  - "ruin" noise (the ridges slot): rare peaks inside what would be vanilla -> the Glimmering Crags.
@@ -19,7 +19,7 @@ public final class AstralRegions {
     public static final double THICKET = 0.22;     // belt below -this, in the nebula band
     public static final double CRAGS = 0.45;       // ruin above this, where it would be vanilla
 
-    public enum Region { VANILLA, NEBULA_FIELDS, CHORUS_THICKET, ASHEN_BARRENS, COMET_WAKE, HOLLOW_ISLES, CORONA, GLIMMERING_CRAGS }
+    public enum Region { VANILLA, NEBULA_FIELDS, CHORUS_THICKET, ASHEN_BARRENS, HOLLOW_ISLES, CORONA, GLIMMERING_CRAGS }
 
     public static Region pick(double nebula, double belt, double ruin) {
         if (nebula > NEBULA) {
@@ -27,7 +27,6 @@ public final class AstralRegions {
         }
         if (nebula < COLD) {
             if (belt > COLD_BELT) return Region.ASHEN_BARRENS;
-            if (belt < -COLD_BELT) return Region.COMET_WAKE;
         } else {
             if (belt > MID_BELT) return Region.HOLLOW_ISLES;
             if (belt < -MID_BELT) return Region.CORONA;

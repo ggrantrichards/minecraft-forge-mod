@@ -1,9 +1,9 @@
 {
-  "feature": "astralend:crater",
+  "feature": "astralend:comet_core",
   "placement": [
     {
       "type": "minecraft:rarity_filter",
-      "chance": 5
+      "chance": 8
     },
     {
       "type": "minecraft:in_square"

@@ -12,7 +12,6 @@ import net.minecraft.world.level.biome.Biome;
 public final class ModBiomes {
     public static final ResourceKey<Biome> NEBULA_FIELDS = key("nebula_fields");
     public static final ResourceKey<Biome> ASHEN_BARRENS = key("ashen_barrens");
-    public static final ResourceKey<Biome> COMET_WAKE = key("comet_wake");
     public static final ResourceKey<Biome> HOLLOW_ISLES = key("hollow_isles");
     public static final ResourceKey<Biome> CORONA = key("corona");
     public static final ResourceKey<Biome> CHORUS_THICKET = key("chorus_thicket");

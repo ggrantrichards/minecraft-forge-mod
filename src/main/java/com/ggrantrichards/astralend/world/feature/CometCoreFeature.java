@@ -22,7 +22,7 @@ public record CometCoreFeature() implements Feature {
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
-        if (!level.getBlockState(origin.below()).is(ModBlocks.CHARRED_END_STONE.get())) {
+        if (!level.getBlockState(origin.below()).is(ModBlocks.CHARRED_END_STONE.get()) && !level.getBlockState(origin.below()).is(ModBlocks.PALE_END_STONE.get())) {
             return false;
         }
         int radius = 2 + random.nextInt(2);          // 2 or 3

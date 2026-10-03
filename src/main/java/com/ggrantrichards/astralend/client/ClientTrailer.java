@@ -1,6 +1,5 @@
 package com.ggrantrichards.astralend.client;
 
-import com.ggrantrichards.astralend.comet.LiveComet;
 import com.ggrantrichards.astralend.entity.ModEntities;
 import com.mojang.logging.LogUtils;
 import java.io.File;
@@ -399,7 +398,8 @@ public final class ClientTrailer {
         return best == null ? null : best.position().add(0.0, 1.0, 0.0);
     }
 
-    // ---- the live comet: it comes in high from the far left, crosses the sky and lands ahead
+    // ---- a camera path from high on the far left, across the sky to a point ahead (it once followed a
+    // live comet; comets are cut)
 
     private static void launchComet(IntegratedServer server, Scene scene) {
         Vec3 forward = Vec3.directionFromRotation(0.0F, yaw0);
@@ -413,12 +413,7 @@ public final class ClientTrailer {
             // in close enough to see: across the sky from the far left, passing over and landing ahead
             Vec3 start = stop.add(forward.scale(30.0)).add(right.scale(-48.0)).add(0, 52.0, 0);
             Vec3 control = start.add(stop).scale(0.5).add(right.scale(-6.0)).add(forward.scale(-10.0)).add(0, 14.0, 0);
-            comet = new Vec3[] {start, control, stop};
-            LiveComet c = ModEntities.LIVE_COMET.get().create(end, EntitySpawnReason.EVENT);
-            if (c != null) {
-                c.launch(start, control, stop, (int) (scene.frames() * 0.78), land);
-                end.addFreshEntity(c);
-            }
+            comet = new Vec3[] {start, control, stop};     // (live comets are cut: the camera path remains)
         });
     }
 

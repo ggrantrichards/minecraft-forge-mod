@@ -5,8 +5,6 @@ import com.ggrantrichards.astralend.ModBlocks;
 import com.ggrantrichards.astralend.ModEffects;
 import com.ggrantrichards.astralend.block.FlarebloomBlock;
 import com.ggrantrichards.astralend.block.SunscaleLichenBlock;
-import com.ggrantrichards.astralend.entity.CinderMite;
-import com.ggrantrichards.astralend.entity.ModEntities;
 import com.ggrantrichards.astralend.world.ModBiomes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -28,10 +26,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.datafix.DataFixTypes;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.BiomeResolver;
 import net.minecraft.world.level.block.state.BlockState;
@@ -48,7 +44,7 @@ import net.minecraftforge.fml.LogicalSide;
 //   WARNING   ~1 min    the Remnant brightens and a hum rises; there's always time to get under cover
 //   FLARE     1-2 min   open sky in the Corona burns (Sunburn); Flareblooms open; Void Rays take off;
 //                       Void Crystal and Flare Bottles on Collector Pedestals charge
-//   AFTERGLOW ~2 min    Sunscale Lichen glows bright, Void Ray wings refill, Cinder Mites swarm out
+//   AFTERGLOW ~2 min    Sunscale Lichen glows bright, Void Ray wings refill
 //
 // One timer for the whole End, saved with the world. Clients hear about it through FlareNetwork.
 public class Sunstorms extends SavedData {
@@ -166,9 +162,6 @@ public class Sunstorms extends SavedData {
         }
         if (this.phase == FlarePhase.FLARE || this.phase == FlarePhase.AFTERGLOW) {
             this.wakeTheCorona(level);
-        }
-        if (this.phase == FlarePhase.AFTERGLOW && time % 300 == 0) {
-            this.releaseMites(level);
         }
     }
 
@@ -295,41 +288,6 @@ public class Sunstorms extends SavedData {
                     } else if (state.getBlock() instanceof SunscaleLichenBlock && !state.getValue(SunscaleLichenBlock.CHARGED)) {
                         level.setBlock(pos, state.setValue(SunscaleLichenBlock.CHARGED, true), 2);
                     }
-                }
-            }
-        }
-    }
-
-    // In the afterglow, Cinder Mites come up out of the stone near players in the Corona, in swarms.
-    private void releaseMites(ServerLevel level) {
-        if (level.getDifficulty() == Difficulty.PEACEFUL) {
-            return;
-        }
-        RandomSource random = level.getRandom();
-        for (ServerPlayer player : level.players()) {
-            if (player.isSpectator() || player.isCreative() || !isCorona(level, player.blockPosition())
-                || level.getEntitiesOfClass(CinderMite.class, new AABB(player.blockPosition()).inflate(32.0)).size() >= 8) {
-                continue;
-            }
-            double angle = random.nextDouble() * Math.PI * 2;
-            double distance = 10.0 + random.nextDouble() * 10.0;
-            int x = Mth.floor(player.getX() + Math.cos(angle) * distance);
-            int z = Mth.floor(player.getZ() + Math.sin(angle) * distance);
-            int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
-            BlockPos at = new BlockPos(x, y, z);
-            if (y <= level.getMinY() + 1 || !isCorona(level, at)) {
-                continue;
-            }
-            int count = 3 + random.nextInt(2);
-            for (int i = 0; i < count; i++) {
-                CinderMite mite = ModEntities.CINDER_MITE.get().create(level, EntitySpawnReason.EVENT);
-                if (mite == null) {
-                    continue;
-                }
-                mite.snapTo(x + 0.5 + random.nextDouble() - 0.5, y, z + 0.5 + random.nextDouble() - 0.5, random.nextFloat() * 360.0F, 0.0F);
-                if (level.noCollision(mite)) {
-                    mite.finalizeSpawn(level, level.getCurrentDifficultyAt(at), EntitySpawnReason.EVENT, null);
-                    level.addFreshEntity(mite);
                 }
             }
         }
