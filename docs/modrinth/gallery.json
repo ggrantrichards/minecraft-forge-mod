@@ -7,28 +7,48 @@
   {
     "file": "docs/images/screens/nebula_fields.png",
     "title": "Nebula Fields",
-    "description": "Rolling moss islands under forests of giant glowing Lumineshrooms.",
+    "description": "Rolling Chorus Moss islands under forests of giant glowing Lumineshrooms.",
     "featured": true
+  },
+  {
+    "title": "Chorus Thicket",
+    "file": "docs/images/phase10/chorus_thicket.png",
+    "description": "Chorus trees of pale Chorus Wood, crowned in bloom."
+  },
+  {
+    "title": "Glimmering Crags",
+    "file": "docs/images/phase10/glimmering_crags.png",
+    "description": "Nightstone peaks grown through with teal Glimmer Crystal."
+  },
+  {
+    "title": "Resonant Spire",
+    "file": "docs/images/phase10/resonant_spire.png",
+    "description": "A Resonant Spire, and the Spire Wyrm that nests atop it."
+  },
+  {
+    "title": "Whalefall",
+    "file": "docs/images/phase10/whalefall.png",
+    "description": "The skeleton of a Star Leviathan, adrift in the void."
   },
   {
     "file": "docs/images/screens/ashen_barrens.png",
     "title": "Ashen Barrens",
-    "description": "Pale, flat shelves under green and gold auroras."
+    "description": "The dead country: pale shelves and old bones under green and gold auroras."
   },
   {
     "file": "docs/images/screens/corona.png",
     "title": "The Corona",
-    "description": "Sunscorched mesas, Flarebloom fields and glowing lichen."
+    "description": "Sunscorched mesas, Flarebloom fields and glowing lichen, where Sunstorms rage."
   },
   {
     "file": "docs/images/screens/comet_wake.png",
     "title": "Comet Wake",
-    "description": "Scorched islands pocked with impact craters."
+    "description": "Scorched islands pocked with impact craters and spires of blue ice."
   },
   {
     "file": "docs/images/screens/hollow_isles.png",
     "title": "Hollow Isles",
-    "description": "Dim forests of twisted Nullwood on ring-shaped islands."
+    "description": "Dim forests of twisted Nullwood on ring-shaped islands, Upwells underneath."
   },
   {
     "file": "docs/images/sky/corona_flare.png",
@@ -38,17 +58,17 @@
   {
     "file": "docs/images/mobs/drift_whale.png",
     "title": "Drift Whale",
-    "description": "A huge, gentle whale that swims through the void."
+    "description": "A huge, gentle whale that swims through the void. Ride it with a Chorus Flower on a Stick."
   },
   {
     "file": "docs/images/mobs/void_wanderer.png",
     "title": "Void Wanderer",
-    "description": "A clockwork construct that studies you, if you hold still."
+    "description": "A purpur sentinel of the End's builders that studies you, if you hold still."
   },
   {
     "file": "docs/images/mobs/pollinator.png",
     "title": "End Pollinator",
-    "description": "A little drifter that spreads glowing plants."
+    "description": "A little drifter that spreads glowing plants through the Nebula Fields."
   },
   {
     "file": "docs/images/comets/game_live_comet.png",
@@ -59,10 +79,5 @@
     "file": "docs/images/structures/game_rift_maw.png",
     "title": "Rift Maw",
     "description": "The fossil skull of a Star Leviathan. Its throat is a way across the End."
-  },
-  {
-    "file": "docs/images/structures/game_observatory_ruins.png",
-    "title": "Shattered Observatory",
-    "description": "The Cartographers' domed hall in a great ring of fallen quartz pillars."
   }
 ]

@@ -23,6 +23,8 @@ card 4.0 | For ages, the End stood still.
 sky_nebula_fields 150 pitch=-40:16 fwd=6 flare=calm |
 card 3.0 | Now it is waking up.
 nebula_fields 90 fwd=14 up=-3 yaw=8 | Nebula Fields
+chorus_thicket 90 fwd=12 up=-2 yaw=-6 | Chorus Thicket
+glimmering_crags 90 fwd=12 yaw=8 | Glimmering Crags
 ashen_barrens 90 fwd=14 up=-2 yaw=-8 | Ashen Barrens
 corona 90 fwd=12 yaw=10 | The Corona
 comet_wake 90 fwd=14 up=-2 yaw=-6 | Comet Wake
@@ -35,6 +37,7 @@ mob_void_ray 65 orbit=40 | Void Ray
 mob_watcher 75 fwd=2.5 | The Watcher
 mob_umbral_stalker_lit 65 orbit=30 | Umbral Stalker
 mob_hollow 75 orbit=-40 | The Hollow
+mob_spire_wyrm 90 orbit=35 | Spire Wyrm
 card 2.5 | Keep an eye on the sky.
 comet_wake 190 comet | Live Comets
 sky_corona_flare 110 yaw=25 pitch=-18:-10 flare=flare | Sunstorms
@@ -42,7 +45,8 @@ card 2.5 | Someone was here before you.
 structure_shattered_observatory 110 orbit=30 focus=hit | The Shattered Observatory
 structure_rift_maw 110 fwd=4 wake@30 | Rift Maws
 structure_constellation_maze 110 orbit=20 focus=hit bridges@30 | Constellation Mazes
-structure_whalefall 75 orbit=25 focus=hit | Whalefalls
+structure_resonant_spire 110 orbit=25 focus=hit | Resonant Spires
+structure_whalefall 130 orbit=25 focus=hit | The Whalefall
 card 2.5 | Bring something back.
 starforge_astral_forge 75 orbit=35 focus=hit | Starforging
 nebula_fields_aerial 150 fwd=-20 up=14 pitch=38:24 ease=in |

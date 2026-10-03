@@ -378,6 +378,7 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('W'), end, "hollow", 3.0, 1.6, 2.0);
         mobShot(lines, areas.get('A'), end, "drift_whale side", 11.0, 7.0, 7.5);
         mobShot(lines, areas.get('N'), end, "watcher", 6.5, 0.5, 2.6);
+        mobShot(lines, areas.get('G'), end, "spire_wyrm", 16.0, 6.0, 5.0);
         mobShot(lines, areas.get('W'), end, "live_comet side", 14.0, 14.0, 4.0);
         // Phase 5: the sky and Sunstorms.
         skyShot(lines, areas.get('A'), "sky_ashen_barrens", -45.0F, -32.0F, null, "flare=calm");

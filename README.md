@@ -4,36 +4,8 @@ A Forge mod for **Minecraft Java Edition 26.3** with **Forge 66.0.8** that expan
 into a sparse, mysterious network of astral islands. The full plan is in
 [docs/END_UPDATE.md](docs/END_UPDATE.md).
 
-**Status:** phases 1-9 done: biomes, mobs, the sky and Stellar Flares, structures, live comets, Starforging, and a polish pass. Mod ID: `astralend`.
-
-**Next, Phase 10: the Mojang pass.** Every feature gets held to what a real Mojang End update would
-ship: the hazards are defanged (no Flare Burn, no comet landfall, no Stalker void knockback), the
-materials consolidate to about three, Starforging gives way to a single smithing-table upgrade (Void
-Recall stays, on its own), the Black Hole Guardian, the Watcher, Comet Ice, the Cinder Mite and the
-inversion pockets are cut, the science names go, and the missing pieces come in: ties to the vanilla
-End (End Cities, chorus, gateways), music and ambience, and a reason to come back. The full list is in
-[the plan, section 14.1](docs/END_UPDATE.md#141-phase-10-the-mojang-pass).
-
-**Then Phase 11: new additions.** What a real End update would add, held to the same rules (fix the
-End's real problems, build on the vanilla End, a small sharp list, fantasy names, no unfair deaths or
-power creep) and keeping the End alien and stagnant, not lush:
-
-- **Biomes:** the vanilla barrens and highlands reworked into the **Ashen Barrens** (Ashdust muffles every
-  sound and blocks sculk vibrations) and the **Chorus Thicket** (brittle, bleached Chorus trees, Chorus
-  Wood, fall-cushioning Chorus Moss); new **Glimmering Crags** (dark teal **Nightstone**, Resonance
-  Crystals) and **Obsidian Wastes** (the Endermen's home, Fossilized End Ships).
-- **Mobs:** the **Drifter**, a void mount you hook with a fishing rod or saddle and steer with a Chorus
-  Flower on a Stick; the **Weaver**, whose Levitation Webs you can Silk Touch into jump pads; the
-  **Keeper**, an End City guardian that grounds gliders only over land; sparse **Chorus Moths**.
-- **Materials:** **Resonance Crystal** and **Rift Shards** (mined from island undersides; Rift Thread makes
-  an elytra wear 50% slower, nothing more).
-- **Blocks:** **Voidgel** (levitation pads), **End Chimes** (stop Endermen teleporting nearby), and the
-  **Resonance Anchor** (an Ender Pearl lays a 30-second bridge of light to it).
-- **The Resonant Spires**, climbed with webs, Voidgel and shulker bullets, with a **Resonance Vault** at
-  the top opened by a Weaver's key: banner patterns, a glowing cosmetic trim and a new music disc.
-- **Music and soundscapes** for all of it.
-
-The full spec is in [the plan, section 14.2](docs/END_UPDATE.md#142-phase-11-new-additions).
+**Status:** phases 1-10 done. Mod ID: `astralend`. Phase 10 reworked the whole mod toward what a real
+Mojang End update would ship - see [Phase 10](#phase-10-the-rework) below, which also lists every rename.
 
 [![Fifteen seconds of the trailer, filmed in the game. Click for the full trailer on YouTube.](docs/modrinth/teaser.webp)](https://youtu.be/ZUQVTpnqRTQ)
 
@@ -41,7 +13,7 @@ The full spec is in [the plan, section 14.2](docs/END_UPDATE.md#142-phase-11-new
 
 ## Get it
 
-The first public build, **1.0.0-beta.1**, is published to Modrinth as
+The current build, **1.0.0-beta.2**, is published to Modrinth as
 [**The Astral End**](https://modrinth.com/mod/the-astral-end) (a beta: blocks and items may still be
 renamed or removed before 1.0, so back up worlds you care about). It needs **Minecraft 26.3** and
 **Forge 66** or newer, on both the client and the server. MIT licensed (see [LICENSE](LICENSE)).
@@ -52,6 +24,77 @@ project page lives in [docs/modrinth/](docs/modrinth/): the icon, the gallery, t
 changelog for each version.
 
 ## What's in the mod so far
+
+The sections below run newest first. Older ones describe things as they were at the time; Phase 10
+renamed or removed some of them.
+
+### Phase 10: the rework
+
+**Cut:** the clockwork Orrery cluster (the Abandoned Orrery, Orrery Bronze and its family, the Orrery
+Heart, Shutters and Lamp, the Orrery Sentinel), and Comet Ice (comets bring vanilla blue ice now).
+
+**Renamed:**
+
+| Was | Now |
+|---|---|
+| Dark Matter Belt | Hollow Isles |
+| Aurora Shallows | Ashen Barrens |
+| Black Hole Guardian | The Hollow |
+| Corona Skimmer, Skimmer Film | Void Ray, Ray Film |
+| Singularity Shard | Abyss Shard |
+| Wormhole Maw | Rift Maw |
+| Gravity Anomaly / inversion pockets | Upwell Core / Upwells |
+| Stellar Flares, Flare Burn, Flare Ward | Sunstorms, Sunburn, Sun Ward |
+| Umbral Stone | Nightstone |
+| Nebula Moss | Chorus Moss |
+
+**New biomes** (the outer End now has seven):
+
+- **Chorus Thicket**, the Nebula Fields' sister: chorus trees of pale, glassy **Chorus Wood** (a full
+  wood set, regrown from **Chorus Sprouts**) crowned with Chorus Bloom, vanilla chorus between them.
+- **Glimmering Crags**: islands bristling with jagged Nightstone peaks grown through with teal
+  **Glimmer Crystal**. **Void Crystal** grows only here now, in the very bottoms of the islands, with a
+  Glimmer Cluster hanging under it to give it away.
+- The **Shattered Observatory** is a rare structure now, not a biome: the Cartographers' domed hall in a
+  ring of fallen quartz pillars, overgrown with Starblooms, watched over by shulkers - and the Watcher.
+- The **Ashen Barrens** are the dead country: no Pollinators, no Endermen, ash in the air, withered
+  Lumineshrooms, more bones. The auroras stay.
+
+**New things:**
+
+- **The Resonant Spires** (Glimmering Crags): ninety-block hollow towers with no stairs - climb them on
+  shulker bullets or a Potion of Upwelling - and the **Spire Wyrm** at the top, a serpent kin of the
+  Ender Dragon. It coils through the tower, lunges, and breathes lingering void breath; flying it takes
+  half damage, but **ring a bell** on a ledge as it passes and it crashes, stunned, onto the ledge. It
+  drops the **Resonant Key** for the **Resonance Vault**: the Wyrm and Spire banner patterns, the
+  **Eclipse** armor trim, the music disc **"Observing the Star"**, a Starforge Template and more.
+- **The Whalefall** is a landmark now: the skeleton of a Star Leviathan adrift in the void, about 100
+  blocks high and 300 long, its skull hollowed into floors and a village built on decks in its ribcage.
+- **Potion of Upwelling**, brewed from **Upwell Motes** that drift up through Upwells: gravity reversed,
+  up to 20 blocks (hit a ceiling and it hurts like a fall), then Slow Falling as it wears off.
+- **Voidgel**: bouncy jelly from island undersides that also gives Slow Falling.
+- **End Chimes** (End Rods and amethyst): light and a low hum; a teleport within 16 blocks rings them,
+  and nothing else teleports there for 10 seconds.
+- **Lodestar** (Lodestone + Meteoric Iron): no comet lands within 48 blocks of one.
+- **Chorus Flower on a Stick**: ride a **Drift Whale** and steer it where you look.
+
+**Reworked:** the Drift Whale (400 health and killable - it never fights back, it flees; feed it Chorus
+Fruit; it grazes on chorus), the Umbral Stalker (senses you through walls, snuffs out lights for good
+while hunting - only with `mobGriefing` - and flees fire; no more throws toward the void), the Void Ray
+(a back dark as the void, gold-edged wings), the Void Wanderer (End City purpur, no more bronze), one
+Charged Void Crystal lights two Rift Maw eyes, the Bottled Flare is furnace fuel, chorus and Endermen
+live only in the living biomes, and **Starforging** is softer (Echo Strike 10%, Time Stretch and Lensing
+5% a piece, Heat Shield 1 s a piece, Soak Light half a heart), its alloy needs Dragon's Breath, and its
+templates turn up in End City treasure.
+
+**Music** for the astral biomes, all free to use - see [sounds/CREDITS.txt](src/main/resources/assets/astralend/sounds/CREDITS.txt):
+"Out There" by yd, "Ambient Relaxing Loop" and "Heavenly Loop" by isaiah658, "Observing the Star" by
+madeso (all CC0), and "Space Music" by HitCtrl (CC-BY 3.0).
+
+![The Chorus Thicket](docs/images/phase10/chorus_thicket.png)
+![The Glimmering Crags](docs/images/phase10/glimmering_crags.png)
+![A Resonant Spire, with the Spire Wyrm's boss bar](docs/images/phase10/resonant_spire.png)
+![The Whalefall, adrift in the void](docs/images/phase10/whalefall.png)
 
 ### Phase 9: polish
 

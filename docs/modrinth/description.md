@@ -6,69 +6,75 @@ light and its own secrets.
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ZUQVTpnqRTQ" title="The Astral End - Official Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-**[Watch the trailer on YouTube](https://youtu.be/ZUQVTpnqRTQ)**: filmed entirely in-game.
+**[Watch the trailer on YouTube](https://youtu.be/ZUQVTpnqRTQ)**: filmed entirely in-game (before the beta.2 rework).
 
-> **Beta.** This is the first public build. Expect changes before 1.0, including blocks and items that
-> are renamed, reworked or removed. Keep backups of worlds you care about.
+> **Beta.** Expect changes before 1.0, including blocks and items that are renamed, reworked or
+> removed. Keep backups of worlds you care about.
 
 {{Nebula Fields}}
 
-## Five new biomes
+## Seven new biomes
 
-- **Nebula Fields:** rolling violet moss under forests of giant glowing Lumineshrooms. Low gravity: you
-  fall slower and jump higher.
-- **Ashen Barrens:** vast pale shelves under slow green and gold auroras, ribs of ancient bone in the
-  ground.
+- **Nebula Fields:** rolling violet Chorus Moss under forests of giant glowing Lumineshrooms. Low gravity:
+  you fall slower and jump higher.
+- **Chorus Thicket:** crowded chorus trees of pale, glassy Chorus Wood, crowned in Chorus Bloom.
+- **Glimmering Crags:** jagged Nightstone peaks grown through with teal Glimmer Crystal - and, in the very
+  bottoms of the islands, the End's rarest ore, Void Crystal.
+- **Ashen Barrens:** a dead country of pale shelves and old bones under slow green and gold auroras.
 - **The Corona:** sunscorched mesas, Flarebloom fields, and the End's best ore, Solarite.
 - **Comet Wake:** scorched islands pocked with craters, Stardust that falls *upward*, and Meteoric Iron.
-- **Hollow Isles:** dim Nullwood forests on ring-shaped islands, and Void Crystal.
+- **Hollow Isles:** dim Nullwood forests on ring-shaped islands, and Upwells where gravity points up.
 
-Two new wood sets (Lumine and Nullwood), several stone families, glowing plants and lights.
+Three new wood sets (Lumine, Nullwood and Chorus), several stone families, glowing plants and lights.
 
-{{Ashen Barrens}}
+{{Chorus Thicket}}
+
+{{Glimmering Crags}}
 
 ## A living sky
 
 Stars that turn, auroras, and the Remnant, the dying ember of a collapsed star, low on the horizon. In
 the Corona, **Sunstorms** turn the sky gold: Flareblooms open, Void Rays take to the air, and the
-solar wind pushes your elytra along.
+solar wind pushes your elytra along. Now and then a **live comet** streaks past: glide through its tail,
+or knock chunks off its head. A **Lodestar** keeps them from landing near your base.
 
 {{A Sunstorm}}
 
 ## New creatures
 
-- **Drift Whale:** a huge, translucent whale swimming slowly through the void. It turns toward you and
-  hums.
-- **Void Wanderer:** a clockwork construct that floats over and studies you. Hold still and it leaves
-  you a piece of its star map.
-- **End Pollinator:** a little drifter that spreads glowing plants and leaves Glowing Spores.
-- **Void Ray:** a flat manta that rides the flares. Shear it for Ray Film.
-- **Umbral Stalker:** a shadow you can't see in the dark until it hunts you. Light reveals it.
-- And a few more, for you to find.
+- **Drift Whale:** a huge, translucent whale swimming slowly through the void. Ride it with a Chorus
+  Flower on a Stick.
+- **Spire Wyrm:** a serpent kin of the Ender Dragon, coiled atop the Resonant Spires. Ring the bells.
+- **Umbral Stalker:** a shadow that always knows where you are, and snuffs out your lights. It fears fire.
+- **Void Wanderer**, **End Pollinator**, **Void Ray**, **Cinder Mite**, **The Hollow**, and the **Watcher**.
 
 {{Drift Whale}}
 
-## Live comets
+## Places to find
 
-Now and then a comet streaks past. Glide through its tail with an elytra and it sweeps you along; hit
-its head to knock off Stardust, blue ice or Meteoric Iron.
+- **Resonant Spires:** ninety-block towers with no stairs. Climb them on shulker bullets or a Potion of
+  Upwelling, beat the Spire Wyrm, and open the **Resonance Vault**: banner patterns, the Eclipse armor
+  trim, a music disc and more.
+- **The Whalefall:** the skeleton of a Star Leviathan adrift in the void, 300 blocks long, built into
+  by whoever came after.
+- **The Shattered Observatory**, **Rift Maws** that carry you across the End, **Constellation Mazes**,
+  **Comet Craters** and **Solar Arrays**.
 
-{{A live comet}}
+{{Resonant Spire}}
 
-## Ruins of the Cartographers
+{{Whalefall}}
 
-Someone mapped the End before you. Find the **Shattered Observatory**, a domed hall in a great ring
-of fallen pillars, and open its vaults with a Chart Fragment; ride a **Rift Maw** across the End; and
-light the star-bridges of a **Constellation Maze**.
+## Starforging
 
-{{Rift Maw}}
+An Astral Forge upgrades diamond and netherite gear with six Starforge upgrades - small, stacking perks
+like Echo Strike, Lensing and Void Recall - using Starforge Alloy (Dragon's Breath binds it) and
+Templates found in ruins and End Cities.
 
-{{Shattered Observatory}}
+## Music
 
-## Building blocks
-
-Lumine and Nullwood wood sets, Nightstone, Sunscorched Stone, Pale End Stone, Observatory Quartz
-and Astral Glass with stars caught in it.
+Music for the astral biomes and a music disc, all free to use: "Out There" by yd, "Ambient Relaxing
+Loop" and "Heavenly Loop" by isaiah658, "Observing the Star" by madeso (CC0), and "Space Music" by
+HitCtrl (CC-BY 3.0), from OpenGameArt.org.
 
 ## Requirements
 
