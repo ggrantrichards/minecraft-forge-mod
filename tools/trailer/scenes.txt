@@ -19,8 +19,9 @@
 #   ease              both (default), in, out or none
 #   comet             a live comet crosses the sky and comes down ahead; the camera follows it
 # and things to happen: wake@N, bridges@N (on frame N), flare=<phase>, clear, and for the Spire Wyrm
-# wyrm_wake@N (it wakes on its nest), wyrm_breath@N (it breathes at the camera), wyrm_stun@N (the
-# bell nearest it rings and stuns it).
+# wyrm_wake@N (it wakes on its nest), wyrm_circle@N (it circles the top of its spire, in view),
+# wyrm_breath@N (it breathes at the camera), wyrm_stun@N (the bell nearest the camera rings and
+# stuns it).
 # The caption after "|" is shown small in the corner; leave it empty for none.
 
 vo 0.6 | For ten thousand years... the End stood still.
@@ -66,10 +67,10 @@ wyrm_nest 96 fwd=2.5 focus=wyrm |
 vo 0.4 | Don't. Wake. It.
 card 3.0 | Don't wake it.
 wyrm_nest 150 fwd=-7 up=5 focus=wyrm wyrm_wake@4 | The Spire Wyrm
-wyrm_flight 110 side=-6 focus=wyrm |
+wyrm_flight 110 side=-6 focus=wyrm wyrm_circle@0 |
 wyrm_shaft 90 focus=wyrm wyrm_breath@24 |
 vo 0.5 | Ring the bells. Bring it down.
-wyrm_flight 120 side=5 focus=wyrm wyrm_stun@8 | Ring the bells
+wyrm_bell 130 focus=wyrm wyrm_circle@0 wyrm_stun@36 | Ring the bells
 vo 0.3 | Then bring something back.
 card 2.8 | Bring something back.
 starforge_astral_forge 75 orbit=35 focus=hit | Starforging

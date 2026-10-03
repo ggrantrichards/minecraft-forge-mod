@@ -215,9 +215,13 @@ public final class ClientScreenshots {
                     net.minecraft.world.phys.Vec3 camera = net.minecraft.world.phys.Vec3.atCenterOf(here);
                     wyrm.breatheAtOnCue(end, camera.add(wyrm.position().subtract(camera).normalize().scale(5.0)));
                 }
+                case "wyrm_circle" -> {
+                    wyrm.wake(end);
+                    wyrm.circleNestOnCue(400);
+                }
                 case "wyrm_stun" -> {
                     wyrm.wake(end);
-                    wyrm.stunAtNearestBellOnCue(end);
+                    wyrm.stunAtBellOnCue(end, here);
                 }
                 default -> LOGGER.error("[AstralEnd screenshots] unknown event {}", style);
             }

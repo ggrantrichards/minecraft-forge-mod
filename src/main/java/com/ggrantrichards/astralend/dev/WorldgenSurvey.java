@@ -575,6 +575,23 @@ public final class WorldgenSurvey {
         // Up the shaft from 30 blocks below the nest, and level with it from 22 blocks out.
         lines.add(String.format(java.util.Locale.ROOT, "wyrm_shaft %.1f %.1f %.1f -45 -60", nest.x - 2.0, nest.y - 30.0, nest.z - 2.0));
         lines.add(String.format(java.util.Locale.ROOT, "wyrm_flight %.1f %.1f %.1f -45 -8", nest.x - 16.0, nest.y + 4.0, nest.z - 16.0));
+        // The bell nearest the top, seen from just outside the spire's wall, level with it.
+        BlockPos bell = null;
+        for (BlockPos p : BlockPos.betweenClosed(BlockPos.containing(nest).offset(-18, -40, -18), BlockPos.containing(nest).offset(18, 4, 18))) {
+            if (end.getBlockState(p).is(Blocks.BELL) && (bell == null || p.getY() > bell.getY())) {
+                bell = p.immutable();
+            }
+        }
+        if (bell != null) {
+            net.minecraft.world.phys.Vec3 at = net.minecraft.world.phys.Vec3.atCenterOf(bell);
+            net.minecraft.world.phys.Vec3 out = new net.minecraft.world.phys.Vec3(at.x - nest.x, 0, at.z - nest.z).normalize();
+            net.minecraft.world.phys.Vec3 cam = at.add(out.scale(9.0)).add(0, 2.0, 0);
+            net.minecraft.world.phys.Vec3 d = at.subtract(cam);
+            double yaw = Math.toDegrees(Math.atan2(-d.x, d.z));
+            double pitch = -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+            lines.add(String.format(java.util.Locale.ROOT, "wyrm_bell %.1f %.1f %.1f %.1f %.1f", cam.x, cam.y - 1.62, cam.z, yaw, pitch));
+            log("resonant_spire: the highest bell at " + bell.toShortString());
+        }
     }
 
     private static void structureShot(List<String> lines, Map<String, BlockPos> structures, String name, double distance,

@@ -160,9 +160,9 @@ public class LiveComet extends Mob {
         Vec3 back = this.heading().scale(-1.0);
         Vec3 head = this.position().add(0, this.getBbHeight() * 0.5, 0);
         RandomSource r = this.random;
-        for (int i = 0; i < 10; i++) {
-            double along = r.nextDouble() * r.nextDouble() * 9.0;          // most near the head
-            double spread = 0.5 + along * 0.18;                             // the tail widens behind
+        for (int i = 0; i < 22; i++) {
+            double along = r.nextDouble() * r.nextDouble() * 16.0;         // most near the head
+            double spread = 0.7 + along * 0.2;                              // the tail widens behind
             Vec3 p = head.add(back.scale(1.2 + along)).add((r.nextDouble() - 0.5) * spread, (r.nextDouble() - 0.5) * spread,
                 (r.nextDouble() - 0.5) * spread);
             Vec3 v = back.scale(0.03 + r.nextDouble() * 0.07);

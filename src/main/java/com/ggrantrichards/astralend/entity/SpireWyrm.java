@@ -80,6 +80,7 @@ public class SpireWyrm extends Monster {
     private @Nullable Vec3 stunAt;
     private @Nullable Vec3 lungeAt;
     private final List<BlockPos> bells = new ArrayList<>();
+    private int circleTicks;   // for the trailer: circling the top of its spire, in view
 
     public SpireWyrm(EntityType<? extends SpireWyrm> type, Level level) {
         super(type, level);
@@ -308,6 +309,12 @@ public class SpireWyrm extends Monster {
             default -> {
                 goal = this.coilPoint();
                 speed = target != null ? 0.6 : 0.35;
+                if (target == null && this.circleTicks > 0) {
+                    this.circleTicks--;
+                    this.angle += 0.05;
+                    goal = this.home.add(Math.cos(this.angle) * 15.0, 5.0 + Math.sin(this.angle * 2.0) * 2.0, Math.sin(this.angle) * 15.0);
+                    speed = 0.55;
+                }
                 if (target != null && this.phaseTicks > 140 + this.random.nextInt(80)) {
                     if (this.random.nextBoolean()) {
                         this.lungeAt = target.getEyePosition().add(target.getDeltaMovement().scale(10.0))
@@ -370,11 +377,16 @@ public class SpireWyrm extends Monster {
         this.playSound(SoundEvents.ENDER_DRAGON_SHOOT, 2.0F, 0.8F);
     }
 
-    public void stunAtNearestBellOnCue(ServerLevel level) {
+    public void circleNestOnCue(int ticks) {
+        this.circleTicks = ticks;
+    }
+
+    // The bell nearest `near` rings, and the Wyrm is stunned onto its ledge.
+    public void stunAtBellOnCue(ServerLevel level, BlockPos near) {
         this.findBells(level);
         BlockPos best = null;
         for (BlockPos p : this.bells) {
-            if (best == null || p.distSqr(this.blockPosition()) < best.distSqr(this.blockPosition())) {
+            if (best == null || p.distSqr(near) < best.distSqr(near)) {
                 best = p;
             }
         }

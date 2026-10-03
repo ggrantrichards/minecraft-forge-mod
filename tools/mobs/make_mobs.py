@@ -1043,6 +1043,20 @@ def comet_ice(face, px, py, fw, fh, rnd):
     return clamp(i, COMET_ICE)
 
 
+def comet_ice_glow(face, px, py, fw, fh, rnd):
+    """The ice shines: a live comet is lit by its own cold light, so it shows as a bright head against
+    the dark sky (the rock between stays dark)."""
+    c = comet_ice(face, px, py, fw, fh, rnd)      # its own pattern, dimmer: on top of the lit ice it brightens,
+    return (c[0] * 6 // 10, c[1] * 6 // 10, c[2] * 6 // 10, 255)   # and at night it is the ice
+
+
+def comet_rock_glow(face, px, py, fw, fh, rnd):
+    t = n()
+    if _ice_crust(face, px, py, fw, fh, t):
+        return comet_ice_glow(face, px, py, fw, fh, rnd)
+    return comet_crack_glow(face, px, py, fw, fh, rnd)
+
+
 def comet_crack_glow(face, px, py, fw, fh, rnd):
     t = n()
     if not _ice_crust(face, px, py, fw, fh, t) and 0.41 < t < 0.43 and face != "up":
@@ -1052,14 +1066,14 @@ def comet_crack_glow(face, px, py, fw, fh, rnd):
 
 COMET = Mob("live_comet", (64, 64), [
     Part("comet", (0, 18, 0), [
-        B(-4, -4, -4, 8, 8, 8, comet_rock, comet_crack_glow),       # the rock
-        B(-5, -2, -3, 1, 5, 5, comet_rock, comet_crack_glow),       # its lumps
-        B(4, -1, -2, 1, 4, 4, comet_rock),
-        B(-3, 4, -3, 5, 1, 5, comet_rock),
-        B(-2, -1, 4, 5, 4, 1, comet_rock, comet_crack_glow),
-        B(-3, -5, -3, 5, 1, 4, comet_ice),                          # the ice: a crust on top
-        B(-6, -5, -4, 3, 3, 3, comet_ice),                          # and chunks jutting out
-        B(1, -7, -1, 2, 2, 2, comet_ice),
+        B(-4, -4, -4, 8, 8, 8, comet_rock, comet_rock_glow),        # the rock
+        B(-5, -2, -3, 1, 5, 5, comet_rock, comet_rock_glow),        # its lumps
+        B(4, -1, -2, 1, 4, 4, comet_rock, comet_rock_glow),
+        B(-3, 4, -3, 5, 1, 5, comet_rock, comet_rock_glow),
+        B(-2, -1, 4, 5, 4, 1, comet_rock, comet_rock_glow),
+        B(-3, -5, -3, 5, 1, 4, comet_ice, comet_ice_glow),          # the ice: a crust on top
+        B(-6, -5, -4, 3, 3, 3, comet_ice, comet_ice_glow),          # and chunks jutting out
+        B(1, -7, -1, 2, 2, 2, comet_ice, comet_ice_glow),
     ]),
 ], egg=(COMET_ROCK[2], COMET_ICE[2]))
 

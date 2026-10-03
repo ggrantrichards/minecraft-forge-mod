@@ -106,6 +106,8 @@ public final class ClientTrailer {
                 }
                 ClientScreenshots.load(minecraft);
                 loadScenes(minecraft);
+                // no autosaves while filming: their "Saving world" note would be in the picture
+                server.execute(() -> server.getAllLevels().forEach(level -> level.noSave = true));
                 new File(minecraft.gameDirectory, "screenshots/trailer").mkdirs();
                 hideHud(minecraft);
                 next(minecraft, server);
@@ -396,12 +398,13 @@ public final class ClientTrailer {
         Vec3 right = new Vec3(-forward.z, 0, forward.x);   // facing south (+z), your right is -x
         server.execute(() -> {
             ServerLevel end = server.getLevel(Level.END);
-            Vec3 ahead = eye0.add(forward.scale(44.0));
+            Vec3 ahead = eye0.add(forward.scale(34.0));
             int ground = end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mth.floor(ahead.x), Mth.floor(ahead.z));
             boolean land = ground > end.getMinY() + 8;
             Vec3 stop = new Vec3(Mth.floor(ahead.x) + 0.5, land ? ground - 1 : eye0.y - 14, Mth.floor(ahead.z) + 0.5);
-            Vec3 start = stop.add(forward.scale(60.0)).add(right.scale(-70.0)).add(0, 80.0, 0);
-            Vec3 control = start.add(stop).scale(0.5).add(right.scale(-12.0)).add(0, 26.0, 0);
+            // in close enough to see: across the sky from the far left, passing over and landing ahead
+            Vec3 start = stop.add(forward.scale(30.0)).add(right.scale(-48.0)).add(0, 52.0, 0);
+            Vec3 control = start.add(stop).scale(0.5).add(right.scale(-6.0)).add(forward.scale(-10.0)).add(0, 14.0, 0);
             comet = new Vec3[] {start, control, stop};
             LiveComet c = ModEntities.LIVE_COMET.get().create(end, EntitySpawnReason.EVENT);
             if (c != null) {

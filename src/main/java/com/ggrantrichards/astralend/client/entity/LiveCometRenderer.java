@@ -14,7 +14,7 @@ import net.minecraft.util.Mth;
 
 public class LiveCometRenderer extends MobRenderer<LiveComet, LiveCometRenderer.State, LiveCometRenderer.Model> {
     private static final Identifier TEXTURE = ModModelLayers.texture("live_comet");
-    private static final float SCALE = 3.0F;
+    private static final float SCALE = 4.0F;
 
     public LiveCometRenderer(EntityRendererProvider.Context context) {
         super(context, new Model(context.bakeLayer(ModModelLayers.LIVE_COMET)), 0.0F);
