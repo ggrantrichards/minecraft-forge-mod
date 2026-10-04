@@ -1167,7 +1167,7 @@ def worldgen_phase3():
             {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
             {"type": "minecraft:matching_blocks", "blocks": ["minecraft:end_stone", rid("living_turf"), rid("breathcomb")], "offset": [0, -1, 0]}]}},
     ]})
-    end_biome("eclipse", "The Eclipse", fog="#16182a", water="#34c8bc",   # teal-cyan water (a teal fog turned End Stone green)
+    end_biome("eclipse", "The Eclipse", fog="#2a1e2e", water="#34c8bc",   # a warm dark purple: teal or blue fog turned End Stone green
               features_step4=[rid("eclipse_landmarks")],
               features_step9=[rid("eclipse_giant_lumineshrooms"), rid("eclipse_breathcomb"), rid("eclipse_lumineshrooms"),
                               rid("eclipse_starblooms")],
