@@ -1,93 +1,63 @@
 [
   {
-    "file": "docs/images/screens/nebula_fields.png",
-    "title": "Nebula Fields",
-    "description": "Rolling Chorus Moss islands under forests of giant glowing Lumineshrooms.",
+    "file": "docs/images/distilled/eclipse.png",
+    "title": "The Eclipse",
+    "description": "The Eclipse's heaven half: bare End Stone, the Wellspring, pale Lumineshrooms under a teal aurora.",
     "featured": true
   },
   {
-    "title": "Chorus Thicket",
-    "file": "docs/images/phase10/chorus_thicket.png",
-    "description": "Chorus trees of pale Chorus Wood, crowned in bloom."
+    "file": "docs/images/distilled/corona.png",
+    "title": "The Eclipse's hell half",
+    "description": "Crimson stone under a crimson sky, petrified stalks and Flareblooms."
   },
   {
-    "title": "Glimmering Crags",
-    "file": "docs/images/phase10/glimmering_crags.png",
-    "description": "Nightstone peaks grown through with teal Glimmer Crystal."
+    "file": "docs/images/distilled/nebula_fields.png",
+    "title": "Nebula Fields",
+    "description": "Violet Chorus Moss plains, and low gravity."
   },
   {
-    "title": "Resonant Spire",
-    "file": "docs/images/phase10/resonant_spire.png",
-    "description": "A Resonant Spire, and the Spire Wyrm that nests atop it."
-  },
-  {
-    "title": "The Spire Wyrm, asleep",
-    "file": "docs/images/phase10/wyrm_nest.png",
-    "description": "The Spire Wyrm coiled asleep on its nest atop a Resonant Spire. Don't wake it."
-  },
-  {
-    "title": "Whalefall",
-    "file": "docs/images/phase10/whalefall.png",
-    "description": "The skeleton of a Star Leviathan, adrift in the void."
-  },
-  {
-    "file": "docs/images/screens/ashen_barrens.png",
+    "file": "docs/images/distilled/ashen_barrens.png",
     "title": "Ashen Barrens",
-    "description": "The dead country: pale shelves and old bones under green and gold auroras."
+    "description": "The leviathan graveyard: pale stone and old bones."
   },
   {
-    "file": "docs/images/screens/corona.png",
-    "title": "The Corona",
-    "description": "Sunscorched mesas, Flarebloom fields and glowing lichen, where Sunstorms rage."
-  },
-  {
-    "file": "docs/images/screens/comet_wake.png",
-    "title": "Comet Wake",
-    "description": "Scorched islands pocked with impact craters and spires of blue ice."
-  },
-  {
-    "file": "docs/images/screens/hollow_isles.png",
+    "file": "docs/images/distilled/hollow_isles.png",
     "title": "Hollow Isles",
-    "description": "Dim forests of twisted Nullwood on ring-shaped islands, Upwells underneath."
+    "description": "The End's only forest: dim Nullwood on ring-shaped islands."
   },
   {
-    "file": "docs/images/sky/corona_flare.png",
-    "title": "A Sunstorm",
-    "description": "The Corona's sky burning gold."
-  },
-  {
-    "file": "docs/images/mobs/drift_whale.png",
+    "file": "docs/images/distilled/mob_drift_whale_side.png",
     "title": "Drift Whale",
-    "description": "A huge, gentle whale that swims through the void, its spots glowing like deep-sea light. Ride it with a Chorus Flower on a Stick."
+    "description": "A Drift Whale over the Ashen Barrens. Sing one a song and it's yours to ride."
   },
   {
-    "file": "docs/images/mobs/void_wanderer.png",
-    "title": "Void Wanderer",
-    "description": "A purpur sentinel of the End's builders that studies you, if you hold still."
+    "file": "docs/images/distilled/mob_hushback.png",
+    "title": "Hushback",
+    "description": "A clear-hided grazer of the Eclipse; hurt one and the herd blinks away."
   },
   {
-    "file": "docs/images/mobs/pollinator.png",
-    "title": "End Pollinator",
-    "description": "A little drifter that spreads glowing plants through the Nebula Fields."
+    "file": "docs/images/distilled/mob_mirror_wretch.png",
+    "title": "Mirror Wretch",
+    "description": "It throws familiar sounds from the void's edge to lure you over."
   },
   {
-    "file": "docs/images/comets/game_live_comet.png",
-    "title": "A live comet",
-    "description": "Ride its tail with an elytra, or knock a chunk off its head."
+    "file": "docs/images/distilled/mob_watcher.png",
+    "title": "The Watcher",
+    "description": "Only ever seen from the corner of your eye. Its eye is the Hourglass Nebula."
   },
   {
-    "file": "docs/images/structures/game_rift_maw.png",
+    "file": "docs/images/distilled/structure_leviathan_reliquary.png",
+    "title": "The Leviathan",
+    "description": "In a Leviathan's skull: the reliquary, its pylons, and a floor open to the void."
+  },
+  {
+    "file": "docs/images/distilled/mob_curator.png",
+    "title": "The Curator",
+    "description": "The keeper of the reliquary."
+  },
+  {
+    "file": "docs/images/distilled/structure_rift_maw.png",
     "title": "Rift Maw",
-    "description": "The fossil skull of a Star Leviathan. Its throat is a way across the End."
-  },
-  {
-    "title": "The creatures",
-    "file": "docs/images/mobs.png",
-    "description": "Every creature of the Astral End, from the End Pollinator to the Spire Wyrm."
-  },
-  {
-    "title": "The blocks",
-    "file": "docs/images/blocks.png",
-    "description": "Every full block the Astral End adds."
+    "description": "A colossal skull that wakes into a travel network."
   }
 ]
