@@ -1153,8 +1153,8 @@ def worldgen_phase3():
 
     # ---- The Eclipse's heaven half (the hell half is the Corona, above): living turf, giant
     # Lumineshrooms (their only home), Breathcomb, the Wellspring and its seeds (EclipseLandmarksFeature).
-    # Sparse, as vanilla's End is: a giant Lumineshroom in one chunk of three, small plants in patches.
-    big_feature("eclipse_giant_lumineshrooms", "giant_lumineshroom", rarity=3)
+    # Sparse, as vanilla's End is: a giant Lumineshroom in one chunk of ten, small plants in patches.
+    big_feature("eclipse_giant_lumineshrooms", "giant_lumineshroom", rarity=10)
     plant_patch("eclipse_lumineshrooms", "lumineshroom", rarity=2, count=10, spread=6, on=["minecraft:end_stone", rid("living_turf")])
     plant_patch("eclipse_starblooms", "starbloom", rarity=3, count=8, spread=6, on=["minecraft:end_stone", rid("living_turf")])
     feature("breathcomb", {"type": "minecraft:simple_block", "to_place": {"id": rid("breathcomb")}})
@@ -1167,7 +1167,7 @@ def worldgen_phase3():
             {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
             {"type": "minecraft:matching_blocks", "blocks": ["minecraft:end_stone", rid("living_turf"), rid("breathcomb")], "offset": [0, -1, 0]}]}},
     ]})
-    end_biome("eclipse", "The Eclipse", fog="#0e3436", water="#34c8bc",   # teal-cyan, its counterpart
+    end_biome("eclipse", "The Eclipse", fog="#16182a", water="#34c8bc",   # teal-cyan water (a teal fog turned End Stone green)
               features_step4=[rid("eclipse_landmarks")],
               features_step9=[rid("eclipse_giant_lumineshrooms"), rid("eclipse_breathcomb"), rid("eclipse_lumineshrooms"),
                               rid("eclipse_starblooms")],

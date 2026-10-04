@@ -37,7 +37,7 @@
       },
       "modifier": "overlay"
     },
-    "minecraft:visual/fog_color": "#0e3436",
+    "minecraft:visual/fog_color": "#16182a",
     "minecraft:audio/background_music": {
       "default": {
         "sound": "astralend:music.eclipse",

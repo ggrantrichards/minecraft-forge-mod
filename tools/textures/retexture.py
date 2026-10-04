@@ -282,7 +282,7 @@ def living_turf_side():
     return img
 
 
-BREATH = (("3a3248", "4e445e", "625872"), ("5a4e70", "766a8e", "9286aa"), ("7e72a0", "a296c0", "c4bade"),
+BREATH = (("6a6082", "7c7296", "9086aa"), ("7a6e98", "9084ae", "a69ac4"), ("8c80b0", "a89cc8", "c6bcde"),
           ("a498c8", "cec4e8", "f0ecfc"))   # lavender, dim to bright
 
 
