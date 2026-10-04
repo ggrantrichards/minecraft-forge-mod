@@ -1028,6 +1028,7 @@ public final class WorldgenSurvey {
         final Map<Block, Integer> firstIn = new HashMap<>();      // the first block of any kind from the sky down
         final Map<Integer, Integer> surfaceHeightsIn = new HashMap<>();
         final List<BlockPos> anomalies = new ArrayList<>();
+        final List<BlockPos> endStoneIn = new ArrayList<>();   // where End Stone was left inside (the first few thousand)
         final List<String> profiles = new ArrayList<>();
         int decayingLeaves;
         int caveAir;                                         // sealed cave air (the Crags' root hollows)
@@ -1080,7 +1081,10 @@ public final class WorldgenSurvey {
         }
     }
 
+    private static ServerLevel LAST_END;
+
     private static Area scan(ServerLevel end, BiomeInfo info, BlockPos spot) {
+        LAST_END = end;
         Area area = new Area(info, spot);
         int radius = info.areaChunks();
         int cx = spot.getX() >> 4;
@@ -1129,6 +1133,9 @@ public final class WorldgenSurvey {
                             }
                             Block block = state.getBlock();
                             (inside ? area.in : area.out).merge(block, 1, Integer::sum);
+                            if (inside && block == Blocks.END_STONE && area.endStoneIn.size() < 4000) {
+                                area.endStoneIn.add(pos);
+                            }
                             if (firstSeen == null) {
                                 firstSeen = block;
                             }
@@ -1201,6 +1208,25 @@ public final class WorldgenSurvey {
         log(String.format("%s: %s inside %d, End Stone inside %d, %s outside the biome %d", area.info.name(),
             stone.getName().getString(), own, endStone, stone.getName().getString(), area.out(stone)));
         if (endStone > 0.02 * Math.max(1, own)) {
+            // Where it is: its heights, how many columns, the biome at the block itself, and what's round a few.
+            Map<Integer, Integer> byY = new java.util.TreeMap<>();
+            java.util.Set<Long> columns = new java.util.HashSet<>();
+            for (BlockPos p : area.endStoneIn) {
+                byY.merge(p.getY() / 8 * 8, 1, Integer::sum);
+                columns.add(((long) p.getX() << 32) ^ (p.getZ() & 0xffffffffL));
+            }
+            log(String.format("%s: the End Stone, by height (in 8s): %s; in %d columns", area.info.name(), byY, columns.size()));
+            ServerLevel level = LAST_END;
+            for (int i = 0; i < area.endStoneIn.size() && i < 6 * 97; i += 97) {
+                BlockPos p = area.endStoneIn.get(i);
+                if (level != null) {
+                    log(String.format("  End Stone at %s: biome there %s, above %s, below %s, beside %s", p.toShortString(),
+                        level.getBiome(p).unwrapKey().map(k -> k.identifier().toString()).orElse("?"),
+                        level.getBlockState(p.above()).getBlock().getName().getString(),
+                        level.getBlockState(p.below()).getBlock().getName().getString(),
+                        level.getBlockState(p.east()).getBlock().getName().getString()));
+                }
+            }
             failures.add(String.format("%s: %d End Stone blocks left inside the biome, next to %d %s", area.info.name(), endStone,
                 own, stone.getName().getString()));
         }
