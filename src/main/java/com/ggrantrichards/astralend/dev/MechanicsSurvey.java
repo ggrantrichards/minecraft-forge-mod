@@ -355,10 +355,8 @@ final class MechanicsSurvey {
         mite.snapTo(at.getX() + 1.5, at.getY(), at.getZ() + 4.5, 0.0F, 0.0F);
         end.addFreshEntity(grip);
         end.addFreshEntity(mite);
-        for (int i = 0; i < 12 && mite.isAlive(); i++) {
-            clearHurtCooldown(mite);
-            grip.doHurtTarget(end, mite);
-        }
+        mite.setHealth(2.0F);           // one blow (3) to kill it: hurt cooldowns don't come into it
+        grip.doHurtTarget(end, mite);
         boolean pearl = !end.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, grip.getBoundingBox().inflate(4.0),
             e -> e.getItem().is(net.minecraft.world.item.Items.ENDER_PEARL)).isEmpty();
         boolean leavesPlayers = !grip.canAttack(player);
@@ -389,17 +387,16 @@ final class MechanicsSurvey {
             failures.add("new mobs: a Mirror Wretch should know a ledge from open ground, and throw a player away from it");
         }
         // Hollowback: struck, it blinks aside (1 in 3) - a dozen blows, and it will have.
-        var hollow = ModEntities.HOLLOWBACK.get().create(end, EntitySpawnReason.COMMAND);
-        hollow.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 8.5, 0.0F, 0.0F);
-        end.addFreshEntity(hollow);
         boolean blinked = false;
-        for (int i = 0; i < 12 && !blinked; i++) {
+        for (int i = 0; i < 16 && !blinked; i++) {      // a fresh one each time (no hurt cooldown); 1 in 3 blinks
+            var hollow = ModEntities.HOLLOWBACK.get().create(end, EntitySpawnReason.COMMAND);
+            hollow.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 8.5, 0.0F, 0.0F);
+            end.addFreshEntity(hollow);
             Vec3 was = hollow.position();
-            clearHurtCooldown(hollow);
             hollow.hurtServer(end, end.damageSources().playerAttack(player), 0.5F);
             blinked = hollow.position().distanceTo(was) > 2.5;
+            hollow.discard();
         }
-        hollow.discard();
         log.accept("new mobs: Hollowback - blinked aside when struck: " + blinked);
         if (!blinked) {
             failures.add("new mobs: a Hollowback should blink aside when struck");
