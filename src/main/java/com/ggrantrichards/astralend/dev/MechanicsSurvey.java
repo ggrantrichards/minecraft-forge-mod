@@ -280,6 +280,17 @@ final class MechanicsSurvey {
         }
     }
 
+    // Lets the next blow land at once (26.3 keeps the hurt cooldown private; Forge runs on Mojang's names).
+    private static void clearHurtCooldown(net.minecraft.world.entity.Entity entity) {
+        try {
+            java.lang.reflect.Field f = net.minecraft.world.entity.Entity.class.getDeclaredField("invulnerableTime");
+            f.setAccessible(true);
+            f.setInt(entity, 0);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            // (then the blows land more slowly; the tests give them room)
+        }
+    }
+
     // The distillation's new mobs, doing what they're for (not only appearing): the Hushback is shorn and
     // its herd scatters when one is hurt; the Hydragrip eats an endermite and coughs up a pearl, and
     // leaves players alone; the Mirror Wretch knows when you're at an edge and throws you outward; the
@@ -325,7 +336,7 @@ final class MechanicsSurvey {
         end.addFreshEntity(grip);
         end.addFreshEntity(mite);
         for (int i = 0; i < 12 && mite.isAlive(); i++) {
-            mite.invulnerableTime = 0;
+            clearHurtCooldown(mite);
             grip.doHurtTarget(end, mite);
         }
         boolean pearl = !end.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, grip.getBoundingBox().inflate(4.0),
@@ -364,7 +375,7 @@ final class MechanicsSurvey {
         boolean blinked = false;
         for (int i = 0; i < 12 && !blinked; i++) {
             Vec3 was = hollow.position();
-            hollow.invulnerableTime = 0;
+            clearHurtCooldown(hollow);
             hollow.hurtServer(end, end.damageSources().playerAttack(player), 0.5F);
             blinked = hollow.position().distanceTo(was) > 2.5;
         }
@@ -386,7 +397,7 @@ final class MechanicsSurvey {
         boolean staggered = false;
         if (potion != null) {
             potion.snapTo(curator.getX(), curator.getY() + 3.0, curator.getZ(), 0.0F, 0.0F);
-            curator.invulnerableTime = 0;
+            clearHurtCooldown(curator);
             curator.hurtServer(end, end.damageSources().indirectMagic(potion, player), 1.0F);
             staggered = curator.isStaggered();
         }
@@ -404,7 +415,7 @@ final class MechanicsSurvey {
             curator.tick();             // let the stagger wear off
         }
         curator.snapTo(standing.x, standing.y, standing.z, 0.0F, 0.0F);
-        curator.invulnerableTime = 0;
+        clearHurtCooldown(curator);
         curator.hurtServer(end, end.damageSources().arrow(arrow, player), 6.0F);
         boolean landed = curator.getHealth() < health && curator.position().distanceTo(standing) < 1.0;
         end.setBlock(chime, Blocks.AIR.defaultBlockState(), 3);
