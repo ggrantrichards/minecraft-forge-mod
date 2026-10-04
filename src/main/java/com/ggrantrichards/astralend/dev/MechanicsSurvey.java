@@ -282,13 +282,33 @@ final class MechanicsSurvey {
 
     // Lets the next blow land at once (26.3 keeps the hurt cooldown private; Forge runs on Mojang's names).
     private static void clearHurtCooldown(net.minecraft.world.entity.Entity entity) {
-        try {
-            java.lang.reflect.Field f = net.minecraft.world.entity.Entity.class.getDeclaredField("invulnerableTime");
-            f.setAccessible(true);
-            f.setInt(entity, 0);
-        } catch (ReflectiveOperationException | RuntimeException e) {
-            // (then the blows land more slowly; the tests give them room)
+        for (Class<?> c = entity.getClass(); c != null; c = c.getSuperclass()) {
+            try {
+                java.lang.reflect.Field f = c.getDeclaredField("invulnerableTime");
+                f.setAccessible(true);
+                f.setInt(entity, 0);
+                return;
+            } catch (ReflectiveOperationException | RuntimeException e) {
+                // not declared here: look further up
+            }
         }
+        for (int i = 0; i < 11; i++) {      // no such field: let the cooldown run out (a blow lands once it's 10 or less)
+            entity.tick();
+        }
+    }
+
+    // A column with nothing in it from the sky to the void, near `from` (the outer End has plenty).
+    private static BlockPos voidColumn(ServerLevel end, BlockPos from) {
+        for (int r = 48; r <= 320; r += 24) {
+            for (int k = 0; k < 12; k++) {
+                double a = k * Math.PI / 6.0;
+                int x = from.getX() + (int) Math.round(Math.cos(a) * r), z = from.getZ() + (int) Math.round(Math.sin(a) * r);
+                if (end.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, x, z) <= end.getMinY() + 1) {
+                    return new BlockPos(x, from.getY(), z);
+                }
+            }
+        }
+        return from.offset(0, 0, 400);
     }
 
     // The distillation's new mobs, doing what they're for (not only appearing): the Hushback is shorn and
@@ -349,7 +369,7 @@ final class MechanicsSurvey {
         grip.discard();
         mite.discard();
         // Mirror Wretch: an edge is an edge; its blow throws you away from it.
-        BlockPos ledge = at.offset(0, 30, 0);           // one block of stone in the air
+        BlockPos ledge = voidColumn(end, at).atY(at.getY() + 10);   // one block of stone over open void
         end.setBlock(ledge.below(), Blocks.END_STONE.defaultBlockState(), 3);
         player.snapTo(ledge.getX() + 0.5, ledge.getY(), ledge.getZ() + 0.5, 0.0F, 0.0F);
         boolean edge = com.ggrantrichards.astralend.entity.MirrorWretch.atEdgeForTest(end, player);
