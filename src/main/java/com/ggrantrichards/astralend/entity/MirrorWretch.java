@@ -56,7 +56,8 @@ public class MirrorWretch extends Monster {
             .add(Attributes.MOVEMENT_SPEED, 0.28)
             .add(Attributes.ATTACK_DAMAGE, 4.0)
             .add(Attributes.ATTACK_KNOCKBACK, 1.6)
-            .add(Attributes.FOLLOW_RANGE, 28.0);
+            .add(Attributes.FOLLOW_RANGE, 28.0)
+            .add(Attributes.TEMPT_RANGE, 16.0);     // Memory Moss draws it from this far
     }
 
     @Override
