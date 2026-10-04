@@ -278,7 +278,7 @@ public final class WorldgenSurvey {
             log(String.format("Nearest Eclipse: centre %.0f, %.0f, turned %.0f degrees", eclipse.x(), eclipse.z(),
                 Math.toDegrees(eclipse.angle())));
             // (In the hell half's lower lobe, ~100 blocks from the Remnant, which hangs over (-0.6, 0.1).)
-            spots.put('C', List.of(BlockPos.containing(eclipse.worldX(-0.45, -0.45), 64, eclipse.worldZ(-0.45, -0.45))));
+            spots.put('C', List.of(BlockPos.containing(eclipse.worldX(-0.4, -0.25), 64, eclipse.worldZ(-0.4, -0.25))));
             spots.put('E', List.of(BlockPos.containing(eclipse.worldX(0.5, 0.3), 64, eclipse.worldZ(0.5, 0.3))));
         }
         Map<Character, Area> areas = new LinkedHashMap<>();
@@ -410,6 +410,22 @@ public final class WorldgenSurvey {
         for (Area area : areas.values()) {
             int top = area.surfaceHeightsIn.keySet().stream().max(Integer::compare).orElse(60);
             String slug = area.info.name().toLowerCase().replace("the ", "").replace(' ', '_');
+            EclipseLayout.Eclipse eclipse = area.info.key() == ModBiomes.ECLIPSE || area.info.key() == ModBiomes.CORONA
+                ? EclipseLayout.nearest(area.centre.getX(), area.centre.getZ(), EclipseLayout.sampler(end.getChunkSource().randomState()), 1) : null;
+            if (eclipse != null) {
+                // The Eclipse's halves: from the spot's outer side, looking in across the disc (from anywhere
+                // else the view runs off its edge into the void, or into the Remnant overhead).
+                double dx = eclipse.x() - area.centre.getX(), dz = eclipse.z() - area.centre.getZ(), len = Math.max(1.0, Math.hypot(dx, dz));
+                double yaw = Math.toDegrees(Math.atan2(-dx, dz));
+                for (int k = 0; k < 2; k++) {
+                    double back = k == 0 ? 30 : 70;
+                    int x = (int) Math.round(area.centre.getX() - dx / len * back), z = (int) Math.round(area.centre.getZ() - dz / len * back);
+                    int ground = Math.max(end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), (int) com.ggrantrichards.astralend.world.feature.EclipseTerrainFeature.TOP);
+                    lines.add(String.format(java.util.Locale.ROOT, "%s%s %d %d %d %.1f %d", slug, k == 0 ? "" : "_aerial", x, ground + (k == 0 ? 8 : 40), z,
+                        yaw, k == 0 ? 16 : 34));
+                }
+                continue;
+            }
             // Yaw -45 looks south-east (+x, +z), across the area from its north-west corner.
             lines.add(String.format("%s %d %d %d -45 22", slug, area.centre.getX() - 26, top + 10, area.centre.getZ() - 26));
             lines.add(String.format("%s_aerial %d %d %d -45 38", slug, area.centre.getX() - 64, top + 48, area.centre.getZ() - 64));
