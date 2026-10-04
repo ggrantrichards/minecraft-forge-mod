@@ -120,6 +120,9 @@ centre.
   It drops the **Curator's Core**, which Void Recall needs.
 - **The egg pedestal:** set the dragon egg on the pedestal in the skull. The skull's eyes light, and
   the Watchers come to look.
+- **Colour, only in the Eclipse:** crimson over the hell half and teal-cyan over the heaven half, in the
+  auroras, fog and water. The rest of the End stays muted.
+- **The Watcher's eye** is the Hourglass Nebula: red lobes, a rose ring, a glowing teal iris.
 - **Advancements:** The Leviathan, The Collection Closes, Keeper of the Egg, Wellspring and Led.
   Wyrmslayer and Ring Out are gone with the Spire Wyrm.
 

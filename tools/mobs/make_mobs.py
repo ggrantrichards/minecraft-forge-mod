@@ -934,15 +934,18 @@ def stone(face, px, py, fw, fh, rnd):
 RUNE = hexc("63e6ff")
 MONO_PAL = {".": stone, "S": stone, "d": STONE[0], "W": hexc("f2f6ff"), "I": hexc("39c6e8"), "P": hexc("0a0c16"),
             "G": GOLD[2], "g": GOLD[1], "r": hexc("2b6f86")}
+# The distillation: its eye is the Hourglass Nebula's - red lobes above and below, a rose ring, a teal
+# iris that glows.
+MONO_PAL.update({"O": hexc("d8482a"), "h": hexc("2a1612"), "R": hexc("ee8aa0"), "T": hexc("3edcc8")})
 MONO_EYE = ["GGGGGGGGGG",
-            "SSSSddSSSS",
-            "SSSdWWdSSS",
-            "SSdWIIWdSS",
-            "SdWIPPIWdS",
-            "SdWIPPIWdS",
-            "SSdWIIWdSS",
-            "SSSdWWdSSS",
-            "SSSSddSSSS",
+            "SOOOOOOOOS",
+            "SSOhhhhOSS",
+            "SSSORROSSS",
+            "SSRTTTTRSS",
+            "SSRTTTTRSS",
+            "SSSORROSSS",
+            "SSOhhhhOSS",
+            "SOOOOOOOOS",
             "GGGGGGGGGG"]
 MONO_SIDE = ["GGGGGGGGGG",
              "SSSSSSSSSS",
@@ -955,9 +958,9 @@ MONO_SIDE = ["GGGGGGGGGG",
              "SSSSSSSSSS",
              "GGGGGGGGGG"]
 MONO_HEAD = {"north": MONO_EYE, "east": MONO_SIDE, "west": MONO_SIDE, "south": MONO_SIDE}
-MONO_HEAD_GLOW = {"north": [r.replace("P", ".") for r in MONO_EYE], "east": MONO_SIDE, "west": MONO_SIDE,
+MONO_HEAD_GLOW = {"north": [r.replace("h", ".") for r in MONO_EYE], "east": MONO_SIDE, "west": MONO_SIDE,
                   "south": MONO_SIDE}
-mono_glow_pal = {"W": hexc("ffffff"), "I": RUNE, "r": RUNE}
+mono_glow_pal = {"W": hexc("ffffff"), "I": RUNE, "r": RUNE, "O": hexc("ff6a3a"), "R": hexc("ffa0b4"), "T": hexc("62f6e2")}
 COLUMN_FRONT = ["SSSSSS", "SSrrSS", "SSSSSS", "SrSSrS", "SSrrSS", "SSSSSS", "SSrrSS", "SrSSrS", "SSSSSS",
                 "SSrrSS", "SSSSSS", "GGGGGG"]
 

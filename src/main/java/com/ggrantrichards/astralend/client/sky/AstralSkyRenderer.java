@@ -155,13 +155,14 @@ public class AstralSkyRenderer extends SkyRenderer {
 
     // The auroras of a biome: strength, then two colours (r, g, b each).
     // The distillation: the End's sky stays vanilla's, black and starless - auroras (like the stars,
-    // the constellations and the Remnant) only show over the Eclipse: green and violet over its heaven
-    // half, green and gold over its hell half (the Corona).
+    // the constellations and the Remnant) only show over the Eclipse, and they're the only vivid colour in
+    // the End: teal and pale cyan over its heaven half, crimson and deep rose over its hell half (the
+    // Corona) - the colours of the Horsehead Nebula's glow and the reflection nebula at its foot.
     private static void auroraFor(Holder<Biome> biome, float[] t) {
         if (biome.is(ModBiomes.ECLIPSE)) {
-            set(t, 1.0F, 0.35F, 1.0F, 0.6F, 0.7F, 0.45F, 1.0F);
+            set(t, 1.0F, 0.22F, 0.92F, 0.80F, 0.50F, 0.80F, 1.0F);
         } else if (biome.is(ModBiomes.CORONA)) {
-            set(t, 0.8F, 0.35F, 1.0F, 0.6F, 1.0F, 0.82F, 0.35F);
+            set(t, 0.9F, 0.86F, 0.06F, 0.24F, 0.55F, 0.04F, 0.20F);
         } else {
             set(t, 0.0F, 0.35F, 1.0F, 0.6F, 1.0F, 0.82F, 0.35F);
         }

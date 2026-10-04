@@ -141,7 +141,8 @@ final class MechanicsSurvey {
                 failures.add("spawn egg: no egg or no mob for " + mob);
                 continue;
             }
-            BlockPos ground = standOn.below().offset((k % 5) * 12 - 24, 0, (k / 5) * 12);
+            // Six to a row, two rows: within the 48 x 12 blocks round the stand-in that are always loaded.
+            BlockPos ground = standOn.below().offset((k % 6) * 9 - 22, 0, (k / 6) * 12);
             end.setBlock(ground, Blocks.END_STONE.defaultBlockState(), 3);
             for (int up = 1; up <= 6; up++) {
                 end.setBlock(ground.above(up), Blocks.AIR.defaultBlockState(), 3);

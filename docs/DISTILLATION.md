@@ -172,6 +172,11 @@ its bridges only show through a spyglass.
 - **Music:** four tracks and a disc (done); the warm Heavenly Loop belongs to the Eclipse; the central
   island stays quiet.
 - **No text:** the Rift Maw and maze messages become sound, particles and light.
+- **The Eclipse is the one place with colour:** crimson over its hell half and teal-cyan over its heaven
+  half, in its auroras, fog and water (after the Horsehead Nebula's glow and the blue reflection
+  nebula at its foot). Everywhere else stays muted. The colour comes from light, not blocks, so the
+  crimson doesn't read as the Nether's.
+- **The Watcher's eye** is the Hourglass Nebula: red lobes, a rose ring, a glowing teal iris.
 
 ## Advancements
 

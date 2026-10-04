@@ -313,7 +313,7 @@ public class LeviathanPiece extends StructurePiece {
         // The captured island, held in the jaw, chained to the skull with obsidian.
         double iq = Math.pow(u / 11.0, 2) + Math.pow((v - (sv - 24)) / 7.0, 2) + Math.pow((w - 140) / 15.0, 2);
         if (iq <= 1.0) {
-            return v > sv - 19 ? ModBlocks.PALE_END_STONE.get().defaultBlockState() : Blocks.END_STONE.defaultBlockState();
+            return ModBlocks.PALE_END_STONE.get().defaultBlockState();   // torn from the graveyard (no End Stone: it's the biomes' to replace)
         }
         return null;
     }

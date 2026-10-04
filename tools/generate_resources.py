@@ -1144,7 +1144,7 @@ def worldgen_phase3():
     # Phase 11: the Corona's ground has shape - glazed spires and cracks glowing with magma.
     big_feature("corona_solarite_spires", "solarite_spire", rarity=2, heightmap="WORLD_SURFACE_WG")
     big_feature("corona_scorch_fissures", "scorch_fissure", rarity=2, heightmap="WORLD_SURFACE_WG")
-    end_biome("corona", "The Corona", fog="#4a2616", water="#d9823b",
+    end_biome("corona", "The Corona", fog="#3c0a18", water="#b8183e",   # crimson, after the Horsehead Nebula
               features_step7=[rid("corona_solarite_deep")],
               features_step4=[rid("corona_solarite_surface"), rid("eclipse_landmarks")],
               features_step9=[rid("corona_scorch_fissures"), rid("corona_solarite_spires"), rid("corona_petrified_stalks"), rid("corona_sunscale_lichen"), rid("corona_flareblooms"), rid("corona_ashen_lumineshrooms"),
@@ -1175,7 +1175,7 @@ def worldgen_phase3():
             {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
             {"type": "minecraft:matching_blocks", "blocks": [rid("living_turf")], "offset": [0, -1, 0]}]}},
     ]})
-    end_biome("eclipse", "The Eclipse", fog="#24304a", water="#3f8fd0",
+    end_biome("eclipse", "The Eclipse", fog="#0e3436", water="#34c8bc",   # teal-cyan, its counterpart
               features_step4=[rid("eclipse_landmarks")],
               features_step9=[rid("eclipse_giant_lumineshrooms"), rid("eclipse_breathcomb"), rid("eclipse_lumineshrooms"),
                               rid("eclipse_starblooms"), rid("eclipse_grass")],
