@@ -21,8 +21,8 @@ API = os.environ.get("MODRINTH_API", "https://api.modrinth.com/v2")   # overrida
 ROOT = Path(__file__).resolve().parents[2]
 SLUG = "the-astral-end"
 TITLE = "The Astral End"
-SUMMARY = ("The End, expanded: seven new biomes, new creatures, a boss, a living sky with auroras and "
-           "sunstorms, live comets, and ruins to explore.")
+SUMMARY = ("The End was never empty: drifting islands, the rare Eclipse of heaven and hell, a leviathan "
+           "citadel and its Curator, silent creatures and ruins without explanation.")
 GAME_VERSIONS = ["26.3"]
 LOADERS = ["forge"]
 USER_AGENT = "ggrantrichards/minecraft-forge-mod (release workflow)"

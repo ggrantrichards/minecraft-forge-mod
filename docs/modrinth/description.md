@@ -1,81 +1,82 @@
 # The Astral End
 
-**The End, expanded.** Beyond 1,000 blocks from the dragon's island, the outer End stops being one
-pale biome and becomes a sparse, mysterious sky of astral islands, each kind with its own life, its own
-light and its own secrets.
+**The End was never empty. It was waiting.** Beyond 1,000 blocks from the dragon's island, the outer End
+becomes a sparse sky of drifting islands: quiet, alien, full of ruins no one is left to explain, and as
+dangerous as the void beneath them.
 
-> **Beta.** Expect changes before 1.0, including blocks and items that are renamed, reworked or
-> removed. Keep backups of worlds you care about.
+> **Beta, without world compatibility.** Each beta can rework or remove blocks and items; start a new
+> world for each. Keep backups of worlds you care about.
+
+{{The Eclipse}}
+
+## Built on six ideas
+
+The void and emptiness. A restricted palette, the End's own cream and purple. Displacement. Silence and
+alienness. Ruins without explanation. Finality. No new armour tiers, no friendly villagers, no text in
+your face: the End tells you things with sound and light.
+
+## The islands
+
+- **Nebula Fields:** violet Chorus Moss plains, and low gravity.
+- **Chorus Tangle:** groves of vanilla chorus, hard to cross and easy to fall from.
+- **Hollow Isles:** the End's only forest, dim Nullwood on ring-shaped islands, Upwells beneath.
+  Its variant, the **Deep Hollows**, hangs with Hollow Vines.
+- **Glimmering Crags:** Nightstone peaks of smoky Glimmer Crystal, and root caves where the Umbral
+  Stalker waits. Its variant, the **Shattered Crags**, is split into shards over the void.
+- **Ashen Barrens:** the leviathan graveyard, pale stone and old bones; Memory Moss replays what
+  passed over it.
 
 {{Nebula Fields}}
 
-## Seven new biomes
+{{Ashen Barrens}}
 
-- **Nebula Fields:** rolling violet Chorus Moss under forests of giant glowing Lumineshrooms. Low gravity:
-  you fall slower and jump higher.
-- **Chorus Thicket:** crowded chorus trees of pale, glassy Chorus Wood, crowned in Chorus Bloom.
-- **Glimmering Crags:** jagged Nightstone peaks grown through with teal Glimmer Crystal - and, in the very
-  bottoms of the islands, the End's rarest ore, Void Crystal.
-- **Ashen Barrens:** a dead country of pale shelves and old bones under slow green and gold auroras.
-- **The Corona:** sunscorched mesas, Flarebloom fields, and the End's best ore, Solarite.
-- **Comet Wake:** scorched islands pocked with craters, Stardust that falls *upward*, and Meteoric Iron.
-- **Hollow Isles:** dim Nullwood forests on ring-shaped islands, and Upwells where gravity points up.
+## The Eclipse
 
-Three new wood sets (Lumine, Nullwood and Chorus), several stone families, glowing plants and lights.
+Rare, far out, and unlike anything else in the End: one great disc of land, a yin-yang of **heaven and
+hell**. Bare End Stone and a teal sky on one side, with moss only round its water and the **Wellspring**,
+water held on glass over the void; crimson stone under a crimson sky on the other, where Sunstorms rage
+and the **Remnant**, a dead star's cinder, hangs overhead. Only here do the stars show without a
+spyglass, and only from here can you sight the constellations the Starforge needs.
 
-{{Chorus Thicket}}
+{{The Eclipse's hell half}}
 
-{{Glimmering Crags}}
+## The creatures
 
-## A living sky
-
-Stars that turn, auroras, and the Remnant, the dying ember of a collapsed star, low on the horizon. In
-the Corona, **Sunstorms** turn the sky gold: Flareblooms open, Void Rays take to the air, and the
-solar wind pushes your elytra along. Now and then a **live comet** streaks past: glide through its tail,
-or knock chunks off its head. A **Lodestar** keeps them from landing near your base.
-
-{{A Sunstorm}}
-
-## New creatures
-
-- **Drift Whale:** a huge, translucent whale swimming slowly through the void, its spots glowing like deep-sea light. Ride it with a Chorus
-  Flower on a Stick.
-- **Spire Wyrm:** a serpent kin of the Ender Dragon, asleep atop the Resonant Spires. Wake it, then ring the bells.
-- **Umbral Stalker:** a shadow that always knows where you are, and snuffs out your lights. It fears fire.
-- **Void Wanderer**, **End Pollinator**, **Void Ray**, **Cinder Mite**, **The Hollow**, and the **Watcher**.
-
-{{The creatures}}
+- **Drift Whales** travel in pods toward the Eclipse. Sing one a song (Memory Moss, a note block, Chorus
+  Fruit) and it's yours to ride.
+- **Hushbacks**, clear-hided grazers whose herd blinks away when one is hurt; **Hydragrips**, which hunt
+  endermites; and the **Mirror Wretch**, which throws familiar sounds from the void's edge to lure you.
+- **The Watcher** is only ever seen from the corner of your eye. Look straight at it and it fades - and
+  the next appears further along, leading you to a leviathan's remains.
+- The **Umbral Stalker** in the Crags' caves, the **Void Wanderer**, the **Void Ray**, and Pollinators.
 
 {{Drift Whale}}
 
-## Places to find
+{{Mirror Wretch}}
 
-- **Resonant Spires:** ninety-block towers with no stairs. Climb them on shulker bullets or a Potion of
-  Upwelling, beat the Spire Wyrm, and open the **Resonance Vault**: banner patterns, the Eclipse armor
-  trim, a music disc and more.
-- **The Whalefall:** the skeleton of a Star Leviathan adrift in the void, 300 blocks long, built into
-  by whoever came after.
-- **The Shattered Observatory**, **Rift Maws** that carry you across the End, **Constellation Mazes**,
-  **Comet Craters** and **Solar Arrays**.
+## The Leviathan
 
-{{Resonant Spire}}
+The whole skeleton of a Star Leviathan, 320 blocks from tail to chin, adrift in the void - and the purpur
+citadel someone built on it: a hall along its spine, towers on its vertebrae, a cathedral in its ribcage,
+an island chained in its jaw. In its skull is the reliquary, and its keeper, **the Curator**: it
+teleports away from arrows, smashes the End Chimes pylons that pin it in place, slams you into the air
+over the void, and fears water. Set the dragon egg on the pedestal it guards.
 
-{{Whalefall}}
+{{The Leviathan}}
 
-## Starforging
+{{The Curator}}
 
-An Astral Forge upgrades diamond and netherite gear with six Starforge upgrades - small, stacking perks
-like Echo Strike, Lensing and Void Recall - using Starforge Alloy (Dragon's Breath binds it) and
-Templates found in ruins and End Cities.
+## Ruins and Starforging
 
-## Music
+**Rift Maws**, colossal skulls that wake into a travel network; **Constellation Mazes** whose bridges
+show only through a spyglass; the Whalefall; the Remnant's burning heart. Bring back what they guard to
+an **Astral Forge**: five sidegrades for diamond and netherite gear - Void Recall, Echo Strike, Lensing,
+Radiant, Rift Walker - each needing its constellation sighted from the Eclipse, and a rare material from
+somewhere else.
 
-Music for the astral biomes and a music disc, all free to use: "Out There" by yd, "Ambient Relaxing
-Loop" and "Heavenly Loop" by isaiah658, "Observing the Star" by madeso (CC0), and "Space Music" by
-HitCtrl (CC-BY 3.0), from OpenGameArt.org.
+{{Rift Maw}}
 
-## Requirements
+## Also
 
-- **Minecraft 26.3** with **Forge 66** or newer.
-- Install on both the client and the server.
-- New content generates in **newly explored** parts of the outer End.
+A **Lodestar** to respawn by in the End. A low void hum near island edges. Four music tracks, a music
+disc and ambience for every biome. Advancements for all of it.
