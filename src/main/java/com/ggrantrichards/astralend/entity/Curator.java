@@ -93,6 +93,10 @@ public class Curator extends Monster {
         return this.entityData.get(DATA_SLAM) / 20.0F;
     }
 
+    public boolean isStaggered() {
+        return this.stagger > 0;
+    }
+
     public void setHome(BlockPos home) {
         this.home = home.immutable();
     }

@@ -280,6 +280,143 @@ final class MechanicsSurvey {
         }
     }
 
+    // The distillation's new mobs, doing what they're for (not only appearing): the Hushback is shorn and
+    // its herd scatters when one is hurt; the Hydragrip eats an endermite and coughs up a pearl, and
+    // leaves players alone; the Mirror Wretch knows when you're at an edge and throws you outward; the
+    // Hollowback blinks aside when struck; the Curator sleeps through anything but a player, wakes for
+    // one, is staggered by a splash of water, and can't Phase Step away from an arrow by a rung pylon.
+    static void checkNewMobs(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
+        net.minecraft.server.level.ServerPlayer player = standIn(end);
+        BlockPos at = standOn.offset(30, 0, 0);
+        for (int dx = -14; dx <= 14; dx++) {          // a floor to stand on and blink about
+            for (int dz = -14; dz <= 14; dz++) {
+                end.setBlock(at.offset(dx, -1, dz), Blocks.END_STONE.defaultBlockState(), 3);
+                for (int up = 0; up <= 5; up++) {
+                    end.setBlock(at.offset(dx, up, dz), Blocks.AIR.defaultBlockState(), 3);
+                }
+            }
+        }
+        player.snapTo(at.getX() + 0.5, at.getY(), at.getZ() - 6.5, 0.0F, 0.0F);
+        var shears = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.SHEARS);
+        // Hushback: shorn; hurt one and the herd blinks away.
+        java.util.List<com.ggrantrichards.astralend.entity.Hushback> herd = new java.util.ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            var h = ModEntities.HUSHBACK.get().create(end, EntitySpawnReason.COMMAND);
+            h.snapTo(at.getX() + 0.5 + i * 2, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
+            end.addFreshEntity(h);
+            herd.add(h);
+        }
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, shears);
+        herd.get(0).mobInteract(player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        boolean shorn = herd.get(0).isSheared();
+        Vec3 before1 = herd.get(1).position(), before2 = herd.get(2).position();
+        herd.get(0).hurtServer(end, end.damageSources().playerAttack(player), 1.0F);
+        boolean scattered = herd.get(1).position().distanceTo(before1) > 4.0 || herd.get(2).position().distanceTo(before2) > 4.0;
+        herd.forEach(net.minecraft.world.entity.Entity::discard);
+        log.accept(String.format("new mobs: Hushback - shorn: %s; the herd blinked away when one was hurt: %s", shorn, scattered));
+        if (!shorn || !scattered) {
+            failures.add("new mobs: a Hushback should be shorn with shears, and its herd should blink away when one is hurt");
+        }
+        // Hydragrip: kills an endermite, a pearl comes up; won't go for players.
+        var grip = ModEntities.HYDRAGRIP.get().create(end, EntitySpawnReason.COMMAND);
+        var mite = net.minecraft.world.entity.EntityTypes.ENDERMITE.create(end, EntitySpawnReason.COMMAND);
+        grip.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 4.5, 0.0F, 0.0F);
+        mite.snapTo(at.getX() + 1.5, at.getY(), at.getZ() + 4.5, 0.0F, 0.0F);
+        end.addFreshEntity(grip);
+        end.addFreshEntity(mite);
+        for (int i = 0; i < 12 && mite.isAlive(); i++) {
+            mite.invulnerableTime = 0;
+            grip.doHurtTarget(end, mite);
+        }
+        boolean pearl = !end.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, grip.getBoundingBox().inflate(4.0),
+            e -> e.getItem().is(net.minecraft.world.item.Items.ENDER_PEARL)).isEmpty();
+        boolean leavesPlayers = !grip.canAttack(player);
+        log.accept(String.format("new mobs: Hydragrip - endermite killed: %s, pearl: %s; leaves players alone: %s", !mite.isAlive(), pearl, leavesPlayers));
+        if (mite.isAlive() || !pearl || !leavesPlayers) {
+            failures.add("new mobs: a Hydragrip should kill an endermite and cough up a pearl, and not attack players");
+        }
+        grip.discard();
+        mite.discard();
+        // Mirror Wretch: an edge is an edge; its blow throws you away from it.
+        BlockPos ledge = at.offset(0, 30, 0);           // one block of stone in the air
+        end.setBlock(ledge.below(), Blocks.END_STONE.defaultBlockState(), 3);
+        player.snapTo(ledge.getX() + 0.5, ledge.getY(), ledge.getZ() + 0.5, 0.0F, 0.0F);
+        boolean edge = com.ggrantrichards.astralend.entity.MirrorWretch.atEdgeForTest(end, player);
+        player.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
+        boolean ground = com.ggrantrichards.astralend.entity.MirrorWretch.atEdgeForTest(end, player);
+        end.setBlock(ledge.below(), Blocks.AIR.defaultBlockState(), 3);
+        var wretch = ModEntities.MIRROR_WRETCH.get().create(end, EntitySpawnReason.COMMAND);
+        wretch.snapTo(at.getX() - 1.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
+        end.addFreshEntity(wretch);
+        player.setDeltaMovement(Vec3.ZERO);
+        wretch.throwOutward(player);    // (what its blow does once it lands)
+        boolean thrown = player.getDeltaMovement().x > 0.2;
+        wretch.discard();
+        log.accept(String.format("new mobs: Mirror Wretch - on a ledge counts as an edge: %s, open ground: %s; its blow throws you outward: %s",
+            edge, ground, thrown));
+        if (!edge || ground || !thrown) {
+            failures.add("new mobs: a Mirror Wretch should know a ledge from open ground, and throw a player away from it");
+        }
+        // Hollowback: struck, it blinks aside (1 in 3) - a dozen blows, and it will have.
+        var hollow = ModEntities.HOLLOWBACK.get().create(end, EntitySpawnReason.COMMAND);
+        hollow.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 8.5, 0.0F, 0.0F);
+        end.addFreshEntity(hollow);
+        boolean blinked = false;
+        for (int i = 0; i < 12 && !blinked; i++) {
+            Vec3 was = hollow.position();
+            hollow.invulnerableTime = 0;
+            hollow.hurtServer(end, end.damageSources().playerAttack(player), 0.5F);
+            blinked = hollow.position().distanceTo(was) > 2.5;
+        }
+        hollow.discard();
+        log.accept("new mobs: Hollowback - blinked aside when struck: " + blinked);
+        if (!blinked) {
+            failures.add("new mobs: a Hollowback should blink aside when struck");
+        }
+        // The Curator.
+        var curator = ModEntities.CURATOR.get().create(end, EntitySpawnReason.COMMAND);
+        curator.snapTo(at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, 0.0F, 0.0F);
+        curator.setHome(at);
+        end.addFreshEntity(curator);
+        boolean sleptThrough = !curator.hurtServer(end, end.damageSources().generic(), 5.0F) && curator.isDormant();
+        curator.hurtServer(end, end.damageSources().playerAttack(player), 1.0F);
+        boolean woke = !curator.isDormant();
+        var potion = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(
+            net.minecraft.resources.Identifier.withDefaultNamespace("splash_potion")).map(t -> t.create(end, EntitySpawnReason.COMMAND)).orElse(null);
+        boolean staggered = false;
+        if (potion != null) {
+            potion.snapTo(curator.getX(), curator.getY() + 3.0, curator.getZ(), 0.0F, 0.0F);
+            curator.invulnerableTime = 0;
+            curator.hurtServer(end, end.damageSources().indirectMagic(potion, player), 1.0F);
+            staggered = curator.isStaggered();
+        }
+        // A rung pylon close by: an arrow lands instead of being dodged.
+        BlockPos chime = at.offset(3, 4, 0);
+        end.setBlock(chime.above(), Blocks.PURPUR_BLOCK.defaultBlockState(), 3);
+        end.setBlock(chime, ModBlocks.END_CHIMES.get().defaultBlockState(), 3);
+        if (end.getBlockEntity(chime) instanceof com.ggrantrichards.astralend.block.EndChimesBlockEntity bell) {
+            bell.ring(end);
+        }
+        var arrow = (net.minecraft.world.entity.projectile.arrow.AbstractArrow) net.minecraft.world.entity.EntityTypes.ARROW.create(end, EntitySpawnReason.COMMAND);
+        Vec3 standing = curator.position();
+        float health = curator.getHealth();
+        for (int i = 0; i < 45; i++) {
+            curator.tick();             // let the stagger wear off
+        }
+        curator.snapTo(standing.x, standing.y, standing.z, 0.0F, 0.0F);
+        curator.invulnerableTime = 0;
+        curator.hurtServer(end, end.damageSources().arrow(arrow, player), 6.0F);
+        boolean landed = curator.getHealth() < health && curator.position().distanceTo(standing) < 1.0;
+        end.setBlock(chime, Blocks.AIR.defaultBlockState(), 3);
+        end.setBlock(chime.above(), Blocks.AIR.defaultBlockState(), 3);
+        curator.discard();
+        log.accept(String.format("new mobs: Curator - slept through a non-player hit: %s; woke for a player: %s; staggered by a splash: %s; "
+            + "an arrow by a rung pylon landed: %s", sleptThrough, woke, staggered, landed));
+        if (!sleptThrough || !woke || !staggered || !landed) {
+            failures.add("new mobs: the Curator should sleep through all but a player, wake for one, stagger in water, and take arrows by a rung pylon");
+        }
+    }
+
     static void checkContent(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
         var mite = ModEntities.POLLINATOR.get().create(end, EntitySpawnReason.COMMAND);
         if (mite != null) {

@@ -94,6 +94,10 @@ public class MirrorWretch extends Monster {
         return isMoss(player.getMainHandItem()) || isMoss(player.getOffhandItem());
     }
 
+    public static boolean atEdgeForTest(Level level, Entity entity) {
+        return atEdge(level, entity);
+    }
+
     // Within two blocks of a drop into the void.
     static boolean atEdge(Level level, Entity entity) {
         if (!(level instanceof ServerLevel server)) {
@@ -157,11 +161,15 @@ public class MirrorWretch extends Monster {
     public boolean doHurtTarget(ServerLevel level, Entity target) {
         boolean hit = super.doHurtTarget(level, target);
         if (hit && target instanceof Player player) {
-            Vec3 away = player.position().subtract(this.position()).multiply(1, 0, 1).normalize();
-            player.push(away.x * 0.6, 0.25, away.z * 0.6);
-            player.syncVelocity = true;
+            this.throwOutward(player);
         }
         return hit;
+    }
+
+    public void throwOutward(Player player) {
+        Vec3 away = player.position().subtract(this.position()).multiply(1, 0, 1).normalize();
+        player.push(away.x * 0.6, 0.25, away.z * 0.6);
+        player.syncVelocity = true;
     }
 
     @Override

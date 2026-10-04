@@ -315,6 +315,7 @@ public final class WorldgenSurvey {
             MechanicsSurvey.check(end, areas.get('N').standOn, failures, WorldgenSurvey::log);      // Phase 10
             MechanicsSurvey.checkContent(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkSystems(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
+            MechanicsSurvey.checkNewMobs(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkSpawnEggs(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkHandBuiltPortal(end, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkWyrmFight(end, failures, WorldgenSurvey::log);
@@ -1135,8 +1136,14 @@ public final class WorldgenSurvey {
                                 continue;
                             }
                             Block block = state.getBlock();
-                            (inside ? area.in : area.out).merge(block, 1, Integer::sum);
-                            if (inside && block == Blocks.END_STONE && area.endStoneIn.size() < 4000) {
+                            boolean here = inside;
+                            if (block == Blocks.END_STONE) {
+                                // Judged by the biome at the block itself: the game's biome lookup jitters a
+                                // few blocks in every direction, so a cliff at a border mixes the two stones.
+                                here = end.getBiome(pos).is(info.key());
+                            }
+                            (here ? area.in : area.out).merge(block, 1, Integer::sum);
+                            if (here && block == Blocks.END_STONE && area.endStoneIn.size() < 4000) {
                                 area.endStoneIn.add(pos);
                             }
                             if (firstSeen == null) {

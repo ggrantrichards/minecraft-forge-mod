@@ -83,7 +83,8 @@ public record NullwoodTreeFeature() implements Feature {
         BlockState lantern = ModBlocks.NULL_LANTERN.get().defaultBlockState();
         for (BlockPos leaf : leaves) {
             BlockPos below = leaf.below();
-            if (random.nextInt(7) == 0 && !leaves.contains(below) && level.getBlockState(below).isAir()) {
+            if (random.nextInt(7) == 0 && !leaves.contains(below) && level.getBlockState(below).isAir()
+                && level.getBlockState(leaf).is(ModBlocks.NULLWOOD_LEAVES.get())) {
                 level.setBlock(below, lantern, 2);
             }
         }
@@ -136,7 +137,12 @@ public record NullwoodTreeFeature() implements Feature {
         }
         for (BlockPos leaf : leaves) {
             int d = Math.min(7, distance.getOrDefault(leaf, 7));
-            level.setBlock(leaf, level.getBlockState(leaf).setValue(LeavesBlock.DISTANCE, d), 2);
+            if (d >= 7) {
+                // Too far from any log: it would only decay, so it isn't grown at all.
+                level.setBlock(leaf, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+            } else {
+                level.setBlock(leaf, level.getBlockState(leaf).setValue(LeavesBlock.DISTANCE, d), 2);
+            }
         }
     }
 }

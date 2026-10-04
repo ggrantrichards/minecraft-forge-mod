@@ -109,7 +109,8 @@ public class Hushback extends Animal {
     public void aiStep() {
         super.aiStep();
         if (!this.level().isClientSide() && this.isSheared() && --this.regrow <= 0
-                && this.level().getBlockState(this.blockPosition().below()).is(ModBlocks.LIVING_TURF.get())) {
+                && (this.level().getBlockState(this.blockPosition().below()).is(ModBlocks.LIVING_TURF.get())
+                    || this.level().getBlockState(this.blockPosition().below()).is(net.minecraft.world.level.block.Blocks.END_STONE))) {
             this.entityData.set(SHEARED, false);
         }
     }
