@@ -1,11 +1,13 @@
-"""Speaks the trailer's narration - the `vo` lines in scenes.txt - in a deep movie-trailer voice.
+"""Prepares the trailer's narration from a real voice: recordings of the `vo` lines in scenes.txt.
 
-    python3 tools/trailer/narrate.py <kokoro model .onnx> <voices .bin> <out dir>
+    python3 tools/trailer/narrate.py <out dir>
 
-Writes <out dir>/vo/00.wav, 01.wav, ... (44.1 kHz stereo), which compose.py lays over the score.
-The voice is Kokoro (kokoro-onnx; the Kokoro-82M model and its voices are Apache-2.0), spoken a
-little slowly, then pitched down, warmed, compressed and given a touch of room with ffmpeg - the
-"In a world..." sound. Needs kokoro-onnx, soundfile and ffmpeg.
+Put one recording per line in tools/trailer/voice/, numbered in the order the lines appear
+(00.wav, 01.wav, ... - .wav, .mp3, .m4a, .ogg or .flac all work; tools/trailer/voice/README.md lists
+the lines and their numbers). Each is cleaned up gently - rumble cut, levels evened, a touch of room,
+no change of pitch - and written to <out dir>/vo/NN.wav, which compose.py lays over the score. A line
+with no recording is left out; with none at all the trailer runs on its title cards alone. (No
+synthetic voice: it sounded synthetic.) Needs ffmpeg.
 """
 import os
 import subprocess
@@ -15,19 +17,21 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 import compose  # noqa: E402
 
-VOICE = os.environ.get("NARRATOR_VOICE", "am_onyx")
-SPEED = 0.88
-# Pitch down about two semitones (which also slows it a touch), then the trailer treatment: rumble
-# cut, chest boosted, a gentle compressor, a short slap of room, and loudness evened out.
-FILTER = ("asetrate={rate}*0.885,aresample=44100,highpass=f=55,bass=g=5:f=120:w=0.8,"
-          "equalizer=f=3200:t=q:w=1.2:g=2,acompressor=threshold=-20dB:ratio=3:attack=8:release=160,"
-          "aecho=0.85:0.5:38|76:0.16|0.08,loudnorm=I=-15:TP=-1.5:LRA=7,aformat=channel_layouts=stereo")
+VOICE_DIR = Path(__file__).parent / "voice"
+EXTENSIONS = (".wav", ".mp3", ".m4a", ".ogg", ".flac")
+FILTER = ("highpass=f=70,afftdn=nf=-30,acompressor=threshold=-22dB:ratio=2.5:attack=10:release=180,"
+          "aecho=0.9:0.6:30:0.08,loudnorm=I=-16:TP=-1.5:LRA=8,aformat=channel_layouts=stereo")
 
 
-def main(model, voices, out_dir):
-    from kokoro_onnx import Kokoro
-    import soundfile as sf
+def recording(i):
+    for ext in EXTENSIONS:
+        p = VOICE_DIR / f"{i:02d}{ext}"
+        if p.exists():
+            return p
+    return None
 
+
+def main(out_dir):
     beats = compose.parse()
     starts, t = [], 0
     for b in beats:
@@ -36,19 +40,17 @@ def main(model, voices, out_dir):
     lines = compose.narration(beats, starts)
     vo = Path(out_dir) / "vo"
     vo.mkdir(parents=True, exist_ok=True)
-    kokoro = Kokoro(model, voices)
+    done = 0
     for at, text, i in lines:
-        samples, rate = kokoro.create(text, voice=VOICE, speed=SPEED, lang="en-us")
-        raw = vo / f"{i:02d}_raw.wav"
-        sf.write(str(raw), samples, rate)
-        out = vo / f"{i:02d}.wav"
-        subprocess.run([os.environ.get("FFMPEG", "ffmpeg"), "-y", "-loglevel", "error", "-i", str(raw), "-af", FILTER.format(rate=rate),
-                        "-ar", "44100", "-ac", "2", "-c:a", "pcm_s16le", str(out)], check=True)
-        raw.unlink()
-        seconds = len(samples) / rate / 0.885
-        print(f"line {i} at {at:.1f} s, {seconds:.1f} s long: {text}")
-    print(f"spoke {len(lines)} lines in the voice {VOICE}")
+        src = recording(i)
+        if src is None:
+            continue
+        subprocess.run([os.environ.get("FFMPEG", "ffmpeg"), "-y", "-loglevel", "error", "-i", str(src), "-af", FILTER,
+                        "-ar", "44100", "-ac", "2", "-c:a", "pcm_s16le", str(vo / f"{i:02d}.wav")], check=True)
+        done += 1
+        print(f"line {i} at {at:.1f} s: {text}")
+    print(f"narration: {done} of {len(lines)} lines recorded" + ("" if done else " - the trailer runs on its title cards"))
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2], sys.argv[3])
+    main(sys.argv[-1])
