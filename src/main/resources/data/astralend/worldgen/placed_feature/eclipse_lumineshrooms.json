@@ -3,7 +3,7 @@
   "placement": [
     {
       "type": "minecraft:rarity_filter",
-      "chance": 1
+      "chance": 2
     },
     {
       "type": "minecraft:in_square"
@@ -17,7 +17,7 @@
     },
     {
       "type": "minecraft:count",
-      "count": 24
+      "count": 10
     },
     {
       "type": "minecraft:offset",
@@ -56,6 +56,7 @@
           {
             "type": "minecraft:matching_blocks",
             "blocks": [
+              "minecraft:end_stone",
               "astralend:living_turf"
             ],
             "offset": [

@@ -172,6 +172,9 @@ its bridges only show through a spyglass.
 - **Music:** four tracks and a disc (done); the warm Heavenly Loop belongs to the Eclipse; the central
   island stays quiet.
 - **No text:** the Rift Maw and maze messages become sound, particles and light.
+- **The Eclipse's ground follows vanilla's End:** bare End Stone in the heaven half (no ground cover;
+  moss only round its water), the hell half's crust crimson, every texture within vanilla's End range
+  (few tones, low saturation, little contrast), and its flora sparse.
 - **The Eclipse is the one place with colour:** crimson over its hell half and teal-cyan over its heaven
   half, in its auroras, fog and water (after the Horsehead Nebula's glow and the blue reflection
   nebula at its foot). Everywhere else stays muted. The colour comes from light, not blocks, so the

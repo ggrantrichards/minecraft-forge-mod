@@ -800,9 +800,8 @@ def worldgen():
         # Whole islands of a different stone:
         in_biome("ashen_barrens", block("pale_end_stone")),
         in_biome("hollow_isles", block("nightstone")),
-        # The Eclipse's heaven half: Living Turf over End Stone.
-        in_biome("eclipse", {"type": "minecraft:condition", "if_true": "minecraft:on_floor", "then_run": block("living_turf")}),
-        # The Corona (the Eclipse's hell half): a bleached crust of Sunscorched Stone over Charred End Stone.
+        # (The Eclipse's heaven half is End Stone: no rule. Its moss, round the water, is placed by its features.)
+        # The Corona (the Eclipse's hell half): a crimson crust of Sunscorched Stone over Charred End Stone.
         in_biome("corona", {"type": "minecraft:sequence", "sequence": [
             {"type": "minecraft:condition", "if_true": "minecraft:under_floor", "then_run": block("sunscorched_stone")},
             block("charred_end_stone")]}),
@@ -1154,9 +1153,10 @@ def worldgen_phase3():
 
     # ---- The Eclipse's heaven half (the hell half is the Corona, above): living turf, giant
     # Lumineshrooms (their only home), Breathcomb, the Wellspring and its seeds (EclipseLandmarksFeature).
-    big_feature("eclipse_giant_lumineshrooms", "giant_lumineshroom", count=2)
-    plant_patch("eclipse_lumineshrooms", "lumineshroom", rarity=1, count=24, spread=6, on=[rid("living_turf")])
-    plant_patch("eclipse_starblooms", "starbloom", rarity=1, count=20, spread=6, on=[rid("living_turf")])
+    # Sparse, as vanilla's End is: a giant Lumineshroom in one chunk of three, small plants in patches.
+    big_feature("eclipse_giant_lumineshrooms", "giant_lumineshroom", rarity=3)
+    plant_patch("eclipse_lumineshrooms", "lumineshroom", rarity=2, count=10, spread=6, on=["minecraft:end_stone", rid("living_turf")])
+    plant_patch("eclipse_starblooms", "starbloom", rarity=3, count=8, spread=6, on=["minecraft:end_stone", rid("living_turf")])
     feature("breathcomb", {"type": "minecraft:simple_block", "to_place": {"id": rid("breathcomb")}})
     placed("eclipse_breathcomb", {"feature": rid("breathcomb"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 2}, {"type": "minecraft:in_square"},
@@ -1165,20 +1165,12 @@ def worldgen_phase3():
         {"type": "minecraft:offset", "x": trapezoid(3), "y": trapezoid(1), "z": trapezoid(3)},
         {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
             {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
-            {"type": "minecraft:matching_blocks", "blocks": [rid("living_turf"), rid("breathcomb")], "offset": [0, -1, 0]}]}},
-    ]})
-    feature("eclipse_grass", {"type": "minecraft:simple_block", "to_place": {"id": "minecraft:short_grass"}})
-    placed("eclipse_grass", {"feature": rid("eclipse_grass"), "placement": [
-        {"type": "minecraft:count", "count": 60}, {"type": "minecraft:in_square"},
-        {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"}, {"type": "minecraft:biome"},
-        {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
-            {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
-            {"type": "minecraft:matching_blocks", "blocks": [rid("living_turf")], "offset": [0, -1, 0]}]}},
+            {"type": "minecraft:matching_blocks", "blocks": ["minecraft:end_stone", rid("living_turf"), rid("breathcomb")], "offset": [0, -1, 0]}]}},
     ]})
     end_biome("eclipse", "The Eclipse", fog="#0e3436", water="#34c8bc",   # teal-cyan, its counterpart
               features_step4=[rid("eclipse_landmarks")],
               features_step9=[rid("eclipse_giant_lumineshrooms"), rid("eclipse_breathcomb"), rid("eclipse_lumineshrooms"),
-                              rid("eclipse_starblooms"), rid("eclipse_grass")],
+                              rid("eclipse_starblooms")],
               particle="minecraft:end_rod", particle_chance=0.002)
 
     # ---- Chorus Thicket (the distillation's Chorus Tangle): tangled thickets of vanilla chorus on Chorus

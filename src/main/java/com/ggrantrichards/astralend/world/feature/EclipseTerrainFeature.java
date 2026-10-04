@@ -18,8 +18,9 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 // data/astralend/forge/biome_modifier/eclipse_terrain.json). Whatever terrain was there is cleared,
 // and in its place: one great disc of land RADIUS blocks across, gently rolling, thick in the middle
 // and thin at the rim, in a ring of empty void; a round hole through it at the Wellspring (whose glass
-// floor and water EclipseLandmarksFeature adds). Its ground follows the yin-yang - Living Turf over
-// End Stone in the heaven half, a crust of Sunscorched Stone over Charred End Stone in the hell half -
+// floor and water EclipseLandmarksFeature adds). Its ground follows the yin-yang - bare End Stone in the
+// heaven half (moss, Living Turf, only round the Wellspring's water, as vanilla's End has no ground
+// cover), a crimson crust of Sunscorched Stone over Charred End Stone in the hell half -
 // read with the same warp as the biome source, so the ground and the biomes agree.
 public record EclipseTerrainFeature() implements Feature {
     public static final MapCodec<EclipseTerrainFeature> CODEC = MapCodec.unit(EclipseTerrainFeature::new);
@@ -65,12 +66,15 @@ public record EclipseTerrainFeature() implements Feature {
                 int wxp = x + (int) Math.round(AstralEndBiomeSource.warp(x, z, 0x51ED));
                 int wzp = z + (int) Math.round(AstralEndBiomeSource.warp(x, z, 0x7A3B));
                 boolean hell = e.part(wxp, wzp) == EclipseLayout.Part.HELL;
+                // Moss only round the water: a ragged ring a few blocks wide about the Wellspring.
+                boolean oasis = Math.hypot(x + 0.5 - wx, z + 0.5 - wz) < well + 6.0 + 2.5 * hills(x * 3, z * 3);
                 for (int y = minY; y < maxY; y++) {
                     BlockState want;
                     if (!land || y > top || y < bottom) {
                         want = air;
                     } else if (y == top) {
-                        want = hell ? ModBlocks.SUNSCORCHED_STONE.get().defaultBlockState() : ModBlocks.LIVING_TURF.get().defaultBlockState();
+                        want = hell ? ModBlocks.SUNSCORCHED_STONE.get().defaultBlockState()
+                            : oasis ? ModBlocks.LIVING_TURF.get().defaultBlockState() : Blocks.END_STONE.defaultBlockState();
                     } else if (hell) {
                         want = y > top - 3 ? ModBlocks.SUNSCORCHED_STONE.get().defaultBlockState()
                             : ModBlocks.CHARRED_END_STONE.get().defaultBlockState();

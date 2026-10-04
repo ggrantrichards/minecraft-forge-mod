@@ -499,12 +499,13 @@ public final class WorldgenSurvey {
         return anchor == null ? null : new BlockPos(anchor.getX() - 8, 64, anchor.getZ() - 8);
     }
 
-    // The Eclipse's heaven half: Living Turf, Breathcomb, giant Lumineshrooms, and no Endermen's chorus.
+    // The Eclipse's heaven half: bare End Stone (moss only by its water), Breathcomb, a few giant Lumineshrooms.
     private static void checkEclipse(Area area, List<String> failures) {
         if (!enoughLand(area, failures)) {
             return;
         }
-        atLeast(area, ModBlocks.LIVING_TURF.get(), 40, failures);
+        atLeast(area, Blocks.END_STONE, 400, failures);
+        log("The Eclipse: " + area.in(ModBlocks.LIVING_TURF.get()) + " Living Turf blocks (only round water)");
         atLeast(area, ModBlocks.BREATHCOMB.get(), 1, failures);
         atLeast(area, ModBlocks.LUMINE_CAP.get(), 5, failures);
         int scorched = area.in(ModBlocks.SUNSCORCHED_STONE.get());

@@ -164,11 +164,20 @@ public record EclipseLandmarksFeature() implements Feature {
                     break;
                 }
                 BlockPos ground = Build.surface(level, (int) Math.floor(x), (int) Math.floor(z));
-                if (ground == null || !level.getBlockState(ground).is(ModBlocks.LIVING_TURF.get())) {
+                if (ground == null || !(level.getBlockState(ground).is(ModBlocks.LIVING_TURF.get()) || level.getBlockState(ground).is(Blocks.END_STONE))) {
                     continue;
                 }
-                // A source in a notch of the turf at the very edge; it runs off once the chunk is done.
+                // A source in a notch at the very edge, moss round it; it runs off once the chunk is done.
                 level.setBlock(ground, Blocks.WATER.defaultBlockState(), 2);
+                for (int dx = -2; dx <= 2; dx++) {
+                    for (int dz = -2; dz <= 2; dz++) {
+                        BlockPos g = ground.offset(dx, 0, dz);
+                        if ((dx != 0 || dz != 0) && dx * dx + dz * dz <= 5 && level.getBlockState(g).is(Blocks.END_STONE)
+                            && level.getBlockState(g.above()).isAir()) {
+                            level.setBlock(g, ModBlocks.LIVING_TURF.get().defaultBlockState(), 2);
+                        }
+                    }
+                }
                 placed = true;
                 break;
             }

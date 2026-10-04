@@ -97,8 +97,13 @@ def pale_end_stone():
     return gradient(vanilla("end_stone"), "a6a2b4", "e4e2ec")
 
 
+# Sunscorched Stone: the Eclipse's hell half, crimson - the Horsehead Nebula's glow - but End Stone's own
+# pitted pattern and as few tones, so it reads as the End, not the Nether.
+CRIMSON = ("5a1022", "7c1a30", "9c2a42")
+
+
 def sunscorched_stone():
-    return gradient(vanilla("end_stone").transpose(Image.Transpose.ROTATE_90), "b48448", "efcf8e")
+    return gradient(vanilla("end_stone").transpose(Image.Transpose.ROTATE_90), *CRIMSON)
 
 
 def chorus_moss():
@@ -178,7 +183,8 @@ def chorus_bloom():
 
 
 def lumine_cap():
-    return shift(vanilla("shroomlight"), hue=0.50, sat=0.62, val=0.92)
+    """Pale purpur, within the End's own range: few tones, low saturation, little contrast."""
+    return gradient(vanilla("shroomlight"), "8c6e8e", "a084a2", "b49ab6", "c6b0c8")
 
 
 # Glimmer Crystal: amethyst gone smoky - a dull grey violet, so it reads as part of the End's restricted
@@ -203,11 +209,11 @@ def pale_end_stone_bricks():
 
 
 def sunscorched_stone_bricks():
-    return gradient(vanilla("end_stone_bricks"), "b48448", "efcf8e")
+    return gradient(vanilla("end_stone_bricks"), *CRIMSON)
 
 
 def polished_sunscorched_stone():
-    return gradient(vanilla("sandstone_top"), "c0915a", "efcf8e")
+    return gradient(vanilla("sandstone_top"), *CRIMSON)
 
 
 # Lumine wood: the warped fungus's stem and planks, cooled from teal to the cap's blue; the stem's
@@ -230,8 +236,9 @@ def two_tone(img, is_a, stops_a, stops_b):
 
 
 def _lumine_stem(name):
-    return lambda: two_tone(vanilla(name), lambda p: p[1] > p[0], ("2f6f9c", "5fb4e0", "a8e2fa"),
-                            ("4a4560", "6e6888", "8e88a8"))
+    """Cream, like End Stone and the chorus flower's pale petals."""
+    return lambda: two_tone(vanilla(name), lambda p: p[1] > p[0], ("a8a286", "c0ba9c", "d6d0b2"),
+                            ("b8b296", "cfc9a8", "e2dcbc"))
 
 
 def stardust_block():
@@ -255,22 +262,28 @@ def hollow_vines(name):
     return lambda: gradient(vanilla(name), "120a20", "33245a", "5e4a9c")
 
 
-# The Eclipse's heaven half: the only green in the End, and its breathing light.
-TURF = ("1d4630", "3a8048", "79c066")
+# The Eclipse's heaven half: a muted teal moss, only round the water of its oases (the rest is bare End
+# Stone), and its breathing light.
+TURF = ("2e504c", "3e6660", "4e7c74", "62948a")
 
 
 def living_turf_top():
-    return gradient(vanilla("grass_block_top"), *TURF)
+    return gradient(vanilla("moss_block"), *TURF)
 
 
 def living_turf_side():
+    """End Stone with the moss's edge over its top: a ragged lip one to three pixels deep, not grass."""
     img = vanilla("end_stone").copy()
-    img.alpha_composite(gradient(vanilla("grass_block_side_overlay"), *TURF))
+    top = living_turf_top()
+    for x in range(16):
+        depth = 1 + (x * 7 + 3) % 5 // 2      # 1..3, uneven
+        for y in range(depth):
+            img.putpixel((x, y), top.getpixel((x, (y + 5) % 16)))
     return img
 
 
-BREATH = (("2c2618", "4e4430", "6c5e40"), ("5a4a2c", "8a7448", "b09868"), ("9a8048", "d0b470", "efdcaa"),
-          ("c8a860", "f2dfa0", "fffbe8"))
+BREATH = (("3a3248", "4e445e", "625872"), ("5a4e70", "766a8e", "9286aa"), ("7e72a0", "a296c0", "c4bade"),
+          ("a498c8", "cec4e8", "f0ecfc"))   # lavender, dim to bright
 
 
 def breathcomb(stage):

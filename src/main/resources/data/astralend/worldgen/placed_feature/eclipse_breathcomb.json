@@ -52,6 +52,7 @@
           {
             "type": "minecraft:matching_blocks",
             "blocks": [
+              "minecraft:end_stone",
               "astralend:living_turf",
               "astralend:breathcomb"
             ],

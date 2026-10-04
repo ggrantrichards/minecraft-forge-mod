@@ -64,9 +64,12 @@ silence and alienness, ruins without explanation, and finality. The full plan, i
 **Phase 3, the Eclipse:** one disc of land 360 blocks across, in a ring of empty void. It's rare: about
 three in every four 4096-block cells of the outer End hold one, and never within 1700 blocks of the
 centre.
-- **A yin-yang:** a heaven half of Living Turf and Breathcomb (blocks that glow with a slow breath)
-  and a hell half of Sunscorched Stone. Each half holds a seed of the other: a burnt spire in heaven
-  and a small living pool in hell.
+- **A yin-yang:**
+  - **The heaven half** is bare End Stone, as vanilla's End is. A muted teal moss (Living Turf)
+    grows only round its water. It has lavender Breathcomb (blocks that glow with a slow breath) and
+    a few small Lumineshrooms with pale purpur caps.
+  - **The hell half** is a crust of crimson Sunscorched Stone.
+  - Each half holds a seed of the other: a burnt spire in heaven and a small living pool in hell.
 - **The Wellspring:** a round hole through the heaven half, holding water on a glass floor over the
   void.
 - **Over the hell half:** the **Remnant**, a dead star's cinder, and the Sunstorms.

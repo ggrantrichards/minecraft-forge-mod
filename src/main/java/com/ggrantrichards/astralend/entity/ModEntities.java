@@ -92,7 +92,7 @@ public final class ModEntities {
             event.register(VOID_WANDERER.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::onSolidGround, replace);
             event.register(UMBRAL_STALKER.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::inCave, replace);
             event.register(VOID_RAY.get(), SpawnPlacementTypes.ON_GROUND, ground, VoidRay::checkVoidRaySpawnRules, replace);
-            event.register(HUSHBACK.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::onAstralSoil, replace);
+            event.register(HUSHBACK.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::onSolidGround, replace);
             event.register(HYDRAGRIP.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::nearWater, replace);
             event.register(MIRROR_WRETCH.get(), SpawnPlacementTypes.ON_GROUND, ground, MirrorWretch::checkWretchSpawnRules, replace);
         });
