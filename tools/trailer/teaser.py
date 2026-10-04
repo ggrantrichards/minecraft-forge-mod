@@ -1,5 +1,5 @@
 """Cuts the README's and Modrinth's moving teaser out of the trailer: fifteen seconds from the card
-"Don't wake it." - the Spire Wyrm waking on its spire - as a looping animated WebP (no sound).
+"Somewhere, the void holds its breath." - the Eclipse revealed, heaven and hell - as a looping animated WebP (no sound).
 
     python3 tools/trailer/teaser.py <the_astral_end_trailer.mp4> [docs/modrinth/teaser.webp]
 
@@ -19,7 +19,7 @@ LENGTH = 15.0
 def start():
     t = 0
     for b in compose.parse():
-        if b["kind"] == "card" and b["text"].startswith("Don't wake"):
+        if b["kind"] == "card" and b["text"].startswith("Somewhere, the void"):
             return t / compose.FPS
         t += b["frames"]
     return 0.0

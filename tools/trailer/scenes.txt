@@ -25,56 +25,46 @@
 # stuns it).
 # The caption after "|" is shown small in the corner; leave it empty for none.
 
-vo 0.6 | For ten thousand years... the End stood still.
-card 4.5 | For ages, the End stood still.
-sky_nebula_fields 150 pitch=-40:16 fwd=6 flare=calm |
-vo 0.3 | Now... it is waking up.
-card 3.0 | Now it is waking up.
-vo 0.8 | Beyond the dragon's island, new worlds drift in the dark.
+vo 0.8 | The End was never empty.
+card 4.0 | The End was never empty.
+sky_ashen_barrens 140 pitch=-40:10 fwd=4 flare=calm |
+vo 0.4 | It was waiting.
+card 3.0 | It was waiting.
+vo 0.6 | Past the dragon's island, the islands drift apart.
 nebula_fields 90 fwd=14 up=-3 yaw=8 | Nebula Fields
-chorus_thicket 90 fwd=12 up=-2 yaw=-6 | Chorus Thicket
-vo 0.4 | Forests of chorus. Crags of crystal. And a sun that never sets.
-glimmering_crags 90 fwd=12 yaw=8 | Glimmering Crags
-ashen_barrens 90 fwd=14 up=-2 yaw=-8 | Ashen Barrens
-corona 90 fwd=12 yaw=10 | The Corona
-comet_wake 90 fwd=14 up=-2 yaw=-6 | Comet Wake
 hollow_isles 90 fwd=12 yaw=8 | Hollow Isles
-vo 0.3 | New life drifts between the islands.
-card 3.0 | New life drifts between the islands.
-mob_pollinator 75 orbit=50 | End Pollinator
-vo 0.8 | Some of it is gentle...
+glimmering_crags 90 fwd=12 yaw=8 | Glimmering Crags
+vo 0.4 | Bone. Ash. Silence.
+ashen_barrens 100 fwd=14 up=-2 yaw=-8 | Ashen Barrens
+chorus_thicket 90 fwd=12 up=-2 yaw=-6 | Chorus Tangle
+vo 0.4 | And somewhere out in the dark...
+card 3.0 | Somewhere, the void holds its breath.
+eclipse_aerial 150 fwd=-10 up=8 pitch=38:28 | The Eclipse
+vo 0.3 | ...heaven and hell, turning round each other.
+eclipse 100 fwd=12 yaw=8 | Its heaven
+corona 100 fwd=10 yaw=-8 | and its hell
+vo 0.4 | Things live here that have never seen a sun.
+mob_hushback 75 orbit=50 | Hushback
+mob_hydragrip 70 orbit=-40 | Hydragrip
 mob_drift_whale_side 130 track=0.12 | Drift Whale
-mob_void_wanderer 75 orbit=-45 | Void Wanderer
-mob_void_ray 65 orbit=40 | Void Ray
-mob_watcher 75 fwd=2.5 | The Watcher
-vo 0.2 | ...and some of it hunts in the dark.
+vo 0.3 | Some will call you to the edge.
+mob_mirror_wretch 75 orbit=30 | Mirror Wretch
 mob_umbral_stalker_lit 65 orbit=30 | Umbral Stalker
-mob_hollow 75 orbit=-40 | The Hollow
-vo 0.3 | Keep an eye on the sky.
-card 2.8 | Keep an eye on the sky.
-comet_wake 190 comet=chase | Live Comets
-sky_corona_flare 110 yaw=25 pitch=-18:-10 flare=flare | Sunstorms
-vo 0.3 | Someone was here before you.
-card 2.8 | Someone was here before you.
-structure_shattered_observatory 110 orbit=30 focus=hit | The Shattered Observatory
+vo 0.4 | Don't look straight at it.
+mob_watcher 80 fwd=2.5 | The Watcher
+vo 0.3 | Someone built here. No one is left to say why.
+card 3.2 | No one is left to say why.
 structure_rift_maw 110 fwd=4 wake@30 | Rift Maws
 structure_constellation_maze 110 orbit=20 focus=hit bridges@30 | Constellation Mazes
-vo 0.6 | Leviathans, dead for ages... turned to stone, and to shelter.
-structure_whalefall 130 orbit=25 focus=hit | The Whalefall
-vo 0.6 | And at the top of the highest spire...
-structure_resonant_spire 110 orbit=25 focus=hit | Resonant Spires
-vo 0.4 | ...something is sleeping.
-wyrm_nest 96 fwd=2.5 focus=wyrm |
-vo 0.4 | Don't. Wake. It.
-card 3.0 | Don't wake it.
-wyrm_nest 150 fwd=-7 up=5 focus=wyrm wyrm_wake@4 | The Spire Wyrm
-wyrm_flight 110 side=-6 focus=wyrm wyrm_circle@0 |
-wyrm_shaft 90 focus=wyrm wyrm_breath@24 |
-vo 0.5 | Ring the bells. Bring it down.
-wyrm_bell 130 focus=wyrm wyrm_circle@0 wyrm_stun@36 | Ring the bells
-vo 0.3 | Then bring something back.
-card 2.8 | Bring something back.
+structure_remnant 110 orbit=20 focus=hit | The Remnant
+vo 0.5 | The greatest of them... a whole leviathan, made a citadel.
+structure_leviathan 160 fwd=12 | The Leviathan
+vo 0.3 | Its keeper is only resting.
+structure_leviathan_reliquary 110 fwd=5 | The Reliquary
+mob_curator 90 orbit=25 | The Curator
+vo 0.3 | Take what it keeps.
+card 2.8 | Take what it keeps.
 starforge_astral_forge 75 orbit=35 focus=hit | Starforging
 vo 1.4 | The Astral End.
-nebula_fields_aerial 150 fwd=-20 up=14 pitch=38:24 ease=in |
+eclipse_aerial 150 fwd=-20 up=14 pitch=38:24 ease=in |
 logo 8.0
