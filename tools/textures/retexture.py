@@ -99,7 +99,7 @@ def pale_end_stone():
 
 # Sunscorched Stone: the Eclipse's hell half, crimson - the Horsehead Nebula's glow - but End Stone's own
 # pitted pattern and as few tones, so it reads as the End, not the Nether.
-CRIMSON = ("5a1022", "7c1a30", "9c2a42")
+CRIMSON = ("4e1222", "6c1e32", "8c2c44", "a8405a")
 
 
 def sunscorched_stone():
@@ -237,8 +237,8 @@ def two_tone(img, is_a, stops_a, stops_b):
 
 def _lumine_stem(name):
     """Cream, like End Stone and the chorus flower's pale petals."""
-    return lambda: two_tone(vanilla(name), lambda p: p[1] > p[0], ("a8a286", "c0ba9c", "d6d0b2"),
-                            ("b8b296", "cfc9a8", "e2dcbc"))
+    return lambda: two_tone(vanilla(name), lambda p: p[1] > p[0], ("b6b094", "c6c0a2", "d4ceb0"),
+                            ("bcb698", "cbc5a6", "dad4b6"))
 
 
 def stardust_block():
@@ -264,7 +264,7 @@ def hollow_vines(name):
 
 # The Eclipse's heaven half: a muted teal moss, only round the water of its oases (the rest is bare End
 # Stone), and its breathing light.
-TURF = ("2e504c", "3e6660", "4e7c74", "62948a")
+TURF = ("34524e", "426660", "507870", "5c887e")
 
 
 def living_turf_top():

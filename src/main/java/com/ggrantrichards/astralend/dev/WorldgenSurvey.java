@@ -277,7 +277,8 @@ public final class WorldgenSurvey {
         } else {
             log(String.format("Nearest Eclipse: centre %.0f, %.0f, turned %.0f degrees", eclipse.x(), eclipse.z(),
                 Math.toDegrees(eclipse.angle())));
-            spots.put('C', List.of(BlockPos.containing(eclipse.worldX(-0.6, 0.1), 64, eclipse.worldZ(-0.6, 0.1))));
+            // (In the hell half's lower lobe, ~100 blocks from the Remnant, which hangs over (-0.6, 0.1).)
+            spots.put('C', List.of(BlockPos.containing(eclipse.worldX(-0.45, -0.45), 64, eclipse.worldZ(-0.45, -0.45))));
             spots.put('E', List.of(BlockPos.containing(eclipse.worldX(0.5, 0.3), 64, eclipse.worldZ(0.5, 0.3))));
         }
         Map<Character, Area> areas = new LinkedHashMap<>();
@@ -422,7 +423,7 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('N'), end, "watcher", 6.5, 0.5, 2.6);
         mobShot(lines, areas.get('G'), end, "spire_wyrm", 16.0, 6.0, 5.0);
         mobShot(lines, areas.get('E'), end, "hushback", 3.2, 0.5, 1.4);
-        mobShot(lines, areas.get('E'), end, "hydragrip", 2.2, 0.3, 0.9);
+        mobShot(lines, areas.get('E'), end, "hydragrip", 3.0, 0.3, 1.5);
         mobShot(lines, areas.get('C'), end, "mirror_wretch", 4.2, 0.8, 2.4);
         mobShot(lines, areas.get('A'), end, "hollowback", 3.2, 0.5, 1.4);
         mobShot(lines, areas.get('A'), end, "curator", 8.0, 0.5, 3.2);
@@ -693,9 +694,10 @@ public final class WorldgenSurvey {
         BlockPos mid = new BlockPos(start.getX() + 8, pedestal.getY(), start.getZ() + 8);
         double dx = pedestal.getX() - mid.getX(), dz = pedestal.getZ() - mid.getZ(), len = Math.hypot(dx, dz);
         double sx = -dz / len, sz = dx / len;   // across the body
-        BlockPos cam = mid.offset((int) Math.round(sx * 190 - dx * 0.2), 40, (int) Math.round(sz * 190 - dz * 0.2));
+        // High over its flank, above the islands round it, looking down along the whole body.
+        BlockPos cam = mid.offset((int) Math.round(sx * 150), 75, (int) Math.round(sz * 150));
         double yaw = Math.toDegrees(Math.atan2(-(mid.getX() - cam.getX()), mid.getZ() - cam.getZ()));
-        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan %d.5 %d %d.5 %.1f 10.0 clear", cam.getX(), cam.getY(), cam.getZ(), yaw));
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan %d.5 %d %d.5 %.1f 27.0 clear", cam.getX(), cam.getY(), cam.getZ(), yaw));
         BlockPos door = new BlockPos((int) Math.round(pedestal.getX() - dx / len * 40), pedestal.getY() + 2,
             (int) Math.round(pedestal.getZ() - dz / len * 40));
         double inYaw = Math.toDegrees(Math.atan2(-(pedestal.getX() - door.getX()), pedestal.getZ() - door.getZ()));
