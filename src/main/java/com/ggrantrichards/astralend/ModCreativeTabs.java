@@ -37,6 +37,8 @@ public final class ModCreativeTabs {
         for (var item : ModItems.ITEMS.getEntries()) {
             items.add(item.get());
         }
+        // Out of the world for now (its code and model are kept): no egg in the tab either.
+        items.remove(ModItems.SPIRE_WYRM_SPAWN_EGG.get());
         return items;
     }
 

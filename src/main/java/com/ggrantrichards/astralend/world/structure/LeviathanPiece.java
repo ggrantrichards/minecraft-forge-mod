@@ -379,8 +379,13 @@ public class LeviathanPiece extends StructurePiece {
         this.chest(level, chunk, rnd, 6, spineV(0) - 19, 0);
         this.chest(level, chunk, rnd, -6, spineV(40) - 19, 40);
         // The garrison.
+        // (A shulker can't hold on to the top of a slab - it teleports off looking for a full face -
+        // so each sits on a purpur block set into the tower's roof.)
         for (int t : TOWERS) {
-            this.spawn(level, chunk, EntityTypes.SHULKER, 2, spineV(t) + TOWER_H + 1.5, t + 2, null);
+            for (int side = -1; side <= 1; side += 2) {
+                this.put(level, chunk, this.world(2.5 * side, spineV(t) + TOWER_H + 0.5, t + 2), Blocks.PURPUR_BLOCK.defaultBlockState());
+                this.spawn(level, chunk, EntityTypes.SHULKER, 2.5 * side, spineV(t) + TOWER_H + 1.5, t + 2, null);
+            }
         }
         for (int w : new int[] {-60, 0, 50}) {
             this.spawn(level, chunk, ModEntities.VOID_WANDERER.get(), 0, spineV(w) + 7, w + 3, null);

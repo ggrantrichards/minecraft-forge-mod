@@ -530,7 +530,7 @@ public final class WorldgenSurvey {
         log("The Eclipse: " + scorched + " Sunscorched Stone blocks in the heaven half (its seed of hell is elsewhere)");
     }
 
-    // The Eclipse's landmarks: the Wellspring (water on a glass floor over the void), its two seeds, and
+    // The Eclipse's landmarks: the Wellspring (a basin of water on a bed of End Stone and Pale End Stone), its two seeds, and
     // the two halves in the right places.
     private static void testEclipse(ServerLevel end, EclipseLayout.Eclipse e, List<String> failures) {
         double wx = e.worldX(EclipseLayout.WELLSPRING[0], EclipseLayout.WELLSPRING[1]);
@@ -541,7 +541,7 @@ public final class WorldgenSurvey {
                 end.getChunk(cx + dx, cz + dz);
             }
         }
-        int water = 0, glass = 0, below = 0;
+        int water = 0, bed = 0, glass = 0;
         BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
         double r = EclipseLayout.WELLSPRING_RADIUS * EclipseLayout.RADIUS - 1.5;
         for (int x = (int) (wx - r); x <= (int) (wx + r); x++) {
@@ -555,16 +555,16 @@ public final class WorldgenSurvey {
                         water++;
                     } else if (state.is(ModBlocks.ASTRAL_GLASS.get())) {
                         glass++;
-                    } else if (!state.isAir() && y < 50) {
-                        below++;
+                    } else if (state.is(ModBlocks.PALE_END_STONE.get()) || state.is(Blocks.END_STONE)) {
+                        bed++;
                     }
                 }
             }
         }
-        log(String.format("The Wellspring at %.0f, %.0f: %d water, %d glass floor, %d solid blocks under it", wx, wz, water, glass, below));
-        if (water < 2000 || glass < 400 || below > 20) {
-            failures.add("the Wellspring should be water on a glass floor over open void (" + water + " water, " + glass
-                + " glass, " + below + " solid under it)");
+        log(String.format("The Wellspring at %.0f, %.0f: %d water, on a bed of %d End Stone (%d glass)", wx, wz, water, bed, glass));
+        if (water < 2000 || bed < 1500 || glass > 0) {
+            failures.add("the Wellspring should be a basin of water on a bed of End Stone and Pale End Stone (" + water + " water, "
+                + bed + " bed, " + glass + " glass)");
         }
         // Its halves where the yin-yang says (the biome map is warped near borders, so test well inside).
         var resolver = end.getChunkSource().getGenerator().getBiomeSource().createUncachedResolver(end.getChunkSource().randomState());
@@ -690,6 +690,18 @@ public final class WorldgenSurvey {
             if (!curator.isDormant() || hurt || curator.home() == null) {
                 failures.add("leviathan: the Curator should be dormant, unhurt by anything but a player, and know its home");
             }
+        }
+        // The garrison: two shulkers on each tower's roof, still there once the chunks are live.
+        var box = piece.getBoundingBox();
+        for (int cx = box.minX() >> 4; cx <= box.maxX() >> 4; cx++) {
+            for (int cz = box.minZ() >> 4; cz <= box.maxZ() >> 4; cz++) {
+                end.getChunk(cx, cz);
+            }
+        }
+        var shulkers = end.getEntitiesOfClass(net.minecraft.world.entity.monster.Shulker.class, net.minecraft.world.phys.AABB.of(box).inflate(8));
+        log("leviathan: " + shulkers.size() + " shulkers on the towers");
+        if (shulkers.size() < 6) {
+            failures.add("leviathan: expected 6+ shulkers on the towers, found " + shulkers.size());
         }
         // The egg on the pedestal lights the skull's eyes.
         if (hasPedestal) {

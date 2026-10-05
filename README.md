@@ -70,8 +70,7 @@ centre.
     a few small Lumineshrooms with pale purpur caps.
   - **The hell half** is a crust of crimson Sunscorched Stone.
   - Each half holds a seed of the other: a burnt spire in heaven and a small living pool in hell.
-- **The Wellspring:** a round hole through the heaven half, holding water on a glass floor over the
-  void.
+- **The Wellspring:** a basin of water dug into the heaven half, on a bed of End Stone, ringed with moss.
 - **Over the hell half:** the **Remnant**, a dead star's cinder, and the Sunstorms.
 - **Only over an Eclipse** do the sky's stars, constellations and auroras show without a spyglass.
   Constellations sighted from here unlock Starforge upgrades.

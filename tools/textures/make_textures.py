@@ -123,7 +123,7 @@ def overlay(base, rows, pal):
 
 # ---------------------------------------------------------------- palettes
 
-UMBRAL = [hexc("131019"), hexc("1d1925"), hexc("272130"), hexc("332b3e"), hexc("41374f")]
+UMBRAL = [hexc("201b2a"), hexc("2e283a"), hexc("3c3449"), hexc("4c425c"), hexc("5e5272")]   # lightened
 UMBRAL_GLINT = hexc("4d3f66")
 METEOR_ROCK = [hexc("1b1513"), hexc("261e1a"), hexc("30261f"), hexc("3b2f27"), hexc("4a3a2e")]
 STARDUST = [hexc("a896c9"), hexc("b7a7d5"), hexc("c6b9e0"), hexc("d6cdea"), hexc("e6e0f4")]

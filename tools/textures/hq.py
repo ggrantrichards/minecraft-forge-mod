@@ -86,7 +86,7 @@ def charred_end_stone():
     return img
 
 
-UMBRAL = ramp("09070f", "4f4470", 6, hue_shift=0.03)
+UMBRAL = ramp("16121f", "6e6292", 6, hue_shift=0.03)   # lightened: the Crags read black
 
 
 def nightstone():

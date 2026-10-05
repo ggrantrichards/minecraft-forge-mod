@@ -35,12 +35,17 @@ public record LeviathanRibcageFeature() implements Feature {
         BlockState rib = ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, Direction.Axis.Y);
         BlockState ribAcross = ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, across.getAxis());
         BlockPos start = origin.relative(along, -length / 2);
+        // Only on ground that carries the whole spine: no part of it hangs over an edge or a dip.
+        BlockPos[] grounds = new BlockPos[length];
         for (int i = 0; i < length; i++) {
             BlockPos s = start.relative(along, i);
-            BlockPos ground = Build.surface(level, s.getX(), s.getZ());
-            if (ground == null || Math.abs(ground.getY() - origin.getY()) > 3) {
-                continue;
+            grounds[i] = Build.surface(level, s.getX(), s.getZ());
+            if (grounds[i] == null || Math.abs(grounds[i].getY() - origin.getY() + 1) > 1) {
+                return false;
             }
+        }
+        for (int i = 0; i < length; i++) {
+            BlockPos ground = grounds[i];
             Build.force(level, ground, spine);  // half-sunk into the shelf
             if (i % 3 != 1 || i < 2 || i > length - 3 || random.nextInt(6) == 0) {
                 continue;
@@ -52,6 +57,18 @@ public record LeviathanRibcageFeature() implements Feature {
             // A quarter of the ribs have one end snapped off somewhere along it.
             int brokenSide = random.nextInt(4) == 0 ? (random.nextBoolean() ? 1 : -1) : 0;
             int brokenFrom = 1 + random.nextInt(w);
+            // Both feet must stand on the ground the spine lies on, or the rib isn't raised at all.
+            boolean footed = true;
+            for (int side : new int[] {-w, w}) {
+                if (brokenSide != 0 && side * brokenSide >= brokenFrom) {
+                    continue;
+                }
+                BlockPos foot = Build.surface(level, ground.relative(across, side).getX(), ground.relative(across, side).getZ());
+                footed &= foot != null && Math.abs(foot.getY() - ground.getY()) <= 1;
+            }
+            if (!footed) {
+                continue;
+            }
             for (int side = -w; side <= w; side++) {
                 if (brokenSide != 0 && side * brokenSide >= brokenFrom) {
                     continue;
@@ -59,7 +76,8 @@ public record LeviathanRibcageFeature() implements Feature {
                 int y = archHeight(side, w, h);
                 // fill down to the next step of the arch, so the rib has no gaps
                 int outer = Math.abs(side) + 1 <= w ? archHeight(Math.abs(side) + 1, w, h) : 0;
-                for (int k = Math.min(y, outer); k <= y; k++) {
+                // (the feet start down at the ground itself: k from -1 at the ends)
+                for (int k = Math.abs(side) == w ? -1 : Math.min(y, outer); k <= y; k++) {
                     Build.put(level, ground.relative(across, side).above(k + 1), Math.abs(side) < w / 2 ? ribAcross : rib);
                 }
             }

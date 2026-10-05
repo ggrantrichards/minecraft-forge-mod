@@ -312,8 +312,18 @@ public final class ClientPlaytests {
                         new MobEffectInstance(com.ggrantrichards.astralend.ModEffects.upwelling(), 400)));
                 }
                 keys.keyUp.setDown(t > 120 && t < 220);              // walk along the ceiling
+                // Turn as the mouse does (Entity.turn), and check the view went the mirrored way, all of it.
+                if (t == 160) {
+                    turnFrom = new float[] {player.getYRot(), player.getXRot()};
+                }
                 if (t >= 160 && t < 200) {
-                    player.setYRot(player.getYRot() + 2.0F);
+                    player.turn(20.0, -4.0);
+                }
+                if (t == 205) {
+                    float dy = player.getYRot() - turnFrom[0], dp = player.getXRot() - turnFrom[1];
+                    LOGGER.info(TAG + "upwelling turn: the mouse moved +120 yaw, -24 pitch; the view turned {} yaw, {} pitch ({})",
+                        String.format("%.1f", dy), String.format("%.1f", dp),
+                        Math.abs(dy + 120.0F) < 12.0F && Math.abs(dp - 24.0F) < 6.0F ? "mirrored, PASS" : "FAIL");
                 }
                 keys.keyJump.setDown(t >= 240 && t < 246);          // and drop off it
                 if (t == 280) {
@@ -348,6 +358,8 @@ public final class ClientPlaytests {
             default -> { }
         }
     }
+
+    private static float[] turnFrom = new float[2];
 
     private static void release(Minecraft minecraft) {
         minecraft.options.keyUp.setDown(false);

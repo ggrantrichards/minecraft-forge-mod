@@ -1020,7 +1020,8 @@ def worldgen_phase3():
     plant_patch("aurora_shimmer_reeds", "shimmer_reed", rarity=3, count=24, spread=6)
     plant_patch("ashen_barrens_withered_lumineshrooms", "ashen_lumineshroom", rarity=2, count=8, spread=5,
                 on=[rid("pale_end_stone")])
-    big_feature("aurora_ribcages", "leviathan_ribcage", rarity=5, heightmap="WORLD_SURFACE_WG")
+    # The bones of the dead: very rare - a ribcage in one chunk of 2000 (0-2 across a whole Ashen Barrens).
+    big_feature("aurora_ribcages", "leviathan_ribcage", rarity=2000, heightmap="WORLD_SURFACE_WG")
     feature("standing_stone", {"type": "minecraft:block_column", "allowed_placement": air, "direction": "up",
                                "layers": [{"height": {"type": "minecraft:uniform", "min_inclusive": 1, "max_inclusive": 3},
                                            "provider": {"id": rid("pale_end_stone_bricks")}},
@@ -1029,31 +1030,15 @@ def worldgen_phase3():
     surface_feature("aurora_standing_stones", "standing_stone", rarity=5,
                     extra=[{"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
                         air, {"type": "minecraft:matching_blocks", "blocks": [rid("pale_end_stone")], "offset": [0, -1, 0]}]}}])
-    feature("leviathan_rib", {"type": "minecraft:block_column", "allowed_placement": air, "direction": "up",
-                              "layers": [{"height": {"type": "minecraft:uniform", "min_inclusive": 3, "max_inclusive": 7},
-                                          "provider": {"id": rid("leviathan_bone_block"), "properties": {"axis": "y"}}}],
-                              "prioritize_tip": False})
-    placed("aurora_leviathan_ribs", {"feature": rid("leviathan_rib"), "placement": [
-        {"type": "minecraft:rarity_filter", "chance": 9},
-        {"type": "minecraft:in_square"},
-        {"type": "minecraft:heightmap", "heightmap": "WORLD_SURFACE_WG"},
-        {"type": "minecraft:count", "count": 5},
-        {"type": "minecraft:offset", "x": trapezoid(4), "y": trapezoid(1), "z": trapezoid(4)},
-        {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
-            air, {"type": "minecraft:matching_blocks", "blocks": [rid("pale_end_stone")], "offset": [0, -1, 0]}]}},
-        {"type": "minecraft:biome"},
-    ]})
     # The impact sites (the distillation moved them here when the Comet Wake was cut): old craters, and
     # comet cores with Meteoric Iron at their hearts. Whatever fell, fell long ago.
-    java_feature("comet_core")
-    surface_feature("ashen_barrens_comet_cores", "comet_core", rarity=8)
-    big_feature("ashen_barrens_craters", "crater", rarity=7, heightmap="WORLD_SURFACE_WG")
+    # (Only the Comet Crater structure, and only rarely: the old crater and comet-core features carved into
+    # neighbouring chunks after their plants and stones were placed, and left them floating.)
     # Memory Moss: pale patches that remember what stood there.
     java_feature("memory_moss")
     surface_feature("ashen_barrens_memory_moss", "memory_moss", rarity=3)
     end_biome("ashen_barrens", "Ashen Barrens", fog="#1b2329", water="#5a7e80",
-              features_step4=[rid("aurora_ribcages"), rid("aurora_standing_stones"), rid("aurora_leviathan_ribs"),
-                              rid("ashen_barrens_craters"), rid("ashen_barrens_comet_cores")],
+              features_step4=[rid("aurora_ribcages"), rid("aurora_standing_stones")],
               features_step9=[rid("ashen_barrens_memory_moss"), rid("aurora_shimmer_reeds"), rid("aurora_shimmer_grass"),
                               rid("ashen_barrens_withered_lumineshrooms")],
               particle="minecraft:white_ash", particle_chance=0.012)
@@ -1113,7 +1098,7 @@ def worldgen_phase3():
          "allowed_search_condition": {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"}},
         {"type": "minecraft:offset", "x": 0, "y": -1, "z": 0},
     ]})
-    end_biome("deep_hollows", "Deep Hollows", fog="#150f26", water="#241a44",
+    end_biome("deep_hollows", "Deep Hollows", fog="#241a3c", water="#241a44",
               features_step4=[rid("hollow_isles_upwells")],
               features_step9=[rid("deep_hollows_nullwood_trees"), rid("deep_hollows_vines"), rid("deep_hollows_mimic_plants"),
                               rid("hollow_isles_voidgel")],
@@ -1191,13 +1176,13 @@ def worldgen_phase3():
     # left: the End's first caves, sealed and dark, where Void Crystal grows (here and only here) and the
     # Umbral Stalker hunts.
     big_feature("glimmering_crags_spires", "glimmer_spire", count=2, heightmap="WORLD_SURFACE_WG")
-    plant_patch("glimmering_crags_clusters", "glimmer_cluster", rarity=1, count=12, spread=6, on=[rid("nightstone")])
+    plant_patch("glimmering_crags_clusters", "glimmer_cluster", rarity=1, count=22, spread=7, on=[rid("nightstone")])
     java_feature("root_cave")
     placed("glimmering_crags_root_caves", {"feature": rid("root_cave"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 2}, {"type": "minecraft:biome"}]})
     placed("glimmering_crags_voidgel", {"feature": rid("voidgel_drip"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 2}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
-    end_biome("glimmering_crags", "Glimmering Crags", fog="#1c1826", water="#7c7290",
+    end_biome("glimmering_crags", "Glimmering Crags", fog="#3a3450", water="#7c7290",   # lighter: it read black
               features_step4=[rid("glimmering_crags_spires")],
               features_step7=[rid("glimmering_crags_root_caves")],
               features_step9=[rid("glimmering_crags_clusters"), rid("glimmering_crags_voidgel")],
@@ -1205,8 +1190,8 @@ def worldgen_phase3():
 
     # ---- Shattered Crags (the Crags' variant): a field of fragments, flyable only with an elytra.
     # Void Rays circle the gaps.
-    plant_patch("shattered_crags_clusters", "glimmer_cluster", rarity=1, count=8, spread=5, on=[rid("nightstone")])
-    end_biome("shattered_crags", "Shattered Crags", fog="#1a1622", water="#7c7290",
+    plant_patch("shattered_crags_clusters", "glimmer_cluster", rarity=1, count=16, spread=6, on=[rid("nightstone")])
+    end_biome("shattered_crags", "Shattered Crags", fog="#34304a", water="#7c7290",
               features_step9=[rid("shattered_crags_clusters"), rid("glimmering_crags_voidgel")],
               particle="minecraft:white_ash", particle_chance=0.006)
 

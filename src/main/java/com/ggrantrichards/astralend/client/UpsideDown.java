@@ -85,14 +85,19 @@ public final class UpsideDown {
             lastYaw = Float.NaN;
             return;
         }
-        // Turning: the mouse moved the view as if upright; mirror that so it follows the screen.
+        // Turning: the mouse moved the view as if upright; mirror that so it follows the screen. The
+        // mouse turns the previous tick's rotation (yRotO, xRotO) along with the current one, and the
+        // view is drawn between the two, so both are mirrored - mirroring only the current one left
+        // them pulling opposite ways, and the view hardly moved at all.
         if (f > 0.5F && !Float.isNaN(lastYaw)) {
             float yaw = lastYaw - (player.getYRot() - lastYaw);
             float pitch = Mth.clamp(lastPitch - (player.getXRot() - lastPitch), -90.0F, 90.0F);
+            player.yRotO += yaw - player.getYRot();
+            player.xRotO += pitch - player.getXRot();
             player.setYRot(yaw);
             player.setXRot(pitch);
-            event.setYaw(yaw);
-            event.setPitch(pitch);
+            event.setYaw(player.getViewYRot((float) event.getPartialTick()));
+            event.setPitch(player.getViewXRot((float) event.getPartialTick()));
         }
         lastYaw = player.getYRot();
         lastPitch = player.getXRot();

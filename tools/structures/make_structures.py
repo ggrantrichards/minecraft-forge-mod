@@ -411,13 +411,29 @@ def mirror(t, x, ground, z, facing_angle, state, rnd):
 
 
 def solar_array(seed):
-    """The Solar Array: a field of Cartographer mirrors that once gathered flare light, most of them
-    cracked or fallen, around a sunken chamber where a Bottled Flare still sits in its
-    pedestal. The mirrors still focus the flares: Sunburn is doubled on the open field."""
+    """The Solar Array: a field of mirrors that once gathered flare light, most of them cracked or
+    fallen, raised high on a stepped crimson mesa toward the sun, round a plaza ringed with lava and
+    braziers, over a chamber where a Bottled Flare still sits in its pedestal. The mirrors still focus
+    the flares: Sunburn is doubled on the open field."""
     S = 49
-    t = Template(S, 18, S, seed)
+    t = Template(S, 30, S, seed)
     rnd = t.rnd
-    c, ground = S // 2, 8
+    c, ground, base = S // 2, 20, 8
+    o = ground - 8               # (the chamber's heights, below, were drawn for a ground of 8)
+    # The mesa: solid Sunscorched Stone Bricks from the island up to the plaza, stepped in every four
+    # blocks toward the top, a stairway cut into its south-east face.
+    for y in range(base, ground):
+        r = 22 + (ground - 1 - y) // 4
+        for x in range(S):
+            for z in range(S):
+                if math.hypot(x - c, z - c) <= r + 0.5:
+                    t.set(x, y, z, a("sunscorched_stone_bricks"))
+    for i in range(ground - base):
+        y, x = ground - 1 - i, c + 3 + i
+        for z in (c + 20, c + 21):
+            t.set(x, y, z, a("polished_sunscorched_stone_stairs") + "[facing=west,half=bottom,shape=straight]")
+            for above in range(y + 1, ground + 3):
+                t.set(x, above, z, "minecraft:air")
     # Paving: a cracked plaza around the room and four causeways out to the edge.
     for x in range(S):
         for z in range(S):
@@ -440,13 +456,13 @@ def solar_array(seed):
             mirror(t, x, ground, z, ang + math.pi, state, rnd)
     # The sunken chamber, 11 x 11, its roof level with the plaza and a glass skylight in it.
     lo, hi = c - 5, c + 5
-    t.fill(lo, 0, lo, hi, ground, hi, a("sunscorched_stone_bricks"))
-    t.fill(lo + 1, 1, lo + 1, hi - 1, 1, hi - 1, a("polished_sunscorched_stone"))
-    t.fill(lo + 1, 2, lo + 1, hi - 1, ground - 1, hi - 1, "minecraft:air")
+    t.fill(lo, o, lo, hi, ground, hi, a("sunscorched_stone_bricks"))
+    t.fill(lo + 1, o + 1, lo + 1, hi - 1, o + 1, hi - 1, a("polished_sunscorched_stone"))
+    t.fill(lo + 1, o + 2, lo + 1, hi - 1, ground - 1, hi - 1, "minecraft:air")
     t.fill(lo, ground, lo, hi, ground, hi, a("polished_sunscorched_stone"))
     t.fill(c - 1, ground, c - 1, c + 1, ground, c + 1, a("astral_glass"))
     for x, z in ((lo + 1, lo + 1), (lo + 1, hi - 1), (hi - 1, lo + 1), (hi - 1, hi - 1)):
-        for y in range(2, ground):
+        for y in range(o + 2, ground):
             t.set(x, y, z, a("sunscorched_stone_brick_wall"))
         t.set(x, ground - 1, z, a("null_lantern"))
     # A stairway down from the south causeway.
@@ -462,15 +478,33 @@ def solar_array(seed):
             for yy in range(y - 1, ground + 1):
                 t.set(x, yy, z, a("sunscorched_stone_bricks"))
     for x in (c - 1, c, c + 1):
-        for y in range(2, 5):
+        for y in range(o + 2, o + 5):
             t.set(x, y, hi, "minecraft:air")                         # the doorway
     # The console: a ring of pedestals, emptied long ago, around the one that still holds a cell.
-    t.set(c, 2, c, a("collector_pedestal") + "[holding=bottled_flare]",
+    t.set(c, o + 2, c, a("collector_pedestal") + "[holding=bottled_flare]",
           nbt={"held": {"id": a("bottled_flare"), "count": Int(1)}, "charge": Int(0)})
     for dx, dz in ((-2, 0), (2, 0), (0, -2)):
-        t.set(c + dx, 2, c + dz, a("collector_pedestal") + "[holding=none]")
-    chest(t, lo + 2, 2, lo + 1, "solar_array", facing="south")
-    chest(t, hi - 2, 2, lo + 1, "solar_array", facing="south")
+        t.set(c + dx, o + 2, c + dz, a("collector_pedestal") + "[holding=none]")
+    chest(t, lo + 2, o + 2, lo + 1, "solar_array", facing="south")
+    chest(t, hi - 2, o + 2, lo + 1, "solar_array", facing="south")
+    # A ring of lava round the plaza (bridged by the causeways, walled in), and four braziers burning
+    # between the mirror rings.
+    for x in range(S):
+        for z in range(S):
+            d = math.hypot(x - c, z - c)
+            on_path = abs(x - c) <= 1 or abs(z - c) <= 1
+            if 8.5 <= d < 9.5:
+                t.set(x, ground, z, a("polished_sunscorched_stone"))
+            elif 9.5 <= d < 11.0:
+                t.set(x, ground, z, a("sunscorched_stone_bricks") if on_path else "minecraft:lava")
+                t.set(x, ground - 1, z, a("sunscorched_stone_bricks"))
+            elif 11.0 <= d < 12.0 and not on_path:
+                t.set(x, ground, z, a("sunscorched_stone_bricks"))
+                t.set(x, ground + 1, z, a("sunscorched_stone_brick_wall"))
+    for ang in (math.pi / 4, 3 * math.pi / 4, 5 * math.pi / 4, 7 * math.pi / 4):
+        x, z = round(c + math.cos(ang) * 17.5), round(c + math.sin(ang) * 17.5)
+        t.set(x, ground, z, "minecraft:magma_block")
+        t.set(x, ground + 1, z, "minecraft:campfire[lit=true,signal_fire=false,facing=north,waterlogged=false]")
     return t
 
 
@@ -750,7 +784,7 @@ def structure_json(name, height, heightmap, spawn_overrides, adaptation, ground)
 STRUCTURES = [
     dict(name="comet_crater", variants=[lambda: comet_crater(11, False), lambda: comet_crater(12, False),
                                         lambda: comet_crater(13, True)],
-         biomes=[a("ashen_barrens")], spread=(16, 6, 61829341), height={"absolute": -8}, heightmap="WORLD_SURFACE_WG",
+         biomes=[a("ashen_barrens")], spread=(64, 24, 61829341), height={"absolute": -8}, heightmap="WORLD_SURFACE_WG",
          spawns=None, adaptation="beard_thin", ground=(16, 4096, 12)),
     # Relays float out over the void, so they want open space (or low ground) under them.
     dict(name="wanderer_relay", variants=[lambda: wanderer_relay(21)],

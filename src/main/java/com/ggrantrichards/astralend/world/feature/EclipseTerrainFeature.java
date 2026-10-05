@@ -17,8 +17,8 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 // placed (it's added to every End biome, at the first generation step, by a Forge biome modifier:
 // data/astralend/forge/biome_modifier/eclipse_terrain.json). Whatever terrain was there is cleared,
 // and in its place: one great disc of land RADIUS blocks across, gently rolling, thick in the middle
-// and thin at the rim, in a ring of empty void; a round hole through it at the Wellspring (whose glass
-// floor and water EclipseLandmarksFeature adds). Its ground follows the yin-yang - bare End Stone in the
+// and thin at the rim, in a ring of empty void. (The Wellspring, a basin dug into it, is
+// EclipseLandmarksFeature's.) Its ground follows the yin-yang - bare End Stone in the
 // heaven half (moss, Living Turf, only round the Wellspring's water, as vanilla's End has no ground
 // cover), a crimson crust of Sunscorched Stone over Charred End Stone in the hell half -
 // read with the same warp as the biome source, so the ground and the biomes agree.
@@ -55,7 +55,7 @@ public record EclipseTerrainFeature() implements Feature {
                     continue;
                 }
                 changed = true;
-                boolean land = d <= r && Math.hypot(x + 0.5 - wx, z + 0.5 - wz) >= well;
+                boolean land = d <= r;          // (the Wellspring is a basin dug into it: EclipseLandmarksFeature)
                 int top = minY - 1, bottom = minY;
                 if (land) {
                     double t = d / r;

@@ -141,7 +141,7 @@ public final class ModBlocks {
         () -> vine());
     // The distillation: Hollow Vines hang from the Deep Hollows' Nullwood to the ground, like weeping vines.
     public static final RegistryObject<Block> HOLLOW_VINES = register("hollow_vines", com.ggrantrichards.astralend.block.HollowVinesBlock::new,
-        () -> vine());
+        () -> vine().lightLevel(state -> 9));   // the glowing tips light the Deep Hollows
     public static final RegistryObject<Block> HOLLOW_VINES_PLANT = registerNoItem("hollow_vines_plant",
         com.ggrantrichards.astralend.block.HollowVinesPlantBlock::new, () -> vine());
     // Comet Cress: a crop that hangs from the underside of Stardust. Its item is ModItems.COMET_CRESS.
@@ -295,7 +295,7 @@ public final class ModBlocks {
     public static final RegistryObject<Block> GLIMMER_CLUSTER = register("glimmer_cluster",
         p -> new net.minecraft.world.level.block.AmethystClusterBlock(7.0F, 3.0F, p),
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_PURPLE).forceSolidOn().noOcclusion().strength(1.5F)
-            .sound(SoundType.AMETHYST_CLUSTER).lightLevel(state -> 5).pushReaction(PushReaction.POPPED));
+            .sound(SoundType.AMETHYST_CLUSTER).lightLevel(state -> 8).pushReaction(PushReaction.POPPED));
 
     // ---- Phase 10: Voidgel - jelly from the undersides of the islands. It bounces you like slime and
     // lets you down gently (Slow Falling). ----

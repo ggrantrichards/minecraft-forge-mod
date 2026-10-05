@@ -258,7 +258,10 @@ def nullwood(name, kind="block"):
 
 
 def hollow_vines(name):
-    """The Deep Hollows' hanging vines: weeping vines in the forest's black violet."""
+    """The Deep Hollows' hanging vines: weeping vines in the forest's black violet, their tips a pale
+    glowing violet (they light the Hollows' undersides)."""
+    if name == "weeping_vines":
+        return lambda: gradient(vanilla(name), "33245a", "8a70d0", "d8c8ff")
     return lambda: gradient(vanilla(name), "120a20", "33245a", "5e4a9c")
 
 
@@ -408,7 +411,7 @@ def lodestar_top():
 
 # ---- drawn, kept from the first pass
 def nightstone():
-    return chunks(4101, 14, ramp("0c0a12", "4a405e", 6, hue_shift=0.02, sat_curve=0.06), base_index=2, light=1, dark=1)
+    return chunks(4101, 14, ramp("1a1626", "6e6290", 6, hue_shift=0.02, sat_curve=0.06), base_index=2, light=1, dark=1)
 
 
 def charred_end_stone():

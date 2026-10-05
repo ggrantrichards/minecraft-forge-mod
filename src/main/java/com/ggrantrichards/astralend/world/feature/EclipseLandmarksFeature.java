@@ -22,7 +22,6 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 public record EclipseLandmarksFeature() implements Feature {
     public static final MapCodec<EclipseLandmarksFeature> CODEC = MapCodec.unit(EclipseLandmarksFeature::new);
     private static final int WATER_TOP = (int) EclipseTerrainFeature.TOP - 1;   // the Wellspring's surface
-    private static final int GLASS_Y = WATER_TOP - 5;
 
     @Override
     public MapCodec<EclipseLandmarksFeature> codec() {
@@ -43,22 +42,29 @@ public record EclipseLandmarksFeature() implements Feature {
         return any;
     }
 
-    // The Wellspring: each column of this chunk within it gets its glass floor and water; the ring just
-    // outside is built up to the water's height so nothing spills.
+    // The Wellspring: a basin dug into the heaven half, like the lakes of BetterEnd - deepest in the middle,
+    // a bed of End Stone and Pale End Stone, water to the brim; the ring just outside is built up to the water's
+    // height (moss on top) so nothing spills.
     private boolean wellspring(WorldGenLevel level, EclipseLayout.Eclipse e, int x0, int z0, RandomSource random) {
         double wx = e.worldX(EclipseLayout.WELLSPRING[0], EclipseLayout.WELLSPRING[1]);
         double wz = e.worldZ(EclipseLayout.WELLSPRING[0], EclipseLayout.WELLSPRING[1]);
         double radius = EclipseLayout.WELLSPRING_RADIUS * EclipseLayout.RADIUS;
         boolean placed = false;
         BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
-        BlockState glass = ModBlocks.ASTRAL_GLASS.get().defaultBlockState();
         BlockState water = Blocks.WATER.defaultBlockState();
         for (int x = x0; x < x0 + 16; x++) {
             for (int z = z0; z < z0 + 16; z++) {
                 double d = Math.sqrt((x + 0.5 - wx) * (x + 0.5 - wx) + (z + 0.5 - wz) * (z + 0.5 - wz));
                 if (d < radius) {
-                    level.setBlock(p.set(x, GLASS_Y, z), glass, 2);
-                    for (int y = GLASS_Y + 1; y <= WATER_TOP; y++) {
+                    double t = d / radius;
+                    int floor = WATER_TOP - 1 - (int) Math.round(6.0 * Math.sqrt(Math.max(0.0, 1.0 - t * t)) + 0.6 * random.nextDouble());
+                    // its bed: End Stone, with patches of Pale End Stone; solid under it, whatever was there
+                    for (int y = floor - 3; y < floor; y++) {
+                        level.setBlock(p.set(x, y, z), Blocks.END_STONE.defaultBlockState(), 2);
+                    }
+                    level.setBlock(p.set(x, floor, z), random.nextInt(3) == 0 ? ModBlocks.PALE_END_STONE.get().defaultBlockState()
+                        : Blocks.END_STONE.defaultBlockState(), 2);
+                    for (int y = floor + 1; y <= WATER_TOP; y++) {
                         level.setBlock(p.set(x, y, z), water, 2);
                     }
                     for (int y = WATER_TOP + 1; y < WATER_TOP + 8; y++) {
@@ -70,7 +76,7 @@ public record EclipseLandmarksFeature() implements Feature {
                 } else if (d < radius + 3.0) {
                     // The rim: solid up to the water's surface, turf on top.
                     int top = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z) - 1;
-                    for (int y = Math.min(top, GLASS_Y - 1); y <= WATER_TOP; y++) {
+                    for (int y = Math.min(top, WATER_TOP - 8); y <= WATER_TOP; y++) {
                         BlockState here = level.getBlockState(p.set(x, y, z));
                         if (here.isAir() || here.canBeReplaced()) {
                             level.setBlock(p, y == WATER_TOP ? ModBlocks.LIVING_TURF.get().defaultBlockState()
