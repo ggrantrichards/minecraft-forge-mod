@@ -1,0 +1,99 @@
+== viewport events
+net/minecraftforge/client/event/ViewportEvent$ComputeCameraAngles.class
+net/minecraftforge/client/event/ViewportEvent$ComputeFogColor.class
+net/minecraftforge/client/event/ViewportEvent$ComputeFov.class
+net/minecraftforge/client/event/ViewportEvent$RenderFog.class
+net/minecraftforge/client/event/ViewportEvent.class
+== net.minecraftforge.client.event.ViewportEvent$ComputeFogColor
+Compiled from "ViewportEvent.java"
+public final class net.minecraftforge.client.event.ViewportEvent$ComputeFogColor extends net.minecraftforge.eventbus.api.event.MutableEvent implements net.minecraftforge.client.event.ViewportEvent {
+  public static final net.minecraftforge.eventbus.api.bus.EventBus<net.minecraftforge.client.event.ViewportEvent$ComputeFogColor> BUS;
+  private final net.minecraft.client.renderer.GameRenderer renderer;
+  private final net.minecraft.client.Camera camera;
+  private final float partialTicks;
+  private float red;
+  private float green;
+  private float blue;
+  public net.minecraftforge.client.event.ViewportEvent$ComputeFogColor(net.minecraft.client.Camera, float, float, float, float);
+  public net.minecraft.client.renderer.GameRenderer getRenderer();
+  public net.minecraft.client.Camera getCamera();
+  public float getPartialTick();
+  public float getRed();
+  public void setRed(float);
+  public float getGreen();
+  public void setGreen(float);
+  public float getBlue();
+  public void setBlue(float);
+  static {};
+}
+== net.minecraftforge.client.event.ViewportEvent$RenderFog
+Compiled from "ViewportEvent.java"
+public final class net.minecraftforge.client.event.ViewportEvent$RenderFog extends java.lang.Record implements net.minecraftforge.eventbus.api.event.characteristic.Cancellable,net.minecraftforge.client.event.ViewportEvent,net.minecraftforge.eventbus.api.event.RecordEvent {
+  private final net.minecraft.client.renderer.GameRenderer getRenderer;
+  private final net.minecraft.client.Camera getCamera;
+  private final float getPartialTick;
+  private final net.minecraft.world.level.material.FogType getType;
+  private final net.minecraft.client.renderer.fog.FogData getData;
+  private final org.joml.Vector4f getColor;
+  public static final net.minecraftforge.eventbus.api.bus.CancellableEventBus<net.minecraftforge.client.event.ViewportEvent$RenderFog> BUS;
+  public net.minecraftforge.client.event.ViewportEvent$RenderFog(net.minecraft.world.level.material.FogType, net.minecraft.client.Camera, float, net.minecraft.client.renderer.fog.FogData, org.joml.Vector4f);
+  public net.minecraftforge.client.event.ViewportEvent$RenderFog(net.minecraft.client.renderer.GameRenderer, net.minecraft.client.Camera, float, net.minecraft.world.level.material.FogType, net.minecraft.client.renderer.fog.FogData, org.joml.Vector4f);
+  public net.minecraft.world.level.material.FogType getType();
+  public float getFarPlaneDistance();
+  public float getNearPlaneDistance();
+  public void setFarPlaneDistance(float);
+  public void setNearPlaneDistance(float);
+  public void scaleFarPlaneDistance(float);
+  public void scaleNearPlaneDistance(float);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public net.minecraft.client.renderer.GameRenderer getRenderer();
+  public net.minecraft.client.Camera getCamera();
+  public float getPartialTick();
+  public net.minecraft.client.renderer.fog.FogData getData();
+  public org.joml.Vector4f getColor();
+  static {};
+}
+== net.minecraft.client.renderer.fog.FogRenderer
+Compiled from "FogRenderer.java"
+public class net.minecraft.client.renderer.fog.FogRenderer implements java.lang.AutoCloseable {
+  public static final int FOG_UBO_SIZE;
+  private static final java.util.List<net.minecraft.client.renderer.fog.environment.FogEnvironment> FOG_ENVIRONMENTS;
+  private static boolean fogEnabled;
+  private final com.mojang.renderpearl.api.buffers.GpuBuffer emptyBuffer;
+  private final net.minecraft.client.renderer.MappableRingBuffer regularBuffer;
+  public net.minecraft.client.renderer.fog.FogRenderer();
+  public void close();
+  public void endFrame();
+  public com.mojang.renderpearl.api.buffers.GpuBufferSlice getBuffer(net.minecraft.client.renderer.fog.FogRenderer$FogMode);
+  private void computeFogColor(net.minecraft.client.Camera, float, net.minecraft.client.multiplayer.ClientLevel, int, float, org.joml.Vector4f);
+  public static boolean toggleFog();
+  public net.minecraft.client.renderer.fog.FogData setupFog(net.minecraft.client.Camera, int, net.minecraft.client.DeltaTracker, float, net.minecraft.client.multiplayer.ClientLevel);
+  public void updateBuffer(net.minecraft.client.renderer.fog.FogData);
+  private net.minecraft.world.level.material.FogType getFogType(net.minecraft.client.Camera);
+  private void updateBuffer(java.nio.ByteBuffer, int, org.joml.Vector4f, float, float, float, float, float, float);
+  private static java.lang.String lambda$new$1();
+  private static java.lang.String lambda$new$0();
+  static {};
+}
+== fog classes
+net/minecraft/client/renderer/fog/FogData.class
+net/minecraft/client/renderer/fog/FogRenderer$FogMode.class
+net/minecraft/client/renderer/fog/FogRenderer.class
+net/minecraft/client/renderer/fog/environment/AtmosphericFogEnvironment.class
+net/minecraft/client/renderer/fog/environment/BlindnessFogEnvironment.class
+net/minecraft/client/renderer/fog/environment/DarknessFogEnvironment.class
+net/minecraft/client/renderer/fog/environment/FogEnvironment.class
+net/minecraft/client/renderer/fog/environment/LavaFogEnvironment.class
+net/minecraft/client/renderer/fog/environment/MobEffectFogEnvironment.class
+net/minecraft/client/renderer/fog/environment/PowderedSnowFogEnvironment.class
+net/minecraft/client/renderer/fog/environment/WaterFogEnvironment.class
+net/minecraft/client/renderer/fog/environment/package-info.class
+net/minecraft/client/renderer/fog/package-info.class
+== BiomeSource.getNoiseBiome
+== RandomState sampler
+  public net.minecraft.world.level.levelgen.densityfunction.DensitySamplerSet samplersWithContext(net.minecraft.world.level.levelgen.densityfunction.SamplerContext);
+  public net.minecraft.world.level.biome.Climate$Sampler createClimateSampler(net.minecraft.world.level.levelgen.densityfunction.SamplerContext);
+  public net.minecraft.world.level.levelgen.densityfunction.DensitySampler getSampler(net.minecraft.world.level.levelgen.densityfunction.DensityFunction);
+::notice title=probe::== viewport events%0Anet/minecraftforge/client/event/ViewportEvent$ComputeCameraAngles.class%0Anet/minecraftforge/client/event/ViewportEvent$ComputeFogColor.class%0Anet/minecraftforge/client/event/ViewportEvent$ComputeFov.class%0Anet/minecraftforge/client/event/ViewportEvent$RenderFog.class%0Anet/minecraftforge/client/event/ViewportEvent.class%0A== net.minecraftforge.client.event.ViewportEvent$ComputeFogColor%0ACompiled from "ViewportEvent.java"%0Apublic final class net.minecraftforge.client.event.ViewportEvent$ComputeFogColor extends net.minecraftforge.eventbus.api.event.MutableEvent implements net.minecraftforge.client.event.ViewportEvent {%0A  public static final net.minecraftforge.eventbus.api.bus.EventBus<net.minecraftforge.client.event.ViewportEvent$ComputeFogColor> BUS;%0A  private final net.minecraft.client.renderer.GameRenderer renderer;%0A  private final net.minecraft.client.Camera camera;%0A  private final float partialTicks;%0A  private float red;%0A  private float green;%0A  private float blue;%0A  public net.minecraftforge.client.event.ViewportEvent$ComputeFogColor(net.minecraft.client.Camera, float, float, float, float);%0A  public net.minecraft.client.renderer.GameRenderer getRenderer();%0A  public net.minecraft.client.Camera getCamera();%0A  public float getPartialTick();%0A  public float getRed();%0A  public void setRed(float);%0A  public float getGreen();%0A  public void setGreen(float);%0A  public float getBlue();%0A  public void setBlue(float);%0A  static {};%0A}%0A== net.minecraftforge.client.event.ViewportEvent$RenderFog%0ACompiled from "ViewportEvent.java"%0Apublic final class net.minecraftforge.client.event.ViewportEvent$RenderFog extends java.lang.Record implements net.minecraftforge.eventbus.api.event.characteristic.Cancellable,net.minecraftforge.client.event.ViewportEvent,net.minecraftforge.eventbus.api.event.RecordEvent {%0A  private final net.minecraft.client.renderer.GameRenderer getRenderer;%0A  private final net.minecraft.client.Camera getCamera;%0A  private final float getPartialTick;%0A  private final net.minecraft.world.level.material.FogType getType;%0A  private final net.minecraft.client.renderer.fog.FogData getData;%0A  private final org.joml.Vector4f getColor;%0A  public static final net.minecraftforge.eventbus.api.bus.CancellableEventBus<net.minecraftforge.client.event.ViewportEvent$RenderFog> BUS;%0A  public net.minecraftforge.client.event.ViewportEvent$RenderFog(net.minecraft.world.level.material.FogType, net.minecraft.client.Camera, float, net.minecraft.client.renderer.fog.FogData, org.joml.Vector4f);%0A  public net.minecraftforge.client.event.ViewportEvent$RenderFog(net.minecraft.client.renderer.GameRenderer, net.minecraft.client.Camera, float, net.minecraft.world.level.material.FogType, net.minecraft.client.renderer.fog.FogData, org.joml.Vector4f);%0A  public net.minecraft.world.level.material.FogType getType();%0A  public float getFarPlaneDistance();%0A  public float getNearPlaneDistance();%0A  public void setFarPlaneDistance(float);%0A  public void setNearPlaneDistance(float);%0A  public void scaleFarPlaneDistance(float);%0A  public void scaleNearPlaneDistance(float);%0A  public final java.lang.String toString();%0A  public final int hashCode();%0A  public final boolean equals(java.lang.Object);%0A  public net.minecraft.client.renderer.GameRenderer getRenderer();%0A  public net.minecraft.client.Camera getCamera();%0A  public float getPartialTick();%0A  public net.minecraft.client.renderer.fog.FogData getData();%0A  public org.joml.Vector4f getColor();%0A  static {};%0A}%0A== net.minecraft.client.renderer.fog.FogRenderer%0ACompiled from "FogRenderer.java"%0Apublic class net.minecraft.client.renderer.fog.FogRenderer implements java.lang.AutoCloseable {%0A  public static final int FOG_UBO_SIZE;%0A  private static final java.util.List<net.minecraft.client.renderer.fog.environment.FogEnvironment> FOG_ENVIRONMENTS;%0A  private static boolean fogEnabled;%0A  private final com.mojang.renderpearl.api.buffers.GpuBuffer emptyBuffer;%0A  private final net.minecraft.client.renderer.MappableRingBuffer regularBuffer;%0A  public net.minecraft.client.renderer.fog.FogRenderer();%0A  public void close();%0A  public void endFrame();%0A  public com.mojang.renderpearl.api.buffers.GpuBufferSlice getBuffer(net.minecraft.client.renderer.fog.FogRenderer$FogMode);%0A  private void computeFogColor(net.minecraft.client.Camera, float, net.minecraft.client.multiplayer.ClientLevel, int, float, org.joml.Vector4f);%0A  public static boolean toggleFog();%0A  public net.minecraft.client.renderer.fog.FogData setupFog(net.minecraft.client.Camera, int, net.minecraft.client.DeltaTracker, float, net.minecraft.client.multiplayer.ClientLevel);%0A  public void updateBuffer(net.minecraft.client.renderer.fog.FogData);%0A  private net.minecraft.world.level.material.FogType getFogType(net.minecraft.client.Camera);%0A  private void updateBuffer(java.nio.ByteBuffer, int, org.joml.Vector4f, float, float, float, float, float, float);%0A  private static java.lang.String lambda$new$1();%0A  private static java.lang.String lambda$new$0();%0A  static {};%0A}%0A== fog classes%0Anet/minecraft/client/renderer/fog/FogData.class%0Anet/minecraft/client/renderer/fog/FogRenderer$FogMode.class%0Anet/minecraft/client/renderer/fog/FogRenderer.class%0Anet/minecraft/client/renderer/fog/environment/AtmosphericFogEnvironment.class%0Anet/minecraft/client/renderer/fog/environment/BlindnessFogEnvironment.class%0Anet/minecraft/client/renderer/fog/environment/DarknessFogEnvironment.class%0Anet/minecraft/client/renderer/fog/environment/FogEnvironment.class%0Anet/minecraft/client/renderer/fog/environment/LavaFogEnvironment.class%0Anet/minecraft/client/renderer/fog/environment/MobEffectFogEnvironment.class%0Anet/minecraft/client/renderer/fog/environment/PowderedSnowFogEnvironment.class%0Anet/minecraft/client/renderer/fog/environment/WaterFogEnvironment.class%0Anet/minecraft/client/renderer/fog/environment/package-info.class%0Anet/minecraft/client/renderer/fog/package-info.class%0A== BiomeSource.getNoiseBiome%0A== RandomState sampler%0A  public net.minecraft.world.level.levelgen.densityfunction.DensitySamplerSet samplersWithContext(net.minecraft.world.level.levelgen.densityfunction.SamplerContext);%0A  public net.minecraft.world.level.biome.Climate$Sampler createClimateSampler(net.minecraft.world.level.levelgen.densityfunction.SamplerContext);%0A  public net.minecraft.world.level.levelgen.densityfunction.DensitySampler getSampler(net.minecraft.world.level.levelgen.densityfunction.DensityFunction);
