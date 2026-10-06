@@ -32,7 +32,7 @@ public final class ModSounds {
     // dropped in, named in the biome's "minecraft:audio/ambient_sounds".
     static {
         for (String biome : new String[] {"nebula_fields", "chorus_thicket", "ashen_barrens", "hollow_isles", "corona",
-                                          "glimmering_crags", "deep_hollows", "shattered_crags", "eclipse"}) {
+                                          "glimmering_crags", "deep_hollows", "shattered_crags", "eclipse", "hollow_roots", "crystal_vaults"}) {
             music("ambient." + biome + ".loop");
             music("ambient." + biome + ".additions");
         }
