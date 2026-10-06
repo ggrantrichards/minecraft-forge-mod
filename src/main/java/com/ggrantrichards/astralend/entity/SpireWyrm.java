@@ -84,6 +84,7 @@ public class SpireWyrm extends Monster {
     private @Nullable Vec3 breathFrom;
     private @Nullable Vec3 breathAt;
     private boolean enraged;
+    private int divesInRow;             // never more than two dives without a breath between
     private int idleTicks;
     private final List<BlockPos> bells = new ArrayList<>();
 
@@ -293,7 +294,9 @@ public class SpireWyrm extends Monster {
                     this.idleTicks = 0;
                     int wait = this.enraged ? 70 + this.random.nextInt(40) : 110 + this.random.nextInt(60);
                     if (this.phaseTicks > wait) {
-                        this.setPhase(this.random.nextInt(3) == 0 ? Phase.WIND_BREATH : Phase.WIND_DIVE);
+                        boolean breath = this.divesInRow >= 2 || this.random.nextInt(3) == 0;
+                        this.divesInRow = breath ? 0 : this.divesInRow + 1;
+                        this.setPhase(breath ? Phase.WIND_BREATH : Phase.WIND_DIVE);
                         this.playSound(ModSounds.WYRM_CHARGE.get(), 4.0F, this.phase() == Phase.WIND_DIVE ? 0.9F : 1.2F);
                     }
                 }
