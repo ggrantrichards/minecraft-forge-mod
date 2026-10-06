@@ -46,6 +46,9 @@ and the distillation renamed or removed some of them.
   shelves about once every 24 chunks, and between them vertebrae and lone ribs stick up out of the
   ground (all of it standing on the ground or sunk in it, none floating). Its grass and reeds are grey
   and dead now - **Ashen Grass** and **Ashen Reed** - ash falls through grey fog, and it has music.
+- **The Glimmering Crags glow cold:** Glimmer Crystal is a cold white-lavender now and gives off more
+  light, so the crystal spires stand out pale against the dark Nightstone; the fog is a cold blue-grey
+  and pale motes drift through it (the Shattered Crags too).
 
 ### After beta.3: the reworks
 

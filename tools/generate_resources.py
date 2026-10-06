@@ -1157,7 +1157,8 @@ def worldgen_phase3():
               particle="minecraft:end_rod", particle_chance=0.002)
 
     # ---- Glimmering Crags (Phase 10): the petrified trunks of colossal Nullwood that died long ago,
-    # grown through with smoky violet Glimmer Crystal. Inside the bigger islands, the hollows their roots
+    # grown through with Glimmer Crystal - cold white-lavender since beta.4, and lit, so the spires stand
+    # out pale against the dark stone and the cold blue fog. Inside the bigger islands, the hollows their roots
     # left: the End's first caves, sealed and dark, where Void Crystal grows (here and only here) and the
     # Umbral Stalker hunts.
     big_feature("glimmering_crags_spires", "glimmer_spire", count=2, heightmap="WORLD_SURFACE_WG")
@@ -1167,18 +1168,18 @@ def worldgen_phase3():
         {"type": "minecraft:rarity_filter", "chance": 2}, {"type": "minecraft:biome"}]})
     placed("glimmering_crags_voidgel", {"feature": rid("voidgel_drip"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 2}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
-    end_biome("glimmering_crags", "Glimmering Crags", fog="#3a3450", water="#7c7290",   # lighter: it read black
+    end_biome("glimmering_crags", "Glimmering Crags", fog="#2c3448", water="#8a96c0",
               features_step4=[rid("glimmering_crags_spires")],
               features_step7=[rid("glimmering_crags_root_caves")],
               features_step9=[rid("glimmering_crags_clusters"), rid("glimmering_crags_voidgel")],
-              particle="minecraft:white_ash", particle_chance=0.004)
+              particle="minecraft:end_rod", particle_chance=0.003)
 
     # ---- Shattered Crags (the Crags' variant): a field of fragments, flyable only with an elytra.
     # Void Rays circle the gaps.
     plant_patch("shattered_crags_clusters", "glimmer_cluster", rarity=1, count=16, spread=6, on=[rid("nightstone")])
-    end_biome("shattered_crags", "Shattered Crags", fog="#34304a", water="#7c7290",
+    end_biome("shattered_crags", "Shattered Crags", fog="#283044", water="#8a96c0",
               features_step9=[rid("shattered_crags_clusters"), rid("glimmering_crags_voidgel")],
-              particle="minecraft:white_ash", particle_chance=0.006)
+              particle="minecraft:end_rod", particle_chance=0.004)
 
 
 # ------------------------------------------------------------------ Phase 4: mobs

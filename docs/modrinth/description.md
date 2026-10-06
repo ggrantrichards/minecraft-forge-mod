@@ -22,7 +22,7 @@ your face: the End tells you things with sound and light.
 - **Deep Hollows:** the End's only forest, dark Nullwood on ring-shaped islands, hung with Hollow
   Vines whose black thorns carve pumpkins into violet Hollow Lanterns; Upwells beneath. Under it all, the **Hollow Roots**: caves through the dead roots, lit
   by glowcaps and amber Starsap, where fireflies drift.
-- **Glimmering Crags:** Nightstone peaks of smoky Glimmer Crystal, and root caves where the Umbral
+- **Glimmering Crags:** dark Nightstone peaks grown through with cold, glowing Glimmer Crystal, and root caves where the Umbral
   Stalker waits. Its variant, the **Shattered Crags**, is split into shards over the void; below them
   drift the **Crystal Vaults**, geodes where a Shardback lies folded among the crystals.
 - **Ashen Barrens:** the leviathans' graveyard - grey ash falling on pale stone shelves strewn with

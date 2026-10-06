@@ -22,7 +22,7 @@
       },
       "modifier": "overlay"
     },
-    "minecraft:visual/fog_color": "#34304a",
+    "minecraft:visual/fog_color": "#283044",
     "minecraft:audio/background_music": {
       "default": {
         "sound": "astralend:music.glimmering_crags",
@@ -48,9 +48,9 @@
       "argument": [
         {
           "particle": {
-            "type": "minecraft:white_ash"
+            "type": "minecraft:end_rod"
           },
-          "probability": 0.006
+          "probability": 0.004
         }
       ],
       "modifier": "append"
@@ -59,7 +59,7 @@
   "carvers": [],
   "downfall": 0.5,
   "effects": {
-    "water_color": "#7c7290"
+    "water_color": "#8a96c0"
   },
   "features": [
     [],
