@@ -39,7 +39,7 @@ From playing beta.3. These replace what the distillation's notes below say about
     it. Light its four eyes and a Portal Lens wakes it into a **wormhole**, one stop on the road between
     every Leviathan you've woken;
   - **its organs, dormant but alive:** in the ribcage, the **heart** - Leviathan Heart blocks in a
-    crimson muscle, beating slowly, its vessels running up into the spine and out to the ribs; two
+    muscle of Leviathan Flesh, beating slowly, its vessels running up into the spine and out to the ribs; two
     long **lungs** of Breathcomb, breathing light; and at the back, the **stomach**, a sac of Voidgel
     with what it last swallowed inside (the Whalefall's old chest);
   - **the reliquary is in the ribcage cathedral now**: the Curator, the four pylons, the floor's gaps
@@ -51,7 +51,7 @@ From playing beta.3. These replace what the distillation's notes below say about
     370 blocks long, skull and all, and less rare than before (so the wormhole road is worth waking).
   - Its shulkers now actually stay on the towers.
 - **The Mirror Wretch is the Choir:** no mirror and no face, only a round mouth ringed with teeth. Half
-  of it crawls on a row of small legs, the front half rears up like a cobra, and down its throat hang
+  of it crawls on a row of small legs, the front half rears up like a cobra over two blocks tall, and down its throat hang
   five vocal sacs - one for every voice it has stolen - that swell in turn as it calls you, in voices
   you know, from the void's edge.
 - **The Hydragrip is the Gripmouth:** long and low like a salamander, with feathery gill frills that

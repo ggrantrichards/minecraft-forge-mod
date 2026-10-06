@@ -40,8 +40,8 @@ import net.minecraft.world.level.storage.loot.LootTable;
 //   - the frame, all bone block: a spine of vertebrae (each with its spinous and side processes) on a
 //     cord of bone, tapering into the tail, running into the back of the skull; ribs from the shoulders
 //     to the hips;
-//   - what lives on in it, dormant: in the ribcage, hung from the spine, its heart - Leviathan Heart in a
-//     muscle of crimson, slowly beating, with the great vessels running up into the spine and out to
+//   - what lives on in it, dormant: in the ribcage, hung from the spine, its heart - Leviathan Heart in its
+//     crimson muscle (Leviathan Flesh), slowly beating, with the great vessels running up into the spine and out to
 //     the ribs; two lungs of Breathcomb the length of the cathedral, breathing light; and low at the
 //     back, its stomach, a sac of Voidgel with what it last swallowed still inside;
 //   - what was built over it: a hall of purpur along the spine, walled in End Stone bricks with Astral
@@ -279,11 +279,11 @@ public class LeviathanPiece extends StructurePiece {
             if (core || this.hash(Mth.floor(u), Mth.floor(v), Mth.floor(w)) < 0.22) {
                 return ModBlocks.LEVIATHAN_HEART.get().defaultBlockState();
             }
-            return Blocks.NETHER_WART_BLOCK.defaultBlockState();
+            return ModBlocks.LEVIATHAN_FLESH.get().defaultBlockState();
         }
         for (Cone c : VESSELS) {
             if (c.contains(u, v, w)) {
-                return Blocks.NETHER_WART_BLOCK.defaultBlockState();
+                return ModBlocks.LEVIATHAN_FLESH.get().defaultBlockState();
             }
         }
         // The lungs: long and high, one each side, hung from the spine.

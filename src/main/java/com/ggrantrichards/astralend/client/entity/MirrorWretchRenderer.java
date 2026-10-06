@@ -13,8 +13,14 @@ public class MirrorWretchRenderer extends MobRenderer<MirrorWretch, MirrorWretch
     private static final Identifier TEXTURE = ModModelLayers.texture("mirror_wretch");
 
     public MirrorWretchRenderer(EntityRendererProvider.Context context) {
-        super(context, new Model(context.bakeLayer(ModModelLayers.MIRROR_WRETCH)), 0.4F);
+        super(context, new Model(context.bakeLayer(ModModelLayers.MIRROR_WRETCH)), 0.7F);
         this.addLayer(new GlowLayer<>(this, ModModelLayers.glowTexture("mirror_wretch")));
+    }
+
+    // Drawn a quarter as big again: reared up, it stands over two blocks tall.
+    @Override
+    protected void scale(State state, com.mojang.blaze3d.vertex.PoseStack poseStack) {
+        poseStack.scale(1.25F, 1.25F, 1.25F);
     }
 
     @Override

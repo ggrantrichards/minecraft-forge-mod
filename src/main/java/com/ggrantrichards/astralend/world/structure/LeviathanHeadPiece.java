@@ -294,15 +294,15 @@ public class LeviathanHeadPiece extends StructurePiece {
                 result = bone.setValue(RotatedPillarBlock.AXIS, this.coneAxis(c));
             }
         }
-        // The eye sockets: great holes through the wall, floored, rimmed in dark stone so they read as
-        // sockets from far off, with a deeper ring of crying obsidian round the eye itself.
+        // The eye sockets: great holes through the wall, floored, rimmed in obsidian so they read as
+        // sockets from far off.
         for (int ew : EYE_W) {
             double d = Math.sqrt(Math.pow(v - EYE_V, 2) + Math.pow(w - ew, 2));
             if (Math.abs(u) >= 20 && Math.abs(u) <= 32) {
                 if (d < 5.2) {
                     result = v <= HIGH_GALLERY ? bone : air;
                 } else if (d < 6.4 && e >= SHELL && e <= 1.0) {
-                    result = Blocks.POLISHED_BLACKSTONE.defaultBlockState();
+                    result = Blocks.OBSIDIAN.defaultBlockState();
                 }
             }
         }
@@ -313,7 +313,7 @@ public class LeviathanHeadPiece extends StructurePiece {
                 if (d < 2.3) {
                     result = air;
                 } else if (d < 3.2 && result != null && result.is(ModBlocks.LEVIATHAN_BONE_BLOCK.get())) {
-                    result = Blocks.POLISHED_BLACKSTONE.defaultBlockState();
+                    result = Blocks.OBSIDIAN.defaultBlockState();
                 }
             }
         }
@@ -384,7 +384,7 @@ public class LeviathanHeadPiece extends StructurePiece {
                 this.put(level, chunk, this.world(u, g + 1, w), lantern);
             }
         }
-        // The camp: a ring of slabs round a fire, chests, a table for charts.
+        // The camp: a ring of slabs round a lantern, chests, a table for charts.
         int cw = (int) CW - 12;
         BlockPos fire = this.world(0, FLOOR + 1, cw);
         for (int dx = -3; dx <= 3; dx++) {
@@ -395,7 +395,7 @@ public class LeviathanHeadPiece extends StructurePiece {
                 }
             }
         }
-        this.put(level, chunk, fire, Blocks.SOUL_CAMPFIRE.defaultBlockState());
+        this.put(level, chunk, fire, ModBlocks.NULL_LANTERN.get().defaultBlockState());   // their light, left burning
         this.chest(level, chunk, rnd, this.world(-5, FLOOR + 1, cw - 3));
         this.chest(level, chunk, rnd, this.world(6, FLOOR + 1, cw + 4));
         this.put(level, chunk, this.world(5, FLOOR + 1, cw - 4), Blocks.CARTOGRAPHY_TABLE.defaultBlockState());

@@ -63,6 +63,7 @@ SIMPLE_CUBES = [
     ("whalelight_scale", "Whalelight Scale"),
     # The Leviathan's heart, dormant, still beating
     ("leviathan_heart", "Leviathan Heart"),
+    ("leviathan_flesh", "Leviathan Flesh"),
     # The caves: Starsap, the dead Nullwood's amber
     ("starsap_ore", "Starsap Ore"),
     ("starsap_block", "Block of Starsap"),
@@ -1306,6 +1307,8 @@ def mobs_phase4():
     tag("block", "minecraft:mineable/pickaxe", rid("whalelight_scale"))
     drop_self("leviathan_heart")
     tag("block", "minecraft:mineable/hoe", rid("leviathan_heart"))
+    drop_self("leviathan_flesh")
+    tag("block", "minecraft:mineable/hoe", rid("leviathan_flesh"))
     shaped("spore_lantern", "spore_lantern", [" S ", "SGS", " S "], {"S": rid("glowing_spores"), "G": rid("astral_glass")})
     recipe("glow_ink_sac_from_glowing_spores", {"type": "minecraft:crafting_shapeless", "category": "misc",
                                                 "ingredients": [rid("glowing_spores"), rid("glowing_spores"), "minecraft:ink_sac"],

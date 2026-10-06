@@ -78,3 +78,27 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def flesh():
+    """Leviathan Flesh: the heart's muscle and its great vessels - crimson in long fibres, still."""
+    tones = [(70, 12, 22), (104, 20, 32), (136, 28, 40), (168, 42, 52), (196, 72, 74)]
+    rnd = random.Random(2203)
+    img = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        band = y % 4                       # fibres four pixels deep: a dark seam, then lighter toward the middle
+        base = (0, 2, 3, 2)[band]
+        for x in range(16):
+            t = base
+            if band and rnd.random() < 0.18:
+                t += rnd.choice((-1, 1))
+            if band == 2 and (x + y * 3) % 7 == 0:
+                t = 4                      # a sheen along the fibre
+            img.putpixel((x, y), tones[max(0, min(4, t))] + (255,))
+    out = OUT.with_name("leviathan_flesh.png")
+    img.save(out)
+    print("Wrote", out)
+
+
+if __name__ == "__main__":
+    flesh()

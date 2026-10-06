@@ -401,6 +401,9 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(1.0F).sound(SoundType.WOOD)
             .lightLevel(state -> 15));
 
+    // Leviathan Flesh: the heart's muscle and its great vessels.
+    public static final RegistryObject<Block> LEVIATHAN_FLESH = register("leviathan_flesh", Block::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.CRIMSON_STEM).strength(1.0F).sound(SoundType.WART_BLOCK));
     // Leviathan Heart: in the Leviathan's ribcage, dormant, still beating crimson.
     public static final RegistryObject<Block> LEVIATHAN_HEART = register("leviathan_heart", com.ggrantrichards.astralend.block.LeviathanHeartBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.CRIMSON_STEM).strength(1.5F).sound(SoundType.WART_BLOCK)

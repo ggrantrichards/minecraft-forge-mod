@@ -1415,20 +1415,20 @@ def _wretch_sacs():
     out = []
     for k in range(5):
         size = 3 if k in (0, 4) else 4
-        out.append(Part(f"sac{k}", (0, -14 + k * 2.6, -3), [B(-size / 2 - 1, -size / 2, -size, size + 2, size, size,
+        out.append(Part(f"sac{k}", (0, -18 + k * 3.2, -3), [B(-size / 2 - 1, -size / 2, -size, size + 2, size, size,
                                                                wretch_sac, wretch_sac_glow, key=f"wsac{size}")]))
     return out
 
 
 MIRROR_WRETCH = Mob("mirror_wretch", (128, 64), [
     _wretch_segment(0), _wretch_segment(1), _wretch_segment(2), _wretch_segment(3),
-    Part("chest", (0, 18, 0, 0.55, 0, 0), [B(-4, -16, -3, 8, 16, 6, wretch_skin)], [
-        Part("head", (0, -16, -1, -0.55, 0, 0), [B(-4, -4, -6, 8, 8, 7, wretch_mouth, wretch_mouth_glow)], [
+    Part("chest", (0, 18, 0, 0.3, 0, 0), [B(-4, -21, -3, 8, 21, 6, wretch_skin)], [
+        Part("head", (0, -21, -1, -0.3, 0, 0), [B(-4, -4, -6, 8, 8, 7, wretch_mouth, wretch_mouth_glow)], [
             Part(f"spine{k}", (dx, -4, -1 + k % 2 * 2, -1.1, 0, 0), [B(-0.5, -3, -0.5, 1, 3, 1, wretch_dark, key="wspine")])
             for k, dx in enumerate((-2.5, -1, 1, 2.5))
         ]),
-        Part("fin_l", (4, -10, 0, 0, 0.3, 0.35), [B(0, -3, 0, 7, 9, 0, wretch_fin, key="wfin")]),
-        Part("fin_r", (-4, -10, 0, 0, -0.3, -0.35), [B(-7, -3, 0, 7, 9, 0, wretch_fin, key="wfin", mirror=True)]),
+        Part("fin_l", (4, -14, 0, 0, 0.3, 0.35), [B(0, -3, 0, 7, 9, 0, wretch_fin, key="wfin")]),
+        Part("fin_r", (-4, -14, 0, 0, -0.3, -0.35), [B(-7, -3, 0, 7, 9, 0, wretch_fin, key="wfin", mirror=True)]),
     ] + _wretch_sacs()),
 ], egg=(WRETCH[2], WRETCH_FLESH[3]))
 

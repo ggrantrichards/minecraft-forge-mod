@@ -59,7 +59,7 @@ public final class ModEntities {
         () -> EntityType.Builder.of(Hydragrip::new, MobCategory.CREATURE).sized(0.9F, 0.7F).eyeHeight(0.55F)
             .clientTrackingRange(8).build(ENTITY_TYPES.key("hydragrip")));
     public static final RegistryObject<EntityType<MirrorWretch>> MIRROR_WRETCH = ENTITY_TYPES.register("mirror_wretch",
-        () -> EntityType.Builder.of(MirrorWretch::new, MobCategory.MONSTER).sized(1.0F, 1.5F).eyeHeight(1.25F)
+        () -> EntityType.Builder.of(MirrorWretch::new, MobCategory.MONSTER).sized(1.2F, 2.2F).eyeHeight(2.0F)
             .clientTrackingRange(10).build(ENTITY_TYPES.key("mirror_wretch")));
 
     // ---- The distillation: the Leviathan's keepers (placed by the structure; they don't spawn naturally).
