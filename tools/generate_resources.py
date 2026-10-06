@@ -76,7 +76,7 @@ PILLARS = [
 ]
 CROSS_PLANTS = [
     ("lumineshroom", "Lumineshroom"), ("starbloom", "Starbloom"),
-    ("shimmer_grass", "Shimmer Grass"), ("ashen_lumineshroom", "Ashen Lumineshroom"),
+    ("shimmer_grass", "Ashen Grass"), ("ashen_lumineshroom", "Ashen Lumineshroom"),
     ("petrified_astral_vine", "Petrified Astral Vine"),
     ("nebula_tufts", "Nebula Tufts"), ("nullwood_sapling", "Nullwood Sapling"),
     ("hollow_glowcap", "Hollow Glowcap"),
@@ -961,7 +961,7 @@ def mob_spawns(biome):
 
 # Which music each astral biome plays (sounds in ModSounds.java; who made it in sounds/credits.txt).
 # The Ashen Barrens keep the End's own music: the dead country gets nothing new.
-BIOME_MUSIC = {"nebula_fields": "music.nebula_fields", "eclipse": "music.eclipse",
+BIOME_MUSIC = {"nebula_fields": "music.nebula_fields", "ashen_barrens": "music.outer_end", "eclipse": "music.eclipse",
                "glimmering_crags": "music.glimmering_crags", "shattered_crags": "music.glimmering_crags",
                "deep_hollows": "music.outer_end",
                "corona": "music.outer_end", "hollow_roots": "music.outer_end", "crystal_vaults": "music.glimmering_crags"}
@@ -1011,14 +1011,18 @@ def end_biome(name, english, fog, water, features_step4=(), features_step7=(), f
 def worldgen_phase3():
     air = {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"}
 
-    # ---- Ashen Barrens: the dead country. Pale End Stone shelves under the auroras, thin Shimmer Grass,
-    # standing stones, the ribs of things long dead, and withered Lumineshrooms. Nothing lives here.
+    # ---- Ashen Barrens: the dead country, the Leviathans' graveyard. Pale End Stone shelves under falling
+    # ash, thin grey Ashen Grass and Reeds, standing stones, bones everywhere - whole ribcages now and
+    # then, and vertebrae and lone ribs strewn between - and withered Lumineshrooms. Nothing lives here.
     ground_cover("aurora_shimmer_grass", "shimmer_grass", 90)
     plant_patch("aurora_shimmer_reeds", "shimmer_reed", rarity=3, count=24, spread=6)
     plant_patch("ashen_barrens_withered_lumineshrooms", "ashen_lumineshroom", rarity=2, count=8, spread=5,
                 on=[rid("pale_end_stone")])
-    # The bones of the dead: very rare - a ribcage in one chunk of 2000 (0-2 across a whole Ashen Barrens).
-    big_feature("aurora_ribcages", "leviathan_ribcage", rarity=2000, heightmap="WORLD_SURFACE_WG")
+    # The bones of the dead (after beta.4, a graveyard again): a whole ribcage in about one chunk of 24,
+    # and between them the scattered pieces of the rest, half-sunk in the ground.
+    big_feature("aurora_ribcages", "leviathan_ribcage", rarity=24, heightmap="WORLD_SURFACE_WG")
+    java_feature("bone_fragment")
+    surface_feature("ashen_barrens_bones", "bone_fragment", rarity=2)
     feature("standing_stone", {"type": "minecraft:block_column", "allowed_placement": air, "direction": "up",
                                "layers": [{"height": {"type": "minecraft:uniform", "min_inclusive": 1, "max_inclusive": 3},
                                            "provider": {"id": rid("pale_end_stone_bricks")}},
@@ -1034,11 +1038,11 @@ def worldgen_phase3():
     # Memory Moss: pale patches that remember what stood there.
     java_feature("memory_moss")
     surface_feature("ashen_barrens_memory_moss", "memory_moss", rarity=3)
-    end_biome("ashen_barrens", "Ashen Barrens", fog="#1b2329", water="#5a7e80",
-              features_step4=[rid("aurora_ribcages"), rid("aurora_standing_stones")],
+    end_biome("ashen_barrens", "Ashen Barrens", fog="#26252a", water="#6e6c6a",
+              features_step4=[rid("aurora_ribcages"), rid("ashen_barrens_bones"), rid("aurora_standing_stones")],
               features_step9=[rid("ashen_barrens_memory_moss"), rid("aurora_shimmer_reeds"), rid("aurora_shimmer_grass"),
                               rid("ashen_barrens_withered_lumineshrooms")],
-              particle="minecraft:white_ash", particle_chance=0.012)
+              particle="minecraft:white_ash", particle_chance=0.035)
 
 
     # ---- The Deep Hollows (with the Hollow Isles folded in after beta.4): Nightstone rings, Upwells
@@ -2279,7 +2283,7 @@ def main():
         }])
 
     # Two-block-tall plants (like a lilac). Only the lower half drops the item.
-    for name, english in (("flarebloom", "Flarebloom"), ("shimmer_reed", "Shimmer Reed")):
+    for name, english in (("flarebloom", "Flarebloom"), ("shimmer_reed", "Ashen Reed")):
         blockstate(name, {"variants": {
             "half=lower": {"model": rid(f"block/{name}_bottom")},
             "half=upper": {"model": rid(f"block/{name}_top")},

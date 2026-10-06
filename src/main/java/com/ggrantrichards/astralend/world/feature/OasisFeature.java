@@ -6,15 +6,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 
-// An oasis of the Nebula Fields: a pond of still water sunk into the Chorus Moss - an irregular
-// shape a few blocks across, shallow at the edges and deeper in the middle - with Shimmer Reeds and
-// Lumineshrooms crowding its banks and Starblooms among them. Only on flat ground: a pond needs a
+// An oasis of the Nebula Fields: a pond of still water sunk into the Nebula Moss - an irregular
+// shape a few blocks across, shallow at the edges and deeper in the middle - with glowing Astral Vine
+// buds crowding its banks and Lumineshrooms and tufts behind them. Only on flat ground: a pond needs a
 // level rim all the way round. Sea pickles glow on the bed and lily pads float on top.
 // (Within 7 blocks of its origin, inside the chunks a feature may touch.)
 public record OasisFeature() implements Feature {
@@ -84,9 +82,7 @@ public record OasisFeature() implements Feature {
                 }
             }
         }
-        // The banks: reeds right at the water, lumineshrooms and starblooms a little back.
-        BlockState reedLower = ModBlocks.SHIMMER_REED.get().defaultBlockState().setValue(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER);
-        BlockState reedUpper = ModBlocks.SHIMMER_REED.get().defaultBlockState().setValue(DoublePlantBlock.HALF, DoubleBlockHalf.UPPER);
+        // The banks: glowing Astral Vine buds right at the water, lumineshrooms and tufts a little back.
         for (int i = 0; i < 40; i++) {
             double ang = random.nextDouble() * Math.PI * 2;
             double out = 1.0 + random.nextDouble() * 2.2;
@@ -102,10 +98,7 @@ public record OasisFeature() implements Feature {
             }
             BlockPos at = ground.above();
             if (out < 1.8 && random.nextInt(3) != 0) {
-                if (Build.clear(level, at, 2)) {
-                    Build.put(level, at, reedLower);
-                    Build.put(level, at.above(), reedUpper);
-                }
+                Build.put(level, at, ModBlocks.ASTRAL_VINE.get().defaultBlockState());   // glowing buds at the water's edge
             } else if (random.nextInt(3) == 0) {
                 Build.put(level, at, ModBlocks.LUMINESHROOM.get().defaultBlockState());
             } else {

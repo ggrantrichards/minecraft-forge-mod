@@ -42,6 +42,10 @@ and the distillation renamed or removed some of them.
   (it was Chorus Moss), reed groves of magenta Astral Vines whose tips glow cold pale blue, rose fog,
   and low clouds of drifting gas - rose haze pricked with pale-blue motes - that you walk into and out
   of. Pollinators live here now. The giant Lumineshrooms and Starblooms belong to the Eclipse.
+- **The Ashen Barrens are a graveyard again:** bone and ash. Whole Leviathan ribcages lie on the
+  shelves about once every 24 chunks, and between them vertebrae and lone ribs stick up out of the
+  ground (all of it standing on the ground or sunk in it, none floating). Its grass and reeds are grey
+  and dead now - **Ashen Grass** and **Ashen Reed** - ash falls through grey fog, and it has music.
 
 ### After beta.3: the reworks
 

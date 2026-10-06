@@ -1488,6 +1488,7 @@ public final class WorldgenSurvey {
         atLeast(area, ModBlocks.SHIMMER_REED.get(), 1, failures);
         atLeast(area, ModBlocks.PALE_END_STONE_BRICKS.get(), 0.05, failures);  // standing stones
         atLeast(area, ModBlocks.MEMORY_MOSS.get(), 0.5, failures);
+        atLeast(area, ModBlocks.LEVIATHAN_BONE_BLOCK.get(), 1, failures);     // a graveyard: bones everywhere
         // Flat shelves: most of the land should be topped at the same height.
         int flat = 0;
         for (int y = 52; y <= 55; y++) {

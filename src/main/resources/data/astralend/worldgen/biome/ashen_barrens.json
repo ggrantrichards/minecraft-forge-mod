@@ -15,7 +15,15 @@
       },
       "modifier": "overlay"
     },
-    "minecraft:visual/fog_color": "#1b2329",
+    "minecraft:visual/fog_color": "#26252a",
+    "minecraft:audio/background_music": {
+      "default": {
+        "sound": "astralend:music.outer_end",
+        "min_delay": 3000,
+        "max_delay": 12000,
+        "replace_current_music": false
+      }
+    },
     "minecraft:audio/ambient_sounds": {
       "loop": "astralend:ambient.ashen_barrens.loop",
       "additions": {
@@ -35,7 +43,7 @@
           "particle": {
             "type": "minecraft:white_ash"
           },
-          "probability": 0.012
+          "probability": 0.035
         }
       ],
       "modifier": "append"
@@ -44,7 +52,7 @@
   "carvers": [],
   "downfall": 0.5,
   "effects": {
-    "water_color": "#5a7e80"
+    "water_color": "#6e6c6a"
   },
   "features": [
     [],
@@ -54,6 +62,7 @@
     [
       "minecraft:end_gateway_return",
       "astralend:aurora_ribcages",
+      "astralend:ashen_barrens_bones",
       "astralend:aurora_standing_stones"
     ],
     [],

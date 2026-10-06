@@ -25,8 +25,8 @@ your face: the End tells you things with sound and light.
 - **Glimmering Crags:** Nightstone peaks of smoky Glimmer Crystal, and root caves where the Umbral
   Stalker waits. Its variant, the **Shattered Crags**, is split into shards over the void; below them
   drift the **Crystal Vaults**, geodes where a Shardback lies folded among the crystals.
-- **Ashen Barrens:** the leviathan graveyard, pale stone and old bones; Memory Moss replays what
-  passed over it.
+- **Ashen Barrens:** the leviathans' graveyard - grey ash falling on pale stone shelves strewn with
+  ribcages, vertebrae and lone ribs; Memory Moss replays what passed over it.
 
 {{Nebula Fields}}
 
