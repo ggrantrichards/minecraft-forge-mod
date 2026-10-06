@@ -26,6 +26,26 @@
     "description": "The End's only forest: dim Nullwood on ring-shaped islands."
   },
   {
+    "file": "docs/images/distilled/structure_leviathan.png",
+    "title": "The Leviathan",
+    "description": "A Star Leviathan's skeleton, some 370 blocks long, adrift over the void, with a purpur citadel along its spine."
+  },
+  {
+    "file": "docs/images/distilled/structure_leviathan_heart.png",
+    "title": "Its heart",
+    "description": "In the Leviathan's ribcage, its crimson heart still beats."
+  },
+  {
+    "file": "docs/images/distilled/structure_leviathan_reliquary.png",
+    "title": "The Reliquary",
+    "description": "The ribcage cathedral, its End Chimes pylons and a floor open to the void."
+  },
+  {
+    "file": "docs/images/distilled/mob_curator.png",
+    "title": "The Curator",
+    "description": "The keeper of the reliquary."
+  },
+  {
     "file": "docs/images/distilled/mob_drift_whale_side.png",
     "title": "Drift Whale",
     "description": "A Drift Whale over the Ashen Barrens. Sing one a song and it's yours to ride."
@@ -36,28 +56,18 @@
     "description": "A clear-hided grazer of the Eclipse; hurt one and the herd blinks away."
   },
   {
-    "file": "docs/images/distilled/mob_mirror_wretch.png",
+    "file": "docs/images/distilled/mob_hydragrip_angled.png",
+    "title": "Hydragrip",
+    "description": "A dark newt lit with cyan; it hunts endermites by the water and coughs up their pearls."
+  },
+  {
+    "file": "docs/images/distilled/mob_mirror_wretch_angled.png",
     "title": "Mirror Wretch",
-    "description": "It throws familiar sounds from the void's edge to lure you over."
+    "description": "A worm with a round toothed mouth that slithers low, rears up to strike, and throws familiar sounds from the void's edge to lure you over."
   },
   {
     "file": "docs/images/distilled/mob_watcher.png",
     "title": "The Watcher",
-    "description": "Only ever seen from the corner of your eye. Its eye is the Hourglass Nebula."
-  },
-  {
-    "file": "docs/images/distilled/structure_leviathan_reliquary.png",
-    "title": "The Leviathan",
-    "description": "In a Leviathan's skull: the reliquary, its pylons, and a floor open to the void."
-  },
-  {
-    "file": "docs/images/distilled/mob_curator.png",
-    "title": "The Curator",
-    "description": "The keeper of the reliquary."
-  },
-  {
-    "file": "docs/images/distilled/structure_rift_maw.png",
-    "title": "Rift Maw",
-    "description": "A colossal skull that wakes into a travel network."
+    "description": "Only ever seen from the corner of your eye. Look straight at it and it teleports away, to turn up further on toward the Leviathan."
   }
 ]
