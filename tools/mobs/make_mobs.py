@@ -1233,88 +1233,75 @@ def smooth(pal, top=0.85, bottom=0.25, belly=None, spots=None):
 
 
 # Hydragrip: a sleek, otter-built salamander of the Wellspring's banks, standing high on webbed,
-# clawed feet. Dark indigo skin with a violet-and-teal sheen and a scatter of cyan lights; a long neck
-# and a smooth round head with big dark glossy eyes and a wide, quiet smile; small pink frills behind
-# its jaw; a long tail ending in a ribbed violet fin it swims with.
-HG = ramp("0f0d26", "4b4282")
-HG_BELLY = ramp("3a3058", "8a7aac")
+# clawed feet. Drawn the vanilla way - a few flat tones with a little pixel noise, small dark eyes on
+# the sides of its face like a wolf's, no mouth line - in dark indigo, with rows of cyan lights down
+# its back and flanks, small pink frills behind its head, and a striped violet tail fin.
+HG = [hexc("1b1736"), hexc("252046"), hexc("2e2856"), hexc("3a3368"), hexc("473f7a")]
+HG_BELLY = [hexc("4a4070"), hexc("54497c"), hexc("5e5288")]
 HG_SPOT = hexc("7ff0ff")
-HG_VIOLET = hexc("8a5aa8")
-HG_TEAL = hexc("3a7a9a")
-
-
-def _hg_hash(face, px, py, fw, fh):
-    h = (px * 73856093) ^ (py * 19349663) ^ (fw * 83492791) ^ (fh * 2654435761) ^ (ord(face[0]) * 97)
-    h = (h ^ (h >> 13)) * 1274126177
-    return ((h ^ (h >> 16)) & 0xFFFF) / 65536.0
 
 
 def hg_spot(face, px, py, fw, fh):
-    if face == "down":
-        return False
     if face == "up":
-        density = 0.08
-    elif face in ("east", "west"):
-        density = 0.07 if py < fh * 0.55 else 0.015
-    else:
-        density = 0.03
-    return _hg_hash(face, px, py, fw, fh) < density
+        return fw >= 4 and px in (1, fw - 2) and py % 3 == 1          # two rows down the back
+    if face in ("east", "west"):
+        return fh >= 5 and fw >= 6 and py == 1 and px % 3 == 1        # a row along each flank
+    return False
+
+
+def hg_flat(face, rnd, lift=0):
+    """Vanilla-style: one base tone, a little pixel noise, the top a shade lighter, the belly paler."""
+    if face == "down":
+        return HG_BELLY[rnd.choice((0, 1, 1, 2))]
+    r = rnd.random()
+    t = 2 + (-1 if r < 0.22 else 1 if r > 0.88 else 0) + (1 if face == "up" else 0) + lift
+    return HG[max(0, min(len(HG) - 1, t))]
 
 
 def hg_skin(face, px, py, fw, fh, rnd):
-    if hg_spot(face, px, py, fw, fh):
-        return HG_SPOT
-    c = smooth(HG, 0.8, 0.2, belly=HG_BELLY)(face, px, py, fw, fh, rnd)
-    if face != "down":
-        band = math.sin(px * 0.55 + py * 0.35 + fw * 0.3)      # an oily, shifting sheen
-        c = mix(c, HG_VIOLET, 0.28 * max(0.0, band)) if band > 0 else mix(c, HG_TEAL, 0.2 * -band)
-    return c
+    return HG_SPOT if hg_spot(face, px, py, fw, fh) else hg_flat(face, rnd)
 
 
 def hg_skin_glow(face, px, py, fw, fh, rnd):
     return HG_SPOT if hg_spot(face, px, py, fw, fh) else None
 
 
+def hg_plain(face, px, py, fw, fh, rnd):
+    return hg_flat(face, rnd)
+
+
 def hg_head(face, px, py, fw, fh, rnd):
-    if face == "up":
-        return hg_skin(face, px, py, fw, fh, rnd)
-    return smooth(HG, 0.85, 0.35, belly=HG_BELLY)(face, px, py, fw, fh, rnd)
+    if face == "north" and py == 2 and px in (0, 1, fw - 2, fw - 1):
+        edge = px in (0, fw - 1)
+        return hexc("0b0a14") if edge else hexc("d6e8f0")              # a small dark eye with a light glint
+    if face == "up" and py == 2 and px == fw // 2:
+        return HG_SPOT                                                  # one light on its brow
+    return hg_flat(face, rnd)
+
+
+def hg_head_glow(face, px, py, fw, fh, rnd):
+    return HG_SPOT if face == "up" and py == 2 and px == fw // 2 else None
 
 
 def hg_muzzle(face, px, py, fw, fh, rnd):
-    if face == "north":
-        if py == fh - 1 and 0 < px < fw - 1:
-            return HG[0]                                        # the long, quiet smile
-        if py == fh - 2 and px in (0, fw - 1):
-            return HG[0]                                        # its upturned corners
-    if face in ("east", "west") and py == fh - 1:
-        return HG[0]                                            # the smile runs back along its cheeks
-    return smooth(HG, 0.9, 0.45, belly=HG_BELLY)(face, px, py, fw, fh, rnd)
-
-
-def hg_eye(face, px, py, fw, fh, rnd):
-    if face in ("north", "east", "west"):
-        if px == 0 and py == 0:
-            return hexc("e8f4ff")                               # the glint
-        return hexc("2a1814") if py == fh - 1 and px == fw - 1 else hexc("06050c")
-    return hg_skin(face, px, py, fw, fh, rnd)
-
-
-def hg_eye_glow(face, px, py, fw, fh, rnd):
-    return hexc("c8e8ff") if face in ("north", "east", "west") and px == 0 and py == 0 else None
+    if face == "north" and py == 0 and px in (fw // 2 - 1, fw // 2):
+        return HG[0]                                                    # the nose
+    return hg_flat(face, rnd)
 
 
 def hg_jaw(face, px, py, fw, fh, rnd):
     if face == "up":
-        return hexc("3a1a2e") if 0 < px < fw - 1 and py > 0 else HG_BELLY[2]   # the inside of its mouth
-    return smooth(HG_BELLY, 0.7, 0.3)(face, px, py, fw, fh, rnd)
+        return hexc("4a2440") if 0 < px < fw - 1 and py > 0 else HG_BELLY[1]   # the inside of its mouth
+    return HG_BELLY[rnd.choice((0, 1, 1, 2))]
+
+
+FRILL = [hexc("a8587a"), hexc("cc7598"), hexc("e69ab6")]
 
 
 def hg_frill(face, px, py, fw, fh, rnd):
-    t = px / max(1, fw - 1)
-    if py % 2 == 1 and t > 0.5:
-        return None                                             # feathered tips
-    return mix(hexc("8a4a6e"), hexc("f4b8d0"), t)
+    if py % 2 == 1 and px == fw - 1:
+        return None                                                     # notched tips
+    return FRILL[0] if px == 0 else FRILL[1] if px < fw - 1 else FRILL[2]
 
 
 def hg_frill_glow(face, px, py, fw, fh, rnd):
@@ -1324,21 +1311,19 @@ def hg_frill_glow(face, px, py, fw, fh, rnd):
 def hg_fin(face, px, py, fw, fh, rnd):
     if face in ("east", "west"):
         if px % 3 == 0:
-            return hexc("3a2a5a")                               # the ribs
-        return mix(hexc("4a3a7a"), hexc("b07ab0"), py / max(1, fh - 1))
+            return hexc("3e2e66")                                       # the ribs
+        return hexc("8a62a6") if py < fh // 3 else hexc("6c4c90")
     return None
 
 
 def hg_foot(face, px, py, fw, fh, rnd):
     if face == "north" and px % 2 == 0:
-        return hexc("d8c8d8")                                   # claws
-    if face == "up" and py == 0 and px % 2 == 0:
-        return HG[0]                                            # between the toes
-    return smooth(HG, 0.6, 0.15)(face, px, py, fw, fh, rnd)
+        return hexc("cfc3d6")                                           # claws
+    return HG[0] if face != "up" else HG[1]
 
 
 def _hg_leg(name, side, z):
-    return Part(name, (side * 3.5, 17, z, 0, 0, side * -0.08), [B(-1.5, 0, -1.5, 3, 6, 3, hg_skin, hg_skin_glow, key="hgleg")], [
+    return Part(name, (side * 3.5, 17, z, 0, 0, side * -0.08), [B(-1.5, 0, -1.5, 3, 6, 3, hg_plain, key="hgleg")], [
         Part(name + "_foot", (0, 6, -0.5, 0, 0, side * 0.08), [B(-2, 0, -3, 4, 1, 5, hg_foot, key="hgfoot")]),
     ])
 
@@ -1355,12 +1340,9 @@ HYDRAGRIP = Mob("hydragrip", (128, 64), [
     Part("body", (0, 14, 0), [B(-4, -3.5, -6, 8, 7, 14, hg_skin, hg_skin_glow),
                               B(-3.5, -3, 8, 7, 6, 3, hg_skin, hg_skin_glow)], [
         Part("neck", (0, -1.5, -5, -0.8, 0, 0), [B(-2.5, -2.5, -8, 5, 5, 8, hg_skin, hg_skin_glow)], [
-            Part("head", (0, -0.5, -7.5, 0.8, 0, 0), [B(-3.5, -6, -5, 7, 6, 6, hg_head),
-                                                      B(-3, -7, -4.5, 6, 1, 5, hg_skin, hg_skin_glow),
-                                                      B(-2.5, -3, -7, 5, 3, 2, hg_muzzle),
-                                                      B(-3.7, -5.5, -5.4, 2, 2, 1, hg_eye, hg_eye_glow, key="hgeye"),
-                                                      B(1.7, -5.5, -5.4, 2, 2, 1, hg_eye, hg_eye_glow, key="hgeye", mirror=True)],
-                 [Part("jaw", (0, 0, -2), [B(-2.5, 0, -5, 5, 1, 6, hg_jaw)])] + _hg_frills(1) + _hg_frills(-1)),
+            Part("head", (0, -0.5, -7.5, 0.8, 0, 0), [B(-3.5, -6, -5, 7, 6, 6, hg_head, hg_head_glow),
+                                                      B(-2, -3, -8, 4, 3, 3, hg_muzzle)],
+                 [Part("jaw", (0, 0, -2), [B(-2, 0, -6, 4, 1, 6, hg_jaw)])] + _hg_frills(1) + _hg_frills(-1)),
         ]),
         Part("tail", (0, -1, 11, -0.25, 0, 0), [B(-2.5, -2.5, 0, 5, 5, 7, hg_skin, hg_skin_glow)], [
             Part("tail_mid", (0, 0, 7, 0.15, 0, 0), [B(-2, -2, 0, 4, 4, 6, hg_skin, hg_skin_glow), B(0, -4, 1, 0, 2, 5, hg_fin)], [

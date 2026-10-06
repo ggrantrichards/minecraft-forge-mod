@@ -55,9 +55,9 @@ From playing beta.3. These replace what the distillation's notes below say about
   hunts it rears up like a cobra, over two blocks tall, its back legs still on the ground, and strikes
   down from there. Down its throat hang five vocal sacs - one for every voice it has stolen - that
   swell in turn as it calls you, in voices you know, from the void's edge.
-- **The Hydragrip is redrawn:** sleek and otter-built, high on webbed, clawed feet; dark indigo skin
-  with a violet-and-teal sheen and a scatter of cyan lights; a long neck, a smooth round head with big
-  dark glossy eyes and a quiet smile, small pink frills, and a long tail ending in a ribbed violet fin.
+- **The Hydragrip is redrawn** in the vanilla style: sleek and otter-built, high on webbed, clawed feet; dark indigo skin
+  with rows of cyan lights down its back and flanks; a long neck, a wolf-like head with small dark
+  eyes, small pink frills, and a long tail ending in a striped violet fin.
 - **The Watcher's eye is white and cyan again** (the red-and-orange nebula eye is gone).
 - **Summoned Watchers stay.** A Watcher from a spawn egg or a command hangs where it's put; the two
   the pedestal calls stay for half a minute. (A wild one still fades when you look straight at it or
