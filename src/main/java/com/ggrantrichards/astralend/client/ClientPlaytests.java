@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 //   upwelling      drink Upwelling under a ledge: fall up onto its underside, walk on it, turn, jump off
 //   biome_border   fly east out of the Nebula Fields across its border: does the sky shift gently,
 //                  do the biomes interlock?
-//   maw_hall       stand in the hall inside a Rift Maw's skull and look all round it
+//   maw_hall       stand in the hall inside a Leviathan's skull and look all round it
 //   remnant_flight fly in toward the Remnant from far off: the picture of it in the sky gives way to
 //                  the real thing
 public final class ClientPlaytests {
@@ -221,9 +221,9 @@ public final class ClientPlaytests {
                     player.onUpdateAbilities();
                 }
                 case "maw_hall" -> {
-                    ClientScreenshots.Shot s = shot("structure_rift_maw_hall");
+                    ClientScreenshots.Shot s = shot("structure_leviathan_maw_hall");
                     if (s == null) {
-                        LOGGER.error(TAG + "no Rift Maw hall in astralend-shots.txt");
+                        LOGGER.error(TAG + "no Leviathan Maw hall in astralend-shots.txt");
                         return;
                     }
                     put(player, end, new Vec3(s.x(), s.y() - 1.6, s.z()), s.yaw(), 0);
@@ -318,6 +318,10 @@ public final class ClientPlaytests {
                 }
                 if (t >= 160 && t < 200) {
                     player.turn(20.0, -4.0);
+                    if (t % 8 == 0) {
+                        LOGGER.info(TAG + "upwelling turning t={} yaw {} pitch {}", t, String.format("%.1f", player.getYRot()),
+                            String.format("%.1f", player.getXRot()));
+                    }
                 }
                 if (t == 205) {
                     float dy = player.getYRot() - turnFrom[0], dp = player.getXRot() - turnFrom[1];

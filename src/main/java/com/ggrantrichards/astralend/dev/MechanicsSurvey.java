@@ -276,6 +276,28 @@ final class MechanicsSurvey {
             if (early || stranger || !tamed) {
                 failures.add("systems: a Drift Whale should be tamed only by Chorus Fruit from whoever just sang to it");
             }
+            // No two alike: a pod's whales differ in size and pace, and they play.
+            DriftWhale calf = ModEntities.DRIFT_WHALE.get().create(end, EntitySpawnReason.COMMAND);
+            if (calf != null) {
+                calf.snapTo(standOn.getX() + 12.5, standOn.getY() + 14.0, standOn.getZ() + 0.5, 0.0F, 0.0F);
+                end.addFreshEntity(calf);
+                whale.setSize(1.15F);
+                calf.setSize(0.6F);
+                calf.playForTest(end);
+                int play = calf.play();
+                net.minecraft.world.phys.Vec3 from = calf.position();
+                for (int i = 0; i < 40; i++) {
+                    calf.tick();
+                }
+                double moved = calf.position().distanceTo(from);
+                log.accept(String.format("systems: Drift Whales - sizes %.2f and %.2f (calf: %s), tempos %.2f and %.2f; the calf played (%d) and moved %.1f blocks",
+                    whale.getScale(), calf.getScale(), calf.isCalf(), whale.tempo(), calf.tempo(), play, moved));
+                if (Math.abs(whale.getScale() - calf.getScale()) < 0.3 || !calf.isCalf() || whale.isCalf() || whale.tempo() == calf.tempo()
+                        || play == DriftWhale.PLAY_NONE || moved < 0.5) {
+                    failures.add("systems: Drift Whales should each have their own size and pace, and play");
+                }
+                calf.discard();
+            }
             whale.discard();
         }
     }

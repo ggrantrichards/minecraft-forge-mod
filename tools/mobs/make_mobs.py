@@ -1209,83 +1209,228 @@ HUSHBACK = Mob("hushback", (128, 64), [
 ], egg=(hexc("e4eef4"), hexc("b8ae98")))
 
 
-# Hydragrip: sleek and otter-like, a wet deep teal over a pale belly, with a long tapering tail.
-GRIP = [hexc("16302f"), hexc("214541"), hexc("2f5c56"), hexc("41766d"), hexc("5a948a")]
-GRIP_BELLY = [hexc("a8b8a0"), hexc("c2d0b8"), hexc("d8e2cc")]
+# ---- Redesigned after BetterEnd's mobs: compact bodies, one signature feature, flat cards
+# (zero-thickness boxes) for frills and fins, clean shading in one strong hue, few glowing accents.
+
+def ramp(a, b, k=6):
+    ca, cb = hexc(a), hexc(b)
+    return [mix(ca, cb, i / (k - 1)) for i in range(k)]
 
 
-def grip_fur(face, px, py, fw, fh, rnd):
-    if face == "down":
-        return clamp(1 + (1 if n() > 0.6 else 0), GRIP_BELLY)
-    return clamp(2 + shade_flat(face) + (1 if n() > 0.72 else 0) - (1 if n() < 0.2 else 0), GRIP)
+def smooth(pal, top=0.85, bottom=0.25, belly=None, spots=None):
+    """Clean shading: lit from above, a soft gradient down each side, very little noise."""
+    def f(face, px, py, fw, fh, rnd):
+        if face == "up":
+            t = top
+        elif face == "down":
+            if belly:
+                return belly[min(len(belly) - 1, 1 + (1 if n() > 0.6 else 0))]
+            t = bottom
+        else:
+            t = top - (top - bottom) * (py + 0.5) / max(1, fh)
+        t += (n() - 0.5) * 0.18
+        if spots and spots(face, px, py, fw, fh):
+            t += 0.3
+        return pal[max(0, min(len(pal) - 1, int(round(t * (len(pal) - 1)))))]
+    return f
+
+
+# Hydragrip (the Gripmouth): a long, low, salamander-built hunter of the Wellspring's banks. Gill
+# frills behind its broad head, lit at the tips; frog's eyes on top with slit pupils, and a second,
+# smaller pair below them; a wide hinged jaw with a row of small pale teeth; a line of lights down
+# each flank; a finned tail it swims with.
+GRIP = ramp("0a1f24", "5fb3a8")
+GRIP_BELLY = ramp("6e6488", "e4dcf0")
+GRIP_GLOW = hexc("8ff5e6")
+
+
+def grip_lights(face, px, py, fw, fh):
+    if face in ("east", "west"):
+        return fh >= 6 and py == fh // 3 and px % 3 == 1
+    if face == "up":
+        return fw >= 8 and px in (2, fw - 3) and py % 3 == 1
+    return False
+
+
+def grip_skin(face, px, py, fw, fh, rnd):
+    return smooth(GRIP, 0.9, 0.3, belly=GRIP_BELLY, spots=grip_lights)(face, px, py, fw, fh, rnd)
+
+
+def grip_skin_glow(face, px, py, fw, fh, rnd):
+    return hexc("3fa89a") if grip_lights(face, px, py, fw, fh) else None
 
 
 def grip_head(face, px, py, fw, fh, rnd):
-    if face == "north" and py == 1 and px in (0, fw - 1):
-        return hexc("0a0a0e")
-    if face == "north" and py == 0 and px in (0, fw - 1):
-        return hexc("e8f4f0")
-    return grip_fur(face, px, py, fw, fh, rnd)
+    if face == "north":
+        if py == fh - 1:
+            return GRIP_BELLY[4] if px in (1, 3, fw - 4, fw - 2) else hexc("1a0c14")       # a few small teeth over the dark of the mouth
+        if py == 1 and px in (2, fw - 3):
+            return hexc("041014")                                                          # the lower pair of eyes
+        if py == 0:
+            return GRIP[1]                                                                 # the brow
+    return grip_skin(face, px, py, fw, fh, rnd)
 
 
-def grip_snout(face, px, py, fw, fh, rnd):
-    if face == "north" and py == 0 and px == fw // 2:
-        return hexc("101014")
-    return clamp(1 + (1 if n() > 0.5 else 0), GRIP_BELLY) if face in ("down", "north") else grip_fur(face, px, py, fw, fh, rnd)
-
-
-HYDRAGRIP = Mob("hydragrip", (64, 32), [
-    Part("body", (0, 19.5, 0), [B(-2.5, -2.5, -7, 5, 5, 14, grip_fur)], [
-        Part("head", (0, -1, -7), [B(-2, -2, -4, 4, 4, 4, grip_head), B(-1.5, 0, -6, 3, 2, 2, grip_snout)]),
-        Part("tail", (0, -1, 7), [B(-1, -1, 0, 2, 2, 5, grip_fur)], [
-            Part("tail_tip", (0, 0, 5), [B(-0.5, -0.5, 0, 1, 1, 4, grip_fur)]),
-        ]),
-    ]),
-    Part("leg_fr", (-2, 21, -5), [B(-1, 0, -1, 2, 3, 2, grip_fur, key="gleg")]),
-    Part("leg_fl", (2, 21, -5), [B(-1, 0, -1, 2, 3, 2, grip_fur, key="gleg")]),
-    Part("leg_br", (-2, 21, 5), [B(-1, 0, -1, 2, 3, 2, grip_fur, key="gleg")]),
-    Part("leg_bl", (2, 21, 5), [B(-1, 0, -1, 2, 3, 2, grip_fur, key="gleg")]),
-], egg=(GRIP[2], GRIP_BELLY[1]))
-
-
-# Mirror Wretch: too tall, too thin, grey-violet skin over a starved frame, and where its face should
-# be, a sheet of something like silvered glass that catches the light.
-WRETCH = [hexc("221e2c"), hexc("2f2a3c"), hexc("3d374c"), hexc("4d465e"), hexc("615a74")]
-MIRROR = [hexc("8a90a4"), hexc("b4bac8"), hexc("d8dce6"), hexc("f2f4f8")]
-
-
-def wretch_skin(face, px, py, fw, fh, rnd):
-    return clamp(2 + shade_flat(face) + (1 if n() > 0.74 else 0) - (1 if n() < 0.22 else 0), WRETCH)
-
-
-def wretch_ribs(face, px, py, fw, fh, rnd):
-    if face in ("north", "south") and py % 2 == 1 and 2 <= py <= 7 and 0 < px < fw - 1:
-        return WRETCH[0]
-    return wretch_skin(face, px, py, fw, fh, rnd)
-
-
-def mirror_face(face, px, py, fw, fh, rnd):
-    if face != "north":
-        return wretch_skin(face, px, py, fw, fh, rnd)
-    streak = (px + py) % 5 == 0
-    return MIRROR[3] if streak else clamp(1 + (1 if n() > 0.5 else 0), MIRROR)
-
-
-def mirror_glow(face, px, py, fw, fh, rnd):
-    if face == "north" and (px + py) % 5 == 0:
-        return hexc("dfe6ff")
+def grip_head_glow(face, px, py, fw, fh, rnd):
+    if face == "north" and py == 1 and px in (2, fw - 3):
+        return GRIP_GLOW
     return None
 
 
-MIRROR_WRETCH = Mob("mirror_wretch", (64, 64), [
-    Part("body", (0, -6, 0), [B(-3, 0, -1.5, 6, 11, 3, wretch_ribs)], [
-        Part("head", (0, 0, 0), [B(-2.5, -7, -2.5, 5, 7, 5, wretch_skin), B(-2, -6, -3, 4, 5, 1, mirror_face, mirror_glow)]),
+def grip_jaw(face, px, py, fw, fh, rnd):
+    if face == "north" and py == 0:
+        return GRIP_BELLY[4] if px in (2, fw - 3) else hexc("1a0c14")
+    if face == "up":
+        return hexc("3a1a2a") if 0 < px < fw - 1 and py > 0 else GRIP_BELLY[2]            # the inside of the mouth
+    return smooth(GRIP_BELLY, 0.85, 0.35)(face, px, py, fw, fh, rnd)
+
+
+def grip_eye(face, px, py, fw, fh, rnd):
+    if face == "north":
+        if px == fw // 2:
+            return hexc("020608")                                                          # a slit pupil
+        if 0 < py or 0 < px < fw - 1:
+            return hexc("2a8a80")
+    return grip_skin(face, px, py, fw, fh, rnd)
+
+
+def grip_eye_glow(face, px, py, fw, fh, rnd):
+    if face == "north" and px != fw // 2 and (0 < py or 0 < px < fw - 1):
+        return GRIP_GLOW
+    return None
+
+
+def grip_frill(face, px, py, fw, fh, rnd):
+    t = px / max(1, fw - 1)
+    if py % 2 == 1 and t > 0.55:
+        return None                                                                        # feathered tips
+    return mix(GRIP[3], hexc("9ff0e4"), t)
+
+
+def grip_frill_glow(face, px, py, fw, fh, rnd):
+    return hexc("6fe0d0") if px >= fw - 2 and py % 2 == 0 else None
+
+
+def grip_fin(face, px, py, fw, fh, rnd):
+    if face in ("east", "west"):
+        return mix(GRIP[2], hexc("7fd8cc"), py / max(1, fh - 1)) if (px + py) % 5 else GRIP[3]
+    return None
+
+
+def grip_foot(face, px, py, fw, fh, rnd):
+    return smooth(GRIP_BELLY, 0.8, 0.4)(face, px, py, fw, fh, rnd)
+
+
+def _grip_leg(name, side, z):
+    return Part(name, (side * 5, 19, z, 0, 0, side * -0.9), [B(-1.5, 0, -1.5, 3, 7, 3, grip_skin, key="gleg")], [
+        Part(name + "_foot", (0, 7, 0, 0, 0, side * 0.9), [B(-2, -0.5, -2.5, 4, 1, 5, grip_foot, key="gfoot")]),
+    ])
+
+
+def _grip_frills(side):
+    out = []
+    for k, (dy, rz) in enumerate(((-3, -0.35), (-1, 0.0), (1, 0.35))):
+        out.append(Part(f"frill_{'l' if side > 0 else 'r'}{k}", (side * 5.5, dy, -1, 0, side * -0.4, side * rz + (0 if side > 0 else math.pi)),
+                        [B(0, -1, 0, 7, 2, 0, grip_frill, grip_frill_glow, key="gfrill")]))
+    return out
+
+
+HYDRAGRIP = Mob("hydragrip", (128, 64), [
+    Part("body", (0, 18, 0), [B(-5, -4.5, -4, 10, 8, 16, grip_skin, grip_skin_glow)], [
+        Part("head", (0, -2, -4), [B(-5.5, -4, -6, 11, 5, 6, grip_head, grip_head_glow),
+                                   B(-5, -6, -5.5, 3, 3, 3, grip_eye, grip_eye_glow, key="geye"),
+                                   B(2, -6, -5.5, 3, 3, 3, grip_eye, grip_eye_glow, key="geye", mirror=True)],
+             [Part("jaw", (0, 1, -1), [B(-5, 0, -5, 10, 2, 5, grip_jaw)])] + _grip_frills(1) + _grip_frills(-1)),
+        Part("tail", (0, -1, 12, -0.15, 0, 0), [B(-2, -2, 0, 4, 4, 8, grip_skin), B(0, -5, 0, 0, 10, 9, grip_fin)], [
+            Part("tail_tip", (0, 0, 8), [B(-1, -1, 0, 2, 2, 6, grip_skin), B(0, -3, 0, 0, 6, 7, grip_fin)]),
+        ]),
     ]),
-    Part("right_arm", (-4, -5, 0), [B(-1, 0, -1, 2, 21, 2, wretch_skin, key="warm")]),
-    Part("left_arm", (4, -5, 0), [B(-1, 0, -1, 2, 21, 2, wretch_skin, key="warm", mirror=True)]),
-    Part("right_leg", (-1.5, 5, 0), [B(-1, 0, -1, 2, 19, 2, wretch_skin, key="wleg")]),
-    Part("left_leg", (1.5, 5, 0), [B(-1, 0, -1, 2, 19, 2, wretch_skin, key="wleg", mirror=True)]),
-], egg=(WRETCH[2], MIRROR[2]))
+    _grip_leg("leg_fr", -1, -1), _grip_leg("leg_fl", 1, -1), _grip_leg("leg_br", -1, 9), _grip_leg("leg_bl", 1, 9),
+], egg=(GRIP[2], GRIP_BELLY[3]))
+
+
+# Mirror Wretch (the Choir): it has no mirror and no face - only a round mouth ringed with teeth. Half
+# of it crawls on a row of small legs; the front half rears up like a cobra. Down its throat hang five
+# vocal sacs, one for every voice it has stolen, that swell in turn as it speaks; it calls you in
+# with them, in voices you know, from the void's edge.
+WRETCH = ramp("17131d", "8a7e94")          # dusk grey-violet
+WRETCH_BELLY = ramp("4a4236", "efe6cf")    # End Stone cream
+WRETCH_FLESH = ramp("2a1622", "c88aa4")
+
+
+def wretch_skin(face, px, py, fw, fh, rnd):
+    return smooth(WRETCH, 0.75, 0.25, belly=WRETCH_BELLY)(face, px, py, fw, fh, rnd)
+
+
+def wretch_dark(face, px, py, fw, fh, rnd):
+    return smooth(WRETCH, 0.5, 0.15)(face, px, py, fw, fh, rnd)
+
+
+def wretch_mouth(face, px, py, fw, fh, rnd):
+    if face == "north":
+        r = math.hypot(px + 0.5 - fw / 2, py + 0.5 - fh / 2) / (fw / 2)
+        if r < 0.42:
+            return hexc("0e0610")
+        if r < 0.62:
+            return WRETCH_BELLY[5] if (px + py) % 2 == 0 else WRETCH_FLESH[1]       # the inner ring of teeth
+        if r < 0.82:
+            return WRETCH_FLESH[3] if (px * 3 + py) % 4 else WRETCH_BELLY[4]       # the lip, and the outer teeth
+    return wretch_skin(face, px, py, fw, fh, rnd)
+
+
+def wretch_mouth_glow(face, px, py, fw, fh, rnd):
+    if face == "north":
+        r = math.hypot(px + 0.5 - fw / 2, py + 0.5 - fh / 2) / (fw / 2)
+        if r < 0.3:
+            return hexc("40142c")
+    return None
+
+
+def wretch_sac(face, px, py, fw, fh, rnd):
+    return smooth(WRETCH_FLESH, 0.95, 0.5)(face, px, py, fw, fh, rnd)
+
+
+def wretch_sac_glow(face, px, py, fw, fh, rnd):
+    return hexc("5a2446") if face in ("north", "east", "west") and (px * 5 + py * 7) % 11 == 0 else None
+
+
+def wretch_fin(face, px, py, fw, fh, rnd):
+    if face in ("north", "south"):
+        if abs(px + 0.5 - fw / 2) > fw / 2 * (1 - (py / fh) ** 2 * 0.8):
+            return None
+        return WRETCH_FLESH[3] if py < fh * 0.4 else WRETCH_BELLY[4]
+    return None
+
+
+def _wretch_segment(i):
+    z = 4 + i * 5
+    w = 7 - i
+    return Part(f"seg{i}", (0, 20, z), [B(-w / 2, -3.5 + i * 0.5, -2.5, w, 7 - i, 5, wretch_skin)], [
+        Part(f"seg{i}_foot_l", (w / 2, 1, 0, 0, 0, -0.6), [B(-0.5, 0, -0.5, 1, 4, 1, wretch_dark, key="wfoot")]),
+        Part(f"seg{i}_foot_r", (-w / 2, 1, 0, 0, 0, 0.6), [B(-0.5, 0, -0.5, 1, 4, 1, wretch_dark, key="wfoot")]),
+    ])
+
+
+def _wretch_sacs():
+    out = []
+    for k in range(5):
+        size = 3 if k in (0, 4) else 4
+        out.append(Part(f"sac{k}", (0, -14 + k * 2.6, -3), [B(-size / 2 - 1, -size / 2, -size, size + 2, size, size,
+                                                               wretch_sac, wretch_sac_glow, key=f"wsac{size}")]))
+    return out
+
+
+MIRROR_WRETCH = Mob("mirror_wretch", (128, 64), [
+    _wretch_segment(0), _wretch_segment(1), _wretch_segment(2), _wretch_segment(3),
+    Part("chest", (0, 18, 0, 0.55, 0, 0), [B(-4, -16, -3, 8, 16, 6, wretch_skin)], [
+        Part("head", (0, -16, -1, -0.55, 0, 0), [B(-4, -4, -6, 8, 8, 7, wretch_mouth, wretch_mouth_glow)], [
+            Part(f"spine{k}", (dx, -4, -1 + k % 2 * 2, -1.1, 0, 0), [B(-0.5, -3, -0.5, 1, 3, 1, wretch_dark, key="wspine")])
+            for k, dx in enumerate((-2.5, -1, 1, 2.5))
+        ]),
+        Part("fin_l", (4, -10, 0, 0, 0.3, 0.35), [B(0, -3, 0, 7, 9, 0, wretch_fin, key="wfin")]),
+        Part("fin_r", (-4, -10, 0, 0, -0.3, -0.35), [B(-7, -3, 0, 7, 9, 0, wretch_fin, key="wfin", mirror=True)]),
+    ] + _wretch_sacs()),
+], egg=(WRETCH[2], WRETCH_FLESH[3]))
 
 # ---- The distillation's Leviathan mobs.
 

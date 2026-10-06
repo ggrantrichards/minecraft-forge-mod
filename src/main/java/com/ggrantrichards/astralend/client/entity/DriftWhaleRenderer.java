@@ -35,6 +35,9 @@ public class DriftWhaleRenderer extends MobRenderer<DriftWhale, DriftWhaleRender
     public void extractRenderState(DriftWhale entity, State state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.humming = entity.isHumming();
+        state.roll = entity.roll(partialTicks);
+        state.tempo = entity.tempo();
+        state.pitch = entity.getViewXRot(partialTicks);
     }
 
     @Override
@@ -49,10 +52,14 @@ public class DriftWhaleRenderer extends MobRenderer<DriftWhale, DriftWhaleRender
 
     public static class State extends LivingEntityRenderState {
         public boolean humming;
+        public float roll;
+        public float tempo = 1.0F;
+        public float pitch;
     }
 
     // A slow, heavy swim: a wave runs down the body to the tail and fluke, the long fins row, and
-    // the whole whale rolls a little. While it hums, its head lifts and its jaw opens.
+    // the whole whale rolls a little, each at its own tempo. It pitches as it climbs and dives, and
+    // rolls right over when it plays. While it hums, its head lifts and its jaw opens.
     public static class Model extends EntityModel<State> {
         private final ModelPart body;
         private final ModelPart head;
@@ -78,9 +85,9 @@ public class DriftWhaleRenderer extends MobRenderer<DriftWhale, DriftWhaleRender
         @Override
         public void setupAnim(State state) {
             super.setupAnim(state);
-            float t = state.ageInTicks * 0.07F;
-            this.body.xRot += Mth.sin(t) * 0.03F;
-            this.body.zRot += Mth.sin(t * 0.5F) * 0.03F;
+            float t = state.ageInTicks * 0.07F * state.tempo;
+            this.body.xRot += Mth.sin(t) * 0.03F + state.pitch * Mth.DEG_TO_RAD;
+            this.body.zRot += Mth.sin(t * 0.5F) * 0.03F + state.roll * Mth.DEG_TO_RAD;
             this.rear.xRot += Mth.sin(t - 0.7F) * 0.08F;
             this.tailstock.xRot += Mth.sin(t - 1.4F) * 0.16F;
             this.fluke.xRot += Mth.sin(t - 2.1F) * 0.3F;

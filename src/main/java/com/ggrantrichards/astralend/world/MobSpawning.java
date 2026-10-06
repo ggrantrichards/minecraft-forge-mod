@@ -86,7 +86,8 @@ public final class MobSpawning {
         return level.getEntitiesOfClass(type, new AABB(player.blockPosition()).inflate(radius)).isEmpty();
     }
 
-    // A pod of three to five: the first is its leader, the rest keep station on it.
+    // A pod of three to five: the first is its leader (the biggest), the rest swim round it; often one
+    // is a calf, which keeps close by its mother, the leader.
     private static void spawnWhale(ServerLevel level, ServerPlayer player, RandomSource random) {
         for (int attempt = 0; attempt < 8; attempt++) {
             double angle = random.nextDouble() * Math.PI * 2;
@@ -98,12 +99,15 @@ public final class MobSpawning {
             if (leader == null) {
                 continue;
             }
+            leader.setSize(1.05F + random.nextFloat() * 0.15F);
             int pod = 2 + random.nextInt(3);
+            boolean calf = random.nextInt(2) == 0;
             for (int i = 0; i < pod; i++) {
                 net.minecraft.world.phys.Vec3 station = new net.minecraft.world.phys.Vec3((random.nextDouble() - 0.5) * 30.0,
                     (random.nextDouble() - 0.5) * 8.0, 10.0 + random.nextDouble() * 16.0);
                 DriftWhale follower = trySpawn(level, ModEntities.DRIFT_WHALE.get(), x + station.x, y + station.y, z + station.z);
                 if (follower != null) {
+                    follower.setSize(calf && i == 0 ? 0.55F + random.nextFloat() * 0.1F : 0.8F + random.nextFloat() * 0.25F);
                     follower.follow(leader, station);
                 }
             }

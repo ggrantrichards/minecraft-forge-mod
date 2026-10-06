@@ -74,7 +74,7 @@ public final class ModItems {
         com.ggrantrichards.astralend.item.ChorusFlowerOnAStickItem::new, new Item.Properties().durability(30));
     public static final RegistryObject<Item> STAR_CHART = register("star_chart", StarChartItem::new, new Item.Properties().stacksTo(1));
     // Phase 6: structures. Temporal Crystals are loot only: they can't be mined or farmed.
-    // The key to the Rift Maws: wakes a Maw (with its eyes lit), or attunes you to a woken one.
+    // The key to the Maws (the Leviathans' skulls): wakes a Maw (with its eyes lit), or attunes you to a woken one.
     public static final RegistryObject<Item> PORTAL_LENS = register("portal_lens", Item::new,
         new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON));
     // Phase 7: caught from a live comet's tail.

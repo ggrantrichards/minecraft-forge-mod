@@ -28,9 +28,14 @@ import net.minecraft.world.phys.Vec3;
 // leviathan's remains: keep it in the corner of your eye and it leads you there. Come close and it is
 // simply gone. Catch it in a spyglass and a Star Chart appears in your inventory (and you get "Something
 // Looks Back"). It never attacks and can't be reached. (MobSpawning decides where and when it appears.)
+//
+// One that's summoned stays where it's put: from a spawn egg, a command or a spawner it hangs there,
+// watching, until it's killed with /kill (it still can't be hurt); the two the egg's pedestal calls
+// stay for half a minute, then fade.
 public class Watcher extends Mob {
     public static final int LIFETIME = 240;
     private static final double TOO_CLOSE = 24.0;
+    private int lingerUntil = -1;      // summoned by the pedestal: stays (near or looked at) until this tick
 
     public Watcher(EntityType<? extends Watcher> type, Level level) {
         super(type, level);
@@ -56,9 +61,42 @@ public class Watcher extends Mob {
     }
 
     @Override
+    public net.minecraft.world.entity.SpawnGroupData finalizeSpawn(net.minecraft.world.level.ServerLevelAccessor level,
+            net.minecraft.world.DifficultyInstance difficulty, net.minecraft.world.entity.EntitySpawnReason reason,
+            net.minecraft.world.entity.SpawnGroupData data) {
+        if (reason == net.minecraft.world.entity.EntitySpawnReason.SPAWN_ITEM_USE || reason == net.minecraft.world.entity.EntitySpawnReason.COMMAND
+                || reason == net.minecraft.world.entity.EntitySpawnReason.SPAWNER || reason == net.minecraft.world.entity.EntitySpawnReason.TRIAL_SPAWNER) {
+            this.setPersistenceRequired();       // summoned: it stays (and stays across a reload)
+        }
+        return super.finalizeSpawn(level, difficulty, reason, data);
+    }
+
+    // Called up for a while (the pedestal's two): it stays, near or looked at, for `ticks`, then fades.
+    public void linger(int ticks) {
+        this.lingerUntil = this.tickCount + ticks;
+    }
+
+    private boolean summoned() {
+        return this.isPersistenceRequired() || this.lingerUntil >= 0;
+    }
+
+    @Override
     protected void customServerAiStep(ServerLevel level) {
         super.customServerAiStep(level);
         Player nearest = level.getNearestPlayer(this, 160.0);
+        if (this.summoned()) {
+            if (this.lingerUntil >= 0 && this.tickCount > this.lingerUntil) {
+                this.vanish(level);
+            } else if (nearest != null) {
+                this.getLookControl().setLookAt(nearest, 10.0F, 10.0F);
+                Vec3 to = nearest.position().subtract(this.position());
+                float yaw = (float) (Mth.atan2(to.z, to.x) * (180.0 / Math.PI)) - 90.0F;
+                this.setYRot(yaw);
+                this.yBodyRot = yaw;
+                this.yHeadRot = yaw;
+            }
+            return;
+        }
         if (nearest == null || this.tickCount > LIFETIME) {
             this.vanish(level);
             return;
@@ -98,7 +136,7 @@ public class Watcher extends Mob {
     }
 
     private void vanish(ServerLevel level) {
-        if (this.isRemoved()) {
+        if (this.isRemoved() || this.isPersistenceRequired()) {
             return;
         }
         level.sendParticles(ParticleTypes.END_ROD, this.getX(), this.getY() + 1.6, this.getZ(), 40, 0.4, 0.9, 0.4, 0.05);

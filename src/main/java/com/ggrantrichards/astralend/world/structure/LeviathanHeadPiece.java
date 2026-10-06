@@ -12,6 +12,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.StructureManager;
@@ -26,19 +27,25 @@ import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.storage.loot.LootTable;
 
-// Builds a Rift Maw a chunk at a time. Every block is decided from shapes - the island, the cranium,
-// the snout and jaw, the teeth - so each chunk can be built on its own and they all agree.
+// The Leviathan's skull - the Maw. Built a chunk at a time like the body (LeviathanPiece), in the same
+// diagonal frame, every block decided from shapes so each chunk agrees with the rest.
 //
-// The skull lies along w (the mouth toward +w), u across it, v up from the island's top. The cranium
-// is a shell of bone 60 across, 56 high and 68 long; the snout and the fallen lower jaw run 80 blocks
-// on past it, out over the island's edge, with teeth as long as a tree is tall. Inside the cranium is
-// the hall where its brain was: a floor, two galleries round the walls joined by ladders, a colonnade
-// of bone, lights hanging from the vault and the camp of whoever got here first. You get in at the
-// back, through the hole where the spine went, or by the four eye sockets high on its sides. The
-// throat - a great disc of dark stone - closes the back of the mouth; its eyes wake it (MawNetwork).
-public class RiftMawPiece extends StructurePiece {
+// The skull's own frame: w along it (the mouth toward +w), u across, v up from the bottom of the
+// cranium. Its w = 0 sits at the body's w = HEAD_W and its v = 0 at the body's v = HEAD_V, so the
+// spine runs into the hole at the back of the cranium. The cranium is a shell of bone 60 across, 56
+// high and 68 long; the snout and the open lower jaw run 80 blocks on past it, with teeth as long as a
+// tree is tall. Inside the cranium is the hall where its brain was: a floor, two galleries round the
+// walls joined by ladders, a colonnade of bone, lights hanging from the vault and the camp of whoever
+// got here first. You come in from the citadel's hall, through the hole where the spine goes in, or by
+// the four eye sockets high on its sides. Its face: heavy brows over the sockets, cheekbones flaring
+// back under them, a crest down the crown, two nostrils near the tip of the snout. The throat - a
+// great disc of dark stone - closes the back of the mouth; light the four eyes and it wakes into a
+// wormhole (MawNetwork), one stop on the road between every Leviathan you've woken.
+public class LeviathanHeadPiece extends StructurePiece {
     private static final ResourceKey<LootTable> LOOT = ResourceKey.create(Registries.LOOT_TABLE,
-        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "chests/rift_maw"));
+        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "chests/leviathan_skull"));
+    // Where the skull sits on the body (see LeviathanPiece): its w = 0 at body w = HEAD_W.
+    public static final int HEAD_W = 98;
     // The cranium: an ellipsoid round (0, CV, CW), radii A across, B up, C along; its wall is the outer
     // 13% of that.
     private static final double CV = 30, CW = -22, A = 30, B = 28, C = 34, SHELL = 0.87;
@@ -47,10 +54,13 @@ public class RiftMawPiece extends StructurePiece {
     private static final int[] EYE_W = {-17, -27};
     private static final int THROAT_V = 16, THROAT_W = 6;
     private static final double THROAT_R = 9.0;
+    private static final int MIN_U = -37, MAX_U = 37, MIN_V = 0, MAX_V = 64, MIN_W = -58, MAX_W = 86;
 
-    private final BlockPos origin;
-    private final boolean alongZ;
+    private final BlockPos origin;     // the body's origin (LeviathanPiece)
+    private final int turn;
     private final long seed;
+    private final double cos;
+    private final double sin;
     private final double[] phase = new double[6];
     private final List<Cone> cones = new ArrayList<>();
 
@@ -61,19 +71,25 @@ public class RiftMawPiece extends StructurePiece {
         }
     }
 
-    public RiftMawPiece(BlockPos origin, boolean alongZ, long seed) {
-        super(ModWorldgen.RIFT_MAW_PIECE.get(), 0, box(origin, alongZ));
+    public LeviathanHeadPiece(BlockPos origin, int turn, long seed) {
+        super(ModWorldgen.LEVIATHAN_HEAD_PIECE.get(), 0, box(origin, turn));
         this.origin = origin;
-        this.alongZ = alongZ;
+        this.turn = turn;
         this.seed = seed;
+        double a = Math.PI / 4 + turn * Math.PI / 2;
+        this.cos = Math.cos(a);
+        this.sin = Math.sin(a);
         this.build();
     }
 
-    public RiftMawPiece(StructurePieceSerializationContext context, CompoundTag tag) {
-        super(ModWorldgen.RIFT_MAW_PIECE.get(), tag);
+    public LeviathanHeadPiece(StructurePieceSerializationContext context, CompoundTag tag) {
+        super(ModWorldgen.LEVIATHAN_HEAD_PIECE.get(), tag);
         this.origin = new BlockPos(tag.getIntOr("OX", 0), tag.getIntOr("OY", 0), tag.getIntOr("OZ", 0));
-        this.alongZ = tag.getBooleanOr("AlongZ", true);
+        this.turn = tag.getIntOr("Turn", 0);
         this.seed = tag.getLongOr("Seed", 0L);
+        double a = Math.PI / 4 + this.turn * Math.PI / 2;
+        this.cos = Math.cos(a);
+        this.sin = Math.sin(a);
         this.build();
     }
 
@@ -82,26 +98,41 @@ public class RiftMawPiece extends StructurePiece {
         tag.putInt("OX", this.origin.getX());
         tag.putInt("OY", this.origin.getY());
         tag.putInt("OZ", this.origin.getZ());
-        tag.putBoolean("AlongZ", this.alongZ);
+        tag.putInt("Turn", this.turn);
         tag.putLong("Seed", this.seed);
     }
 
-    private static final int MIN_U = -50, MAX_U = 50, MIN_V = -42, MAX_V = 64, MIN_W = -82, MAX_W = 90;
+    // The skull's v = 0, in the body's frame: level with the spine where it goes into the skull.
+    public static int headV() {
+        return Mth.floor(LeviathanPiece.spineV(HEAD_W - 56));
+    }
 
-    private static BoundingBox box(BlockPos o, boolean alongZ) {
-        return alongZ
-            ? new BoundingBox(o.getX() + MIN_U, o.getY() + MIN_V, o.getZ() + MIN_W, o.getX() + MAX_U, o.getY() + MAX_V, o.getZ() + MAX_W)
-            : new BoundingBox(o.getX() + MIN_W, o.getY() + MIN_V, o.getZ() - MAX_U, o.getX() + MAX_W, o.getY() + MAX_V, o.getZ() - MIN_U);
+    private static BoundingBox box(BlockPos o, int turn) {
+        double a = Math.PI / 4 + turn * Math.PI / 2;
+        double c = Math.cos(a), s = Math.sin(a);
+        int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
+        for (int u : new int[] {MIN_U, MAX_U}) {
+            for (int w : new int[] {MIN_W + HEAD_W, MAX_W + HEAD_W}) {
+                int x = o.getX() + (int) Math.round(w * c - u * s);
+                int z = o.getZ() + (int) Math.round(w * s + u * c);
+                minX = Math.min(minX, x);
+                maxX = Math.max(maxX, x);
+                minZ = Math.min(minZ, z);
+                maxZ = Math.max(maxZ, z);
+            }
+        }
+        int y = o.getY() + headV();
+        return new BoundingBox(minX - 1, y + MIN_V, minZ - 1, maxX + 1, y + MAX_V, maxZ + 1);
     }
 
     // ------------------------------------------------------------------ the shapes
 
     private void build() {
-        RandomSource rnd = RandomSource.create(this.seed);
+        RandomSource rnd = RandomSource.create(this.seed ^ 0x5EEDL);
         for (int i = 0; i < this.phase.length; i++) {
             this.phase[i] = rnd.nextDouble() * Math.PI * 2;
         }
-        // The lower jaw: two great bars from the hinges under the cranium to the chin, fallen open.
+        // The lower jaw: two great bars from the hinges under the cranium to the chin, hanging open.
         for (int s = -1; s <= 1; s += 2) {
             this.cones.add(new Cone(s * 25, 8, 4, s * 11, 5, 74, 3.8, 3.2));
             this.cones.add(new Cone(s * 11, 5, 74, 0, 5, 80, 3.2, 3.0));
@@ -126,24 +157,12 @@ public class RiftMawPiece extends StructurePiece {
         }
         // A crest along the top of the cranium.
         this.cones.add(new Cone(0, CV + B - 1, CW - 22, 0, CV + B + 1, CW + 6, 2.4, 1.6));
-        // The first vertebrae of the spine, fallen behind the skull onto the island.
-        for (int k = 0; k < 3; k++) {
-            double w = CW - C - 6 - k * 7;
-            this.cones.add(new Cone(0, 4, w - 1.8, 0, 4 - k * 0.5, w + 1.8, 3.8 - k * 0.4, 3.8 - k * 0.4));
-            this.cones.add(new Cone(0, 4, w, 0, 11 - k, w + 1.5, 1.3, 0.8));
-            for (int s = -1; s <= 1; s += 2) {
-                this.cones.add(new Cone(0, 4, w, s * 7, 3, w, 1.1, 0.7));
-            }
-        }
         // The colonnade down the hall: bone pillars from the floor to the vault.
         for (int s = -1; s <= 1; s += 2) {
             for (int w = -44; w <= 0; w += 11) {
                 double top = innerCeiling(s * 11, w);
                 this.cones.add(new Cone(s * 11, FLOOR, w, s * 11, top + 1, w, 1.4, 1.1));
             }
-            // The posts the ladders climb.
-            this.cones.add(new Cone(s * 19.5, FLOOR, CW, s * 19.5, LOW_GALLERY - 1, CW, 0.6, 0.6));
-            this.cones.add(new Cone(s * 21.5, LOW_GALLERY + 1, CW + 8, s * 21.5, HIGH_GALLERY - 1, CW + 8, 0.6, 0.6));
         }
     }
 
@@ -173,12 +192,6 @@ public class RiftMawPiece extends StructurePiece {
         return r <= 0 ? CV : CV + B * Math.sqrt(r);
     }
 
-    private double noise(double a, double b) {
-        return (Math.sin(a * 0.11 + this.phase[0]) * Math.cos(b * 0.09 + this.phase[1])
-            + 0.5 * Math.sin(a * 0.23 + b * 0.17 + this.phase[2])
-            + 0.25 * Math.cos(b * 0.31 - a * 0.07 + this.phase[3])) / 1.75;
-    }
-
     // A fixed pseudo-random number in [0, 1) for a block: the same whichever chunk asks.
     private double hash(int u, int v, int w) {
         long h = this.seed ^ (u * 73856093L) ^ (v * 19349663L) ^ (w * 83492791L);
@@ -193,10 +206,14 @@ public class RiftMawPiece extends StructurePiece {
     @Override
     public void postProcess(WorldGenLevel level, StructureManager structures, ChunkGenerator generator, RandomSource random,
                             BoundingBox chunk, ChunkPos chunkPos, BlockPos reference) {
-        RandomSource rnd = RandomSource.create(this.seed ^ (chunkPos.getMiddleBlockX() * 341873128712L + chunkPos.getMiddleBlockZ() * 132897987541L));
-        for (int u = MIN_U; u <= MAX_U; u++) {
-            for (int w = MIN_W; w <= MAX_W; w++) {
-                if (!this.columnIn(chunk, u, w)) {
+        BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
+        int y0 = this.origin.getY() + headV();
+        for (int x = Math.max(chunk.minX(), this.boundingBox.minX()); x <= Math.min(chunk.maxX(), this.boundingBox.maxX()); x++) {
+            for (int z = Math.max(chunk.minZ(), this.boundingBox.minZ()); z <= Math.min(chunk.maxZ(), this.boundingBox.maxZ()); z++) {
+                double dx = x - this.origin.getX(), dz = z - this.origin.getZ();
+                int w = (int) Math.round(dx * this.cos + dz * this.sin) - HEAD_W;
+                int u = (int) Math.round(-dx * this.sin + dz * this.cos);
+                if (u < MIN_U || u > MAX_U || w < MIN_W || w > MAX_W) {
                     continue;
                 }
                 List<Cone> near = new ArrayList<>();
@@ -209,12 +226,15 @@ public class RiftMawPiece extends StructurePiece {
                 for (int v = MIN_V; v <= MAX_V; v++) {
                     BlockState state = this.blockAt(u, v, w, near);
                     if (state != null) {
-                        this.put(level, chunk, u, v, w, state);
+                        p.set(x, y0 + v, z);
+                        if (chunk.isInside(p)) {
+                            level.setBlock(p, state, 2);
+                        }
                     }
                 }
             }
         }
-        this.furnish(level, chunk, rnd);
+        this.furnish(level, chunk);
     }
 
     // What's at (u, v, w), or null for "leave it as it is".
@@ -222,16 +242,6 @@ public class RiftMawPiece extends StructurePiece {
         BlockState bone = ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState();
         BlockState air = Blocks.AIR.defaultBlockState();
         BlockState result = null;
-        // The island.
-        double q = Math.sqrt(Math.pow(u / 44.0, 2) + Math.pow((w - 5) / 72.0, 2)) / (1 + 0.08 * this.noise(u, w));
-        if (q <= 1 && v <= 0) {
-            int bottom = (int) -Math.round((4 + 30 * Math.pow(1 - q, 0.9)) * (0.85 + 0.15 * this.noise(w * 1.3, u * 1.3)));
-            if (v >= bottom) {
-                double h = this.hash(u, v, w);
-                result = v > -3 ? (h < 0.08 ? Blocks.END_STONE.defaultBlockState() : ModBlocks.PALE_END_STONE.get().defaultBlockState())
-                    : (h < 0.5 ? Blocks.END_STONE.defaultBlockState() : ModBlocks.PALE_END_STONE.get().defaultBlockState());
-            }
-        }
         // The cranium: its wall, and the hall inside.
         double e = Math.sqrt(Math.pow(u / A, 2) + Math.pow((v - CV) / B, 2) + Math.pow((w - CW) / C, 2));
         if (e <= 1.0) {
@@ -242,7 +252,7 @@ public class RiftMawPiece extends StructurePiece {
                 } else if (e > 0.96 && h < 0.02) {
                     result = ModBlocks.WHALELIGHT_SCALE.get().defaultBlockState();
                 } else {
-                    result = bone.setValue(RotatedPillarBlock.AXIS, this.normalAxis(u / A / A, (v - CV) / B / B, (w - CW) / C / C));
+                    result = bone;
                 }
             } else if (v <= FLOOR) {
                 result = bone;
@@ -252,7 +262,7 @@ public class RiftMawPiece extends StructurePiece {
                 for (int g : new int[] {LOW_GALLERY, HIGH_GALLERY}) {
                     double inner = Math.sqrt(Math.max(0, SHELL * SHELL - Math.pow((g - CV) / B, 2)));
                     if (v == g && ring >= inner - 0.2) {
-                        result = bone.setValue(RotatedPillarBlock.AXIS, this.worldAxis(Math.abs(u) > Math.abs(w - CW) * A / C ? 'w' : 'u'));
+                        result = bone;
                     } else if (v == g + 1 && ring >= inner - 0.2 && ring < inner - 0.165 && (u + w) % 6 != 0) {
                         result = ModBlocks.NULLWOOD.fence().get().defaultBlockState();
                     }
@@ -268,7 +278,7 @@ public class RiftMawPiece extends StructurePiece {
                 boolean roof = v <= top && v >= top - 3;
                 boolean cheek = Math.abs(u) >= half - 3 && v <= top && v >= snoutTop(w) - 14 + 5 * f;
                 if (roof || cheek) {
-                    result = bone.setValue(RotatedPillarBlock.AXIS, this.worldAxis('w'));
+                    result = bone;
                 } else if (v > 5 && v < top - 3 && Math.abs(u) < half - 3) {
                     result = air;                                  // the mouth
                 }
@@ -276,16 +286,16 @@ public class RiftMawPiece extends StructurePiece {
         }
         // The jaw's floor, between its bars: the bed of the mouth.
         if (w >= 6 && w <= 76 && v >= 3 && v <= 5 && Math.abs(u) < jawHalf(w)) {
-            result = bone.setValue(RotatedPillarBlock.AXIS, this.worldAxis('w'));
+            result = bone;
         }
-        // Bones: jaw, teeth, brows, crest, spine, pillars.
+        // Bones: jaw, teeth, brows, cheekbones, crest, pillars.
         for (Cone c : near) {
             if (this.inside(c, u, v, w)) {
                 result = bone.setValue(RotatedPillarBlock.AXIS, this.coneAxis(c));
             }
         }
         // The eye sockets: great holes through the wall, floored, rimmed in dark stone so they read as
-        // sockets from far off.
+        // sockets from far off, with a deeper ring of crying obsidian round the eye itself.
         for (int ew : EYE_W) {
             double d = Math.sqrt(Math.pow(v - EYE_V, 2) + Math.pow(w - ew, 2));
             if (Math.abs(u) >= 20 && Math.abs(u) <= 32) {
@@ -307,7 +317,7 @@ public class RiftMawPiece extends StructurePiece {
                 }
             }
         }
-        // The way in at the back, where the spine left the skull.
+        // The way in at the back, where the spine goes into the skull.
         if (w < CW - 18 && v > FLOOR && u * u + Math.pow(v - 10, 2) < 49 && e <= 1.0) {
             result = air;
         }
@@ -330,26 +340,28 @@ public class RiftMawPiece extends StructurePiece {
         return result;
     }
 
-    // Everything else: eyes, ladders, lights, the camp.
-    private void furnish(WorldGenLevel level, BoundingBox chunk, RandomSource rnd) {
-        if (!this.overlaps(chunk, -34, 0, -60, 34, 60, 12)) {
-            return;
-        }
+    // Everything set block by block in the world's grid: eyes, ladders, lights, the camp.
+    private void furnish(WorldGenLevel level, BoundingBox chunk) {
+        RandomSource rnd = RandomSource.create(this.seed ^ 0xCA4FL);
         // The eyes, set in the sockets, looking out.
-        for (int s = -1; s <= 1; s += 2) {
-            for (int ew : EYE_W) {
-                this.put(level, chunk, s * 27, EYE_V, ew, ModBlocks.MAW_EYE.get().defaultBlockState()
-                    .setValue(MawEyeBlock.FACING, this.dir(s, 0)).setValue(MawEyeBlock.LIT, false));
-            }
+        for (BlockPos eye : this.eyes()) {
+            int s = this.side(eye);
+            this.put(level, chunk, eye, ModBlocks.MAW_EYE.get().defaultBlockState()
+                .setValue(MawEyeBlock.FACING, this.across(s)).setValue(MawEyeBlock.LIT, false));
         }
-        // Ladders: from the floor to the low gallery, and on to the high one.
+        // Ladders: from the floor to the low gallery, and on to the high one, each on a post of bone.
         for (int s = -1; s <= 1; s += 2) {
-            BlockState ladder = Blocks.LADDER.defaultBlockState().setValue(LadderBlock.FACING, this.dir(-s, 0));
+            Direction out = this.across(s);
+            BlockState ladder = Blocks.LADDER.defaultBlockState().setValue(LadderBlock.FACING, out.getOpposite());
+            BlockPos low = this.world(s * 18, 0, (int) CW);
             for (int v = FLOOR + 1; v <= LOW_GALLERY + 1; v++) {
-                this.put(level, chunk, s * 18, v, (int) CW, ladder);
+                this.put(level, chunk, low.atY(this.y(v)).relative(out), ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState());
+                this.put(level, chunk, low.atY(this.y(v)), ladder);
             }
+            BlockPos high = this.world(s * 20, 0, (int) CW + 8);
             for (int v = LOW_GALLERY + 1; v <= HIGH_GALLERY + 1; v++) {
-                this.put(level, chunk, s * 20, v, (int) CW + 8, ladder);
+                this.put(level, chunk, high.atY(this.y(v)).relative(out), ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState());
+                this.put(level, chunk, high.atY(this.y(v)), ladder);
             }
         }
         // Light: Whalelight hanging from the vault, lanterns along the galleries.
@@ -358,7 +370,7 @@ public class RiftMawPiece extends StructurePiece {
                 int top = (int) Math.floor(innerCeiling(u, w));
                 int len = 2 + (int) (this.hash(u, 0, w) * 4);
                 for (int k = 0; k < len; k++) {
-                    this.put(level, chunk, u, top - k, w, ModBlocks.WHALELIGHT_SCALE.get().defaultBlockState());
+                    this.put(level, chunk, this.world(u, top - k, w), ModBlocks.WHALELIGHT_SCALE.get().defaultBlockState());
                 }
             }
         }
@@ -369,31 +381,28 @@ public class RiftMawPiece extends StructurePiece {
                 double ang = k * Math.PI / 5 + 0.3;
                 int u = (int) Math.round(Math.cos(ang) * A * (inner - 0.07));
                 int w = (int) Math.round(CW + Math.sin(ang) * C * (inner - 0.07));
-                this.put(level, chunk, u, g + 1, w, lantern);
+                this.put(level, chunk, this.world(u, g + 1, w), lantern);
             }
         }
-        // The camp: a ring of bricks round a fire, chests, a table for charts.
+        // The camp: a ring of slabs round a fire, chests, a table for charts.
         int cw = (int) CW - 12;
-        BlockState bricks = ModBlocks.PALE_END_STONE_BRICKS.get().defaultBlockState();
-        for (int du = -3; du <= 3; du++) {
-            for (int dw = -3; dw <= 3; dw++) {
-                double r = Math.sqrt(du * du + dw * dw);
+        BlockPos fire = this.world(0, FLOOR + 1, cw);
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                double r = Math.sqrt(dx * dx + dz * dz);
                 if (r >= 2.5 && r < 3.5) {
-                    this.put(level, chunk, du, FLOOR + 1, cw + dw, ModBlocks.PALE_END_STONE_BRICK_SLAB.get().defaultBlockState());
+                    this.put(level, chunk, fire.offset(dx, 0, dz), ModBlocks.PALE_END_STONE_BRICK_SLAB.get().defaultBlockState());
                 }
             }
         }
-        this.put(level, chunk, 0, FLOOR + 1, cw, Blocks.SOUL_CAMPFIRE.defaultBlockState());
-        this.chest(level, chunk, rnd, -5, FLOOR + 1, cw - 3);
-        this.chest(level, chunk, rnd, 6, FLOOR + 1, cw + 4);
-        this.put(level, chunk, 5, FLOOR + 1, cw - 4, Blocks.CARTOGRAPHY_TABLE.defaultBlockState());
-        this.put(level, chunk, -6, FLOOR + 1, cw + 3, Blocks.BARREL.defaultBlockState());
-        this.put(level, chunk, -6, FLOOR + 2, cw + 3, lantern);
-        for (int dw = -1; dw <= 1; dw++) {
-            this.put(level, chunk, 7, FLOOR + 1, cw + dw, bricks);
-        }
+        this.put(level, chunk, fire, Blocks.SOUL_CAMPFIRE.defaultBlockState());
+        this.chest(level, chunk, rnd, this.world(-5, FLOOR + 1, cw - 3));
+        this.chest(level, chunk, rnd, this.world(6, FLOOR + 1, cw + 4));
+        this.put(level, chunk, this.world(5, FLOOR + 1, cw - 4), Blocks.CARTOGRAPHY_TABLE.defaultBlockState());
+        this.put(level, chunk, this.world(-6, FLOOR + 1, cw + 3), Blocks.BARREL.defaultBlockState());
+        this.put(level, chunk, this.world(-6, FLOOR + 2, cw + 3), lantern);
         // And a chest high up, by the eyes.
-        this.chest(level, chunk, rnd, 22, HIGH_GALLERY + 1, EYE_W[1] - 4);
+        this.chest(level, chunk, rnd, this.world(22, HIGH_GALLERY + 1, EYE_W[1] - 4));
     }
 
     // ------------------------------------------------------------------ helpers
@@ -412,65 +421,64 @@ public class RiftMawPiece extends StructurePiece {
         if (dv >= du && dv >= dw) {
             return Direction.Axis.Y;
         }
-        return this.worldAxis(dw >= du ? 'w' : 'u');
+        return (this.turn % 2 == 0) == (dw >= du) ? Direction.Axis.X : Direction.Axis.Z;
     }
 
-    // The grain of the bone on the cranium follows its surface: the axis of the surface's normal.
-    private Direction.Axis normalAxis(double nu, double nv, double nw) {
-        double au = Math.abs(nu), av = Math.abs(nv), aw = Math.abs(nw);
-        if (av >= au && av >= aw) {
-            return Direction.Axis.Y;
+    // The world direction closest to the skull's +u (s = 1) or -u (s = -1): it lies diagonally, so
+    // either of two would do; one is picked the same way everywhere.
+    private Direction across(int s) {
+        double x = -this.sin * s, z = this.cos * s;
+        if (Math.abs(x) > Math.abs(z) + 1.0E-6) {
+            return x > 0 ? Direction.EAST : Direction.WEST;
         }
-        return this.worldAxis(aw >= au ? 'w' : 'u');
+        return z > 0 ? Direction.SOUTH : Direction.NORTH;
     }
 
-    private Direction.Axis worldAxis(char local) {
-        boolean alongW = local == 'w';
-        return this.alongZ == alongW ? Direction.Axis.Z : Direction.Axis.X;
+    private int side(BlockPos p) {
+        double dx = p.getX() - this.origin.getX(), dz = p.getZ() - this.origin.getZ();
+        return -dx * this.sin + dz * this.cos >= 0 ? 1 : -1;
     }
 
-    // The world direction of local +u (su = 1), -u (su = -1), +w (sw = 1) or -w (sw = -1).
-    private Direction dir(int su, int sw) {
-        if (su != 0) {
-            return this.alongZ ? (su > 0 ? Direction.EAST : Direction.WEST) : (su > 0 ? Direction.NORTH : Direction.SOUTH);
-        }
-        return this.alongZ ? (sw > 0 ? Direction.SOUTH : Direction.NORTH) : (sw > 0 ? Direction.EAST : Direction.WEST);
+    private int y(int v) {
+        return this.origin.getY() + headV() + v;
     }
 
     private BlockPos world(int u, int v, int w) {
-        return this.alongZ
-            ? new BlockPos(this.origin.getX() + u, this.origin.getY() + v, this.origin.getZ() + w)
-            : new BlockPos(this.origin.getX() + w, this.origin.getY() + v, this.origin.getZ() - u);
+        double bw = w + HEAD_W;
+        return new BlockPos(this.origin.getX() + Mth.floor(bw * this.cos - u * this.sin + 0.5), this.y(v),
+            this.origin.getZ() + Mth.floor(bw * this.sin + u * this.cos + 0.5));
     }
 
-    private boolean columnIn(BoundingBox chunk, int u, int w) {
-        BlockPos p = this.world(u, 0, w);
-        return p.getX() >= chunk.minX() && p.getX() <= chunk.maxX() && p.getZ() >= chunk.minZ() && p.getZ() <= chunk.maxZ();
-    }
-
-    private boolean overlaps(BoundingBox chunk, int minU, int minV, int minW, int maxU, int maxV, int maxW) {
-        BlockPos a = this.world(minU, minV, minW), b = this.world(maxU, maxV, maxW);
-        BoundingBox box = new BoundingBox(Math.min(a.getX(), b.getX()), Math.min(a.getY(), b.getY()), Math.min(a.getZ(), b.getZ()),
-            Math.max(a.getX(), b.getX()), Math.max(a.getY(), b.getY()), Math.max(a.getZ(), b.getZ()));
-        return box.intersects(chunk);
-    }
-
-    private void put(WorldGenLevel level, BoundingBox chunk, int u, int v, int w, BlockState state) {
-        BlockPos p = this.world(u, v, w);
+    private void put(WorldGenLevel level, BoundingBox chunk, BlockPos p, BlockState state) {
         if (chunk.isInside(p)) {
             level.setBlock(p, state, 2);
         }
     }
 
-    private void chest(WorldGenLevel level, BoundingBox chunk, RandomSource rnd, int u, int v, int w) {
-        BlockPos p = this.world(u, v, w);
+    private void chest(WorldGenLevel level, BoundingBox chunk, RandomSource rnd, BlockPos p) {
         if (chunk.isInside(p)) {
             this.createChest(level, chunk, rnd, p, LOOT, null);
         }
     }
 
+    // The four eyes, in the world.
+    public List<BlockPos> eyes() {
+        List<BlockPos> out = new ArrayList<>();
+        for (int s = -1; s <= 1; s += 2) {
+            for (int ew : EYE_W) {
+                out.add(this.world(s * 27, EYE_V, ew));
+            }
+        }
+        return out;
+    }
+
     // The middle of the throat, in the world (the survey looks for it).
     public BlockPos throat() {
         return this.world(0, THROAT_V, THROAT_W);
+    }
+
+    // The middle of the hall's floor, in the world (for the survey's photographs).
+    public BlockPos hall() {
+        return this.world(0, FLOOR + 1, (int) CW);
     }
 }

@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
-// One of a Rift Maw's four eye sockets. Set a Charged Void Crystal in it and it lights, and the dark eye
+// One of a Maw's four eye sockets (a Leviathan's skull). Set a Charged Void Crystal in it and it lights, and the dark eye
 // nearest it with it (two crystals for a Maw); with all four lit, a Portal Lens wakes the Maw (MawThroatBlock).
 public class MawEyeBlock extends Block {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;

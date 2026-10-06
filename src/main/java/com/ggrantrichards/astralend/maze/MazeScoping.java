@@ -39,6 +39,9 @@ public final class MazeScoping {
     private static final int REACH = 48;
     public static final ResourceKey<Structure> MAZE = ResourceKey.create(Registries.STRUCTURE,
         Identifier.fromNamespaceAndPath(AstralEnd.MODID, "constellation_maze"));
+    // A Leviathan carries a maze on its last tower.
+    public static final ResourceKey<Structure> LEVIATHAN = ResourceKey.create(Registries.STRUCTURE,
+        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "leviathan"));
 
     // Per player, while they look through a spyglass in a maze: the constellation in view and for how long.
     private record Sighting(int[] constellation, int[] held, boolean[] hinted, boolean eclipse) {}
@@ -64,7 +67,8 @@ public final class MazeScoping {
                 // In a maze, sighting lights bridges; from the Eclipse, it marks the constellation as
                 // seen (the Starforge needs it).
                 boolean eclipse = level.getBiome(player.blockPosition()).is(ECLIPSE);
-                if (!eclipse && !level.structureManager().getStructureWithPieceAt(player.blockPosition(), holder -> holder.is(MAZE)).isValid()) {
+                if (!eclipse && !level.structureManager().getStructureWithPieceAt(player.blockPosition(), holder -> holder.is(MAZE)).isValid()
+                        && leviathanMaze(level, player.blockPosition()) == null) {
                     continue;
                 }
                 s = new Sighting(new int[] {-1}, new int[1], new boolean[] {eclipse}, eclipse);
@@ -175,14 +179,20 @@ public final class MazeScoping {
                 continue;
             }
             StructureStart maze = level.structureManager().getStructureWithPieceAt(player.blockPosition(), holder -> holder.is(MAZE));
-            if (!maze.isValid()) {
-                continue;
+            BlockPos start;
+            if (maze.isValid()) {
+                BoundingBox box = maze.getBoundingBox();
+                if (player.getY() > box.minY() + 14) {
+                    continue;
+                }
+                start = firstPlatform(level, box);
+            } else {
+                // Off a Leviathan's tower maze: caught once you've fallen past its tower's top.
+                start = leviathanMaze(level, player.blockPosition());
+                if (start != null && (player.getY() > start.getY() - 6 || player.getY() < start.getY() - 40)) {
+                    start = null;
+                }
             }
-            BoundingBox box = maze.getBoundingBox();
-            if (player.getY() > box.minY() + 14) {
-                continue;
-            }
-            BlockPos start = firstPlatform(level, box);
             if (start == null) {
                 continue;
             }
@@ -194,6 +204,23 @@ public final class MazeScoping {
             player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 100));
             level.playSound(null, start, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.5F, 0.6F);
         }
+    }
+
+    // The first platform of the maze on a Leviathan's tower, if `pos` is within reach of it (and above
+    // the hall it would land on), or null.
+    private static BlockPos leviathanMaze(ServerLevel level, BlockPos pos) {
+        StructureStart start = level.structureManager().getStructureWithPieceAt(pos, holder -> holder.is(LEVIATHAN));
+        if (!start.isValid()) {
+            return null;
+        }
+        for (var piece : start.getPieces()) {
+            if (piece instanceof com.ggrantrichards.astralend.world.structure.LeviathanPiece body) {
+                BlockPos maze = body.mazeStart();
+                double dx = pos.getX() - maze.getX(), dz = pos.getZ() - maze.getZ();
+                return dx * dx + dz * dz < 40 * 40 && pos.getY() > maze.getY() - 40 ? maze : null;
+            }
+        }
+        return null;
     }
 
     // The first platform: the lowest of the stars set into the platforms' floors (the maze climbs from

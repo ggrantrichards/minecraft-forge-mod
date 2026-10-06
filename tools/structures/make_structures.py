@@ -171,7 +171,7 @@ def wanderer_relay(seed):
     return t
 
 
-# ------------------------------------------------------------------ Whalefall
+# ------------------------------------------------------------------ vaults
 
 def vault(t, x, y, z, loot, facing):
     """A vanilla vault that opens for a Chart Fragment, like a trial key."""
@@ -865,24 +865,6 @@ def write_data():
             "structures": [{"structure": a(name), "weight": 1}],
         })
         write_json(DATA / "tags/worldgen/biome/has_structure" / f"{name}.json", {"values": st["biomes"]})
-    # The Whalefall is built by Java (WhalefallStructure / WhalefallPiece: too big for a template). It
-    # drifts over open void anywhere in the outer End, very rarely.
-    write_json(DATA / "worldgen/structure/whalefall.json", {
-        "type": a("whalefall"), "biomes": f"#{NS}:has_structure/whalefall", "step": "surface_structures",
-        "spawn_overrides": {}, "terrain_adaptation": "none"})
-    write_json(DATA / "worldgen/structure_set/whalefall.json", {
-        "placement": {"type": "minecraft:random_spread", "salt": 70127811, "separation": 30, "spacing": 64},
-        "structures": [{"structure": a("whalefall"), "weight": 1}]})
-    # Phase 11: the Rift Maw is built by Java too (RiftMawStructure / RiftMawPiece): a colossal skull
-    # on its own island, out over the void among the small islands.
-    write_json(DATA / "worldgen/structure/rift_maw.json", {
-        "type": a("rift_maw"), "biomes": f"#{NS}:has_structure/rift_maw", "step": "surface_structures",
-        "spawn_overrides": {}, "terrain_adaptation": "none"})
-    write_json(DATA / "worldgen/structure_set/rift_maw.json", {
-        "placement": {"type": "minecraft:random_spread", "salt": 48129573, "separation": 12, "spacing": 30},
-        "structures": [{"structure": a("rift_maw"), "weight": 1}]})
-    write_json(DATA / "tags/worldgen/biome/has_structure/rift_maw.json", {"values": [
-        "minecraft:small_end_islands", a("nebula_fields"), a("hollow_isles")]})
     # The Remnant hangs high over the hell half (the Corona) of every Eclipse (RemnantStructure /
     # RemnantPiece). Every chunk is a candidate; RemnantStructure only starts in the one under the
     # Eclipse's anchor (EclipseLayout.REMNANT).
@@ -893,20 +875,17 @@ def write_data():
         "placement": {"type": "minecraft:random_spread", "salt": 31337117, "separation": 0, "spacing": 1},
         "structures": [{"structure": a("remnant"), "weight": 1}]})
     write_json(DATA / "tags/worldgen/biome/has_structure/remnant.json", {"values": [a("corona")]})
-    # Distillation 5: the Leviathan (LeviathanStructure / LeviathanPiece), a whole skeleton with a citadel
-    # on it, out over the void of the small islands and the barrens. Rare: one region in 90 chunks square.
+    # The Leviathan (LeviathanStructure: LeviathanPiece and LeviathanHeadPiece), a whole skeleton with a
+    # citadel on it and the Maw for a skull, high over the void. One region in 56 chunks square: rare, but
+    # near enough to each other for the Maws' wormhole road to be worth waking.
     write_json(DATA / "worldgen/structure/leviathan.json", {
         "type": a("leviathan"), "biomes": f"#{NS}:has_structure/leviathan", "step": "surface_structures",
         "spawn_overrides": {}, "terrain_adaptation": "none"})
     write_json(DATA / "worldgen/structure_set/leviathan.json", {
-        "placement": {"type": "minecraft:random_spread", "salt": 90210447, "separation": 40, "spacing": 90},
+        "placement": {"type": "minecraft:random_spread", "salt": 90210447, "separation": 28, "spacing": 56},
         "structures": [{"structure": a("leviathan"), "weight": 1}]})
     write_json(DATA / "tags/worldgen/biome/has_structure/leviathan.json", {"values": [
-        "minecraft:small_end_islands", "minecraft:end_barrens", a("ashen_barrens")]})
-    write_json(DATA / "tags/worldgen/biome/has_structure/whalefall.json", {"values": [
-        "minecraft:small_end_islands", "minecraft:end_barrens", "minecraft:end_midlands", "minecraft:end_highlands",
-        a("nebula_fields"), a("chorus_thicket"), a("ashen_barrens"), a("hollow_isles"),
-        a("glimmering_crags")]})
+        "minecraft:small_end_islands", "minecraft:end_barrens", a("ashen_barrens"), a("nebula_fields"), a("hollow_isles")]})
 
 
 def main():

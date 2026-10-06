@@ -37,44 +37,63 @@ public class MirrorWretchRenderer extends MobRenderer<MirrorWretch, MirrorWretch
         public float attackTime;
     }
 
-    // A slow, loose-limbed walk, its long arms trailing; its head tilts as if listening.
+    // The Choir: its crawling half ripples along the ground, the reared half sways and turns its mouth
+    // toward what it's listening to, and the vocal sacs down its throat swell one after another.
     public static class Model extends EntityModel<State> {
-        private final ModelPart body;
+        private final ModelPart chest;
         private final ModelPart head;
-        private final ModelPart rightArm;
-        private final ModelPart leftArm;
-        private final ModelPart rightLeg;
-        private final ModelPart leftLeg;
+        private final ModelPart finL;
+        private final ModelPart finR;
+        private final ModelPart[] segments = new ModelPart[4];
+        private final ModelPart[][] feet = new ModelPart[4][2];
+        private final ModelPart[] sacs = new ModelPart[5];
 
         public Model(ModelPart root) {
             super(root);
-            this.body = root.getChild("body");
-            this.head = this.body.getChild("head");
-            this.rightArm = root.getChild("right_arm");
-            this.leftArm = root.getChild("left_arm");
-            this.rightLeg = root.getChild("right_leg");
-            this.leftLeg = root.getChild("left_leg");
+            this.chest = root.getChild("chest");
+            this.head = this.chest.getChild("head");
+            this.finL = this.chest.getChild("fin_l");
+            this.finR = this.chest.getChild("fin_r");
+            for (int i = 0; i < 4; i++) {
+                this.segments[i] = root.getChild("seg" + i);
+                this.feet[i][0] = this.segments[i].getChild("seg" + i + "_foot_l");
+                this.feet[i][1] = this.segments[i].getChild("seg" + i + "_foot_r");
+            }
+            for (int k = 0; k < 5; k++) {
+                this.sacs[k] = this.chest.getChild("sac" + k);
+            }
         }
 
         @Override
         public void setupAnim(State state) {
             super.setupAnim(state);
-            float pos = state.walkAnimationPos * 0.5F;
+            float t = state.ageInTicks;
+            float pos = state.walkAnimationPos * 0.8F;
             float speed = Math.min(state.walkAnimationSpeed, 1.0F);
+            for (int i = 0; i < 4; i++) {
+                float wave = Mth.sin(pos - i * 1.1F) * speed;
+                this.segments[i].y -= Math.max(0.0F, wave) * 1.2F;
+                this.segments[i].x += Mth.sin(t * 0.08F - i * 0.9F) * 0.5F;
+                this.feet[i][0].xRot += Mth.cos(pos - i * 1.1F) * 0.9F * speed;
+                this.feet[i][1].xRot += Mth.cos(pos - i * 1.1F + Mth.PI) * 0.9F * speed;
+            }
+            this.chest.zRot += Mth.sin(t * 0.06F) * 0.08F;
+            this.chest.xRot += Mth.sin(t * 0.045F) * 0.05F;
             this.head.yRot += state.yRot * Mth.DEG_TO_RAD;
-            this.head.xRot += state.xRot * Mth.DEG_TO_RAD;
-            this.head.zRot += Mth.sin(state.ageInTicks * 0.03F) * 0.25F;
-            this.rightLeg.xRot += Mth.cos(pos) * 0.8F * speed;
-            this.leftLeg.xRot += Mth.cos(pos + Mth.PI) * 0.8F * speed;
-            this.rightArm.xRot += Mth.cos(pos + Mth.PI) * 0.4F * speed;
-            this.leftArm.xRot += Mth.cos(pos) * 0.4F * speed;
-            this.rightArm.zRot += 0.06F + Mth.sin(state.ageInTicks * 0.05F) * 0.04F;
-            this.leftArm.zRot -= 0.06F + Mth.sin(state.ageInTicks * 0.05F) * 0.04F;
-            this.body.xRot += 0.12F;   // stooped
+            this.head.xRot += state.xRot * Mth.DEG_TO_RAD * 0.7F;
+            this.head.zRot += Mth.sin(t * 0.03F) * 0.2F;     // listening
+            this.finL.yRot += Mth.sin(t * 0.1F) * 0.15F;
+            this.finR.yRot -= Mth.sin(t * 0.1F) * 0.15F;
+            for (int k = 0; k < 5; k++) {
+                float swell = 1.0F + 0.18F * Math.max(0.0F, Mth.sin(t * 0.12F - k * 0.9F));
+                this.sacs[k].xScale = swell;
+                this.sacs[k].yScale = swell;
+                this.sacs[k].zScale = swell;
+            }
             if (state.attackTime > 0.0F) {
                 float strike = Mth.sin(state.attackTime * Mth.PI);
-                this.rightArm.xRot -= strike * 2.0F;
-                this.leftArm.xRot -= strike * 2.0F;
+                this.chest.xRot -= strike * 0.6F;              // it lunges
+                this.head.xRot += strike * 0.4F;
             }
         }
     }

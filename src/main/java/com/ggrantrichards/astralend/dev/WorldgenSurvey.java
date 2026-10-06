@@ -440,8 +440,8 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('N'), end, "watcher", 6.5, 0.5, 2.6);
         mobShot(lines, areas.get('G'), end, "spire_wyrm", 16.0, 6.0, 5.0);
         mobShot(lines, areas.get('E'), end, "hushback", 3.2, 0.5, 1.4);
-        mobShot(lines, areas.get('E'), end, "hydragrip", 3.0, 0.3, 1.5);
-        mobShot(lines, areas.get('C'), end, "mirror_wretch", 4.2, 0.8, 2.4);
+        mobShot(lines, areas.get('E'), end, "hydragrip", 3.8, 0.3, 1.3);
+        mobShot(lines, areas.get('C'), end, "mirror_wretch", 4.6, 0.6, 1.6);
         mobShot(lines, areas.get('A'), end, "hollowback", 3.2, 0.5, 1.4);
         mobShot(lines, areas.get('A'), end, "curator", 8.0, 0.5, 3.2);
         // Phase 5: the sky and Sunstorms.
@@ -454,7 +454,6 @@ public final class WorldgenSurvey {
         structureShot(lines, structures, "comet_crater", 18.0, 17.0, 2.0);
         structureShot(lines, structures, "comet_crater_hot", 18.0, 17.0, 2.0);
         structureShot(lines, structures, "wanderer_relay", 30.0, -6.0, -20.0);
-        structureShot(lines, structures, "whalefall", 150.0, 60.0, 30.0);
         structureShot(lines, structures, "shattered_observatory", 46.0, 26.0, 4.0);
         structureShot(lines, structures, "solar_array", 34.0, 36.0, 4.0);
         structureShot(lines, structures, "solar_array_room", 3.0, 2.2, 0.0);
@@ -470,43 +469,6 @@ public final class WorldgenSurvey {
 
     // Extra screenshot lines worked out by the structure tests (they need the structure's layout).
     private static final List<String> EXTRA_SHOTS = new ArrayList<>();
-
-    // A Rift Maw wakes: light its four eyes, wake it, and check the throat became a wormhole and
-    // there's somewhere to stand at its mouth. Then a view into its mouth, from in front.
-    private static void testMaw(ServerLevel end, BlockPos throat, List<String> failures) {
-        int eyes = 0;
-        for (BlockPos p : BlockPos.betweenClosed(throat.offset(-44, -24, -44), throat.offset(44, 32, 44))) {
-            BlockState state = end.getBlockState(p);
-            if (state.is(ModBlocks.MAW_EYE.get())) {
-                end.setBlock(p, state.setValue(com.ggrantrichards.astralend.maw.MawEyeBlock.LIT, true), 2);
-                eyes++;
-            }
-        }
-        var maw = com.ggrantrichards.astralend.maw.MawNetwork.wake(end, throat, null);
-        if (maw == null) {
-            failures.add("rift_maw: didn't wake with " + eyes + " eyes lit");
-            return;
-        }
-        boolean wormhole = end.getBlockState(throat).is(ModBlocks.WORMHOLE.get());
-        log(String.format("rift_maw: %d eye sockets; woke, throat %s, exit %s facing %s; wormhole %s", eyes,
-            maw.throat().toShortString(), maw.exit().toShortString(), net.minecraft.core.Direction.from2DDataValue(maw.facing()),
-            wormhole ? "open" : "MISSING"));
-        if (eyes != 4 || !wormhole) {
-            failures.add("rift_maw: expected 4 eye sockets and an open wormhole, got " + eyes + " and " + wormhole);
-        }
-        // The whole skull from in front and off to one side, then the hall inside its cranium.
-        net.minecraft.core.Direction out = net.minecraft.core.Direction.from2DDataValue(maw.facing());
-        BlockPos cam = maw.throat().relative(out, 120).relative(out.getClockWise(), 60).above(30);
-        double yaw = Math.toDegrees(Math.atan2(-(maw.throat().getX() - cam.getX()), maw.throat().getZ() - cam.getZ()));
-        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_rift_maw %d.5 %d %d.5 %.1f 12.0 wake",
-            cam.getX(), cam.getY(), cam.getZ(), yaw));
-        BlockPos front = maw.throat().relative(out, 150).above(20);
-        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_rift_maw_front %d.5 %d %d.5 %.1f 6.0",
-            front.getX(), front.getY(), front.getZ(), out.getOpposite().toYRot()));
-        BlockPos hall = maw.throat().relative(out.getOpposite(), 52).below(9);
-        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_rift_maw_hall %d.5 %d %d.5 %.1f -12.0",
-            hall.getX(), hall.getY(), hall.getZ(), out.toYRot()));
-    }
 
     // The Remnant: its heart (light in Solarite) where the structure starts, high over the Corona, a
     // chamber round it and a way in. Then views: from out in the air beside it, and in the chamber.
@@ -642,45 +604,62 @@ public final class WorldgenSurvey {
             return;
         }
         var registry = end.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE);
-        com.ggrantrichards.astralend.world.structure.LeviathanPiece piece = null;
+        com.ggrantrichards.astralend.world.structure.LeviathanPiece body = null;
+        com.ggrantrichards.astralend.world.structure.LeviathanHeadPiece head = null;
         for (var entry : end.getChunk(start.getX() >> 4, start.getZ() >> 4).getAllStarts().entrySet()) {
             var key = registry.getKey(entry.getKey());
-            if (key != null && key.getPath().equals("leviathan") && !entry.getValue().getPieces().isEmpty()
-                    && entry.getValue().getPieces().get(0) instanceof com.ggrantrichards.astralend.world.structure.LeviathanPiece lp) {
-                piece = lp;
+            if (key != null && key.getPath().equals("leviathan")) {
+                for (var piece : entry.getValue().getPieces()) {
+                    if (piece instanceof com.ggrantrichards.astralend.world.structure.LeviathanPiece lp) {
+                        body = lp;
+                    } else if (piece instanceof com.ggrantrichards.astralend.world.structure.LeviathanHeadPiece hp) {
+                        head = hp;
+                    }
+                }
             }
         }
-        if (piece == null) {
-            failures.add("leviathan: found a start at " + start.toShortString() + " but no Leviathan piece in it");
+        if (body == null || head == null) {
+            failures.add("leviathan: found a start at " + start.toShortString() + " but not both its pieces (body " + (body != null)
+                + ", skull " + (head != null) + ")");
             return;
         }
-        BlockPos pedestal = piece.pedestal();
-        for (int cx = -3; cx <= 3; cx++) {
-            for (int cz = -3; cz <= 3; cz++) {
-                end.getChunk((pedestal.getX() >> 4) + cx, (pedestal.getZ() >> 4) + cz);
+        // Generate all of it.
+        var box = body.getBoundingBox();
+        var skullBox = head.getBoundingBox();
+        for (int cx = Math.min(box.minX(), skullBox.minX()) >> 4; cx <= Math.max(box.maxX(), skullBox.maxX()) >> 4; cx++) {
+            for (int cz = Math.min(box.minZ(), skullBox.minZ()) >> 4; cz <= Math.max(box.maxZ(), skullBox.maxZ()) >> 4; cz++) {
+                end.getChunk(cx, cz);
             }
         }
-        int eyes = 0, chimes = 0, bone = 0, purpur = 0;
-        for (BlockPos p : BlockPos.betweenClosed(pedestal.offset(-40, -40, -40), pedestal.offset(40, 30, 40))) {
+        BlockPos pedestal = body.pedestal(), arena = body.arena(), heart = body.heart(), throat = head.throat();
+        // The reliquary in the cathedral: the pedestal, four pylons with their chimes, the lungs over it.
+        int chimes = 0, breathcomb = 0;
+        for (BlockPos p : BlockPos.betweenClosed(arena.offset(-28, -4, -28), arena.offset(28, 24, 28))) {
             BlockState state = end.getBlockState(p);
-            if (state.is(ModBlocks.MAW_EYE.get())) {
-                eyes++;
-            } else if (state.is(ModBlocks.END_CHIMES.get())) {
+            if (state.is(ModBlocks.END_CHIMES.get())) {
                 chimes++;
-            } else if (state.is(Blocks.BONE_BLOCK)) {
-                bone++;
-            } else if (state.is(ModBlocks.PURPUR_BRICKS.get())) {
-                purpur++;
+            } else if (state.is(ModBlocks.BREATHCOMB.get())) {
+                breathcomb++;
+            }
+        }
+        // The heart, beating in its muscle.
+        int heartBlocks = 0, muscle = 0;
+        for (BlockPos p : BlockPos.betweenClosed(heart.offset(-7, -7, -7), heart.offset(7, 7, 7))) {
+            BlockState state = end.getBlockState(p);
+            if (state.is(ModBlocks.LEVIATHAN_HEART.get())) {
+                heartBlocks++;
+            } else if (state.is(Blocks.NETHER_WART_BLOCK)) {
+                muscle++;
             }
         }
         boolean hasPedestal = end.getBlockState(pedestal).is(ModBlocks.LEVIATHAN_PEDESTAL.get());
-        var curators = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.Curator.class, new net.minecraft.world.phys.AABB(pedestal).inflate(48));
-        log(String.format("leviathan: start %s, pedestal at %s (%s); round the skull: %d Maw Eye blocks, %d End Chimes, %d bone, "
-            + "%d purpur bricks; %d Curator(s)%s", start.toShortString(), pedestal.toShortString(), hasPedestal ? "built" : "MISSING",
-            eyes, chimes, bone, purpur, curators.size(), curators.isEmpty() ? "" : curators.get(0).isDormant() ? ", dormant" : ", AWAKE"));
-        if (!hasPedestal || eyes < 4 || chimes != 4 || bone < 3000 || purpur < 200) {
-            failures.add(String.format("leviathan: expected the pedestal, 4+ Maw Eye blocks, 4 End Chimes, 3000+ bone and 200+ purpur "
-                + "bricks round the skull; got %s, %d, %d, %d, %d", hasPedestal, eyes, chimes, bone, purpur));
+        var curators = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.Curator.class, new net.minecraft.world.phys.AABB(arena).inflate(24));
+        log(String.format("leviathan: start %s; pedestal %s (%s); %d End Chimes, %d Breathcomb in the lungs; heart: %d Leviathan Heart in %d "
+            + "muscle; %d Curator(s)%s", start.toShortString(), pedestal.toShortString(), hasPedestal ? "built" : "MISSING", chimes, breathcomb,
+            heartBlocks, muscle, curators.size(), curators.isEmpty() ? "" : curators.get(0).isDormant() ? ", dormant" : ", AWAKE"));
+        if (!hasPedestal || chimes != 4 || breathcomb < 600 || heartBlocks < 40 || muscle < 40) {
+            failures.add(String.format("leviathan: expected the pedestal, 4 End Chimes, 600+ Breathcomb and a heart (40+ each); got %s, %d, %d, %d, %d",
+                hasPedestal, chimes, breathcomb, heartBlocks, muscle));
         }
         if (curators.size() != 1) {
             failures.add("leviathan: expected one Curator in the reliquary, found " + curators.size());
@@ -691,46 +670,115 @@ public final class WorldgenSurvey {
                 failures.add("leviathan: the Curator should be dormant, unhurt by anything but a player, and know its home");
             }
         }
-        // The garrison: two shulkers on each tower's roof, still there once the chunks are live.
-        var box = piece.getBoundingBox();
-        for (int cx = box.minX() >> 4; cx <= box.maxX() >> 4; cx++) {
-            for (int cz = box.minZ() >> 4; cz <= box.maxZ() >> 4; cz++) {
-                end.getChunk(cx, cz);
-            }
-        }
+        // The garrison: two shulkers on each tower's roof but the maze's, still there once the chunks are live.
         var shulkers = end.getEntitiesOfClass(net.minecraft.world.entity.monster.Shulker.class, net.minecraft.world.phys.AABB.of(box).inflate(8));
         log("leviathan: " + shulkers.size() + " shulkers on the towers");
         if (shulkers.size() < 6) {
-            failures.add("leviathan: expected 6+ shulkers on the towers, found " + shulkers.size());
+            failures.add("leviathan: expected 6 shulkers on the towers, found " + shulkers.size());
         }
-        // The egg on the pedestal lights the skull's eyes.
+        // The maze on the last tower: its start, a spyglass, and bridges for all four constellations.
+        BlockPos maze = body.mazeStart();
+        int[] bridges = new int[4];
+        boolean spyglass = false;
+        for (BlockPos p : BlockPos.betweenClosed(maze.offset(-40, -4, -40), maze.offset(40, 20, 40))) {
+            BlockState state = end.getBlockState(p);
+            if (state.is(ModBlocks.STAR_BRIDGE.get())) {
+                bridges[state.getValue(com.ggrantrichards.astralend.maze.StarBridgeBlock.CONSTELLATION)]++;
+            } else if (state.is(Blocks.BARREL) && end.getBlockEntity(p) instanceof net.minecraft.world.level.block.entity.BarrelBlockEntity barrel) {
+                spyglass |= barrel.getItem(13).is(net.minecraft.world.item.Items.SPYGLASS);
+            }
+        }
+        boolean mazeStart = end.getBlockState(maze).is(ModBlocks.STAR_INLAY_OBSERVATORY_QUARTZ.get());
+        log(String.format("leviathan: the maze on its tower: start %s (%s), spyglass %s, bridges %s", maze.toShortString(),
+            mazeStart ? "a star inlay" : "MISSING", spyglass, java.util.Arrays.toString(bridges)));
+        if (!mazeStart || !spyglass || java.util.Arrays.stream(bridges).anyMatch(n -> n < 8)) {
+            failures.add("leviathan: the maze on its tower needs its start, a spyglass and bridges for all four constellations");
+        }
+        // The skull: four dark eyes, the throat, bone.
+        int dark = 0;
+        for (BlockPos eye : head.eyes()) {
+            if (end.getBlockState(eye).is(ModBlocks.MAW_EYE.get()) && !end.getBlockState(eye).getValue(com.ggrantrichards.astralend.maw.MawEyeBlock.LIT)) {
+                dark++;
+            }
+        }
+        int skullBone = 0;
+        for (BlockPos p : BlockPos.betweenClosed(throat.offset(-30, -14, -30), throat.offset(30, 40, 30))) {
+            if (end.getBlockState(p).is(ModBlocks.LEVIATHAN_BONE_BLOCK.get())) {
+                skullBone++;
+            }
+        }
+        boolean hasThroat = end.getBlockState(throat).is(ModBlocks.MAW_THROAT.get());
+        log(String.format("leviathan: skull - %d dark eyes, throat %s (%s), %d bone round it", dark, throat.toShortString(),
+            hasThroat ? "built" : "MISSING", skullBone));
+        if (dark != 4 || !hasThroat || skullBone < 8000) {
+            failures.add(String.format("leviathan: expected 4 dark eyes, the throat and 8000+ bone in the skull; got %d, %s, %d", dark, hasThroat, skullBone));
+        }
+        // Nothing of the land reaches into it: no End Stone or ground cover anywhere in its bounds.
+        int ground = 0;
+        for (var b : List.of(box, skullBox)) {
+            for (int x = b.minX(); x <= b.maxX(); x += 2) {
+                for (int z = b.minZ(); z <= b.maxZ(); z += 2) {
+                    for (int y = b.minY(); y <= b.maxY(); y++) {
+                        BlockState state = end.getBlockState(new BlockPos(x, y, z));
+                        if (state.is(Blocks.END_STONE) || state.is(ModBlocks.PALE_END_STONE.get()) || state.is(ModBlocks.CHORUS_MOSS.get())
+                                || state.is(ModBlocks.LIVING_TURF.get()) || state.is(Blocks.CHORUS_PLANT)) {
+                            ground++;
+                        }
+                    }
+                }
+            }
+        }
+        log("leviathan: " + ground + " blocks of land inside its bounds (every other column)");
+        if (ground > 0) {
+            failures.add("leviathan: land reaches into it (" + ground + " blocks of End Stone or ground cover in its bounds)");
+        }
+        // The egg on the pedestal lights the skull's four eyes; then the Maw wakes into a wormhole.
         if (hasPedestal) {
             com.ggrantrichards.astralend.block.LeviathanPedestalBlock.enshrine(end, pedestal);
             int lit = 0;
-            for (BlockPos p : BlockPos.betweenClosed(pedestal.offset(-28, -8, -28), pedestal.offset(28, 20, 28))) {
-                BlockState state = end.getBlockState(p);
+            for (BlockPos eye : head.eyes()) {
+                BlockState state = end.getBlockState(eye);
                 if (state.is(ModBlocks.MAW_EYE.get()) && state.getValue(com.ggrantrichards.astralend.maw.MawEyeBlock.LIT)) {
                     lit++;
                 }
             }
-            log("leviathan: the egg enshrined lit " + lit + " of " + eyes + " Maw Eye blocks");
-            if (lit < eyes) {
-                failures.add("leviathan: enshrining the egg lit only " + lit + " of " + eyes + " Maw Eye blocks");
+            var maw = com.ggrantrichards.astralend.maw.MawNetwork.wake(end, throat, null);
+            boolean wormhole = end.getBlockState(throat).is(ModBlocks.WORMHOLE.get());
+            log(String.format("leviathan: the egg enshrined lit %d of 4 eyes; the Maw %s, wormhole %s%s", lit, maw != null ? "woke" : "DIDN'T WAKE",
+                wormhole ? "open" : "MISSING", maw == null ? "" : ", exit " + maw.exit().toShortString() + " facing "
+                + net.minecraft.core.Direction.from2DDataValue(maw.facing())));
+            if (lit != 4 || maw == null || !wormhole) {
+                failures.add("leviathan: the egg should light the skull's 4 eyes and the Maw then wake; lit " + lit + ", woke " + (maw != null));
             }
         }
-        // Views: the skeleton from off its flank (it lies diagonally, so from the south-west of its middle),
-        // and the reliquary from just inside the skull.
-        BlockPos mid = new BlockPos(start.getX() + 8, pedestal.getY(), start.getZ() + 8);
-        double dx = pedestal.getX() - mid.getX(), dz = pedestal.getZ() - mid.getZ(), len = Math.hypot(dx, dz);
-        double sx = -dz / len, sz = dx / len;   // across the body
-        // High over its flank, above the islands round it, looking down along the whole body.
-        BlockPos cam = mid.offset((int) Math.round(sx * 150), 75, (int) Math.round(sz * 150));
-        double yaw = Math.toDegrees(Math.atan2(-(mid.getX() - cam.getX()), mid.getZ() - cam.getZ()));
-        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan %d.5 %d %d.5 %.1f 27.0 clear", cam.getX(), cam.getY(), cam.getZ(), yaw));
-        BlockPos door = new BlockPos((int) Math.round(pedestal.getX() - dx / len * 40), pedestal.getY() + 2,
-            (int) Math.round(pedestal.getZ() - dz / len * 40));
-        double inYaw = Math.toDegrees(Math.atan2(-(pedestal.getX() - door.getX()), pedestal.getZ() - door.getZ()));
-        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan_reliquary %d.5 %d %d.5 %.1f 5.0", door.getX(), door.getY(), door.getZ(), inYaw));
+        // Views: the whole of it from high off its flank; the skull from in front of its mouth; the hall
+        // in the skull; the reliquary; the heart from under it; the maze.
+        double dx = throat.getX() - arena.getX(), dz = throat.getZ() - arena.getZ(), len = Math.hypot(dx, dz);
+        double ax = dx / len, az = dz / len;                // along the body, toward the head
+        BlockPos mid = new BlockPos((int) Math.round(arena.getX() + ax * 40), throat.getY(), (int) Math.round(arena.getZ() + az * 40));
+        BlockPos cam = mid.offset((int) Math.round(-az * 190), 70, (int) Math.round(ax * 190));
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan %d.5 %d %d.5 %.1f 18.0 clear", cam.getX(), cam.getY(), cam.getZ(),
+            yawTo(cam, mid)));
+        BlockPos front = throat.offset((int) Math.round(ax * 120 - az * 45), 18, (int) Math.round(az * 120 + ax * 45));
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan_maw %d.5 %d %d.5 %.1f 8.0 wake=%d;%d;%d", front.getX(), front.getY(),
+            front.getZ(), yawTo(front, throat), throat.getX(), throat.getY(), throat.getZ()));
+        BlockPos hall = head.hall().above();
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan_maw_hall %d.5 %d %d.5 %.1f -12.0", hall.getX(), hall.getY(),
+            hall.getZ(), yawTo(hall, throat)));
+        BlockPos nave = pedestal.offset((int) Math.round(-ax * 6), 3, (int) Math.round(-az * 6));
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan_reliquary %d.5 %d %d.5 %.1f 8.0", nave.getX(), nave.getY(),
+            nave.getZ(), yawTo(nave, arena)));
+        BlockPos under = pedestal.offset((int) Math.round(-ax * 9), 1, (int) Math.round(-az * 9));
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan_heart %d.5 %d %d.5 %.1f -38.0", under.getX(), under.getY(),
+            under.getZ(), yawTo(under, heart)));
+        BlockPos mazeCam = maze.offset((int) Math.round(-az * 34 - ax * 20), 16, (int) Math.round(ax * 34 - az * 20));
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan_maze %d.5 %d %d.5 %.1f 20.0 bridges=%d;%d;%d", mazeCam.getX(),
+            mazeCam.getY(), mazeCam.getZ(), yawTo(mazeCam, maze), maze.getX(), maze.getY(), maze.getZ()));
+    }
+
+    // The yaw (Minecraft's: 0 = south, 90 = west) that looks from `from` toward `to`.
+    private static double yawTo(BlockPos from, BlockPos to) {
+        return Math.toDegrees(Math.atan2(-(to.getX() - from.getX()), to.getZ() - from.getZ()));
     }
 
     // A Constellation Maze: four platforms (the stars in their floors, where you stand to sight a
@@ -825,15 +873,14 @@ public final class WorldgenSurvey {
     }
 
     // Phase 6: each structure is found the way /locate finds it, generated, and looked for by a block
-    // only it has: a crater's or whalefall's loot chest, the relay's Void Crystal light behind Astral
+    // only it has: a crater's loot chest, the relay's Void Crystal light behind Astral
     // Glass. Returns where each was found (for screenshots); a hot crater is reported separately.
     private static Map<String, BlockPos> checkStructures(Map<Character, Area> areas, ServerLevel end, List<String> failures) {
         Map<String, BlockPos> found = new LinkedHashMap<>();
         record Wanted(String name, char biome, Block marker) {}
         for (Wanted w : List.of(new Wanted("comet_crater", 'A', Blocks.CHEST), new Wanted("wanderer_relay", 'D', ModBlocks.VOID_CRYSTAL_BLOCK.get()),
-                                new Wanted("whalefall", 'A', Blocks.CHEST), new Wanted("shattered_observatory", 'N', Blocks.VAULT),
+                                new Wanted("shattered_observatory", 'N', Blocks.VAULT),
                                 new Wanted("solar_array", 'C', ModBlocks.COLLECTOR_PEDESTAL.get()),
-                                new Wanted("rift_maw", 'N', ModBlocks.MAW_THROAT.get()),
                                 new Wanted("remnant", 'C', Blocks.SHROOMLIGHT),
                                 new Wanted("constellation_maze", 'N', ModBlocks.STAR_BRIDGE.get()))) {
             Area area = areas.get(w.biome());
@@ -929,10 +976,6 @@ public final class WorldgenSurvey {
                 log(String.format("%s: built at %s (start %s)%s%s", w.name(), marker.toShortString(), start.toShortString(),
                     hot ? ", still hot" : "", loot));
                 found.putIfAbsent(key, marker);
-                if (w.name().equals("rift_maw") && !found.containsKey("maw_tested")) {
-                    found.put("maw_tested", marker);
-                    testMaw(end, marker, failures);
-                }
                 if (w.name().equals("remnant") && !found.containsKey("remnant_tested")) {
                     found.put("remnant_tested", marker);
                     testRemnant(end, start, failures);

@@ -65,6 +65,7 @@ public final class UpsideDown {
         if (player == null || !flipped) {
             return;
         }
+        mirrorTurn(player);
         // Pressed against a ceiling: that's your floor now.
         if (player.verticalCollision && !player.verticalCollisionBelow && player.getDeltaMovement().y >= -0.01) {
             player.setOnGround(true);
@@ -81,26 +82,18 @@ public final class UpsideDown {
         Minecraft minecraft = Minecraft.getInstance();
         LocalPlayer player = minecraft.player;
         float f = amount((float) event.getPartialTick());
-        if (player == null || f <= 0.0F || event.getCamera().entity() != player) {
+        if (player == null || f <= 0.0F) {
             lastYaw = Float.NaN;
             return;
         }
-        // Turning: the mouse moved the view as if upright; mirror that so it follows the screen. The
-        // mouse turns the previous tick's rotation (yRotO, xRotO) along with the current one, and the
-        // view is drawn between the two, so both are mirrored - mirroring only the current one left
-        // them pulling opposite ways, and the view hardly moved at all.
-        if (f > 0.5F && !Float.isNaN(lastYaw)) {
-            float yaw = lastYaw - (player.getYRot() - lastYaw);
-            float pitch = Mth.clamp(lastPitch - (player.getXRot() - lastPitch), -90.0F, 90.0F);
-            player.yRotO += yaw - player.getYRot();
-            player.xRotO += pitch - player.getXRot();
-            player.setYRot(yaw);
-            player.setXRot(pitch);
+        if (event.getCamera().entity() != player) {
+            return;
+        }
+        if (f > 0.5F) {
+            mirrorTurn(player);
             event.setYaw(player.getViewYRot((float) event.getPartialTick()));
             event.setPitch(player.getViewXRot((float) event.getPartialTick()));
         }
-        lastYaw = player.getYRot();
-        lastPitch = player.getXRot();
         event.setRoll(event.getRoll() + 180.0F * f);
         if (!event.getCamera().isDetached()) {
             Camera camera = event.getCamera();
@@ -110,6 +103,31 @@ public final class UpsideDown {
                 aimFrom(minecraft, player, eye, (float) event.getPartialTick());
             }
         }
+    }
+
+    // Turning: the mouse turned the view as if upright; mirror that, so it follows the screen. Called
+    // every frame and every tick - it mirrors only what changed since it last looked, so however often
+    // it's called, each turn is mirrored once. The mouse turns the previous tick's rotation (yRotO,
+    // xRotO) along with the current one, and the view is drawn between the two, so both are mirrored.
+    // A jump of more than 90 degrees isn't the mouse (a teleport, the server setting it): kept as is.
+    private static void mirrorTurn(LocalPlayer player) {
+        if (flip <= 0.5F) {
+            lastYaw = Float.NaN;
+            return;
+        }
+        if (!Float.isNaN(lastYaw)) {
+            float dYaw = player.getYRot() - lastYaw, dPitch = player.getXRot() - lastPitch;
+            if (Math.abs(dYaw) < 90.0F && (dYaw != 0.0F || dPitch != 0.0F)) {
+                float yaw = lastYaw - dYaw;
+                float pitch = Mth.clamp(lastPitch - dPitch, -90.0F, 90.0F);
+                player.yRotO += yaw - player.getYRot();
+                player.xRotO += pitch - player.getXRot();
+                player.setYRot(yaw);
+                player.setXRot(pitch);
+            }
+        }
+        lastYaw = player.getYRot();
+        lastPitch = player.getXRot();
     }
 
     private static void moveCamera(Camera camera, Vec3 to) {

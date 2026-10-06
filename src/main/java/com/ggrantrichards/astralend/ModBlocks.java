@@ -219,7 +219,7 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.SAND).requiresCorrectToolForDrops().strength(2.0F, 6.0F)
             .sound(SoundType.STONE).noOcclusion()
             .lightLevel(state -> state.getValue(CollectorPedestalBlock.HOLDING).charged() ? 10 : 0));
-    // Phase 6 (structures): the Rift Maw (eye sockets, the dormant throat, and the woken wormhole)
+    // The Maw, the Leviathan's skull (eye sockets, the dormant throat, and the woken wormhole)
     // and the Constellation Maze (star-bridges). Built into structures, so the parts
     // that make the puzzles work can't be broken, like an End Portal frame.
     public static final RegistryObject<Block> MAW_EYE = register("maw_eye", com.ggrantrichards.astralend.maw.MawEyeBlock::new,
@@ -385,6 +385,11 @@ public final class ModBlocks {
     public static final RegistryObject<Block> SPORE_LANTERN = register("spore_lantern", Block::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).strength(0.3F).sound(SoundType.GLASS)
             .lightLevel(state -> 15).isRedstoneConductor((state, level, pos) -> false));
+    // Leviathan Heart: in the Leviathan's ribcage, dormant, still beating crimson.
+    public static final RegistryObject<Block> LEVIATHAN_HEART = register("leviathan_heart", com.ggrantrichards.astralend.block.LeviathanHeartBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.CRIMSON_STEM).strength(1.5F).sound(SoundType.WART_BLOCK)
+            .lightLevel(state -> 11));
+
     // Whalelight Scale: shed, very rarely, by a humming Drift Whale. Glows softly.
     public static final RegistryObject<Block> WHALELIGHT_SCALE = register("whalelight_scale", Block::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.ICE).strength(1.0F).sound(SoundType.AMETHYST)

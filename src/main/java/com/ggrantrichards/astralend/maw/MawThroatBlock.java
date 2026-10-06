@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
-// The back of a dormant Rift Maw's throat: dark stone. With all four eye sockets lit, use a
+// The back of a dormant Maw's throat (a Leviathan's skull): dark stone. With all four eye sockets lit, use a
 // Portal Lens on it and the Maw wakes (MawNetwork.wake).
 public class MawThroatBlock extends Block {
     public MawThroatBlock(BlockBehaviour.Properties properties) {

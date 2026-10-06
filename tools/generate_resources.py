@@ -61,6 +61,8 @@ SIMPLE_CUBES = [
     # Phase 4
     ("spore_lantern", "Spore Lantern"),
     ("whalelight_scale", "Whalelight Scale"),
+    # The Leviathan's heart, dormant, still beating
+    ("leviathan_heart", "Leviathan Heart"),
 ]
 PILLARS = [
     ("leviathan_bone_block", "Leviathan Bone Block", "leviathan_bone"),
@@ -1276,6 +1278,8 @@ def mobs_phase4():
     drop_self("spore_lantern")
     drop_self("whalelight_scale")
     tag("block", "minecraft:mineable/pickaxe", rid("whalelight_scale"))
+    drop_self("leviathan_heart")
+    tag("block", "minecraft:mineable/hoe", rid("leviathan_heart"))
     shaped("spore_lantern", "spore_lantern", [" S ", "SGS", " S "], {"S": rid("glowing_spores"), "G": rid("astral_glass")})
     recipe("glow_ink_sac_from_glowing_spores", {"type": "minecraft:crafting_shapeless", "category": "misc",
                                                 "ingredients": [rid("glowing_spores"), rid("glowing_spores"), "minecraft:ink_sac"],
@@ -1446,14 +1450,14 @@ def structures_phase6():
     item_def("temporal_crystal", rid("item/temporal_crystal"))
     lang[f"item.{NS}.temporal_crystal"] = "Temporal Crystal"
     lang[f"item.{NS}.star_chart.marks_structure"] = "Marks a site: %s"
-    for name, english in (("comet_crater", "Comet Crater"), ("wanderer_relay", "Wanderer Relay"), ("whalefall", "Whalefall"),
+    for name, english in (("comet_crater", "Comet Crater"), ("wanderer_relay", "Wanderer Relay"),
                           ("shattered_observatory", "Shattered Observatory"), ("solar_array", "Solar Array Ruins"),
-                          ("rift_maw", "Rift Maw"), ("leviathan", "Leviathan"), ("constellation_maze", "Constellation Maze"),
+                          ("leviathan", "Leviathan"), ("constellation_maze", "Constellation Maze"),
                           ("remnant", "The Remnant")):
         lang[f"structure.{NS}.{name}"] = english
         tag("worldgen/structure", rid(name), rid(name))      # a Star Chart looks each one up by its own tag
 
-    # ---- Batch C: the Rift Maw and the Constellation Maze
+    # ---- Batch C: the Maw (the Leviathan's skull) and the Constellation Maze
     facings = {"north": 0, "east": 90, "south": 180, "west": 270}
     for lit, front in ((False, "maw_eye"), (True, "maw_eye_lit")):
         block_model(front, {"parent": "minecraft:block/orientable", "textures": {
@@ -1498,8 +1502,9 @@ def structures_phase6():
         chance("temporal_crystal", 0.25),
         chance("star_chart", 0.3),
     ])
-    # The Whalefall's lore chest: a chart, the light of the bones, and what the whale carried.
-    chest_loot("whalefall", [
+    # The Leviathan's stomach (what the Whalefall's lore chest held): a chart, the light of the bones,
+    # and what it last swallowed.
+    chest_loot("leviathan_stomach", [
         {"rolls": 1, "entries": [entry("star_chart")]},
         {"rolls": {"type": "minecraft:uniform", "min": 2, "max": 4}, "entries": [
             entry("whalelight_scale", 5, (1, 3)), entry("leviathan_bone_block", 4, (1, 3)),
@@ -1516,8 +1521,9 @@ def structures_phase6():
         {"rolls": 1, "entries": [entry("temporal_crystal")]},
         chance("starforge_template", 0.5),
     ])
-    # The camp in a Rift Maw's cranium: what the first explorers left - and the crystals that light its eyes.
-    chest_loot("rift_maw", [
+    # The camp in the Leviathan's skull, the Maw: what the first explorers left - and the crystals that
+    # light its eyes.
+    chest_loot("leviathan_skull", [
         {"rolls": 1, "entries": [entry("charged_void_crystal", 1, (1, 2))]},
         {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
             entry("void_crystal", 4, (1, 4)), entry("chart_fragment", 3, (1, 2)), entry("leviathan_bone_block", 3, (2, 6)),
@@ -1527,12 +1533,12 @@ def structures_phase6():
         chance("star_chart", 0.35),
         chance("temporal_crystal", 0.15),
     ])
-    # The Constellation Maze's reward: a Temporal Crystal, and a Star Chart that marks a Rift Maw.
+    # The Constellation Maze's reward: a Temporal Crystal, and a Star Chart that marks a Leviathan.
     chest_loot("constellation_maze", [
         {"rolls": 1, "entries": [entry("temporal_crystal")]},
         {"rolls": 1, "entries": [entry("starforge_template")]},
         {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("star_chart"), "functions": [
-            {"function": "minecraft:set_components", "components": {"minecraft:custom_data": {"Structure": "rift_maw"}}}]}]},
+            {"function": "minecraft:set_components", "components": {"minecraft:custom_data": {"Structure": "leviathan"}}}]}]},
         {"rolls": {"type": "minecraft:uniform", "min": 2, "max": 4}, "entries": [
             entry("charged_void_crystal", 3, (1, 2)), entry("chart_fragment", 3, (1, 3)), entry("void_crystal", 4, (2, 5)),
             entry("star_inlay_observatory_quartz", 2, (2, 6)), entry("minecraft:ender_pearl", 3, (2, 4)),
@@ -1812,7 +1818,7 @@ def advancements_phase9():
                 "Cross a Constellation Maze and open the chest on its dais", parent=rid("end/hold_still"),
                 criteria={"maze": {"trigger": "minecraft:player_generates_container_loot",
                                    "conditions": {"loot_tables": [rid("chests/constellation_maze")]}}})
-    advancement("say_ahh", rid("portal_lens"), "Say Ahh", "Wake a Rift Maw", parent=rid("end/hold_still"), frame="goal")
+    advancement("say_ahh", rid("portal_lens"), "Say Ahh", "Wake a Leviathan's Maw", parent=rid("end/hold_still"), frame="goal")
     advancement("something_looks_back", rid("star_chart"), "Something Looks Back",
                 "Catch a glimpse of the Watcher through a spyglass", parent=rid("end/hold_still"), hidden=True)
     # The Corona
@@ -2105,8 +2111,7 @@ def distillation_blocks():
         advancement(f"sighted_{name}", "minecraft:spyglass", f"Sighted: {english[4:]}",
                     f"From the Eclipse, find {english} through a spyglass")
     # Where the Watcher leads you: the remains of leviathans (the Leviathan itself, from phase 5).
-    for structure in ("whalefall", "rift_maw", "leviathan"):
-        tag("worldgen/structure", f"{NS}:leviathan_remains", rid(structure))
+    tag("worldgen/structure", f"{NS}:leviathan_remains", rid("leviathan"))
 
     # The Leviathan: its reliquary's pedestal, its chests, and what it's for.
     for lit in (False, True):

@@ -13,7 +13,7 @@ Mojang End update would ship - see [Phase 10](#phase-10-the-rework) below, which
 
 ## Get it
 
-The current build, **1.0.0-beta.2**, is published to Modrinth as
+The current build, **1.0.0-beta.3**, is published to Modrinth as
 [**The Astral End**](https://modrinth.com/mod/the-astral-end) (a beta: blocks and items may still be
 renamed or removed before 1.0, so back up worlds you care about). It needs **Minecraft 26.3** and
 **Forge 66** or newer, on both the client and the server. MIT licensed (see [LICENSE](LICENSE)).
@@ -27,6 +27,47 @@ changelog for each version.
 
 The sections below run newest first. Older ones describe things as they were at the time; Phase 10
 and the distillation renamed or removed some of them.
+
+### After beta.3: the reworks
+
+From playing beta.3. These replace what the distillation's notes below say about them.
+
+- **One Leviathan.** The Rift Maw and the Whalefall are gone; the Leviathan has everything:
+  - **its skull is the Maw** - the Rift Maw's colossal skull, with its teeth and the hall in its
+    cranium (galleries, ladders, a colonnade of bone, the first explorers' camp), and a face: heavy
+    brows over four eye sockets, cheekbones, a crest, nostrils. The citadel's hall runs into the back of
+    it. Light its four eyes and a Portal Lens wakes it into a **wormhole**, one stop on the road between
+    every Leviathan you've woken;
+  - **its organs, dormant but alive:** in the ribcage, the **heart** - Leviathan Heart blocks in a
+    crimson muscle, beating slowly, its vessels running up into the spine and out to the ribs; two
+    long **lungs** of Breathcomb, breathing light; and at the back, the **stomach**, a sac of Voidgel
+    with what it last swallowed inside (the Whalefall's old chest);
+  - **the reliquary is in the ribcage cathedral now**: the Curator, the four pylons, the floor's gaps
+    into the void, and the egg's pedestal right under the heart. A ladder goes down to it from the hall
+    through the spine. The egg on the pedestal lights the skull's eyes, far up the body;
+  - **a Constellation Maze on its last tower:** platforms floating out from the roof, bridges that
+    show through a spyglass, a dais and its chest;
+  - **far from the land:** it floats 100+ blocks up, and only where no island comes near it. It's about
+    370 blocks long, skull and all, and less rare than before (so the wormhole road is worth waking).
+  - Its shulkers now actually stay on the towers.
+- **The Mirror Wretch is the Choir:** no mirror and no face, only a round mouth ringed with teeth. Half
+  of it crawls on a row of small legs, the front half rears up like a cobra, and down its throat hang
+  five vocal sacs - one for every voice it has stolen - that swell in turn as it calls you, in voices
+  you know, from the void's edge.
+- **The Hydragrip is the Gripmouth:** long and low like a salamander, with feathery gill frills that
+  glow at the tips, frog's eyes with slit pupils (and a smaller pair below), a wide jaw with small
+  teeth that snaps open when it bites, a line of lights down each flank, and a finned tail.
+- **Summoned Watchers stay.** A Watcher from a spawn egg or a command hangs where it's put; the two
+  the pedestal calls stay for half a minute. (A wild one still fades when you look straight at it or
+  come within 24 blocks - that's how it leads you.)
+- **The Ashen Barrens:** ribcages and comet craters are rare now - a couple per biome at most - and a
+  ribcage only stands where there's ground under all of it, so no bones hang in the air.
+- **Lighter Crags and Hollows:** Nightstone is lighter, Glimmer Clusters brighter and more of them,
+  Hollow Vines glow, and both biomes' fog is lighter.
+- **The Wellspring** sits in a basin of End Stone, not on glass.
+- **The Solar Array** stands high on a stepped mesa, ringed with lava and lit by braziers.
+- **Upwelling:** turning the view works while you're upside down.
+- **The Spire Wyrm's spawn egg** is out of the creative menu.
 
 ### The distillation
 
@@ -77,8 +118,8 @@ centre.
 - **Its mobs:**
   - the **Hushback**, a see-through grazer whose herd blinks away when one is hurt; it gives fleece
     and meat;
-  - the **Hydragrip**, otter-like; it hunts endermites and gives a pearl;
-  - the **Mirror Wretch**, which prowls the border between the halves, throws familiar sounds from the
+  - the **Hydragrip** (the Gripmouth since beta.3); it hunts endermites and gives a pearl;
+  - the **Mirror Wretch** (the Choir since beta.3), which prowls the border between the halves, throws familiar sounds from the
     void's edge to lure you, and hunts endermen. Endermen that wander in scream and flee.
 
 **Phase 4, systems:**

@@ -22,6 +22,7 @@ import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EndRodBlock;
+import net.minecraft.world.level.block.LadderBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -29,37 +30,79 @@ import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.storage.loot.LootTable;
 
-// Builds a Leviathan a chunk at a time: every block is decided from shapes in the skeleton's own frame,
-// so each chunk is built on its own and they all agree. The frame: w along the body (the skull toward
-// +w), u across it, v up from the origin. It lies diagonally in the world (a turn of 45 + 90k degrees),
-// which is what lets a skeleton 320 blocks long fit inside the 8 chunks round its start that a
-// structure may reach.
+// Builds a Leviathan's body a chunk at a time: every block is decided from shapes in the skeleton's
+// own frame, so each chunk is built on its own and they all agree. The frame: w along the body (the head
+// toward +w), u across it, v up from the origin. It lies diagonally in the world (a turn of 45 + 90k
+// degrees), which is what lets a skeleton 370 blocks long, skull and all, fit inside the 8 chunks round
+// its start that a structure may reach. The skull is LeviathanHeadPiece: the Maw.
 //
-// What's there:
+// What's here:
 //   - the frame, all bone block: a spine of vertebrae (each with its spinous and side processes) on a
-//     cord of bone, tapering into the tail; ribs from the shoulders to the hips; the skull, with the
-//     eye sockets set with Maw Eyes in rims of crying obsidian; the lower jaw, its teeth, and in it a
-//     captured island, chained shut with obsidian;
-//   - what was built over it: a hall of purpur along the spine, walled in End Stone bricks with
-//     Astral Glass windows and lit with End Rods; four towers rising from the vertebrae; the ribcage closed
-//     into a cathedral with Astral Glass between the ribs and a purpur floor; and in the skull the
-//     reliquary - a floor broken by gaps into the void, four End Chimes pylons, the egg pedestal, and
-//     the Curator, dormant;
+//     cord of bone, tapering into the tail, running into the back of the skull; ribs from the shoulders
+//     to the hips;
+//   - what lives on in it, dormant: in the ribcage, hung from the spine, its heart - Leviathan Heart in a
+//     muscle of crimson, slowly beating, with the great vessels running up into the spine and out to
+//     the ribs; two lungs of Breathcomb the length of the cathedral, breathing light; and low at the
+//     back, its stomach, a sac of Voidgel with what it last swallowed still inside;
+//   - what was built over it: a hall of purpur along the spine, walled in End Stone bricks with Astral
+//     Glass windows and lit with End Rods, running into the skull; four towers rising from the
+//     vertebrae, the last of them crowned with a Constellation Maze; and the ribcage closed into a
+//     cathedral with Astral Glass between the ribs - the reliquary: a purpur floor broken by gaps into
+//     the void, four End Chimes pylons, the Curator, dormant, and under the heart the egg's pedestal.
+//     A ladder goes down to it from the hall, through the spine;
 //   - its garrison: shulkers on the towers, Void Wanderers in the hall, Hollowbacks in the cathedral.
 public class LeviathanPiece extends StructurePiece {
     private static final ResourceKey<LootTable> LOOT = ResourceKey.create(Registries.LOOT_TABLE,
         Identifier.fromNamespaceAndPath(AstralEnd.MODID, "chests/leviathan"));
-    public static final int MIN_U = -26, MAX_U = 26, MIN_V = -46, MAX_V = 82, MIN_W = -162, MAX_W = 166;
-    // The skull: an ellipsoid round (0, skull v, SKULL_W), radii SA across, SB up, SC along.
-    private static final double SA = 18, SB = 15, SC = 30, SKULL_W = 128, SHELL = 0.82;
-    private static final int RIB_FROM = -44, RIB_TO = 86, RIB_STEP = 11;
+    private static final ResourceKey<LootTable> STOMACH_LOOT = ResourceKey.create(Registries.LOOT_TABLE,
+        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "chests/leviathan_stomach"));
+    private static final ResourceKey<LootTable> MAZE_LOOT = ResourceKey.create(Registries.LOOT_TABLE,
+        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "chests/constellation_maze"));
+    public static final int MIN_U = -30, MAX_U = 30, MIN_V = 0, MAX_V = 106, MIN_W = -186, MAX_W = 70;
+    // The spine runs on into the skull (LeviathanHeadPiece) up to here.
+    private static final int SPINE_TO = LeviathanHeadPiece.HEAD_W - 30;
+    private static final int RIB_FROM = -96, RIB_TO = 14, RIB_STEP = 11;
     private static final double RIB_R = 15;
-    private static final int HALL_FROM = -96, HALL_TO = 92;
-    private static final int[] TOWERS = {-80, -30, 20, 70};
-    private static final int TOWER_H = 26;
-    private static final int[][] PYLONS = {{-10, 116}, {10, 116}, {-10, 140}, {10, 140}};
-    private static final int[][] CHAINS = {{-7, 126}, {7, 126}, {-6, 152}, {6, 152}};
-    private static final int PEDESTAL_W = 150;
+    private static final int HALL_FROM = -120, HALL_TO = 56;
+    private static final int[] TOWERS = {-104, -62, -20, 22};
+    private static final int TOWER_H = 26, MAZE_TOWER = -104, MAZE_H = 32;
+    // The reliquary, in the cathedral: its middle (where the Curator waits), the pylons, the pedestal.
+    private static final int ARENA_W = -46;
+    private static final int[][] PYLONS = {{-10, -58}, {10, -58}, {-10, -34}, {10, -34}};
+    private static final int PEDESTAL_W = 2;
+    // The ladder down from the hall to the cathedral.
+    private static final double SHAFT_U = -2.5;
+    private static final int SHAFT_W = -26;
+    // The organs: the heart over the pedestal, the lungs high along the cathedral, the stomach at its back.
+    private static final double HEART_W = 2, STOMACH_W = -86;
+    // The Constellation Maze over the last tower: its platforms (u, height over the tower's top, w) - the
+    // first is the tower's own roof - and the dais.
+    private static final double[][] MAZE = {{0, 0, MAZE_TOWER}, {-17, 3, -118}, {-4, 6, -136}, {15, 9, -126}, {19, 13, -102}};
+
+    private record Cone(double u0, double v0, double w0, double u1, double v1, double w1, double r) {
+        boolean contains(double u, double v, double w) {
+            double ex = this.u1 - this.u0, ey = this.v1 - this.v0, ez = this.w1 - this.w0;
+            double len = ex * ex + ey * ey + ez * ez;
+            double t = len < 1.0E-9 ? 0 : Mth.clamp(((u - this.u0) * ex + (v - this.v0) * ey + (w - this.w0) * ez) / len, 0.0, 1.0);
+            double dx = u - (this.u0 + ex * t), dy = v - (this.v0 + ey * t), dz = w - (this.w0 + ez * t);
+            return dx * dx + dy * dy + dz * dz <= this.r * this.r;
+        }
+    }
+
+    // The great vessels: up from the heart into the spine, and out to the ribs.
+    private static final Cone[] VESSELS = {
+        new Cone(0, spineV(HEART_W) - 6, HEART_W, 0, spineV(HEART_W) - 0.5, HEART_W + 3, 1.4),
+        new Cone(1.5, spineV(HEART_W) - 6.5, HEART_W - 1, 2, spineV(HEART_W) - 1, HEART_W - 9, 1.0),
+        new Cone(-2.5, spineV(HEART_W) - 9, HEART_W, -12.5, spineV(HEART_W) - 15, HEART_W + 7, 0.9),
+        new Cone(2.5, spineV(HEART_W) - 9, HEART_W, 12.5, spineV(HEART_W) - 15, HEART_W + 7, 0.9),
+        new Cone(-2, spineV(HEART_W) - 11, HEART_W - 2, -12, spineV(HEART_W) - 8, HEART_W - 14, 0.8),
+        new Cone(2, spineV(HEART_W) - 11, HEART_W - 2, 12, spineV(HEART_W) - 8, HEART_W - 14, 0.8),
+    };
+    // The airways: from each lung's front, together, and on along the spine toward the skull.
+    private static final Cone[] AIRWAYS = {
+        new Cone(-8, spineV(-26) - 5, -26, -1.5, spineV(-14) - 3, -14, 1.0),
+        new Cone(8, spineV(-26) - 5, -26, 1.5, spineV(-14) - 3, -14, 1.0),
+    };
 
     private final BlockPos origin;
     private final int turn;      // 0..3: the frame is turned 45 + 90*turn degrees
@@ -116,12 +159,8 @@ public class LeviathanPiece extends StructurePiece {
     // ------------------------------------------------------------------ the frame
 
     // The spine's height at w: a long, slow undulation.
-    private static double spineV(double w) {
+    public static double spineV(double w) {
         return 40.0 + 5.0 * Math.sin(w / 55.0);
-    }
-
-    private static double skullV() {
-        return spineV(100) + 2.0;
     }
 
     private BlockPos world(double u, double v, double w) {
@@ -165,11 +204,7 @@ public class LeviathanPiece extends StructurePiece {
 
     // What's at (u, v, w), or null to leave it as it is.
     private BlockState blockAt(double u, double v, double w) {
-        BlockState skull = w > 96 ? this.skullAt(u, v, w) : null;
-        if (skull != null) {
-            return skull;
-        }
-        if (w > 100) {
+        if (w > SPINE_TO) {
             return null;
         }
         double sv = spineV(w);
@@ -177,20 +212,24 @@ public class LeviathanPiece extends StructurePiece {
         // Towers rising from the vertebrae.
         for (int t : TOWERS) {
             double rho = Math.hypot(u, w - t);
-            if (rho <= 5.5 && v >= sv + 5 && v <= sv + TOWER_H + 1) {
-                return this.towerAt(u, v - sv, w - t, rho);
+            int height = t == MAZE_TOWER ? MAZE_H : TOWER_H;
+            if (rho <= 5.5 && v >= sv + 5 && v <= sv + height + 1) {
+                return this.towerAt(u, v - sv, w - t, rho, height);
             }
         }
-        // The hall along the spine.
+        // The hall along the spine, on into the back of the skull.
         if (w >= HALL_FROM && w <= HALL_TO && Math.abs(u) <= 4.5 && v >= sv + 5 && v < sv + 12) {
             return this.hallAt(u, v - sv, w);
         }
-        // The spine: its cord, the vertebrae and their processes.
+        // The spine: its cord, the vertebrae and their processes. Inside the skull, only the cord.
         double r = Math.hypot(u, v - sv);
-        double vr = 1.5 + 2.5 * Mth.clamp((w + 160) / 100.0, 0.0, 1.0);
+        double vr = 1.5 + 2.5 * Mth.clamp((w - MIN_W) / 100.0, 0.0, 1.0);
         double k = w - 8 * Math.round(w / 8.0);
         if (r <= Math.max(1.0, vr * 0.4)) {
             return bone;
+        }
+        if (w > HALL_TO - 6) {
+            return null;
         }
         if (Math.abs(k) <= 1.5 && r <= vr) {
             return bone;
@@ -202,7 +241,7 @@ public class LeviathanPiece extends StructurePiece {
         if (Math.abs(k) <= 1.0 && Math.abs(v - sv) <= 1.0 && Math.abs(u) <= vr + 3) {
             return bone;            // the side processes
         }
-        // The ribcage, closed into a cathedral.
+        // The ribcage, closed into a cathedral, and what's inside it.
         if (w >= RIB_FROM - 1 && w <= RIB_TO + 1 && v < sv + 2.5 && v > sv - 29) {
             double cv = sv - 13;
             double d = Math.hypot(u, v - cv);
@@ -214,14 +253,75 @@ public class LeviathanPiece extends StructurePiece {
                 return ModBlocks.ASTRAL_GLASS.get().defaultBlockState();
             }
             if (d < RIB_R - 0.6 && w > RIB_FROM && w < RIB_TO) {
+                BlockState organ = this.organAt(u, v, w);
+                if (organ != null) {
+                    return organ;
+                }
                 double floor = sv - 20;
                 if (v >= floor - 0.5 && v < floor + 0.5) {
-                    return ModBlocks.PURPUR_BRICKS.get().defaultBlockState();
+                    return this.gap(u, w) ? Blocks.AIR.defaultBlockState() : ModBlocks.PURPUR_BRICKS.get().defaultBlockState();
                 }
                 return Blocks.AIR.defaultBlockState();
             }
         }
         return null;
+    }
+
+    // The organs, or null where there's none.
+    private BlockState organAt(double u, double v, double w) {
+        // The heart: two lobes of Leviathan Heart in a muscle of crimson, the heart showing through.
+        double hv = spineV(HEART_W) - 9;
+        double h1 = Math.sqrt(u * u + Math.pow(v - hv, 2) + Math.pow(w - HEART_W, 2));
+        double h2 = Math.sqrt(Math.pow(u - 1.5, 2) + Math.pow(v - (hv - 2.2), 2) + Math.pow(w - (HEART_W - 2.5), 2) * 1.2);
+        double h = Math.min(h1 / 3.8, h2 / 2.8);
+        if (h <= 1.0) {
+            boolean core = h1 <= 2.6 || h2 <= 1.8;
+            if (core || this.hash(Mth.floor(u), Mth.floor(v), Mth.floor(w)) < 0.22) {
+                return ModBlocks.LEVIATHAN_HEART.get().defaultBlockState();
+            }
+            return Blocks.NETHER_WART_BLOCK.defaultBlockState();
+        }
+        for (Cone c : VESSELS) {
+            if (c.contains(u, v, w)) {
+                return Blocks.NETHER_WART_BLOCK.defaultBlockState();
+            }
+        }
+        // The lungs: long and high, one each side, hung from the spine.
+        for (int s = -1; s <= 1; s += 2) {
+            double sv = spineV(w);
+            double q = Math.pow((u - s * 8) / 3.6, 2) + Math.pow((v - (sv - 5)) / 3.6, 2) + Math.pow((w + 50) / 22.0, 2);
+            if (q <= 1.0) {
+                return ModBlocks.BREATHCOMB.get().defaultBlockState();
+            }
+        }
+        for (Cone c : AIRWAYS) {
+            if (c.contains(u, v, w)) {
+                return ModBlocks.BREATHCOMB.get().defaultBlockState();
+            }
+        }
+        // The stomach: a sac of Voidgel, resting on the floor, hollow.
+        double sv = spineV(STOMACH_W);
+        double st = Math.sqrt(Math.pow(u / 5.5, 2) + Math.pow((v - (sv - 15)) / 4.6, 2) + Math.pow((w - STOMACH_W) / 6.5, 2));
+        if (st <= 1.0) {
+            return st >= 0.8 ? ModBlocks.VOIDGEL.get().defaultBlockState() : Blocks.AIR.defaultBlockState();
+        }
+        return null;
+    }
+
+    // Floor gaps in the reliquary: cells 3 blocks square, about one in five open to the void below -
+    // never in the middle (where the Curator waits), by the pylons, the pedestal, the ladder's foot or
+    // under the stomach.
+    private boolean gap(double u, double w) {
+        if (Math.abs(u) < 5 && Math.abs(w - ARENA_W) < 6 || Math.abs(u) < 5 && w > PEDESTAL_W - 8
+                || Math.abs(u - SHAFT_U) < 4 && Math.abs(w - SHAFT_W) < 4 || w < STOMACH_W + 9) {
+            return false;
+        }
+        for (int[] pylon : PYLONS) {
+            if (Math.abs(u - pylon[0]) < 3 && Math.abs(w - pylon[1]) < 3) {
+                return false;
+            }
+        }
+        return this.hash(Mth.floor(u / 3.0), Mth.floor(w / 3.0), 77) < 0.2;
     }
 
     // The hall: a purpur floor, End Stone brick walls with Astral Glass windows, a purpur roof hung with End Rods.
@@ -241,11 +341,11 @@ public class LeviathanPiece extends StructurePiece {
     }
 
     // A tower: a hollow purpur round, a floor every eight blocks, slit windows, a platform on top and an
-    // End Rod at its peak.
-    private BlockState towerAt(double u, double h, double dw, double rho) {
-        if (h >= TOWER_H) {
-            if (rho <= 5.5 && h < TOWER_H + 1) {
-                return Blocks.PURPUR_SLAB.defaultBlockState();
+    // End Rod at its peak (the maze's tower: a solid roof, the maze's first platform).
+    private BlockState towerAt(double u, double h, double dw, double rho, int height) {
+        if (h >= height) {
+            if (rho <= 5.5 && h < height + 1) {
+                return height == MAZE_H ? Blocks.PURPUR_BLOCK.defaultBlockState() : Blocks.PURPUR_SLAB.defaultBlockState();
             }
             return rho <= 5.5 ? Blocks.AIR.defaultBlockState() : null;
         }
@@ -270,82 +370,18 @@ public class LeviathanPiece extends StructurePiece {
         return Blocks.AIR.defaultBlockState();
     }
 
-    // The skull, its jaw and the captured island, and the reliquary inside.
-    private BlockState skullAt(double u, double v, double w) {
-        double sv = skullV();
-        BlockState bone = Blocks.BONE_BLOCK.defaultBlockState();
-        double q = Math.sqrt(Math.pow(u / SA, 2) + Math.pow((v - sv) / SB, 2) + Math.pow((w - SKULL_W) / SC, 2));
-        double floor = sv - 6;
-        boolean gap = this.gap(u, w);
-        if (q <= 1.0) {
-            // The eye sockets: Maw Eyes in rims of crying obsidian, high on each side.
-            for (int side = -1; side <= 1; side += 2) {
-                double e = Math.sqrt(Math.pow(u - side * (SA - 1.5), 2) + Math.pow(v - (sv + 4), 2) + Math.pow(w - (SKULL_W + 8), 2));
-                if (e <= 1.6) {
-                    return ModBlocks.MAW_EYE.get().defaultBlockState();
-                }
-                if (e <= 3.2 && q >= SHELL) {
-                    return Blocks.CRYING_OBSIDIAN.defaultBlockState();
-                }
-            }
-            if (q >= SHELL) {
-                return gap && v < floor ? Blocks.AIR.defaultBlockState() : bone;
-            }
-            if (v >= floor - 0.5 && v < floor + 0.5) {
-                return gap ? Blocks.AIR.defaultBlockState() : ModBlocks.PURPUR_BRICKS.get().defaultBlockState();
-            }
-            return Blocks.AIR.defaultBlockState();
-        }
-        // The lower jaw: two bars of bone from under the skull to the chin, with teeth.
-        for (int side = -1; side <= 1; side += 2) {
-            double t = Mth.clamp((w - 108) / 62.0, 0.0, 1.0);
-            double ju = side * Mth.lerp(t, 12, 5), jv = sv - Mth.lerp(t, 13, 17);
-            if (w >= 104 && w <= 172 && Math.hypot(u - ju, v - jv) <= 2.2) {
-                return bone;
-            }
-            if (w >= 112 && w <= 164 && Math.floorMod(Mth.floor(w), 5) == 0 && Math.abs(u - ju) <= 0.6 && v > jv && v <= jv + 4) {
-                return bone;     // a tooth
-            }
-        }
-        if (w >= 166 && w <= 172 && Math.abs(u) <= 5 && Math.abs(v - (sv - 17)) <= 1.5) {
-            return bone;         // the chin
-        }
-        // The captured island, held in the jaw, chained to the skull with obsidian.
-        double iq = Math.pow(u / 11.0, 2) + Math.pow((v - (sv - 24)) / 7.0, 2) + Math.pow((w - 140) / 15.0, 2);
-        if (iq <= 1.0) {
-            return ModBlocks.PALE_END_STONE.get().defaultBlockState();   // torn from the graveyard (no End Stone: it's the biomes' to replace)
-        }
-        return null;
-    }
+    // ------------------------------------------------------------------ set in the world's grid
 
-    // Floor gaps in the reliquary: cells 3 blocks square, about one in five open to the void below -
-    // never in the middle (where the Curator waits), by the pylons or before the pedestal.
-    private boolean gap(double u, double w) {
-        int cu = Mth.floor(u / 3.0), cw = Mth.floor((w - SKULL_W) / 3.0);
-        if (Math.abs(u) < 5 && Math.abs(w - SKULL_W) < 6 || Math.abs(u) < 4 && w > SKULL_W + 12) {
-            return false;
-        }
-        for (int[] pylon : PYLONS) {
-            if (Math.abs(u - pylon[0]) < 3 && Math.abs(w - pylon[1]) < 3) {
-                return false;
-            }
-        }
-        return this.hash(cu, cw, 77) < 0.22;
-    }
-
-
-    // ------------------------------------------------------------------ chests and the garrison
-
-    // The small things - columns a block across, lamps, the pedestal - set block by block in the world's
-    // own grid. (Lying diagonally, a shape thinner than a block and a half can fall between the blocks.)
+    // The small things - columns a block across, lamps, the pedestal, the maze - set block by block in
+    // the world's own grid. (Lying diagonally, a shape thinner than a block and a half can fall between
+    // the blocks.)
     private void furnish(WorldGenLevel level, BoundingBox chunk) {
         RandomSource rnd = RandomSource.create(this.seed);
-        double sv = skullV();
-        double floor = sv - 6;
-        BlockPos centre = this.world(0, floor, SKULL_W);
+        double floor = spineV(ARENA_W) - 20;
+        BlockPos centre = this.world(0, floor, ARENA_W);
         // The pylons: an obsidian column, a purpur arm toward the arena's middle, End Chimes under it.
         for (int[] pylon : PYLONS) {
-            BlockPos base = this.world(pylon[0], floor + 1, pylon[1]);
+            BlockPos base = this.world(pylon[0], spineV(pylon[1]) - 19, pylon[1]);
             for (int h = 0; h < 6; h++) {
                 this.put(level, chunk, base.above(h), h == 5 ? Blocks.PURPUR_BLOCK.defaultBlockState() : Blocks.OBSIDIAN.defaultBlockState());
             }
@@ -354,47 +390,167 @@ public class LeviathanPiece extends StructurePiece {
             this.put(level, chunk, arm, Blocks.PURPUR_BLOCK.defaultBlockState());
             this.put(level, chunk, arm.below(), ModBlocks.END_CHIMES.get().defaultBlockState());
         }
-        // The egg's pedestal, and the chains that hold the captured island to the skull.
+        // The egg's pedestal, under the heart.
         this.put(level, chunk, this.pedestal(), ModBlocks.LEVIATHAN_PEDESTAL.get().defaultBlockState());
-        for (int[] chain : CHAINS) {
-            BlockPos top = this.world(chain[0], sv - 10, chain[1]);
-            for (int d = 0; d < 11; d++) {
-                this.put(level, chunk, top.below(d), Blocks.OBSIDIAN.defaultBlockState());
-            }
+        // The ladder from the hall down through the spine to the cathedral, on a column of bone.
+        BlockPos top = this.world(SHAFT_U, spineV(SHAFT_W) + 5.5, SHAFT_W);
+        BlockPos foot = this.world(SHAFT_U, spineV(SHAFT_W) - 19, SHAFT_W);
+        Direction wall = this.across(1);
+        BlockState ladder = Blocks.LADDER.defaultBlockState().setValue(LadderBlock.FACING, wall.getOpposite());
+        for (int y = foot.getY(); y <= top.getY(); y++) {
+            this.put(level, chunk, foot.atY(y).relative(wall), Blocks.BONE_BLOCK.defaultBlockState());
+            this.put(level, chunk, foot.atY(y), ladder);
         }
-        // End Rods: down the middle of the hall's roof, and one on top of each tower.
+        // End Rods: down the middle of the hall's roof, and one on top of each tower but the maze's.
         BlockState rod = Blocks.END_ROD.defaultBlockState().setValue(EndRodBlock.FACING, Direction.DOWN);
         for (int w = HALL_FROM + 6; w <= HALL_TO - 4; w += 12) {
             this.put(level, chunk, this.world(0, spineV(w) + 10.5, w), rod);
         }
         for (int t : TOWERS) {
-            this.put(level, chunk, this.world(0, spineV(t) + TOWER_H + 1.5, t), Blocks.END_ROD.defaultBlockState());
+            if (t != MAZE_TOWER) {
+                this.put(level, chunk, this.world(0, spineV(t) + TOWER_H + 1.5, t), Blocks.END_ROD.defaultBlockState());
+            }
         }
-        // Chests: two in the reliquary, one at the foot of each tower, two in the cathedral.
-        this.chest(level, chunk, rnd, -4, sv - 5, PEDESTAL_W + 1);
-        this.chest(level, chunk, rnd, 4, sv - 5, PEDESTAL_W + 1);
+        // Chests: one at the foot of each tower, one by the pedestal, and in the stomach, what it swallowed.
         for (int t : TOWERS) {
-            this.chest(level, chunk, rnd, -2, spineV(t) + 6.5, t + 2);
+            this.chest(level, chunk, rnd, this.world(-2, spineV(t) + 6.5, t + 2), LOOT);
         }
-        this.chest(level, chunk, rnd, 6, spineV(0) - 19, 0);
-        this.chest(level, chunk, rnd, -6, spineV(40) - 19, 40);
+        this.chest(level, chunk, rnd, this.world(4, spineV(PEDESTAL_W) - 19, PEDESTAL_W - 3), LOOT);
+        BlockPos gut = this.world(0, spineV(STOMACH_W) - 18.5, STOMACH_W);
+        this.chest(level, chunk, rnd, gut, STOMACH_LOOT);
+        this.put(level, chunk, gut.offset(2, 0, 1), Blocks.BONE_BLOCK.defaultBlockState());
+        this.put(level, chunk, gut.offset(-2, 0, -1), ModBlocks.WHALELIGHT_SCALE.get().defaultBlockState());
+        this.put(level, chunk, gut.offset(1, 0, -2), ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState());
+        this.maze(level, chunk, rnd);
         // The garrison.
         // (A shulker can't hold on to the top of a slab - it teleports off looking for a full face -
         // so each sits on a purpur block set into the tower's roof.)
         for (int t : TOWERS) {
+            if (t == MAZE_TOWER) {
+                continue;
+            }
             for (int side = -1; side <= 1; side += 2) {
                 this.put(level, chunk, this.world(2.5 * side, spineV(t) + TOWER_H + 0.5, t + 2), Blocks.PURPUR_BLOCK.defaultBlockState());
                 this.spawn(level, chunk, EntityTypes.SHULKER, 2.5 * side, spineV(t) + TOWER_H + 1.5, t + 2, null);
             }
         }
-        for (int w : new int[] {-60, 0, 50}) {
+        for (int w : new int[] {-90, -40, 10}) {
             this.spawn(level, chunk, ModEntities.VOID_WANDERER.get(), 0, spineV(w) + 7, w + 3, null);
         }
-        for (int w : new int[] {-30, -8, 14, 36}) {
-            this.spawn(level, chunk, ModEntities.HOLLOWBACK.get(), w % 2 == 0 ? 5 : -5, spineV(w) - 19, w, null);
+        for (int w : new int[] {-72, -62, -28, -16}) {
+            this.spawn(level, chunk, ModEntities.HOLLOWBACK.get(), w % 4 == 0 ? 5 : -5, spineV(w) - 19, w, null);
         }
-        BlockPos home = this.world(0, sv - 5, SKULL_W);
-        this.spawn(level, chunk, ModEntities.CURATOR.get(), 0, sv - 5, SKULL_W, home);
+        BlockPos home = this.world(0, floor + 1, ARENA_W);
+        this.spawn(level, chunk, ModEntities.CURATOR.get(), 0, floor + 1, ARENA_W, home);
+    }
+
+    // The Constellation Maze over the last tower: platforms floating out from its roof, joined by
+    // star-bridges that show only when their constellation is sighted through a spyglass from the
+    // platform before (MazeScoping); the last leads to a dais and its chest.
+    private void maze(WorldGenLevel level, BoundingBox chunk, RandomSource rnd) {
+        double base = spineV(MAZE_TOWER) + MAZE_H;
+        double[][] at = new double[MAZE.length][];
+        for (int i = 0; i < MAZE.length; i++) {
+            double[] m = MAZE[i];
+            at[i] = this.exact(m[0], base + 0.5 + m[1], m[2]);   // (+ 0.5: the block the roof is built in)
+            BlockPos c = BlockPos.containing(at[i][0], at[i][1], at[i][2]);
+            boolean dais = i == MAZE.length - 1;
+            if (i > 0) {
+                this.platform(level, chunk, c, dais ? 5.4 : 3.2, dais);
+            }
+            if (!dais) {
+                this.put(level, chunk, c, ModBlocks.STAR_INLAY_OBSERVATORY_QUARTZ.get().defaultBlockState());
+                this.put(level, chunk, c.offset(2, 1, 2), ModBlocks.POLISHED_NIGHTSTONE_WALL.get().defaultBlockState());
+                this.put(level, chunk, c.offset(2, 2, 2), ModBlocks.NULL_LANTERN.get().defaultBlockState());
+            }
+            if (i == 0) {
+                // A spyglass left at the start for whoever came without one.
+                BlockPos barrel = c.offset(-2, 1, -2);
+                this.put(level, chunk, barrel, Blocks.BARREL.defaultBlockState());
+                if (chunk.isInside(barrel) && level.getBlockEntity(barrel) instanceof net.minecraft.world.level.block.entity.BarrelBlockEntity b) {
+                    b.setItem(13, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.SPYGLASS));
+                }
+            }
+            if (dais) {
+                for (int[] o : new int[][] {{-3, -3}, {3, -3}, {-3, 3}, {3, 3}}) {
+                    for (int k = 1; k <= 3; k++) {
+                        this.put(level, chunk, c.offset(o[0], k, o[1]), ModBlocks.OBSERVATORY_QUARTZ_PILLAR.get().defaultBlockState());
+                    }
+                    this.put(level, chunk, c.offset(o[0], 4, o[1]), ModBlocks.NULL_LANTERN.get().defaultBlockState());
+                }
+                this.chest(level, chunk, rnd, c.above(), MAZE_LOOT);
+            }
+        }
+        // The bridges, each answering to one constellation (the one sighted from the platform it starts at).
+        for (int i = 0; i + 1 < MAZE.length; i++) {
+            double r0 = i == 0 ? 5.6 : 3.6, r1 = i + 2 == MAZE.length ? 5.8 : 3.6;
+            double[] a = at[i], b = at[i + 1];
+            double dx = b[0] - a[0], dz = b[2] - a[2], len = Math.hypot(dx, dz);
+            double ux = dx / len, uz = dz / len;
+            double[] from = {a[0] + ux * r0, a[1], a[2] + uz * r0};
+            double[] to = {b[0] - ux * r1, b[1], b[2] - uz * r1};
+            double bend = i % 2 == 0 ? 5 : -5;
+            double[] mid = {(from[0] + to[0]) / 2 - uz * bend, (from[1] + to[1]) / 2, (from[2] + to[2]) / 2 + ux * bend};
+            BlockState bridge = ModBlocks.STAR_BRIDGE.get().defaultBlockState()
+                .setValue(com.ggrantrichards.astralend.maze.StarBridgeBlock.CONSTELLATION, i)
+                .setValue(com.ggrantrichards.astralend.maze.StarBridgeBlock.LIT, false);
+            for (double[][] leg : new double[][][] {{from, mid}, {mid, to}}) {
+                double[] p = leg[0], q = leg[1];
+                int steps = (int) (Math.max(Math.abs(q[0] - p[0]), Math.abs(q[2] - p[2])) * 2) + 1;
+                for (int k = 0; k <= steps; k++) {
+                    double f = k / (double) steps;
+                    BlockPos s = BlockPos.containing(p[0] + (q[0] - p[0]) * f, p[1] + (q[1] - p[1]) * f, p[2] + (q[2] - p[2]) * f);
+                    for (BlockPos o : new BlockPos[] {s, s.east(), s.south(), s.east().south()}) {
+                        if (chunk.isInside(o) && level.getBlockState(o).isAir()) {
+                            level.setBlock(o, bridge, 2);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // A broken platform floating in the void: polished stone on a rough cone of Nightstone (the dais:
+    // Observatory Quartz with a ring of stars).
+    private void platform(WorldGenLevel level, BoundingBox chunk, BlockPos c, double radius, boolean dais) {
+        int r = (int) Math.ceil(radius) + 1;
+        for (int dx = -r; dx <= r; dx++) {
+            for (int dz = -r; dz <= r; dz++) {
+                double d = Math.hypot(dx, dz);
+                if (d > radius + 0.4) {
+                    continue;
+                }
+                boolean edge = d > radius - 0.9;
+                double h = this.hash(c.getX() + dx, c.getY(), c.getZ() + dz);
+                if (edge && h < 0.25) {
+                    continue;                                  // a chipped edge
+                }
+                BlockState top = dais
+                    ? (d > 2.6 && d < 3.4 && (dx + dz) % 2 == 0 ? ModBlocks.STAR_INLAY_OBSERVATORY_QUARTZ.get() : ModBlocks.OBSERVATORY_QUARTZ.get()).defaultBlockState()
+                    : (edge ? ModBlocks.NIGHTSTONE_BRICKS.get() : ModBlocks.POLISHED_NIGHTSTONE.get()).defaultBlockState();
+                this.put(level, chunk, c.offset(dx, 0, dz), top);
+                for (int dy = 1; dy < 5; dy++) {
+                    if (d <= radius * (1 - dy / 4.5) + (h - 0.6) * 0.8) {
+                        this.put(level, chunk, c.offset(dx, -dy, dz), ModBlocks.NIGHTSTONE.get().defaultBlockState());
+                    }
+                }
+            }
+        }
+    }
+
+    // A point of the frame in the world, exactly (not rounded to a block).
+    private double[] exact(double u, double v, double w) {
+        return new double[] {this.origin.getX() + 0.5 + w * this.cos - u * this.sin, this.origin.getY() + v,
+            this.origin.getZ() + 0.5 + w * this.sin + u * this.cos};
+    }
+
+    // The world direction closest to the frame's +u (s = 1) or -u (s = -1).
+    private Direction across(int s) {
+        double x = -this.sin * s, z = this.cos * s;
+        if (Math.abs(x) > Math.abs(z) + 1.0E-6) {
+            return x > 0 ? Direction.EAST : Direction.WEST;
+        }
+        return z > 0 ? Direction.SOUTH : Direction.NORTH;
     }
 
     private void put(WorldGenLevel level, BoundingBox chunk, BlockPos p, BlockState state) {
@@ -403,10 +559,9 @@ public class LeviathanPiece extends StructurePiece {
         }
     }
 
-    private void chest(WorldGenLevel level, BoundingBox chunk, RandomSource rnd, double u, double v, double w) {
-        BlockPos p = this.world(u, v, w);
+    private void chest(WorldGenLevel level, BoundingBox chunk, RandomSource rnd, BlockPos p, ResourceKey<LootTable> loot) {
         if (chunk.isInside(p)) {
-            this.createChest(level, chunk, rnd, p, LOOT, null);
+            this.createChest(level, chunk, rnd, p, loot, null);
         }
     }
 
@@ -432,6 +587,22 @@ public class LeviathanPiece extends StructurePiece {
 
     // The reliquary's pedestal, in the world (the survey looks for it).
     public BlockPos pedestal() {
-        return this.world(0, skullV() - 5, PEDESTAL_W);
+        return this.world(0, spineV(PEDESTAL_W) - 19, PEDESTAL_W);
+    }
+
+    // Where the Curator waits.
+    public BlockPos arena() {
+        return this.world(0, spineV(ARENA_W) - 19, ARENA_W);
+    }
+
+    // The heart's middle.
+    public BlockPos heart() {
+        return this.world(0, spineV(HEART_W) - 9, HEART_W);
+    }
+
+    // The maze's first platform - the top of its tower - where anyone falling through it is set back.
+    public BlockPos mazeStart() {
+        double[] p = this.exact(0, spineV(MAZE_TOWER) + MAZE_H, MAZE_TOWER);
+        return BlockPos.containing(p[0], p[1], p[2]);
     }
 }

@@ -64,19 +64,8 @@ public final class ModWorldgen {
     public static final RegistryObject<StructureType<IslandStructure>> ISLAND =
         STRUCTURE_TYPES.register("island", () -> () -> IslandStructure.CODEC);
 
-    // Phase 10: the colossal Whalefall, built by a piece of its own (too big for a template).
-    public static final RegistryObject<StructureType<com.ggrantrichards.astralend.world.structure.WhalefallStructure>> WHALEFALL =
-        STRUCTURE_TYPES.register("whalefall", () -> () -> com.ggrantrichards.astralend.world.structure.WhalefallStructure.CODEC);
     public static final DeferredRegister<net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType> STRUCTURE_PIECES =
         DeferredRegister.create(Registries.STRUCTURE_PIECE, AstralEnd.MODID);
-    public static final RegistryObject<net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType> WHALEFALL_PIECE =
-        STRUCTURE_PIECES.register("whalefall", () -> com.ggrantrichards.astralend.world.structure.WhalefallPiece::new);
-
-    // Phase 11: the Rift Maw, a colossal skull with a hall inside, built by its own piece too.
-    public static final RegistryObject<StructureType<com.ggrantrichards.astralend.world.structure.RiftMawStructure>> RIFT_MAW =
-        STRUCTURE_TYPES.register("rift_maw", () -> () -> com.ggrantrichards.astralend.world.structure.RiftMawStructure.CODEC);
-    public static final RegistryObject<net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType> RIFT_MAW_PIECE =
-        STRUCTURE_PIECES.register("rift_maw", () -> com.ggrantrichards.astralend.world.structure.RiftMawPiece::new);
 
     // Phase 11: the Remnant, a dead star's cinder hanging over each Corona.
     public static final RegistryObject<StructureType<com.ggrantrichards.astralend.world.structure.RemnantStructure>> REMNANT =
@@ -89,6 +78,9 @@ public final class ModWorldgen {
         STRUCTURE_TYPES.register("leviathan", () -> () -> com.ggrantrichards.astralend.world.structure.LeviathanStructure.CODEC);
     public static final RegistryObject<net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType> LEVIATHAN_PIECE =
         STRUCTURE_PIECES.register("leviathan", () -> com.ggrantrichards.astralend.world.structure.LeviathanPiece::new);
+    // Its skull, the Maw (the Rift Maw that was, merged into the one Leviathan).
+    public static final RegistryObject<net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType> LEVIATHAN_HEAD_PIECE =
+        STRUCTURE_PIECES.register("leviathan_head", () -> com.ggrantrichards.astralend.world.structure.LeviathanHeadPiece::new);
 
     private ModWorldgen() {}
 }

@@ -40,10 +40,17 @@ import org.jspecify.annotations.Nullable;
 // Drift Whale: a huge, translucent whale that swims slowly through the void, the last small
 // descendant of the Star Leviathans.
 //
-// Whales travel in pods of three to five: one leads, the rest keep station on it, and now and then a
-// pod's leader heads for the nearest Eclipse - follow a pod and it may take you there. It never
-// touches ground; now and then it drifts down to graze on chorus. When a player comes close it turns
-// toward them, slows down and hums. It never fights back: hurt it and it flees.
+// Whales travel in pods of three to five: one leads, the rest swim loosely round it, and now and then
+// a pod's leader heads for the nearest Eclipse - follow a pod and it may take you there. It never
+// touches ground; now and then it drifts down to graze on chorus. It never fights back: hurt it and
+// it flees.
+//
+// No two are alike. Each has its own size (the leader biggest; often a calf, which keeps close by the
+// leader, its mother), its own pace and its own swing as it swims, and its own temper: a curious one
+// comes close and circles you, humming; a shy one keeps its distance; most turn toward you and hum.
+// When one hums, the others answer, each in its own voice - the bigger, the deeper. And they play:
+// one rolls over and over as it swims, one breaches in a great loop, two chase each other round in a
+// spiral - the calves most of all.
 //
 // Taming is by song. Eat Memory Moss (Remembering), then play a note block near a whale: it turns
 // toward the music and sings back, and for half a minute it will take Chorus Fruit from you - feed
@@ -57,6 +64,8 @@ import org.jspecify.annotations.Nullable;
 public class DriftWhale extends Mob implements ItemSteerable {
     private static final EntityDataAccessor<Boolean> DATA_HUMMING = SynchedEntityData.defineId(DriftWhale.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_BOOST_TIME = SynchedEntityData.defineId(DriftWhale.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_PLAY = SynchedEntityData.defineId(DriftWhale.class, EntityDataSerializers.INT);
+    public static final int PLAY_NONE = 0, PLAY_ROLL = 1, PLAY_LOOP = 2, PLAY_CHASE = 3;
     private static final double RIDDEN_SPEED = 0.025;   // about 5 blocks a second; a boost doubles it
     private static final int FLEE_TICKS = 200;
     private static final double CRUISE_SPEED = 0.12;
@@ -76,6 +85,16 @@ public class DriftWhale extends Mob implements ItemSteerable {
     private @Nullable UUID owner;           // tamed by song
     private @Nullable UUID singer;          // who sang to it, for a short while after
     private int listening;
+    private int playTicks;
+    private int playLength;
+    private @Nullable Vec3 playCentre;
+    private Vec3 playHeading = Vec3.ZERO;
+    private double playPhase;
+    private int answerIn;                   // answering another's hum in this many ticks
+    private boolean answering;
+    // Client side: how far over it has rolled (it eases back upright when it stops).
+    private float roll;
+    private float rollO;
 
     public DriftWhale(EntityType<? extends DriftWhale> type, Level level) {
         super(type, level);
@@ -95,6 +114,56 @@ public class DriftWhale extends Mob implements ItemSteerable {
         super.defineSynchedData(builder);
         builder.define(DATA_HUMMING, false);
         builder.define(DATA_BOOST_TIME, 0);
+        builder.define(DATA_PLAY, PLAY_NONE);
+    }
+
+    // ---- who it is: fixed for each whale by its UUID, so nothing needs saving.
+
+    // A number in [0, 1) that's this whale's own, one for each trait k.
+    private double trait(int k) {
+        long h = this.getUUID().getLeastSignificantBits() ^ this.getUUID().getMostSignificantBits() * 31L ^ k * 0x9E3779B97F4A7C15L;
+        h ^= h >>> 33;
+        h *= 0xff51afd7ed558ccdL;
+        h ^= h >>> 33;
+        return (h >>> 11) * 0x1.0p-53;
+    }
+
+    // Its pace: 0.85 to 1.15 of a whale's, and a calf's a little quicker.
+    public float tempo() {
+        return (float) ((0.85 + 0.3 * this.trait(1)) * (this.isCalf() ? 1.15 : 1.0));
+    }
+
+    private double curiosity() {
+        return this.trait(2);
+    }
+
+    public boolean isCalf() {
+        return this.getScale() < 0.75F;
+    }
+
+    // Its size, as the SCALE attribute (saved with it): the body, its hitbox and its voice follow.
+    public void setSize(float scale) {
+        var attribute = this.getAttribute(Attributes.SCALE);
+        if (attribute != null) {
+            attribute.setBaseValue(scale);
+        }
+    }
+
+    @Override
+    public net.minecraft.world.entity.SpawnGroupData finalizeSpawn(net.minecraft.world.level.ServerLevelAccessor level,
+            net.minecraft.world.DifficultyInstance difficulty, net.minecraft.world.entity.EntitySpawnReason reason,
+            net.minecraft.world.entity.SpawnGroupData data) {
+        this.setSize((float) (0.85 + 0.3 * this.trait(0)));
+        return super.finalizeSpawn(level, difficulty, reason, data);
+    }
+
+    public int play() {
+        return this.entityData.get(DATA_PLAY);
+    }
+
+    // Rolled over this far (degrees), for the renderer.
+    public float roll(float partialTick) {
+        return Mth.lerp(partialTick, this.rollO, this.roll);
     }
 
     public boolean isTamed() {
@@ -168,6 +237,8 @@ public class DriftWhale extends Mob implements ItemSteerable {
             this.fleeFrom = attacker != null ? attacker.position() : this.position().add(this.getLookAngle());
             this.target = null;
             this.grazing = null;
+            this.playTicks = 0;
+            this.entityData.set(DATA_PLAY, PLAY_NONE);
         }
         return hurt;
     }
@@ -274,6 +345,18 @@ public class DriftWhale extends Mob implements ItemSteerable {
         this.setNoGravity(true);
         super.tick();
         this.steering.tickBoost();
+        if (this.level().isClientSide()) {
+            this.rollO = this.roll;
+            if (this.play() == PLAY_ROLL) {
+                this.roll += 7.0F * this.tempo();
+            } else {
+                float upright = Math.round(this.roll / 360.0F) * 360.0F;
+                this.roll = Mth.approach(this.roll, upright, 6.0F);
+            }
+            if (Math.abs(this.roll) > 3600.0F && this.roll == this.rollO) {
+                this.roll = this.rollO = 0.0F;
+            }
+        }
     }
 
     @Override
@@ -304,8 +387,23 @@ public class DriftWhale extends Mob implements ItemSteerable {
             this.faceDirection(velocity, 4.0F);
         } else if (this.grazing != null) {
             velocity = this.graze(level);
+        } else if (this.playTicks > 0) {
+            velocity = this.playStep(level);
         } else if (this.leader != null && this.station != null && this.followLeader(level) != null) {
             velocity = this.followLeader(level);
+        } else if (near != null && this.curiosity() > 0.65) {
+            // Curious: it comes in close and circles you, humming.
+            Vec3 toPlayer = near.getEyePosition().subtract(this.position().add(0.0, 1.0, 0.0));
+            Vec3 round = new Vec3(-toPlayer.z, 0.0, toPlayer.x).normalize();
+            double pull = toPlayer.length() > 12.0 ? 1.0 : toPlayer.length() < 8.0 ? -0.6 : 0.0;
+            velocity = toPlayer.normalize().scale(pull * 0.05).add(round.scale(0.05)).scale(this.tempo());
+            this.faceDirection(velocity.lengthSqr() > 1.0E-4 ? velocity : toPlayer, 2.5F);
+            this.hum(level);
+        } else if (near != null && this.curiosity() < 0.3) {
+            // Shy: it keeps its distance, and slips away if you press it.
+            Vec3 away = this.position().subtract(near.position()).multiply(1.0, 0.2, 1.0);
+            velocity = away.length() < 22.0 ? away.normalize().scale(CRUISE_SPEED * this.tempo()) : Vec3.ZERO;
+            this.faceDirection(velocity.lengthSqr() > 1.0E-4 ? velocity : near.position().subtract(this.position()), 1.5F);
         } else if (near != null) {
             // Turn toward the player and slow down.
             Vec3 toPlayer = near.getEyePosition().subtract(this.position().add(0.0, 1.0, 0.0));
@@ -324,9 +422,23 @@ public class DriftWhale extends Mob implements ItemSteerable {
                 }
             }
             Vec3 toTarget = this.target != null ? this.target.subtract(this.position()) : Vec3.ZERO;
-            velocity = toTarget.lengthSqr() > 1.0 ? toTarget.normalize().scale(CRUISE_SPEED) : Vec3.ZERO;
+            velocity = toTarget.lengthSqr() > 1.0 ? toTarget.normalize().scale(CRUISE_SPEED * this.tempo()).add(this.sway(toTarget)) : Vec3.ZERO;
             this.faceDirection(velocity, 1.0F);
         }
+        if (this.playTicks <= 0 && this.fleeTicks <= 0 && this.grazing == null && !this.isVehicle()
+                && this.random.nextInt(this.isCalf() ? 500 : 1500 + (int) (this.trait(3) * 1500)) == 0) {
+            this.startPlay(level);
+        }
+        if (this.answerIn > 0 && --this.answerIn == 0) {
+            this.answering = true;
+            this.humCooldown = 0;
+            this.hum(level);
+            this.answering = false;
+        }
+        // It pitches its body as it climbs and dives.
+        double horizontal = velocity.horizontalDistance();
+        float pitch = velocity.lengthSqr() > 1.0E-4 ? (float) Mth.clamp(-Mth.atan2(velocity.y, horizontal) * (180.0 / Math.PI), -55.0, 55.0) : 0.0F;
+        this.setXRot(Mth.approach(this.getXRot(), pitch, 2.0F));
         this.setDeltaMovement(this.getDeltaMovement().scale(0.9).add(velocity.scale(0.1)));
     }
 
@@ -336,9 +448,98 @@ public class DriftWhale extends Mob implements ItemSteerable {
             this.leader = null;
             return null;
         }
-        Vec3 to = lead.position().add(this.station).subtract(this.position());
-        Vec3 velocity = to.lengthSqr() > 4.0 ? to.normalize().scale(Math.min(CRUISE_SPEED * 1.6, to.length() * 0.02)) : Vec3.ZERO;
+        // Not a fixed station: each wanders round its place in the pod, on its own slow rhythm. A calf
+        // keeps tucked in close beside its mother.
+        double t = this.tickCount / (140.0 + 260.0 * this.trait(4)) + this.trait(5) * Math.PI * 2;
+        Vec3 place = this.isCalf()
+            ? new Vec3(lead.getBbWidth() * 0.7 * (this.trait(6) < 0.5 ? -1 : 1), -2.0, 3.0)
+            : this.station.add(Math.sin(t) * 6.0, Math.sin(t * 1.7) * 2.5, Math.cos(t * 0.8) * 7.0);
+        Vec3 to = lead.position().add(place).subtract(this.position());
+        double speed = Math.min(CRUISE_SPEED * 1.6 * this.tempo(), to.length() * 0.02);
+        Vec3 velocity = to.lengthSqr() > 4.0 ? to.normalize().scale(speed) : lead.getDeltaMovement().scale(0.9);
         this.faceDirection(to.lengthSqr() > 4.0 ? to : lead.getLookAngle(), 1.5F);
+        return velocity;
+    }
+
+    // Its own swing as it swims: a slow side-to-side weave across its way, and a rise and fall.
+    private Vec3 sway(Vec3 heading) {
+        Vec3 side = new Vec3(-heading.z, 0.0, heading.x);
+        if (side.lengthSqr() < 1.0E-6) {
+            return Vec3.ZERO;
+        }
+        double t = this.tickCount / (60.0 + 120.0 * this.trait(7)) + this.trait(8) * Math.PI * 2;
+        double amount = 0.02 + 0.04 * this.trait(9);
+        return side.normalize().scale(Math.sin(t) * amount).add(0.0, Math.sin(t * 0.6) * amount * 0.4, 0.0);
+    }
+
+    // ---- play
+
+    // The survey starts a bout of play to see it happen.
+    public void playForTest(ServerLevel level) {
+        this.startPlay(level);
+    }
+
+    private void startPlay(ServerLevel level) {
+        DriftWhale mate = null;
+        for (DriftWhale other : level.getEntitiesOfClass(DriftWhale.class, this.getBoundingBox().inflate(40.0),
+                w -> w != this && !w.isVehicle() && w.playTicks <= 0 && w.fleeTicks <= 0)) {
+            mate = other;
+            break;
+        }
+        int kind = mate != null && this.random.nextInt(3) == 0 ? PLAY_CHASE : this.random.nextInt(3) == 0 ? PLAY_LOOP : PLAY_ROLL;
+        Vec3 heading = this.getLookAngle().multiply(1.0, 0.0, 1.0);
+        heading = heading.lengthSqr() > 1.0E-4 ? heading.normalize() : new Vec3(0.0, 0.0, 1.0);
+        switch (kind) {
+            case PLAY_LOOP -> this.beginPlay(PLAY_LOOP, 120, this.position().add(0.0, 9.0, 0.0), heading, 0.0);
+            case PLAY_CHASE -> {
+                // Round and round each other, a spiral about the point between them.
+                Vec3 centre = this.position().add(mate.position()).scale(0.5);
+                double a = Math.atan2(this.getZ() - centre.z, this.getX() - centre.x);
+                this.beginPlay(PLAY_CHASE, 200, centre, heading, a);
+                mate.beginPlay(PLAY_CHASE, 200, centre, heading, a + Math.PI);
+                this.humCooldown = 0;
+                this.hum(level);
+            }
+            default -> this.beginPlay(PLAY_ROLL, 60 + this.random.nextInt(50), null, heading, 0.0);
+        }
+    }
+
+    private void beginPlay(int kind, int ticks, @Nullable Vec3 centre, Vec3 heading, double phase) {
+        this.entityData.set(DATA_PLAY, kind);
+        this.playTicks = ticks;
+        this.playLength = ticks;
+        this.playCentre = centre;
+        this.playHeading = heading;
+        this.playPhase = phase;
+    }
+
+    private Vec3 playStep(ServerLevel level) {
+        int kind = this.play();
+        double f = 1.0 - --this.playTicks / (double) this.playLength;     // 0 .. 1 through the bout
+        if (this.playTicks <= 0) {
+            this.entityData.set(DATA_PLAY, PLAY_NONE);
+        }
+        Vec3 velocity;
+        if (kind == PLAY_LOOP && this.playCentre != null) {
+            // A breach: up and over in a great loop, ending where it began, on its way.
+            double a = -Math.PI / 2 + f * Math.PI * 2;
+            Vec3 point = this.playCentre.add(this.playHeading.scale(Math.cos(a) * 9.0)).add(0.0, Math.sin(a) * 9.0, 0.0);
+            Vec3 to = point.subtract(this.position());
+            velocity = to.scale(0.25).add(this.playHeading.scale(0.02));
+            if (velocity.length() > CRUISE_SPEED * 2.5) {
+                velocity = velocity.normalize().scale(CRUISE_SPEED * 2.5);
+            }
+            this.faceDirection(this.playHeading, 3.0F);
+        } else if (kind == PLAY_CHASE && this.playCentre != null) {
+            double a = this.playPhase + f * Math.PI * 4;
+            Vec3 point = this.playCentre.add(Math.cos(a) * 10.0, Math.sin(f * Math.PI * 2) * 3.0, Math.sin(a) * 10.0);
+            Vec3 to = point.subtract(this.position());
+            velocity = to.lengthSqr() > 1.0E-4 ? to.normalize().scale(Math.min(CRUISE_SPEED * 2.0, to.length() * 0.2)) : Vec3.ZERO;
+            this.faceDirection(new Vec3(-Math.sin(a), 0.0, Math.cos(a)), 6.0F);
+        } else {
+            // A roll (the renderer turns it over and over): it swims on as it rolls.
+            velocity = this.getLookAngle().multiply(1.0, 0.0, 1.0).normalize().scale(CRUISE_SPEED * this.tempo());
+        }
         return velocity;
     }
 
@@ -427,7 +628,17 @@ public class DriftWhale extends Mob implements ItemSteerable {
         this.humCooldown = 200 + this.random.nextInt(200);
         this.humTicks = 60;
         this.entityData.set(DATA_HUMMING, true);
-        level.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.CONDUIT_AMBIENT, this.getSoundSource(), 4.0F, 0.5F);
+        // Its own voice: the bigger, the deeper.
+        float pitch = Mth.clamp(0.5F / this.getScale(), 0.38F, 0.85F);
+        level.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.CONDUIT_AMBIENT, this.getSoundSource(), 4.0F, pitch);
+        if (!this.answering) {
+            // The others answer, each in its own time.
+            for (DriftWhale other : level.getEntitiesOfClass(DriftWhale.class, this.getBoundingBox().inflate(48.0), w -> w != this)) {
+                if (other.answerIn <= 0 && other.humTicks <= 0) {
+                    other.answerIn = 15 + other.random.nextInt(50);
+                }
+            }
+        }
         for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, this.getBoundingBox().inflate(16.0))) {
             ModAdvancements.award(player, "whale_song");
         }

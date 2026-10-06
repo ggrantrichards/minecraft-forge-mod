@@ -61,10 +61,25 @@ public class LeviathanPedestalBlock extends Block {
         return InteractionResult.SUCCESS;
     }
 
-    // The egg is home: light the pedestal and every Maw Eye in the skull, and call two Watchers.
+    // The egg is home: light the pedestal and the four eyes of the skull (the Maw: wake it now
+    // with a Portal Lens), and call two Watchers to bear witness.
     public static void enshrine(ServerLevel level, BlockPos pos) {
         level.setBlock(pos, level.getBlockState(pos).setValue(LIT, true), Block.UPDATE_ALL);
-        for (BlockPos p : BlockPos.betweenClosed(pos.offset(-REACH, -8, -REACH), pos.offset(REACH, 20, REACH))) {
+        // The skull's four eyes: asked of the Leviathan the pedestal is in (they're far up its body).
+        var start = level.structureManager().getStructureWithPieceAt(pos, holder -> holder.is(com.ggrantrichards.astralend.maze.MazeScoping.LEVIATHAN));
+        java.util.List<BlockPos> eyes = new java.util.ArrayList<>();
+        if (start.isValid()) {
+            for (var piece : start.getPieces()) {
+                if (piece instanceof com.ggrantrichards.astralend.world.structure.LeviathanHeadPiece head) {
+                    eyes.addAll(head.eyes());
+                }
+            }
+        } else {
+            for (BlockPos p : BlockPos.betweenClosed(pos.offset(-REACH, -8, -REACH), pos.offset(REACH, 20, REACH))) {
+                eyes.add(p.immutable());
+            }
+        }
+        for (BlockPos p : eyes) {
             BlockState s = level.getBlockState(p);
             if (s.is(ModBlocks.MAW_EYE.get()) && !s.getValue(MawEyeBlock.LIT)) {
                 level.setBlock(p, s.setValue(MawEyeBlock.LIT, true), Block.UPDATE_ALL);
@@ -80,6 +95,7 @@ public class LeviathanPedestalBlock extends Block {
             var watcher = ModEntities.WATCHER.get().create(level, EntitySpawnReason.EVENT);
             if (watcher != null) {
                 watcher.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, (float) Math.toDegrees(a) + 90.0F, 0.0F);
+                watcher.linger(600);
                 level.addFreshEntity(watcher);
             }
         }

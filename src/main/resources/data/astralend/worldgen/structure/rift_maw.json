@@ -1,7 +1,0 @@
-{
-  "type": "astralend:rift_maw",
-  "biomes": "#astralend:has_structure/rift_maw",
-  "step": "surface_structures",
-  "spawn_overrides": {},
-  "terrain_adaptation": "none"
-}

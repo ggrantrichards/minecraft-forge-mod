@@ -177,7 +177,7 @@ public final class ClientScreenshots {
         });
     }
 
-    // One of a shot's styles that changes the world: flare=<phase>, clear, bridges or wake (see
+    // One of a shot's styles that changes the world: flare=<phase>, clear, bridges or wake=<throat> (see
     // the comments in each). `here` is the camera's position.
     static void event(ServerLevel end, BlockPos here, String style) {
         Sunstorms flares = Sunstorms.get(end);
@@ -189,6 +189,14 @@ public final class ClientScreenshots {
             for (Entity other : end.getEntities((Entity) null, new AABB(here).inflate(32.0),
                     e -> !(e instanceof net.minecraft.world.entity.player.Player))) {
                 other.discard();
+            }
+        }
+        if (style.startsWith("bridges=")) {
+            // The maze on a Leviathan's tower, all its bridges lit (bridges=x;y;z, its first platform).
+            String[] c = style.substring(8).split(";");
+            BlockPos from = new BlockPos(Integer.parseInt(c[0]), Integer.parseInt(c[1]), Integer.parseInt(c[2]));
+            for (int id = 0; id < 4; id++) {
+                com.ggrantrichards.astralend.maze.MazeScoping.lightBridges(end, from, id);
             }
         }
         if (style.equals("bridges")) {
@@ -226,20 +234,17 @@ public final class ClientScreenshots {
                 default -> LOGGER.error("[AstralEnd screenshots] unknown event {}", style);
             }
         }
-        if (style.equals("wake")) {
-            // A Rift Maw, woken: light its eyes and open its throat.
-            BlockPos throat = null;
-            for (BlockPos p : BlockPos.betweenClosed(here.offset(-40, -24, -40), here.offset(40, 16, 40))) {
+        if (style.startsWith("wake=")) {
+            // A Leviathan's Maw, woken: light its eyes and open its throat (wake=x;y;z, the throat).
+            String[] c = style.substring(5).split(";");
+            BlockPos throat = new BlockPos(Integer.parseInt(c[0]), Integer.parseInt(c[1]), Integer.parseInt(c[2]));
+            for (BlockPos p : BlockPos.betweenClosed(throat.offset(-44, -24, -44), throat.offset(44, 32, 44))) {
                 var state = end.getBlockState(p);
                 if (state.is(ModBlocks.MAW_EYE.get())) {
                     end.setBlock(p, state.setValue(com.ggrantrichards.astralend.maw.MawEyeBlock.LIT, true), 2);
-                } else if (throat == null && state.is(ModBlocks.MAW_THROAT.get())) {
-                    throat = p.immutable();
                 }
             }
-            if (throat != null) {
-                com.ggrantrichards.astralend.maw.MawNetwork.wake(end, throat, null);
-            }
+            com.ggrantrichards.astralend.maw.MawNetwork.wake(end, throat, null);
         }
     }
 

@@ -1,7 +1,0 @@
-{
-  "type": "astralend:whalefall",
-  "biomes": "#astralend:has_structure/whalefall",
-  "step": "surface_structures",
-  "spawn_overrides": {},
-  "terrain_adaptation": "none"
-}

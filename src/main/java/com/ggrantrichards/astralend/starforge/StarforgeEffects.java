@@ -60,7 +60,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 //                 heart per piece; 2+ pieces and Sunburn can't touch you. Weapons: targets glow for 5 s.
 //
 // Rift Pearls drop from every boss: the Ender Dragon, the Wither, the Warden, Elder Guardians - and
-// a Rift Maw gives one up when it's first woken.
+// a Leviathan's Maw gives one up when it's first woken.
 public final class StarforgeEffects {
     public static void register() {
         TickEvent.PlayerTickEvent.Post.BUS.addListener(StarforgeEffects::onPlayerTick);
