@@ -8,7 +8,7 @@ plugins {
     id 'net.minecraftforge.gradle' version '[7.0.17,8)'
 }
 
-version = '1.0.0-beta.3'
+version = '1.0.0-beta.4'
 group = 'com.ggrantrichards.astralend'
 
 // Minecraft 26.1+ runs on Java 25, so the mod targets Java 25 too.

@@ -45,7 +45,7 @@ eclipse 100 fwd=12 yaw=8 | Its heaven
 corona 100 fwd=10 yaw=-8 | and its hell
 vo 0.4 | Things live here that have never seen a sun.
 mob_hushback 75 orbit=50 | Hushback
-mob_hydragrip 70 orbit=-40 | Hydragrip
+mob_hydragrip_angled 70 orbit=-40 | Hydragrip
 mob_drift_whale_side 130 track=0.12 | Drift Whale
 vo 0.3 | Some will call you to the edge.
 mob_mirror_wretch_reared 75 orbit=30 | Mirror Wretch
