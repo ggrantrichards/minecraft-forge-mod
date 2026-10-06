@@ -32,7 +32,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.phys.Vec3;
 
-// A Star Chart, given by the Watcher or found in ruins. It marks a place in the End for you to
+// A Star Chart, found in ruins. It marks a place in the End for you to
 // find: the nearest of a structure picked at random (a crater, a relay, a Leviathan...), or, if none
 // is in reach, the nearest region of a far-off biome. Charts found in chests start out unread and
 // fill in the first time they're used in the End. Use one and a thread of starlight points the way;

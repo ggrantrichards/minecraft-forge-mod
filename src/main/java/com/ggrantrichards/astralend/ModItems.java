@@ -137,7 +137,6 @@ public final class ModItems {
     public static final RegistryObject<Item> STARSAP = simple("starsap");
     public static final RegistryObject<Item> HOLLOW_THORN = register("hollow_thorn", com.ggrantrichards.astralend.item.HollowThornItem::new,
         new Item.Properties().durability(64));
-    public static final RegistryObject<Item> GLOAMGRUB_SPAWN_EGG = spawnEgg("gloamgrub", ModEntities.GLOAMGRUB);
     public static final RegistryObject<Item> SHARDBACK_SPAWN_EGG = spawnEgg("shardback", ModEntities.SHARDBACK);
 
     private static net.minecraft.tags.TagKey<net.minecraft.world.level.block.entity.BannerPattern> patternTag(String name) {

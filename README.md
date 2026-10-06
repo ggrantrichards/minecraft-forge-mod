@@ -55,10 +55,16 @@ From playing beta.3. These replace what the distillation's notes below say about
   hunts it rears up like a cobra, over two blocks tall, its back legs still on the ground, and strikes
   down from there. Down its throat hang five vocal sacs - one for every voice it has stolen - that
   swell in turn as it calls you, in voices you know, from the void's edge.
-- **The Hydragrip is redrawn** in the vanilla style: sleek and otter-built, high on webbed, clawed feet; dark indigo skin
-  with rows of cyan lights down its back and flanks; a long neck, a wolf-like head with small dark
-  eyes, small pink frills, and a long tail ending in a striped violet fin.
-- **The Watcher's eye is white and cyan again** (the red-and-orange nebula eye is gone).
+- **The Hydragrip is redrawn** in the vanilla style: a low, newt-built swimmer on short webbed and clawed
+  legs, with a flat head and small dark eyes, dark indigo skin with rows of cyan lights down its back
+  and flanks, tiny pink gill frills, and a striped violet fin on its tail.
+- **The Watcher's eye is white and cyan again** (the red-and-orange nebula eye is gone), and it gives no
+  Star Chart now: look straight at it and it teleports away, to turn up further on toward the
+  Leviathan. Charts are the Void Wanderer's alone.
+- **The Void Wanderer's study is gentler:** a faint ring of purple sparks round your legs instead of a
+  storm of white ones, from four or five blocks off; it tries once, gives up if you move, and no
+  Wanderer comes for you again for five minutes.
+- **The Gloamgrub is gone;** fireflies drift through the Hollow Roots instead.
 - **Summoned Watchers stay.** A Watcher from a spawn egg or a command hangs where it's put; the two
   the pedestal calls stay for half a minute. (A wild one still fades when you look straight at it or
   come within 24 blocks - that's how it leads you.)
@@ -66,8 +72,7 @@ From playing beta.3. These replace what the distillation's notes below say about
   - **The Hollow Roots**, under the Hollow Isles: caves through the old root mass, some opening out
     through the islands' undersides. Hollow Glowcaps light their floors, dead roots hang from their
     roofs, and **Starsap** - the dead Nullwood's amber - glows in the walls (a long-burning fuel, and a
-    glowing block). **Gloamgrubs** graze the glowcaps: fat, harmless, lit down their backs, brighter
-    when they've eaten.
+    glowing block). Fireflies drift in the dark.
   - **The Crystal Vaults**, under the Shattered Crags: geodes drifting in the void below the shards,
     Nightstone outside and Glimmer Crystal within, cracked open on one side. In each waits a
     **Shardback**, folded down among the crystals and looking like one of them, until you come close.
@@ -141,7 +146,7 @@ centre.
 - **Its mobs:**
   - the **Hushback**, a see-through grazer whose herd blinks away when one is hurt; it gives fleece
     and meat;
-  - the **Hydragrip**, sleek, dark and cyan-spotted; it hunts endermites and gives a pearl;
+  - the **Hydragrip**, a dark newt lit with cyan; it hunts endermites and gives a pearl;
   - the **Mirror Wretch** (the Choir since beta.3), which prowls the border between the halves, throws familiar sounds from the
     void's edge to lure you, and hunts endermen. Endermen that wander in scream and flee.
 
@@ -543,13 +548,13 @@ creative tab, and its own behaviour. These are in-game screenshots taken on ever
 | Mob | Where | What it does | Leaves behind |
 |---|---|---|---|
 | **End Pollinator** | Nebula Fields, Chorus Thicket | A little jellyfish-like drifter carrying a glowing sac of chorus pollen. Floats between glowing plants and hovers over them; a pollinated plant spreads to the ground beside it. Starblooms tempt it and make it breed. | **Glowing Spores**, every 5-10 minutes, like a chicken lays eggs. Killing it drops nothing. |
-| **Void Wanderer** | Hollow Isles, Shattered Observatory | A drifting sentinel of End City purpur with void crystal set in its seams, one great glass lens and a spinning purpur ring. It floats over and studies you: **stand still for 5 seconds** and it leaves you a **Chart Fragment** and drifts away. Each one studies each player once. Hit it and it looses homing shulker bullets back and blinks away when hurt. | Chart Fragment (for letting it chart you); its **Cracked Lens** if killed |
+| **Void Wanderer** | Hollow Isles, Shattered Observatory | A drifting sentinel of End City purpur with void crystal set in its seams, one great glass lens and a spinning purpur ring. Now and then it floats over and studies you, a faint ring of sparks sweeping your legs: **stand still for 5 seconds** and it leaves you a **Chart Fragment**; move, and it gives up. Either way it drifts away. Each one tries each player once, one at a time, and none comes for you again for five minutes. Hit it and it looses homing shulker bullets back and blinks away when hurt. | Chart Fragment (for letting it chart you); its **Cracked Lens** if killed |
 | **Umbral Stalker** | Hollow Isles (hostile) | A hunched shadow brute that walks on its knuckles, with bone tusks, dark-matter crystals on its back and a violet rift in its chest. Unseen until it picks you as prey, it **senses you through walls**, creeps up while your back is turned and pounces. While it hunts it **snuffs out lights** for good (only with `mobGriefing` on). It **fears fire**: burn it (flint and steel, Fire Aspect, Flame, or a torch in your hand) and it runs, then comes back once it's out. | **Umbral Membrane** |
 | **Cinder Mite** | The Corona (hostile) | Glowing burrowers that come in swarms of about four, set you on fire, and burrow back into the stone after a minute. Immune to fire; **water kills them** in about two seconds. | **Cinder**, a fuel (smelts 4 items) |
 | **Void Ray** | The Corona | A flat manta with a back as dark as the void and gold-edged wings; it rests on the ground, then glides in wide circles, whole flocks riding the Sunstorms. **Shear it** while its wings shimmer for **Ray Film**; they fill again in the next storm's afterglow. | Ray Film (sheared, not killed) |
 | **The Hollow** | Hollow Isles, Comet Wake (rare, one at a time) | A small singularity that pulls you and your dropped items in. Items it swallows are **kept, not destroyed**: it drops them when it dies or collapses (after 2-3 minutes). You can only hurt it while its ring **flickers**. | **Abyss Shard**, only from a kill |
 | **Drift Whale** | The open void between islands (one at a time) | A huge, translucent whale that swims slowly through the void, grazes on chorus and hums; the points of light on its skin are **bioluminescent** and glow in the dark. 400 health; it never fights back, it flees. Feed it Chorus Fruit, and **ride it** with a **Chorus Flower on a Stick**. Very rarely sheds a glowing **Whalelight Scale**. | Three advancements: *Something Big Out There*, *Whale Song*, *Tagalong* |
-| **The Watcher** | Shattered Observatory (only when you're alone) | A floating sentinel of pale stone with one great eye, gold bands, glowing runes and shards circling it, at the edge of sight, there for a few seconds. Walk toward it and it's gone. **Catch it in a spyglass** and it vanishes too, leaving you a **Star Chart**. | Star Chart, and the advancement *Something Looks Back* |
+| **The Watcher** | Shattered Observatory (only when you're alone) | A floating sentinel of pale stone with one great eye, gold bands, glowing runes and shards circling it, at the edge of sight, there for a few seconds. Walk toward it and it's gone; look straight at it and it teleports away - and turns up again further on, always toward the nearest Leviathan. It gives nothing: charts are the Void Wanderer's. | The advancement *Something Looks Back* (catch it in a spyglass) |
 | **Spire Wyrm** (mini-boss) | Atop each Resonant Spire, Glimmering Crags | A serpent kin of the Ender Dragon. It **sleeps coiled on its nest** until you climb near it or strike it; then it wakes with a roar and a wave of darkness and rises off the spire. It coils through the tower, lunges and breathes lingering void breath, and flying it shrugs off half of every blow, but **ring a bell** as it passes and it crashes, stunned, onto the ledge. | The **Resonant Key** (opens the Resonance Vault) and a **Rift Pearl** |
 | **Live Comet** | The sky over the Comet Wake | A tumbling lump of meteoric rock crusted with comet ice, trailing light; it lands and leaves a small crater with blue ice and meteoric iron. A **Lodestar** keeps them off your builds. | Its crater |
 

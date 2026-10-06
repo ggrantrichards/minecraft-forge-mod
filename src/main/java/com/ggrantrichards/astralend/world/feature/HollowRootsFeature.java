@@ -1,7 +1,6 @@
 package com.ggrantrichards.astralend.world.feature;
 
 import com.ggrantrichards.astralend.ModBlocks;
-import com.ggrantrichards.astralend.entity.ModEntities;
 import com.mojang.serialization.MapCodec;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,7 +19,7 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 // and tunnels running from it - out, and down, and some out through the island's underside, so you
 // can find a way in from below. Inside it's never quite dark: Hollow Glowcaps on the floors, the
 // roots that are left hanging from the roofs, Starsap - the old trees' amber - glowing in the walls,
-// and Gloamgrubs grazing.
+// and fireflies drifting in the dark (the biome's ambient particles).
 //
 // It stays within 23 blocks of the chunk's middle (a feature may only write to the chunks next to its own).
 public record HollowRootsFeature() implements Feature {
@@ -71,19 +69,6 @@ public record HollowRootsFeature() implements Feature {
             }
         }
         decorate(level, random, carved);
-        // A few Gloamgrubs, grazing.
-        int grubs = 1 + random.nextInt(2);
-        for (int i = 0; i < grubs && !carved.isEmpty(); i++) {
-            BlockPos at = carved.get(random.nextInt(carved.size()));
-            if (level.getBlockState(at.below()).isSolid() && level.getBlockState(at).isAir() && level.getBlockState(at.above()).isAir()) {
-                var grub = ModEntities.GLOAMGRUB.get().create(level.getLevel(), EntitySpawnReason.CHUNK_GENERATION);
-                if (grub != null) {
-                    grub.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, random.nextFloat() * 360.0F, 0.0F);
-                    grub.setPersistenceRequired();
-                    level.addFreshEntity(grub);
-                }
-            }
-        }
         return !carved.isEmpty();
     }
 

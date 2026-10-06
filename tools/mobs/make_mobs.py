@@ -1271,7 +1271,7 @@ def hg_plain(face, px, py, fw, fh, rnd):
 
 
 def hg_head(face, px, py, fw, fh, rnd):
-    if face == "north" and py == 2 and px in (0, 1, fw - 2, fw - 1):
+    if face == "north" and py == 1 and px in (0, 1, fw - 2, fw - 1):
         edge = px in (0, fw - 1)
         return hexc("0b0a14") if edge else hexc("d6e8f0")              # a small dark eye with a light glint
     if face == "up" and py == 2 and px == fw // 2:
@@ -1292,7 +1292,7 @@ def hg_muzzle(face, px, py, fw, fh, rnd):
 def hg_jaw(face, px, py, fw, fh, rnd):
     if face == "up":
         return hexc("4a2440") if 0 < px < fw - 1 and py > 0 else HG_BELLY[1]   # the inside of its mouth
-    return HG_BELLY[rnd.choice((0, 1, 1, 2))]
+    return hg_flat(face, rnd, -1) if face != "down" else HG_BELLY[rnd.choice((0, 1, 1, 2))]
 
 
 FRILL = [hexc("a8587a"), hexc("cc7598"), hexc("e69ab6")]
@@ -1323,30 +1323,30 @@ def hg_foot(face, px, py, fw, fh, rnd):
 
 
 def _hg_leg(name, side, z):
-    return Part(name, (side * 3.5, 17, z, 0, 0, side * -0.08), [B(-1.5, 0, -1.5, 3, 6, 3, hg_plain, key="hgleg")], [
-        Part(name + "_foot", (0, 6, -0.5, 0, 0, side * 0.08), [B(-2, 0, -3, 4, 1, 5, hg_foot, key="hgfoot")]),
+    return Part(name, (side * 3.5, 19, z, 0, 0, side * -0.15), [B(-1.5, 0, -1.5, 3, 4, 3, hg_plain, key="hgleg")], [
+        Part(name + "_foot", (0, 4, -0.5, 0, 0, side * 0.15), [B(-2, 0, -3, 4, 1, 5, hg_foot, key="hgfoot")]),
     ])
 
 
 def _hg_frills(side):
     out = []
-    for k, (dy, rz) in enumerate(((-5, -0.4), (-3.5, 0.0), (-2, 0.4))):
-        out.append(Part(f"frill_{'l' if side > 0 else 'r'}{k}", (side * 3.5, dy, 0.5, 0, side * -0.8, side * rz + (0 if side > 0 else math.pi)),
-                        [B(0, -1, 0, 3, 2, 0, hg_frill, hg_frill_glow, key="hgfrill")]))
+    for k, (dy, rz) in enumerate(((-4, -0.3), (-2.5, 0.0), (-1, 0.3))):
+        out.append(Part(f"frill_{'l' if side > 0 else 'r'}{k}", (side * 4, dy, 0.5, 0, side * -1.1, side * rz + (0 if side > 0 else math.pi)),
+                        [B(0, -0.5, 0, 2, 1, 0, hg_frill, hg_frill_glow, key="hgfrill")]))
     return out
 
 
 HYDRAGRIP = Mob("hydragrip", (128, 64), [
-    Part("body", (0, 14, 0), [B(-4, -3.5, -6, 8, 7, 14, hg_skin, hg_skin_glow),
-                              B(-3.5, -3, 8, 7, 6, 3, hg_skin, hg_skin_glow)], [
-        Part("neck", (0, -1.5, -5, -0.8, 0, 0), [B(-2.5, -2.5, -8, 5, 5, 8, hg_skin, hg_skin_glow)], [
-            Part("head", (0, -0.5, -7.5, 0.8, 0, 0), [B(-3.5, -6, -5, 7, 6, 6, hg_head, hg_head_glow),
-                                                      B(-2, -3, -8, 4, 3, 3, hg_muzzle)],
-                 [Part("jaw", (0, 0, -2), [B(-2, 0, -6, 4, 1, 6, hg_jaw)])] + _hg_frills(1) + _hg_frills(-1)),
+    Part("body", (0, 16, 0), [B(-4, -3, -6, 8, 6, 14, hg_skin, hg_skin_glow),
+                              B(-3.5, -2.5, 8, 7, 5, 2, hg_skin, hg_skin_glow)], [
+        Part("neck", (0, -0.5, -5, -0.3, 0, 0), [B(-3, -2.5, -4, 6, 5, 4, hg_plain)], [
+            Part("head", (0, 0, -3.5, 0.3, 0, 0), [B(-4, -4, -5, 8, 5, 6, hg_head, hg_head_glow),
+                                                   B(-3, -2, -8, 6, 2, 3, hg_muzzle)],
+                 [Part("jaw", (0, 0, -2), [B(-3, 0, -6, 6, 1, 4, hg_jaw)])] + _hg_frills(1) + _hg_frills(-1)),
         ]),
-        Part("tail", (0, -1, 11, -0.25, 0, 0), [B(-2.5, -2.5, 0, 5, 5, 7, hg_skin, hg_skin_glow)], [
-            Part("tail_mid", (0, 0, 7, 0.15, 0, 0), [B(-2, -2, 0, 4, 4, 6, hg_skin, hg_skin_glow), B(0, -4, 1, 0, 2, 5, hg_fin)], [
-                Part("tail_tip", (0, 0, 6, 0.25, 0, 0), [B(-1, -1.5, 0, 2, 3, 5, hg_skin, hg_skin_glow), B(0, -4, 0, 0, 8, 9, hg_fin)]),
+        Part("tail", (0, -0.5, 10, -0.1, 0, 0), [B(-3, -2.5, 0, 6, 5, 6, hg_skin, hg_skin_glow)], [
+            Part("tail_mid", (0, 0.5, 6, 0.05, 0, 0), [B(-2, -2, 0, 4, 4, 6, hg_skin, hg_skin_glow)], [
+                Part("tail_tip", (0, 0, 6, 0.05, 0, 0), [B(-1, -1.5, 0, 2, 3, 5, hg_skin, hg_skin_glow), B(0, -3.5, -1, 0, 7, 7, hg_fin)]),
             ]),
         ]),
     ]),
@@ -1567,58 +1567,6 @@ CURATOR = Mob("curator", (64, 64), [
 
 # ---- The caves (after beta.3).
 
-# Gloamgrub: a fat, soft grub of the Hollow Roots - pale, ringed, and down its back a row of lantern-
-# lights that brighten when it has eaten. Small dark eyes, two little mandibles.
-GRUB = ramp("6e6278", "efe6dc")
-GRUB_GLOW = hexc("f6d27a")
-
-
-def grub_skin(face, px, py, fw, fh, rnd):
-    def ring(face, px, py, fw, fh):
-        return False
-    base = smooth(GRUB, 0.95, 0.45, belly=ramp("8a7a80", "c8bcbc"))(face, px, py, fw, fh, rnd)
-    if face in ("east", "west", "north", "south") and py == 0:
-        return GRUB[2]                                                  # the fold between rings
-    return base
-
-
-def grub_lantern(face, px, py, fw, fh, rnd):
-    if face == "up" and abs(px + 0.5 - fw / 2) < 1.1 and abs(py + 0.5 - fh / 2) < 1.1:
-        return hexc("e8b860")
-    return grub_skin(face, px, py, fw, fh, rnd)
-
-
-def grub_lantern_glow(face, px, py, fw, fh, rnd):
-    if face == "up" and abs(px + 0.5 - fw / 2) < 1.1 and abs(py + 0.5 - fh / 2) < 1.1:
-        return GRUB_GLOW
-    return None
-
-
-def grub_head(face, px, py, fw, fh, rnd):
-    if face == "north":
-        if py == 1 and px in (1, fw - 2):
-            return hexc("140c10")
-        if py == fh - 1 and 1 < px < fw - 2:
-            return hexc("4a2a2a")
-    return grub_skin(face, px, py, fw, fh, rnd)
-
-
-def grub_mandible(face, px, py, fw, fh, rnd):
-    return hexc("5a3a2a") if py < fh - 1 else hexc("2a1a14")
-
-
-GLOAMGRUB = Mob("gloamgrub", (64, 64), [
-    Part("head", (0, 24, -6), [B(-2.5, -5, -4, 5, 5, 4, grub_head)], [
-        Part("mandible_l", (1.5, -1, -4, 0, -0.3, 0), [B(-0.5, -0.5, -2, 1, 1, 2, grub_mandible, key="gmand")]),
-        Part("mandible_r", (-1.5, -1, -4, 0, 0.3, 0), [B(-0.5, -0.5, -2, 1, 1, 2, grub_mandible, key="gmand")]),
-    ]),
-    Part("seg1", (0, 24, -2), [B(-3.5, -6.5, -4, 7, 6.5, 4, grub_lantern, grub_lantern_glow, key="gseg1")]),
-    Part("seg2", (0, 24, 2), [B(-3.5, -6.5, -4, 7, 6.5, 4, grub_lantern, grub_lantern_glow, key="gseg1")]),
-    Part("seg3", (0, 24, 5), [B(-3, -5.5, -3, 6, 5.5, 3, grub_lantern, grub_lantern_glow)]),
-    Part("seg4", (0, 24, 7.5), [B(-2, -4, -2.5, 4, 4, 2.5, grub_skin)]),
-], egg=(GRUB[4], GRUB_GLOW))
-
-
 # Shardback: the Crystal Vaults' hunter. A low, heavy, dark body, its back grown over in shards of
 # Glimmer Crystal that catch the light; a blunt head with two pairs of small violet eyes. Folded
 # down, it's one more crystal cluster on the vault floor.
@@ -1669,13 +1617,13 @@ SHARDBACK = Mob("shardback", (64, 64), [
 ], egg=(SHARD_HIDE[2], SHARD_CRYSTAL[4]))
 
 MOBS = [POLLINATOR, WANDERER, STALKER, VOID_RAY, WHALE, WATCHER, SPIRE_WYRM, HUSHBACK, HYDRAGRIP, MIRROR_WRETCH,
-        HOLLOWBACK, CURATOR, GLOAMGRUB, SHARDBACK]
+        HOLLOWBACK, CURATOR, SHARDBACK]
 # Cut by the distillation (their definitions stay above, unused): the Cinder Mite, the Hollow and the
 # Live Comet. Each mob's texture is painted from a seed fixed by its place in the original list, so
 # cutting some doesn't repaint the rest.
 SEED_INDEX = {"pollinator": 0, "void_wanderer": 1, "umbral_stalker": 2, "cinder_mite": 3, "void_ray": 4, "hollow": 5,
               "drift_whale": 6, "watcher": 7, "live_comet": 8, "spire_wyrm": 9, "hushback": 10, "hydragrip": 11,
-              "mirror_wretch": 12, "hollowback": 13, "curator": 14, "gloamgrub": 15, "shardback": 16}
+              "mirror_wretch": 12, "hollowback": 13, "curator": 14, "shardback": 16}
 for _mob in MOBS:
     auto_uv(_mob)          # boxes drawn without a texture position get one
 

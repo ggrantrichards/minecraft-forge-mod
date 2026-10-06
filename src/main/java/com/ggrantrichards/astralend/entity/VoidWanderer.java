@@ -41,9 +41,11 @@ import org.jspecify.annotations.Nullable;
 // Void Wanderer: a purpur sentinel left by the End's builders, still drifting the dark and charting
 // whatever it finds.
 //
-// When it notices a player it floats over and studies them, a ring of light sweeping up and down them.
-// If the player stands still for the whole study (5 seconds) it leaves them a Chart Fragment - a
-// shard of the star map it carries - and drifts away. Each Wanderer studies each player once. Attack
+// Now and then, when it notices a player nearby, it floats over and studies them, a faint ring of
+// sparks sweeping their legs and body. If the player stands still for the whole study (5 seconds) it
+// leaves them a Chart Fragment - a shard of the star map it carries - and drifts away; if they move, or
+// don't stand still for it, it gives up and drifts away all the same. Each Wanderer tries each player
+// once; one at a time, and after a study no Wanderer comes for that player for five minutes. Attack
 // it and it looses homing starbolts back (shulker bullets: they lift you if they hit), and it blinks
 // away when badly hurt; killed, it drops its Cracked Lens.
 public class VoidWanderer extends PathfinderMob {
@@ -51,8 +53,11 @@ public class VoidWanderer extends PathfinderMob {
     private static final EntityDataAccessor<Integer> DATA_SCAN = SynchedEntityData.defineId(VoidWanderer.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_HOSTILE = SynchedEntityData.defineId(VoidWanderer.class, EntityDataSerializers.BOOLEAN);
 
+    private static final long STUDY_REST = 6000L;          // ticks between studies of one player, by any Wanderer
+    private static final java.util.Map<UUID, Long> LAST_STUDIED = new java.util.concurrent.ConcurrentHashMap<>();
     private final Set<UUID> scanned = new HashSet<>();
     private int departTicks = -1;
+    private @Nullable UUID studying;
 
     public VoidWanderer(EntityType<? extends VoidWanderer> type, Level level) {
         super(type, level);
@@ -192,10 +197,26 @@ public class VoidWanderer extends PathfinderMob {
         this.entityData.set(DATA_HOSTILE, input.getBooleanOr("Hostile", false));
     }
 
-    // Floats in front of a player and studies them. Moving more than a little starts it over.
+    // Done with a player: rise and drift away from them, then fade out (aiStep).
+    private void leave(Player from) {
+        this.departTicks = 160;
+        this.getNavigation().stop();
+        Vec3 away = this.position().subtract(from.position()).multiply(1.0, 0.0, 1.0).normalize().scale(20.0);
+        this.getMoveControl().setWantedPosition(this.getX() + away.x, this.getY() + 8.0, this.getZ() + away.z, 1.0);
+    }
+
+    // Another Wanderer is studying this player already.
+    private static boolean beingStudied(VoidWanderer self, Player player) {
+        return !self.level().getEntitiesOfClass(VoidWanderer.class, player.getBoundingBox().inflate(32.0),
+            w -> w != self && player.getUUID().equals(w.studying)).isEmpty();
+    }
+
+    // Floats in front of a player and studies them. Moving more than a little spoils it.
     private class ScanGoal extends Goal {
         private @Nullable Player player;
         private @Nullable Vec3 standingAt;
+        private int waited;
+        private boolean done;
 
         ScanGoal() {
             this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
@@ -204,25 +225,42 @@ public class VoidWanderer extends PathfinderMob {
         @Override
         public boolean canUse() {
             VoidWanderer self = VoidWanderer.this;
-            if (self.isHostile() || self.departTicks >= 0 || self.random.nextInt(reducedTickDelay(10)) != 0) {
+            if (self.isHostile() || self.departTicks >= 0 || self.random.nextInt(reducedTickDelay(40)) != 0) {
                 return false;
             }
-            List<Player> players = self.level().getEntitiesOfClass(Player.class, self.getBoundingBox().inflate(16.0),
-                p -> p.isAlive() && !p.isSpectator() && !self.scanned.contains(p.getUUID()) && self.hasLineOfSight(p));
+            long now = self.level().getGameTime();
+            List<Player> players = self.level().getEntitiesOfClass(Player.class, self.getBoundingBox().inflate(12.0),
+                p -> p.isAlive() && !p.isSpectator() && !self.scanned.contains(p.getUUID()) && self.hasLineOfSight(p)
+                    && now - LAST_STUDIED.getOrDefault(p.getUUID(), -STUDY_REST) >= STUDY_REST && !beingStudied(self, p));
             this.player = players.isEmpty() ? null : players.get(0);
-            return this.player != null;
+            if (this.player == null) {
+                return false;
+            }
+            this.waited = 0;
+            this.done = false;
+            self.studying = this.player.getUUID();
+            self.scanned.add(this.player.getUUID());       // one try per player, whatever comes of it
+            return true;
         }
 
         @Override
         public boolean canContinueToUse() {
             VoidWanderer self = VoidWanderer.this;
-            return this.player != null && this.player.isAlive() && !self.isHostile() && self.departTicks < 0
-                && self.distanceToSqr(this.player) < 24 * 24;
+            return !this.done && this.player != null && this.player.isAlive() && !self.isHostile() && self.departTicks < 0
+                && self.distanceToSqr(this.player) < 20 * 20;
         }
 
         @Override
         public void stop() {
-            VoidWanderer.this.entityData.set(DATA_SCAN, 0);
+            VoidWanderer self = VoidWanderer.this;
+            if (this.player != null) {
+                LAST_STUDIED.put(this.player.getUUID(), self.level().getGameTime());
+                if (self.departTicks < 0 && !self.isHostile()) {
+                    self.leave(this.player);         // studied or not, it has seen enough
+                }
+            }
+            self.studying = null;
+            self.entityData.set(DATA_SCAN, 0);
             this.player = null;
             this.standingAt = null;
         }
@@ -240,19 +278,25 @@ public class VoidWanderer extends PathfinderMob {
                 return;
             }
             self.getLookControl().setLookAt(target, 30.0F, 30.0F);
-            // Hover about three blocks in front of the player, at their eye level.
-            Vec3 front = target.getEyePosition().add(target.getViewVector(1.0F).multiply(1.0, 0.0, 1.0).normalize().scale(3.0));
+            // Hover four or five blocks in front of the player, a little below their eyes.
+            Vec3 front = target.getEyePosition().add(target.getViewVector(1.0F).multiply(1.0, 0.0, 1.0).normalize().scale(4.5));
             if (self.position().distanceToSqr(front) > 2.0) {
-                self.getMoveControl().setWantedPosition(front.x, front.y - 0.4, front.z, 0.8);
+                self.getMoveControl().setWantedPosition(front.x, front.y - 0.6, front.z, 0.8);
             }
-            if (self.distanceToSqr(target) > 36.0) {
+            if (++this.waited > 200 && self.getScanProgress() == 0) {
+                this.done = true;                    // ten seconds and they haven't stood still for it
+                return;
+            }
+            if (self.distanceToSqr(target) > 64.0) {
                 self.entityData.set(DATA_SCAN, 0);
                 this.standingAt = null;
                 return;
             }
             if (this.standingAt == null || this.standingAt.distanceToSqr(target.position()) > 0.25) {
-                if (this.standingAt != null && self.getScanProgress() > 10) {
-                    self.playSound(SoundEvents.BEACON_DEACTIVATE, 0.5F, 1.8F);  // the study is spoilt
+                if (this.standingAt != null && self.getScanProgress() > 0) {
+                    self.playSound(SoundEvents.BEACON_DEACTIVATE, 0.5F, 1.8F);  // the study is spoilt: it gives up
+                    this.done = true;
+                    return;
                 }
                 this.standingAt = target.position();
                 self.entityData.set(DATA_SCAN, 0);
@@ -261,13 +305,15 @@ public class VoidWanderer extends PathfinderMob {
             int progress = self.getScanProgress() + 1;
             self.entityData.set(DATA_SCAN, progress);
             ServerLevel level = (ServerLevel) self.level();
-            // The beam: a ring of light sweeping up and down the player.
-            double sweep = (progress % 40) / 40.0;
-            double y = target.getY() + target.getBbHeight() * (sweep < 0.5 ? sweep * 2 : 2 - sweep * 2);
-            for (int i = 0; i < 6; i++) {
-                double a = i * Math.PI / 3 + progress * 0.2;
-                level.sendParticles(ParticleTypes.END_ROD, target.getX() + Math.cos(a) * 0.6, y, target.getZ() + Math.sin(a) * 0.6,
-                    1, 0.0, 0.0, 0.0, 0.0);
+            // The beam: a faint ring of sparks sweeping from the feet to the chest (never across the eyes).
+            if (progress % 3 == 0) {
+                double sweep = (progress % 40) / 40.0;
+                double y = target.getY() + target.getBbHeight() * 0.7 * (sweep < 0.5 ? sweep * 2 : 2 - sweep * 2);
+                for (int i = 0; i < 3; i++) {
+                    double a = i * Math.PI * 2 / 3 + progress * 0.2;
+                    level.sendParticles(ParticleTypes.WITCH, target.getX() + Math.cos(a) * 0.6, y, target.getZ() + Math.sin(a) * 0.6,
+                        1, 0.0, 0.0, 0.0, 0.0);
+                }
             }
             if (progress % 20 == 0) {
                 self.playSound(SoundEvents.BEACON_AMBIENT, 0.6F, 2.0F);
@@ -282,10 +328,7 @@ public class VoidWanderer extends PathfinderMob {
                 if (shard != null) {
                     shard.setDeltaMovement(target.position().subtract(self.position()).normalize().scale(0.2));
                 }
-                self.departTicks = 160;
-                self.getNavigation().stop();
-                Vec3 away = self.position().subtract(target.position()).multiply(1.0, 0.0, 1.0).normalize().scale(20.0);
-                self.getMoveControl().setWantedPosition(self.getX() + away.x, self.getY() + 8.0, self.getZ() + away.z, 1.0);
+                this.done = true;
             }
         }
     }

@@ -22,7 +22,7 @@ your face: the End tells you things with sound and light.
 - **Hollow Isles:** the End's only forest, dim Nullwood on ring-shaped islands, Upwells beneath.
   Its variant, the **Deep Hollows**, hangs with Hollow Vines - and their black thorns carve pumpkins
   into violet Hollow Lanterns. Under it all, the **Hollow Roots**: caves through the dead roots, lit
-  by glowcaps and amber Starsap, where glowing Gloamgrubs graze.
+  by glowcaps and amber Starsap, where fireflies drift.
 - **Glimmering Crags:** Nightstone peaks of smoky Glimmer Crystal, and root caves where the Umbral
   Stalker waits. Its variant, the **Shattered Crags**, is split into shards over the void; below them
   drift the **Crystal Vaults**, geodes where a Shardback lies folded among the crystals.
@@ -48,12 +48,12 @@ spyglass, and only from here can you sight the constellations the Starforge need
 - **Drift Whales** travel in pods toward the Eclipse, no two alike - big leaders, calves by their
   mothers, curious ones and shy ones - answering each other's hums, rolling and breaching at play. Sing
   one a song (Memory Moss, a note block, Chorus Fruit) and it's yours to ride.
-- **Hushbacks**, clear-hided grazers whose herd blinks away when one is hurt; **Hydragrips**, sleek,
-  dark and cyan-spotted, which hunt endermites by the water; and the **Mirror Wretch**, a slithering worm with a
+- **Hushbacks**, clear-hided grazers whose herd blinks away when one is hurt; **Hydragrips**, dark
+  newts lit with cyan, which hunt endermites by the water; and the **Mirror Wretch**, a slithering worm with a
   round toothed mouth and a vocal sac for every voice it has stolen, calling you in voices you know from
   the void's edge.
-- **The Watcher** is only ever seen from the corner of your eye. Look straight at it and it fades - and
-  the next appears further along, leading you to a leviathan's remains.
+- **The Watcher** is only ever seen from the corner of your eye. Look straight at it and it teleports
+  away - and turns up further along, leading you to the Leviathan.
 - The **Umbral Stalker** in the Crags' caves, the **Void Wanderer**, the **Void Ray**, and Pollinators.
 
 {{Drift Whale}}

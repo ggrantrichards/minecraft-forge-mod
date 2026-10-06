@@ -56,7 +56,7 @@ public final class ModEntities {
         () -> EntityType.Builder.of(Hushback::new, MobCategory.CREATURE).sized(1.0F, 1.3F).eyeHeight(1.15F)
             .clientTrackingRange(10).build(ENTITY_TYPES.key("hushback")));
     public static final RegistryObject<EntityType<Hydragrip>> HYDRAGRIP = ENTITY_TYPES.register("hydragrip",
-        () -> EntityType.Builder.of(Hydragrip::new, MobCategory.CREATURE).sized(1.0F, 1.2F).eyeHeight(1.05F)
+        () -> EntityType.Builder.of(Hydragrip::new, MobCategory.CREATURE).sized(1.0F, 0.8F).eyeHeight(0.65F)
             .clientTrackingRange(8).build(ENTITY_TYPES.key("hydragrip")));
     public static final RegistryObject<EntityType<MirrorWretch>> MIRROR_WRETCH = ENTITY_TYPES.register("mirror_wretch",
         () -> EntityType.Builder.of(MirrorWretch::new, MobCategory.MONSTER).sized(1.2F, 2.2F).eyeHeight(2.0F)
@@ -71,9 +71,6 @@ public final class ModEntities {
             .clientTrackingRange(16).build(ENTITY_TYPES.key("curator")));
 
     // ---- The caves: the Hollow Roots' grub, and the Crystal Vaults' hunter.
-    public static final RegistryObject<EntityType<Gloamgrub>> GLOAMGRUB = ENTITY_TYPES.register("gloamgrub",
-        () -> EntityType.Builder.of(Gloamgrub::new, MobCategory.AMBIENT).sized(0.7F, 0.45F).eyeHeight(0.3F)
-            .clientTrackingRange(8).build(ENTITY_TYPES.key("gloamgrub")));
     public static final RegistryObject<EntityType<Shardback>> SHARDBACK = ENTITY_TYPES.register("shardback",
         () -> EntityType.Builder.of(Shardback::new, MobCategory.MONSTER).sized(1.1F, 1.0F).eyeHeight(0.7F)
             .clientTrackingRange(10).build(ENTITY_TYPES.key("shardback")));
@@ -92,7 +89,6 @@ public final class ModEntities {
             event.put(MIRROR_WRETCH.get(), MirrorWretch.createAttributes().build());
             event.put(HOLLOWBACK.get(), Hollowback.createAttributes().build());
             event.put(CURATOR.get(), Curator.createAttributes().build());
-            event.put(GLOAMGRUB.get(), Gloamgrub.createAttributes().build());
             event.put(SHARDBACK.get(), Shardback.createAttributes().build());
         });
         SpawnPlacementRegisterEvent.BUS.addListener(event -> {
@@ -105,7 +101,6 @@ public final class ModEntities {
             event.register(HUSHBACK.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::onSolidGround, replace);
             event.register(HYDRAGRIP.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::nearWater, replace);
             event.register(MIRROR_WRETCH.get(), SpawnPlacementTypes.ON_GROUND, ground, MirrorWretch::checkWretchSpawnRules, replace);
-            event.register(GLOAMGRUB.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::underRoof, replace);
             event.register(SHARDBACK.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::inCave, replace);
         });
     }
@@ -132,12 +127,6 @@ public final class ModEntities {
             }
         }
         return false;
-    }
-
-    // The Gloamgrub: on solid ground under a roof of rock (the Hollow Roots' caves).
-    private static <T extends net.minecraft.world.entity.Entity> boolean underRoof(
-        EntityType<T> type, LevelAccessor level, EntitySpawnReason reason, BlockPos pos, RandomSource random) {
-        return !level.getBlockState(pos.below()).isAir() && !level.canSeeSky(pos);
     }
 
     // The Umbral Stalker: only under a roof of rock, in the dark (the Glimmering Crags' root caves).

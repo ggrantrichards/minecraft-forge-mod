@@ -21,7 +21,6 @@ public final class ModModelLayers {
     public static final ModelLayerLocation MIRROR_WRETCH = layer("mirror_wretch");
     public static final ModelLayerLocation HOLLOWBACK = layer("hollowback");
     public static final ModelLayerLocation CURATOR = layer("curator");
-    public static final ModelLayerLocation GLOAMGRUB = layer("gloamgrub");
     public static final ModelLayerLocation SHARDBACK = layer("shardback");
 
     public static void register() {
@@ -38,7 +37,6 @@ public final class ModModelLayers {
             event.registerLayerDefinition(MIRROR_WRETCH, MobMeshes::mirrorWretch);
             event.registerLayerDefinition(HOLLOWBACK, MobMeshes::hollowback);
             event.registerLayerDefinition(CURATOR, MobMeshes::curator);
-            event.registerLayerDefinition(GLOAMGRUB, MobMeshes::gloamgrub);
             event.registerLayerDefinition(SHARDBACK, MobMeshes::shardback);
         });
         EntityRenderersEvent.RegisterRenderers.BUS.addListener(event -> {
@@ -54,7 +52,6 @@ public final class ModModelLayers {
             event.registerEntityRenderer(ModEntities.MIRROR_WRETCH.get(), MirrorWretchRenderer::new);
             event.registerEntityRenderer(ModEntities.HOLLOWBACK.get(), HollowbackRenderer::new);
             event.registerEntityRenderer(ModEntities.CURATOR.get(), CuratorRenderer::new);
-            event.registerEntityRenderer(ModEntities.GLOAMGRUB.get(), GloamgrubRenderer::new);
             event.registerEntityRenderer(ModEntities.SHARDBACK.get(), ShardbackRenderer::new);
         });
     }

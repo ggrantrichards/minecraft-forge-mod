@@ -4,14 +4,7 @@
       "argument": {
         "spawn_costs": {},
         "spawns_by_category": {
-          "monster": [],
-          "ambient": [
-            {
-              "type": "astralend:gloamgrub",
-              "count": 2,
-              "weight": 10
-            }
-          ]
+          "monster": []
         }
       },
       "modifier": "overlay"
@@ -42,9 +35,9 @@
       "argument": [
         {
           "particle": {
-            "type": "minecraft:spore_blossom_air"
+            "type": "minecraft:firefly"
           },
-          "probability": 0.002
+          "probability": 0.006
         }
       ],
       "modifier": "append"

@@ -964,8 +964,7 @@ MOB_SPAWNS = {
     "eclipse": {"creature": [("pollinator", 10, 3), ("hushback", 10, 4), ("hydragrip", 5, 2)],
                 "monster": [("minecraft:endermite", 3, 2), ("mirror_wretch", 6, 1)]},
     "corona": {"monster": [("mirror_wretch", 6, 1)]},
-    # The caves: the Hollow Roots' grubs (ambient, like bats), the Crystal Vaults' hunters.
-    "hollow_roots": {"ambient": [("gloamgrub", 10, 2)]},
+    # The caves: the Crystal Vaults' hunters.
     "crystal_vaults": {"monster": [("shardback", 6, 1)], "creature": [("void_ray", 4, 2)]},
 }
 
@@ -1239,7 +1238,6 @@ MOBS = [
     ("hollowback", "Hollowback"),
     ("curator", "The Curator"),
     # The caves
-    ("gloamgrub", "Gloamgrub"),
     ("shardback", "Shardback"),
 ]
 
@@ -1325,7 +1323,7 @@ def mobs_phase4():
                 parent=f"{NS}:end/something_big_out_there")
     advancement("tagalong", "minecraft:elytra", "Tagalong", "Fly alongside a Drift Whale for a whole minute",
                 parent=f"{NS}:end/whale_song", frame="challenge")
-    advancement("something_looks_back", rid("star_chart"), "Something Looks Back",
+    advancement("something_looks_back", "minecraft:spyglass", "Something Looks Back",
                 "Catch the Watcher in a spyglass", frame="goal", hidden=True)
 
 
@@ -1850,7 +1848,7 @@ def advancements_phase9():
                 criteria={"maze": {"trigger": "minecraft:player_generates_container_loot",
                                    "conditions": {"loot_tables": [rid("chests/constellation_maze")]}}})
     advancement("say_ahh", rid("portal_lens"), "Say Ahh", "Wake a Leviathan's Maw", parent=rid("end/hold_still"), frame="goal")
-    advancement("something_looks_back", rid("star_chart"), "Something Looks Back",
+    advancement("something_looks_back", "minecraft:spyglass", "Something Looks Back",
                 "Catch a glimpse of the Watcher through a spyglass", parent=rid("end/hold_still"), hidden=True)
     # The Corona
     advancement("weather_the_storm", rid("sunshade"), "Weather the Storm", "Be in the Corona when a Sunstorm dies down",
@@ -2624,15 +2622,13 @@ def caves():
               features_step4=[rid("hollow_isles_upwells")],
               features_step7=[rid("hollow_isles_stardust_veins"), rid("hollow_roots_caves")],
               features_step9=[rid("hollow_isles_voidgel"), rid("hollow_isles_stardust_underhangs")],
-              particle="minecraft:spore_blossom_air", particle_chance=0.002)
+              particle="minecraft:firefly", particle_chance=0.006)     # fireflies drifting in the dark
     tag("block", "minecraft:mineable/pickaxe", rid("starsap_ore"))
     drop_self("starsap_block")
     drop_self("hollow_glowcap")
     shaped("starsap_block", "starsap_block", ["###", "###", "###"], {"#": rid("starsap")})
     recipe("starsap_from_block", {"type": "minecraft:crafting_shapeless", "category": "misc", "ingredients": [rid("starsap_block")],
                                   "result": {"id": rid("starsap"), "count": 9}})
-    entity_loot("gloamgrub", [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("glowing_spores"), "functions": [
-        {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 1, "max": 3}}]}]}])
     # ---- The Crystal Vaults (under the Shattered Crags, below y=38): drifting geodes, a Shardback in each.
     java_feature("crystal_vault")
     placed("crystal_vaults_geodes", {"feature": rid("crystal_vault"), "placement": [

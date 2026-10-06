@@ -446,7 +446,6 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('C'), end, "mirror_wretch reared,angled", 6.0, 0.0, 2.0);
         mobShot(lines, areas.get('A'), end, "hollowback", 3.2, 0.5, 1.4);
         mobShot(lines, areas.get('A'), end, "curator", 8.0, 0.5, 3.2);
-        mobShot(lines, areas.get('N'), end, "gloamgrub lit", 2.2, 0.0, 1.0);
         mobShot(lines, areas.get('D'), end, "shardback angled", 3.4, 0.0, 1.4);
         // Phase 5: the sky and Sunstorms.
         skyShot(lines, areas.get('A'), "sky_ashen_barrens", -45.0F, -32.0F, null, "flare=calm");
@@ -840,7 +839,7 @@ public final class WorldgenSurvey {
             centre.getX() + 0.5 - d, centre.getY() + 18, centre.getZ() + 0.5 - d, pitch));
     }
 
-    // The caves: under the Hollow Isles, the Hollow Roots (glowcaps, Starsap, Gloamgrubs); under the
+    // The caves: under the Hollow Isles, the Hollow Roots (glowcaps, Starsap, fireflies); under the
     // Shattered Crags, the Crystal Vaults (geodes of Glimmer Crystal, each with its Shardback).
     private static void checkCaves(Area roots, Area vaults, ServerLevel end, List<String> failures) {
         if (roots != null) {
@@ -864,11 +863,9 @@ public final class WorldgenSurvey {
                     }
                 }
             }
-            var grubs = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.Gloamgrub.class,
-                new net.minecraft.world.phys.AABB(roots.centre).inflate(80, 80, 80));
             var biome = end.getBiome(roots.centre.atY(30)).unwrapKey().map(k -> k.identifier().toString()).orElse("?");
-            log(String.format("caves: the Hollow Roots (%s at y=30 under the Hollow Isles' centre): %d glowcaps, %d Starsap ore, %d Gloamgrubs in %d chunks",
-                biome, glowcaps, sap, grubs.size(), chunks));
+            log(String.format("caves: the Hollow Roots (%s at y=30 under the Hollow Isles' centre): %d glowcaps, %d Starsap ore in %d chunks",
+                biome, glowcaps, sap, chunks));
             if (cap != null) {
                 // A view along the cave, from a few blocks off a glowcap, at eye height.
                 BlockPos eye = caveEye(end, cap);
