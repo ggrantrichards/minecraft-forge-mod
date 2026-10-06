@@ -225,12 +225,12 @@ def shattered_observatory(seed):
                 t.set(x, y, z, "minecraft:end_stone")
             for y in range(floor + 1, 28):
                 t.set(x, y, z, "minecraft:air")
-            # Overgrown: Chorus Moss in drifts, Starblooms on it, now and then an Astral Vine.
+            # Overgrown: Nebula Moss in drifts, tufts on it, now and then an Astral Vine.
             if 14.5 < d < 28 and rnd.random() < 0.55 + 0.35 * math.sin(x * 0.4) * math.cos(z * 0.35):
                 t.set(x, floor, z, a("chorus_moss"))
                 roll = rnd.random()
                 if roll < 0.22:
-                    t.set(x, floor + 1, z, a("starbloom"))
+                    t.set(x, floor + 1, z, a("nebula_tufts"))
                 elif roll < 0.25:
                     tall = rnd.randint(1, 4)
                     for y in range(floor + 1, floor + tall):
