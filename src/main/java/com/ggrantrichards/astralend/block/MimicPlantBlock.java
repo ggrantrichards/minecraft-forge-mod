@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-// The Mimic Plant: a dark shrub of the Hollow Isles that makes no sound of its own. It copies the
+// The Mimic Plant: a dark shrub of the Deep Hollows that makes no sound of its own. It copies the
 // sounds of what's near it - your footsteps on the ground you walk on, an enderman's teleport, a Void
 // Wanderer's hum - a little later, from where it stands. The forest feels watched.
 public class MimicPlantBlock extends EndPlantBlock {

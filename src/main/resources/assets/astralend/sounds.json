@@ -64,31 +64,6 @@
       }
     ]
   },
-  "ambient.chorus_thicket.loop": {
-    "sounds": [
-      {
-        "name": "astralend:ambient/chorus_thicket/loop",
-        "stream": true,
-        "volume": 0.6
-      }
-    ]
-  },
-  "ambient.chorus_thicket.additions": {
-    "sounds": [
-      {
-        "name": "astralend:ambient/chorus_thicket/additions1",
-        "volume": 0.5
-      },
-      {
-        "name": "astralend:ambient/chorus_thicket/additions2",
-        "volume": 0.5
-      },
-      {
-        "name": "astralend:ambient/chorus_thicket/additions3",
-        "volume": 0.5
-      }
-    ]
-  },
   "ambient.ashen_barrens.loop": {
     "sounds": [
       {
@@ -110,31 +85,6 @@
       },
       {
         "name": "astralend:ambient/ashen_barrens/additions3",
-        "volume": 0.5
-      }
-    ]
-  },
-  "ambient.hollow_isles.loop": {
-    "sounds": [
-      {
-        "name": "astralend:ambient/hollow_isles/loop",
-        "stream": true,
-        "volume": 0.6
-      }
-    ]
-  },
-  "ambient.hollow_isles.additions": {
-    "sounds": [
-      {
-        "name": "astralend:ambient/hollow_isles/additions1",
-        "volume": 0.5
-      },
-      {
-        "name": "astralend:ambient/hollow_isles/additions2",
-        "volume": 0.5
-      },
-      {
-        "name": "astralend:ambient/hollow_isles/additions3",
         "volume": 0.5
       }
     ]

@@ -29,9 +29,7 @@ public class AstralEndBiomeSource extends BiomeSource {
                 RegistryOps.retrieveElement(Biomes.END_BARRENS),
                 RegistryOps.retrieveElement(ModBiomes.NEBULA_FIELDS),
                 RegistryOps.retrieveElement(ModBiomes.ASHEN_BARRENS),
-                RegistryOps.retrieveElement(ModBiomes.HOLLOW_ISLES),
                 RegistryOps.retrieveElement(ModBiomes.CORONA),
-                RegistryOps.retrieveElement(ModBiomes.CHORUS_THICKET),
                 RegistryOps.retrieveElement(ModBiomes.GLIMMERING_CRAGS),
                 RegistryOps.retrieveElement(ModBiomes.DEEP_HOLLOWS),
                 RegistryOps.retrieveElement(ModBiomes.SHATTERED_CRAGS),
@@ -52,23 +50,21 @@ public class AstralEndBiomeSource extends BiomeSource {
     private final Holder<Biome> barrens;
     private final Holder<Biome> nebulaFields;
     private final Holder<Biome> ashenBarrens;
-    private final Holder<Biome> hollowIsles;
     private final Holder<Biome> corona;
-    private final Holder<Biome> chorusThicket;
     private final Holder<Biome> glimmeringCrags;
     private final Holder<Biome> deepHollows;
     private final Holder<Biome> shatteredCrags;
     private final Holder<Biome> eclipse;
     private final Holder<Biome> hollowRoots;
     private final Holder<Biome> crystalVaults;
-    // The caves: under the Hollow Isles below this height, the Hollow Roots; under the Shattered Crags
+    // The caves: under the Deep Hollows below this height, the Hollow Roots; under the Shattered Crags
     // below this one, the Crystal Vaults.
     public static final int ROOTS_BELOW = 46, VAULTS_BELOW = 38;
 
     private AstralEndBiomeSource(Holder<Biome> end, Holder<Biome> highlands, Holder<Biome> midlands,
                                  Holder<Biome> islands, Holder<Biome> barrens, Holder<Biome> nebulaFields,
-                                 Holder<Biome> ashenBarrens, Holder<Biome> hollowIsles,
-                                 Holder<Biome> corona, Holder<Biome> chorusThicket, Holder<Biome> glimmeringCrags,
+                                 Holder<Biome> ashenBarrens,
+                                 Holder<Biome> corona, Holder<Biome> glimmeringCrags,
                                  Holder<Biome> deepHollows, Holder<Biome> shatteredCrags, Holder<Biome> eclipse,
                                  Holder<Biome> hollowRoots, Holder<Biome> crystalVaults) {
         this.end = end;
@@ -78,9 +74,7 @@ public class AstralEndBiomeSource extends BiomeSource {
         this.barrens = barrens;
         this.nebulaFields = nebulaFields;
         this.ashenBarrens = ashenBarrens;
-        this.hollowIsles = hollowIsles;
         this.corona = corona;
-        this.chorusThicket = chorusThicket;
         this.glimmeringCrags = glimmeringCrags;
         this.deepHollows = deepHollows;
         this.shatteredCrags = shatteredCrags;
@@ -92,7 +86,7 @@ public class AstralEndBiomeSource extends BiomeSource {
     @Override
     protected Stream<Holder<Biome>> collectPossibleBiomes() {
         return Stream.of(this.end, this.highlands, this.midlands, this.islands, this.barrens, this.nebulaFields,
-            this.ashenBarrens, this.hollowIsles, this.corona, this.chorusThicket,
+            this.ashenBarrens, this.corona,
             this.glimmeringCrags, this.deepHollows, this.shatteredCrags, this.eclipse, this.hollowRoots, this.crystalVaults);
     }
 
@@ -133,8 +127,6 @@ public class AstralEndBiomeSource extends BiomeSource {
         switch (region(sampler, warpedX, warpedZ)) {
             case NEBULA_FIELDS: return this.nebulaFields;
             case ASHEN_BARRENS: return this.ashenBarrens;
-            case HOLLOW_ISLES: return blockY < ROOTS_BELOW ? this.hollowRoots : this.hollowIsles;
-            case CHORUS_THICKET: return this.chorusThicket;
             case GLIMMERING_CRAGS: return this.glimmeringCrags;
             case DEEP_HOLLOWS: return blockY < ROOTS_BELOW ? this.hollowRoots : this.deepHollows;
             case SHATTERED_CRAGS: return blockY < VAULTS_BELOW ? this.crystalVaults : this.shatteredCrags;

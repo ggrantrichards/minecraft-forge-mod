@@ -55,18 +55,18 @@
     [],
     [
       "minecraft:end_gateway_return",
-      "astralend:hollow_isles_upwells"
+      "astralend:deep_hollows_upwells"
     ],
     [],
     [],
     [
-      "astralend:hollow_isles_stardust_veins",
+      "astralend:deep_hollows_stardust_veins",
       "astralend:hollow_roots_caves"
     ],
     [],
     [
-      "astralend:hollow_isles_voidgel",
-      "astralend:hollow_isles_stardust_underhangs"
+      "astralend:deep_hollows_voidgel",
+      "astralend:deep_hollows_stardust_underhangs"
     ]
   ],
   "has_precipitation": false,

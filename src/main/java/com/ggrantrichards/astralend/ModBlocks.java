@@ -60,7 +60,7 @@ public final class ModBlocks {
     public static final TagKey<Block> ASTRAL_SOIL = TagKey.create(Registries.BLOCK,
         Identifier.fromNamespaceAndPath(AstralEnd.MODID, "astral_soil"));
 
-    // ---- Nightstone: the dark stone of the Hollow Isless (deepslate-like) ----
+    // ---- Nightstone: the dark stone of the Deep Hollows and the Crags (deepslate-like) ----
     public static final RegistryObject<Block> NIGHTSTONE = register("nightstone", Block::new,
         () -> stone(SoundType.DEEPSLATE));
     public static final RegistryObject<Block> NIGHTSTONE_STAIRS = stairs("nightstone_stairs", NIGHTSTONE);
@@ -120,7 +120,7 @@ public final class ModBlocks {
     public static final RegistryObject<Block> LEVIATHAN_BONE_BLOCK = register("leviathan_bone_block", RotatedPillarBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).instrument(NoteBlockInstrument.XYLOPHONE)
             .requiresCorrectToolForDrops().strength(2.0F).sound(SoundType.BONE_BLOCK));
-    // Chorus Moss: the soft ground cover of the Nebula Fields and the Chorus Thicket. It's springy:
+    // Chorus Moss: the soft ground cover of the Nebula Fields. It's springy:
     // you walk a little slower on it, and it softens a fall (ChorusMossBlock).
     public static final RegistryObject<Block> CHORUS_MOSS = register("chorus_moss", com.ggrantrichards.astralend.block.ChorusMossBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.1F).sound(SoundType.MOSS)
@@ -270,7 +270,7 @@ public final class ModBlocks {
     public static final RegistryObject<Block> STAR_INLAY_OBSERVATORY_QUARTZ = register("star_inlay_observatory_quartz", Block::new,
         () -> quartz());
 
-    // ---- Hollow Isles: the core of a Upwell ----
+    // ---- Deep Hollows: the core of a Upwell ----
     // Gravity flips inside a sphere below it (see UpwellCoreBlockEntity). Silk Touch to collect.
     public static final RegistryObject<Block> UPWELL_CORE = register("upwell_core", UpwellCoreBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).instrument(NoteBlockInstrument.BASEDRUM)
@@ -321,7 +321,7 @@ public final class ModBlocks {
     public static final RegistryObject<Block> PURPUR_WALL = register("purpur_wall", WallBlock::new,
         () -> BlockBehaviour.Properties.ofLegacyCopy(net.minecraft.world.level.block.Blocks.PURPUR_BLOCK).forceSolidOn());
 
-    // ---- The distillation: Memory Moss (the Ashen Barrens) and the Mimic Plant (the Hollow Isles).
+    // ---- The distillation: Memory Moss (the Ashen Barrens) and the Mimic Plant (the Deep Hollows).
     public static final RegistryObject<Block> MEMORY_MOSS = registerNoItem("memory_moss", com.ggrantrichards.astralend.block.MemoryMossBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(0.1F).sound(SoundType.MOSS));
     public static final RegistryObject<Block> MIMIC_PLANT = register("mimic_plant",
@@ -357,7 +357,7 @@ public final class ModBlocks {
     public static final RegistryObject<Block> NEBULA_TENDRIL_PLANT = registerNoItem("nebula_tendril_plant", NebulaTendrilPlantBlock::new,
         () -> tendril());
 
-    // ---- Hollow Isles: twisted Nullwood trees ----
+    // ---- Deep Hollows: twisted Nullwood trees ----
     public static final WoodSet NULLWOOD = woodSet("nullwood", "log", "wood", MapColor.COLOR_BLACK, MapColor.COLOR_PURPLE,
         SoundType.WOOD, BlockSetType.DARK_OAK, WoodType.DARK_OAK);
     public static final RegistryObject<Block> NULLWOOD_LEAVES = register("nullwood_leaves", p -> new TintedParticleLeavesBlock(0.01F, p),

@@ -788,7 +788,7 @@ STRUCTURES = [
          spawns=None, adaptation="beard_thin", ground=(16, 4096, 12)),
     # Relays float out over the void, so they want open space (or low ground) under them.
     dict(name="wanderer_relay", variants=[lambda: wanderer_relay(21)],
-         biomes=[a("hollow_isles")], spread=(18, 7, 51273391),
+         biomes=[a("deep_hollows")], spread=(18, 7, 51273391),
          height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 66}, "max_inclusive": {"absolute": 92}},
          heightmap=None, spawns=None, adaptation=None, ground=(-4096, 40, 7)),
     # A landmark: rare, out on the vanilla Highlands or in the Nebula Fields.
@@ -885,7 +885,7 @@ def write_data():
         "placement": {"type": "minecraft:random_spread", "salt": 90210447, "separation": 28, "spacing": 56},
         "structures": [{"structure": a("leviathan"), "weight": 1}]})
     write_json(DATA / "tags/worldgen/biome/has_structure/leviathan.json", {"values": [
-        "minecraft:small_end_islands", "minecraft:end_barrens", a("ashen_barrens"), a("nebula_fields"), a("hollow_isles")]})
+        "minecraft:small_end_islands", "minecraft:end_barrens", a("ashen_barrens"), a("nebula_fields"), a("deep_hollows")]})
 
 
 def main():

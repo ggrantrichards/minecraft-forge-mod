@@ -25,8 +25,8 @@ BIOME_COLOURS = {
     "s": (100, 98, 76), "?": (255, 0, 255),
 }
 BIOME_NAMES = {
-    "O": "central island", "N": "Nebula Fields", "A": "Ashen Barrens", "W": "Comet Wake", "D": "Hollow Isles",
-    "C": "The Corona", "T": "Chorus Thicket", "G": "Glimmering Crags", "H": "Highlands", "M": "Midlands", "B": "Barrens", "s": "Small Islands",
+    "O": "central island", "N": "Nebula Fields", "A": "Ashen Barrens", "W": "Comet Wake", "D": "Deep Hollows",
+    "C": "The Corona", "G": "Glimmering Crags", "H": "Highlands", "M": "Midlands", "B": "Barrens", "s": "Small Islands",
 }
 # Top-down symbols, as printed by WorldgenSurvey.topSymbol (upper case = inside the surveyed biome).
 BLOCK_COLOURS = {

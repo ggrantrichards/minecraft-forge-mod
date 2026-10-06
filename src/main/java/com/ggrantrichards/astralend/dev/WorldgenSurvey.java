@@ -48,7 +48,7 @@ import org.slf4j.Logger;
 //   2. draws a text map of the End's biomes and measures how much each biome covers,
 //   3. generates an area inside every astral biome and counts every block, checking that each
 //      biome has its stone, ores, plants and features,
-//   4. checks low gravity (Nebula Fields) and the Upwells (Hollow Isles),
+//   4. checks low gravity (Nebula Fields) and the Upwells (Deep Hollows),
 // then prints SURVEY PASSED or SURVEY FAILED and stops the server. CI runs it on every push.
 // tools/render_survey.py turns its maps into the pictures in the README.
 public final class WorldgenSurvey {
@@ -62,15 +62,13 @@ public final class WorldgenSurvey {
 
     private static final List<BiomeInfo> ASTRAL = List.of(
         new BiomeInfo(ModBiomes.NEBULA_FIELDS, 'N', "Nebula Fields", 8, 45, 4),
-        new BiomeInfo(ModBiomes.CHORUS_THICKET, 'T', "Chorus Thicket", 2, 25, 3),
         new BiomeInfo(ModBiomes.GLIMMERING_CRAGS, 'G', "Glimmering Crags", 1, 15, 3),
         new BiomeInfo(ModBiomes.ASHEN_BARRENS, 'A', "Ashen Barrens", 3, 25, 3),
-        new BiomeInfo(ModBiomes.HOLLOW_ISLES, 'D', "Hollow Isles", 2, 20, 3),
+        new BiomeInfo(ModBiomes.DEEP_HOLLOWS, 'D', "Deep Hollows", 2, 25, 3),
         // The Eclipse: rare, and small (360 blocks across), its two halves.
         new BiomeInfo(ModBiomes.CORONA, 'C', "The Corona", 0.02, 3, 3),
         new BiomeInfo(ModBiomes.ECLIPSE, 'E', "The Eclipse", 0.02, 3, 3),
-        // The distillation's variants: patches inside their parents' territories.
-        new BiomeInfo(ModBiomes.DEEP_HOLLOWS, 'V', "Deep Hollows", 0.2, 12, 3),
+        // The Crags' variant: patches inside their territory.
         new BiomeInfo(ModBiomes.SHATTERED_CRAGS, 'X', "Shattered Crags", 0.1, 8, 3));
 
     public static void register() {
@@ -197,9 +195,9 @@ public final class WorldgenSurvey {
         // ---- Biome map ----
         log("Biome map of the End, " + (2 * MAP_RADIUS) + " x " + (2 * MAP_RADIUS) + " blocks, north up, one character = "
             + MAP_STEP + " blocks:");
-        log("  O central island   N Nebula Fields   A Ashen Barrens   D Hollow Isles   "
-            + "C The Corona (the Eclipse's hell half)   E The Eclipse (its heaven half)   T Chorus Tangle   "
-            + "G Glimmering Crags   V Deep Hollows   X Shattered Crags   "
+        log("  O central island   N Nebula Fields   A Ashen Barrens   D Deep Hollows   "
+            + "C The Corona (the Eclipse's hell half)   E The Eclipse (its heaven half)   "
+            + "G Glimmering Crags   X Shattered Crags   "
             + "H/M/B/s vanilla Highlands/Midlands/Barrens/Small Islands");
         Map<Character, Integer> outerCounts = new HashMap<>();
         Map<Character, Integer> runs = new HashMap<>();
@@ -255,7 +253,7 @@ public final class WorldgenSurvey {
                     info.minShare(), info.maxShare()));
             }
             // (Variants are patches inside their parents' territories, so they're allowed to be smaller.)
-            double minCoherence = info.symbol() == 'V' || info.symbol() == 'X' ? 35 : 50;
+            double minCoherence = info.symbol() == 'X' ? 35 : 50;
             boolean small = info.symbol() == 'C' || info.symbol() == 'E';   // the Eclipse is too small for the map's grid
             if (share > 0 && coherence < minCoherence && !small) {
                 failures.add(String.format("%s is scattered, not regions (coherence %.0f%%, expected %.0f%%+)", info.name(),
@@ -324,15 +322,13 @@ public final class WorldgenSurvey {
         writeViewpoints(areas, end, structures);
         checkNebula(areas.get('N'), failures);
         checkAurora(areas.get('A'), failures);
-        checkHollowIsles(areas.get('D'), end, failures);
+        checkDeepHollows(areas.get('D'), end, failures);
         checkCorona(areas.get('C'), failures);
         checkEclipse(areas.get('E'), failures);
         if (eclipse != null) {
             testEclipse(end, eclipse, failures);
         }
-        checkThicket(areas.get('T'), failures);
         checkCrags(areas.get('G'), end, failures);
-        checkDeepHollows(areas.get('V'), failures);
         checkShatteredCrags(areas.get('X'), failures);
         checkLowGravity(areas.get('N'), vanillaSpot, end, failures);
         checkMobs(areas, end, failures);
@@ -839,7 +835,7 @@ public final class WorldgenSurvey {
             centre.getX() + 0.5 - d, centre.getY() + 18, centre.getZ() + 0.5 - d, pitch));
     }
 
-    // The caves: under the Hollow Isles, the Hollow Roots (glowcaps, Starsap, fireflies); under the
+    // The caves: under the Deep Hollows, the Hollow Roots (glowcaps, Starsap, fireflies); under the
     // Shattered Crags, the Crystal Vaults (geodes of Glimmer Crystal, each with its Shardback).
     private static void checkCaves(Area roots, Area vaults, ServerLevel end, List<String> failures) {
         if (roots != null) {
@@ -864,7 +860,7 @@ public final class WorldgenSurvey {
                 }
             }
             var biome = end.getBiome(roots.centre.atY(30)).unwrapKey().map(k -> k.identifier().toString()).orElse("?");
-            log(String.format("caves: the Hollow Roots (%s at y=30 under the Hollow Isles' centre): %d glowcaps, %d Starsap ore in %d chunks",
+            log(String.format("caves: the Hollow Roots (%s at y=30 under the Deep Hollows' centre): %d glowcaps, %d Starsap ore in %d chunks",
                 biome, glowcaps, sap, chunks));
             if (cap != null) {
                 // A view along the cave, from a few blocks off a glowcap, at eye height.
@@ -873,7 +869,7 @@ public final class WorldgenSurvey {
                     yawTo(eye, cap)));
             }
             if (!biome.equals("astralend:hollow_roots") || glowcaps + sap == 0) {
-                failures.add("caves: expected the Hollow Roots under the Hollow Isles, with glowcaps and Starsap");
+                failures.add("caves: expected the Hollow Roots under the Deep Hollows, with glowcaps and Starsap");
             }
         }
         if (vaults != null) {
@@ -1508,21 +1504,6 @@ public final class WorldgenSurvey {
         }
     }
 
-    // The distillation: tangled thickets of vanilla chorus over Chorus Moss, in groves with clearings.
-    private static void checkThicket(Area area, List<String> failures) {
-        if (!enoughLand(area, failures)) {
-            return;
-        }
-        atLeast(area, Blocks.CHORUS_PLANT, 20, failures);
-        atLeast(area, ModBlocks.CHORUS_MOSS.get(), 40, failures);
-        int tangle = area.firsts(Blocks.CHORUS_PLANT) + area.firsts(Blocks.CHORUS_FLOWER);
-        double share = 100.0 * tangle / Math.max(1, area.landColumnsIn);
-        log(String.format("Chorus Tangle: %.0f%% of its land under chorus", share));
-        if (share < 8 || share > 66) {
-            failures.add(String.format("Chorus Tangle: %.0f%% of its land is under chorus (expected thickets and clearings, 8-66%%)", share));
-        }
-    }
-
     // Phase 10: Nightstone peaks grown through with Glimmer Crystal. The distillation: root caves inside
     // the bigger islands, sealed (no daylight reaches them), where Void Crystal grows and the Umbral
     // Stalker - and only the Stalker - can spawn.
@@ -1565,17 +1546,6 @@ public final class WorldgenSurvey {
         }
     }
 
-    // The Hollow Isles' variant: the forest closes in, Hollow Vines hanging to the ground.
-    private static void checkDeepHollows(Area area, List<String> failures) {
-        if (!enoughLand(area, failures)) {
-            return;
-        }
-        replacesEndStone(area, ModBlocks.NIGHTSTONE.get(), failures);
-        atLeast(area, ModBlocks.NULLWOOD.log().get(), 25, failures);
-        atLeast(area, ModBlocks.HOLLOW_VINES_PLANT.get(), 3, failures);
-        atLeast(area, ModBlocks.MIMIC_PLANT.get(), 0.3, failures);
-    }
-
     // The Crags' variant: fragments, mostly void between them.
     private static void checkShatteredCrags(Area area, List<String> failures) {
         if (!enoughLand(area, failures)) {
@@ -1589,23 +1559,27 @@ public final class WorldgenSurvey {
         }
     }
 
-    private static void checkHollowIsles(Area area, ServerLevel end, List<String> failures) {
+    // The Deep Hollows (with the Hollow Isles folded in after beta.4): dark Nullwood forest on ring
+    // islands, Hollow Vines hanging to the ground, Mimic Plants, Voidgel and Upwells beneath.
+    private static void checkDeepHollows(Area area, ServerLevel end, List<String> failures) {
         if (!enoughLand(area, failures)) {
             return;
         }
         replacesEndStone(area, ModBlocks.NIGHTSTONE.get(), failures);
         atLeast(area, ModBlocks.VOIDGEL.get(), 0.5, failures);
-        atLeast(area, ModBlocks.NULLWOOD.log().get(), 15, failures);
+        atLeast(area, ModBlocks.NULLWOOD.log().get(), 25, failures);
+        atLeast(area, ModBlocks.HOLLOW_VINES_PLANT.get(), 3, failures);
+        atLeast(area, ModBlocks.MIMIC_PLANT.get(), 0.3, failures);
         atLeast(area, ModBlocks.NULLWOOD_LEAVES.get(), 40, failures);
         atLeast(area, ModBlocks.NULL_LANTERN.get(), 2, failures);
         int leaves = area.in(ModBlocks.NULLWOOD_LEAVES.get());
-        log(String.format("Hollow Isles: %d of %d Nullwood leaves are too far from a log and would decay", area.decayingLeaves, leaves));
+        log(String.format("Deep Hollows: %d of %d Nullwood leaves are too far from a log and would decay", area.decayingLeaves, leaves));
         if (area.decayingLeaves > 0.05 * Math.max(1, leaves)) {
-            failures.add("Hollow Isles: " + area.decayingLeaves + " Nullwood leaves would decay (trees would lose their leaves)");
+            failures.add("Deep Hollows: " + area.decayingLeaves + " Nullwood leaves would decay (trees would lose their leaves)");
         }
-        log("Hollow Isles: " + area.anomalies.size() + " Upwells");
+        log("Deep Hollows: " + area.anomalies.size() + " Upwells");
         if (area.anomalies.isEmpty()) {
-            failures.add("Hollow Isles: no Upwells generated");
+            failures.add("Deep Hollows: no Upwells generated");
             return;
         }
         // Put a test mob in the middle of a pocket and let the Upwell Core do its work.
@@ -1725,12 +1699,10 @@ public final class WorldgenSurvey {
     private static char symbol(Holder<Biome> biome) {
         if (biome.is(ModBiomes.NEBULA_FIELDS)) return 'N';
         if (biome.is(ModBiomes.ASHEN_BARRENS)) return 'A';
-        if (biome.is(ModBiomes.HOLLOW_ISLES)) return 'D';
+        if (biome.is(ModBiomes.DEEP_HOLLOWS)) return 'D';
         if (biome.is(ModBiomes.CORONA)) return 'C';
         if (biome.is(ModBiomes.ECLIPSE)) return 'E';
-        if (biome.is(ModBiomes.CHORUS_THICKET)) return 'T';
         if (biome.is(ModBiomes.GLIMMERING_CRAGS)) return 'G';
-        if (biome.is(ModBiomes.DEEP_HOLLOWS)) return 'V';
         if (biome.is(ModBiomes.SHATTERED_CRAGS)) return 'X';
         if (biome.is(Biomes.THE_END)) return 'O';
         if (biome.is(Biomes.END_HIGHLANDS)) return 'H';

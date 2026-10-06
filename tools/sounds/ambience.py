@@ -208,9 +208,7 @@ def fizz(rnd):
 
 BIOMES = {
     "nebula_fields": (loop_nebula, chime),
-    "chorus_thicket": (loop_thicket, pop),
     "ashen_barrens": (loop_ashen, ash),
-    "hollow_isles": (loop_hollow, moan),
     "corona": (loop_corona, fizz),
     "glimmering_crags": (loop_crags, chime),
     "deep_hollows": (loop_deep_hollows, creak),

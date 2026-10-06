@@ -32,11 +32,10 @@ vo 0.4 | It was waiting.
 card 3.0 | It was waiting.
 vo 0.6 | Past the dragon's island, the islands drift apart.
 nebula_fields 90 fwd=14 up=-3 yaw=8 | Nebula Fields
-hollow_isles 90 fwd=12 yaw=8 | Hollow Isles
+deep_hollows 90 fwd=12 yaw=8 | Deep Hollows
 glimmering_crags 90 fwd=12 yaw=8 | Glimmering Crags
 vo 0.4 | Bone. Ash. Silence.
 ashen_barrens 100 fwd=14 up=-2 yaw=-8 | Ashen Barrens
-chorus_thicket 90 fwd=12 up=-2 yaw=-6 | Chorus Tangle
 vo 0.4 | And somewhere out in the dark...
 card 3.0 | Somewhere, the void holds its breath.
 eclipse_aerial 150 fwd=-10 up=8 pitch=38:28 | The Eclipse

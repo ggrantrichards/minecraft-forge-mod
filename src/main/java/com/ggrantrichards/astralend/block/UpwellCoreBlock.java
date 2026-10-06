@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 
-// The core of a Upwell, set into the underside of a Hollow Isles island.
+// The core of a Upwell, set into the underside of a Deep Hollows island.
 // Below it hangs a sphere where gravity points up (see UpwellCoreBlockEntity). The sphere is
 // marked by motes drifting slowly upward, so you can see a pocket before you walk into it.
 public class UpwellCoreBlock extends BaseEntityBlock {

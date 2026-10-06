@@ -6,13 +6,11 @@ import java.util.Map;
 public final class BiomeFogs {
     public static final Map<String, Integer> FOG = Map.ofEntries(
         Map.entry("astralend:ashen_barrens", 0x1B2329),
-        Map.entry("astralend:chorus_thicket", 0x3A1C3E),
         Map.entry("astralend:corona", 0x3C0A18),
         Map.entry("astralend:crystal_vaults", 0x2E2A44),
         Map.entry("astralend:deep_hollows", 0x241A3C),
         Map.entry("astralend:eclipse", 0x2A1E2E),
         Map.entry("astralend:glimmering_crags", 0x3A3450),
-        Map.entry("astralend:hollow_isles", 0x2C2150),
         Map.entry("astralend:hollow_roots", 0x2A1C3A),
         Map.entry("astralend:shattered_crags", 0x34304A),
         Map.entry("minecraft:end_barrens", 0xA080A0),

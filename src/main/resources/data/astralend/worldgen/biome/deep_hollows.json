@@ -15,7 +15,7 @@
             {
               "type": "astralend:void_wanderer",
               "count": 1,
-              "weight": 2
+              "weight": 4
             }
           ]
         }
@@ -68,17 +68,20 @@
     [],
     [
       "minecraft:end_gateway_return",
-      "astralend:hollow_isles_upwells"
+      "astralend:deep_hollows_upwells"
     ],
     [],
     [],
-    [],
+    [
+      "astralend:deep_hollows_stardust_veins"
+    ],
     [],
     [
       "astralend:deep_hollows_nullwood_trees",
       "astralend:deep_hollows_vines",
       "astralend:deep_hollows_mimic_plants",
-      "astralend:hollow_isles_voidgel"
+      "astralend:deep_hollows_voidgel",
+      "astralend:deep_hollows_stardust_underhangs"
     ]
   ],
   "has_precipitation": false,

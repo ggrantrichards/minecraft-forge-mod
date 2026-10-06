@@ -12,16 +12,16 @@ import net.minecraft.world.level.biome.Biome;
 public final class ModBiomes {
     public static final ResourceKey<Biome> NEBULA_FIELDS = key("nebula_fields");
     public static final ResourceKey<Biome> ASHEN_BARRENS = key("ashen_barrens");
-    public static final ResourceKey<Biome> HOLLOW_ISLES = key("hollow_isles");
     // The Eclipse: its heaven half ("eclipse") and its hell half, the old Corona ("corona").
     public static final ResourceKey<Biome> ECLIPSE = key("eclipse");
     public static final ResourceKey<Biome> CORONA = key("corona");
-    public static final ResourceKey<Biome> CHORUS_THICKET = key("chorus_thicket");
     public static final ResourceKey<Biome> GLIMMERING_CRAGS = key("glimmering_crags");
-    // The distillation's variants: denser, darker Hollow Isles, and the Crags broken into fragments.
+    // The Deep Hollows: the dark Nullwood forests on ring islands (after beta.4 they took in the Hollow
+    // Isles, which they had been a variant of).
     public static final ResourceKey<Biome> DEEP_HOLLOWS = key("deep_hollows");
+    // The Glimmering Crags' variant: broken into fragments.
     public static final ResourceKey<Biome> SHATTERED_CRAGS = key("shattered_crags");
-    // The caves (after beta.3): under the Hollow Isles, and under the Shattered Crags.
+    // The caves (after beta.3): under the Deep Hollows, and under the Shattered Crags.
     public static final ResourceKey<Biome> HOLLOW_ROOTS = key("hollow_roots");
     public static final ResourceKey<Biome> CRYSTAL_VAULTS = key("crystal_vaults");
 

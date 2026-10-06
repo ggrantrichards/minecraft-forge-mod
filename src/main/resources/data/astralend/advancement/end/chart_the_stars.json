@@ -44,20 +44,6 @@
         }
       }
     },
-    "hollow_isles": {
-      "trigger": "minecraft:location",
-      "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "biomes": "astralend:hollow_isles"
-            }
-          }
-        }
-      }
-    },
     "corona": {
       "trigger": "minecraft:location",
       "conditions": {
@@ -67,20 +53,6 @@
           "predicate": {
             "minecraft:location": {
               "biomes": "astralend:corona"
-            }
-          }
-        }
-      }
-    },
-    "chorus_thicket": {
-      "trigger": "minecraft:location",
-      "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "biomes": "astralend:chorus_thicket"
             }
           }
         }
@@ -179,13 +151,7 @@
       "ashen_barrens"
     ],
     [
-      "hollow_isles"
-    ],
-    [
       "corona"
-    ],
-    [
-      "chorus_thicket"
     ],
     [
       "glimmering_crags"

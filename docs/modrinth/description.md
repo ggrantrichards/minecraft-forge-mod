@@ -18,10 +18,8 @@ your face: the End tells you things with sound and light.
 ## The islands
 
 - **Nebula Fields:** violet Chorus Moss plains, and low gravity.
-- **Chorus Tangle:** groves of vanilla chorus, hard to cross and easy to fall from.
-- **Hollow Isles:** the End's only forest, dim Nullwood on ring-shaped islands, Upwells beneath.
-  Its variant, the **Deep Hollows**, hangs with Hollow Vines - and their black thorns carve pumpkins
-  into violet Hollow Lanterns. Under it all, the **Hollow Roots**: caves through the dead roots, lit
+- **Deep Hollows:** the End's only forest, dark Nullwood on ring-shaped islands, hung with Hollow
+  Vines whose black thorns carve pumpkins into violet Hollow Lanterns; Upwells beneath. Under it all, the **Hollow Roots**: caves through the dead roots, lit
   by glowcaps and amber Starsap, where fireflies drift.
 - **Glimmering Crags:** Nightstone peaks of smoky Glimmer Crystal, and root caves where the Umbral
   Stalker waits. Its variant, the **Shattered Crags**, is split into shards over the void; below them

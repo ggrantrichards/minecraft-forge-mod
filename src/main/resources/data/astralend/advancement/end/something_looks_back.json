@@ -2,7 +2,7 @@
   "parent": "astralend:end/hold_still",
   "display": {
     "icon": {
-      "id": "astralend:star_chart"
+      "id": "minecraft:spyglass"
     },
     "title": {
       "translate": "advancements.astralend.something_looks_back.title"

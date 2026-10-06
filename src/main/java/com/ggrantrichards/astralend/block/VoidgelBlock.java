@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.SlimeBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 
-// Voidgel: jelly from the undersides of the Hollow Isles and the Glimmering Crags. Like a slime
+// Voidgel: jelly from the undersides of the Deep Hollows and the Glimmering Crags. Like a slime
 // block it takes a fall and bounces you back up (a little less high); each bounce also lets you down
 // gently, with a few seconds of Slow Falling.
 public class VoidgelBlock extends SlimeBlock {

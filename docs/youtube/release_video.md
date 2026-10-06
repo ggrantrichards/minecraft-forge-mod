@@ -90,11 +90,9 @@ One shot per biome; one line each. Don't explain mechanics yet, just show variet
 > **Nebula Fields** - walking across violet Chorus Moss, then a jump that floats too long.
 > **VO:** "Nebula Fields. Low gravity - every jump is a little too long."
 >
-> **Chorus Tangle** - the camera threading through vanilla chorus groves.
-> **VO:** "The Chorus Tangle: easy to get lost in, easier to fall out of."
->
-> **Hollow Isles** - Nullwood forest on a ring island; then under it, the Upwell.
-> **VO:** "The Hollow Isles - the only forest out here."
+> **Deep Hollows** - dark Nullwood forest on a ring island, vines hanging to the ground; then under
+> it, the Upwell.
+> **VO:** "The Deep Hollows - the only forest out here."
 > **DO:** Step into an Upwell. The view rolls over; you land on the underside of the island and walk
 > on it, head down. *(Let it play with no VO for 3 seconds.)*
 > **VO:** "...and under them, the Upwells. Gravity isn't a rule here. It's a suggestion."

@@ -23,23 +23,6 @@
       "if_true": {
         "type": "minecraft:biome",
         "biome_is": [
-          "astralend:chorus_thicket"
-        ]
-      },
-      "then_run": {
-        "type": "minecraft:condition",
-        "if_true": "minecraft:on_floor",
-        "then_run": {
-          "type": "minecraft:block",
-          "result_state": "astralend:chorus_moss"
-        }
-      }
-    },
-    {
-      "type": "minecraft:condition",
-      "if_true": {
-        "type": "minecraft:biome",
-        "biome_is": [
           "astralend:glimmering_crags"
         ]
       },
@@ -85,19 +68,6 @@
       "then_run": {
         "type": "minecraft:block",
         "result_state": "astralend:pale_end_stone"
-      }
-    },
-    {
-      "type": "minecraft:condition",
-      "if_true": {
-        "type": "minecraft:biome",
-        "biome_is": [
-          "astralend:hollow_isles"
-        ]
-      },
-      "then_run": {
-        "type": "minecraft:block",
-        "result_state": "astralend:nightstone"
       }
     },
     {

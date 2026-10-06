@@ -9,19 +9,14 @@
       "alpha": "astralend:terrain/weight/ashen_barrens",
       "first": {
         "type": "minecraft:lerp",
-        "alpha": "astralend:terrain/weight/hollow_isles",
+        "alpha": "astralend:terrain/weight/deep_hollows",
         "first": {
           "type": "minecraft:lerp",
-          "alpha": "astralend:terrain/weight/chorus_thicket",
-          "first": {
-            "type": "minecraft:lerp",
-            "alpha": "astralend:terrain/weight/nebula_fields",
-            "first": "minecraft:end/sloped_cheese",
-            "second": "astralend:terrain/nebula_fields"
-          },
-          "second": "astralend:terrain/chorus_thicket"
+          "alpha": "astralend:terrain/weight/nebula_fields",
+          "first": "minecraft:end/sloped_cheese",
+          "second": "astralend:terrain/nebula_fields"
         },
-        "second": "astralend:terrain/hollow_isles"
+        "second": "astralend:terrain/deep_hollows"
       },
       "second": "astralend:terrain/ashen_barrens"
     },

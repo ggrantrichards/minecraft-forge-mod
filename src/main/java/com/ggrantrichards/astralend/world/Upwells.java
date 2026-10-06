@@ -13,7 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.fml.LogicalSide;
 
-// Upwells (Hollow Isles).
+// Upwells (the Deep Hollows).
 //
 // Inside a pocket, gravity points up at 60% of normal strength: you "fall" upward until you
 // hit the island above. It uses vanilla's gravity attribute (0.08 * (1 - 1.6) = -0.048), so it

@@ -124,8 +124,8 @@ public record BorderBlendFeature() implements Feature {
     private static Ground ground(Holder<Biome> biome) {
         String key = biome.unwrapKey().map(k -> k.identifier().toString()).orElse("");
         return switch (key) {
-            case "astralend:nebula_fields", "astralend:chorus_thicket" -> Ground.MOSS;
-            case "astralend:glimmering_crags", "astralend:shattered_crags", "astralend:deep_hollows", "astralend:hollow_isles" -> Ground.NIGHT;
+            case "astralend:nebula_fields" -> Ground.MOSS;
+            case "astralend:glimmering_crags", "astralend:shattered_crags", "astralend:deep_hollows" -> Ground.NIGHT;
             case "astralend:ashen_barrens" -> Ground.PALE;
             case "astralend:eclipse", "astralend:corona" -> Ground.NONE;
             default -> Ground.END;

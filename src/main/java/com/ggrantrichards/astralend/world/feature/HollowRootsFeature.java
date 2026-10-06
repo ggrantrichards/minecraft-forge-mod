@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 
-// The Hollow Roots: under the Hollow Isles, through the thick of their ring islands, the hollows
+// The Hollow Roots: under the Deep Hollows, through the thick of their ring islands, the hollows
 // where the dead Nullwood's roots rotted out. A chamber where a great root met the island's heart,
 // and tunnels running from it - out, and down, and some out through the island's underside, so you
 // can find a way in from below. Inside it's never quite dark: Hollow Glowcaps on the floors, the
