@@ -1,0 +1,80 @@
+26 shots to film
+setting up sky_ashen_barrens (140 frames)
+sky_ashen_barrens draws at 60.1 fps; filming at 5.00 ticks a second
+filmed sky_ashen_barrens (140 frames in 28.5 s; 4 repeated)
+setting up nebula_fields (90 frames)
+nebula_fields draws at 18.7 fps; filming at 5.00 ticks a second
+filmed nebula_fields (90 frames in 18.3 s; 56 repeated)
+setting up hollow_isles (90 frames)
+hollow_isles draws at 11.3 fps; filming at 3.78 ticks a second
+filmed hollow_isles (90 frames in 24.5 s; 46 repeated)
+setting up glimmering_crags (90 frames)
+glimmering_crags draws at 26.6 fps; filming at 5.00 ticks a second
+filmed glimmering_crags (90 frames in 18.6 s; 42 repeated)
+setting up ashen_barrens (100 frames)
+ashen_barrens draws at 12.5 fps; filming at 4.17 ticks a second
+filmed ashen_barrens (100 frames in 24.2 s; 35 repeated)
+setting up chorus_thicket (90 frames)
+chorus_thicket draws at 13.0 fps; filming at 4.34 ticks a second
+filmed chorus_thicket (90 frames in 21.2 s; 42 repeated)
+setting up eclipse_aerial (150 frames)
+eclipse_aerial draws at 15.1 fps; filming at 5.00 ticks a second
+filmed eclipse_aerial (150 frames in 30.2 s; 60 repeated)
+setting up eclipse (100 frames)
+eclipse draws at 25.3 fps; filming at 5.00 ticks a second
+filmed eclipse (100 frames in 20.2 s; 4 repeated)
+setting up corona (100 frames)
+corona draws at 13.6 fps; filming at 4.52 ticks a second
+filmed corona (100 frames in 22.4 s; 16 repeated)
+setting up mob_hushback (75 frames)
+mob_hushback draws at 39.9 fps; filming at 5.00 ticks a second
+filmed mob_hushback (75 frames in 15.2 s; 1 repeated)
+setting up mob_hydragrip_angled (70 frames)
+mob_hydragrip_angled draws at 40.4 fps; filming at 5.00 ticks a second
+filmed mob_hydragrip_angled (70 frames in 14.3 s; 0 repeated)
+setting up mob_drift_whale_side (130 frames)
+mob_drift_whale_side draws at 17.0 fps; filming at 5.00 ticks a second
+filmed mob_drift_whale_side (130 frames in 26.4 s; 48 repeated)
+setting up mob_mirror_wretch_reared (75 frames)
+mob_mirror_wretch_reared draws at 27.3 fps; filming at 5.00 ticks a second
+filmed mob_mirror_wretch_reared (75 frames in 15.2 s; 1 repeated)
+setting up mob_umbral_stalker_lit (65 frames)
+mob_umbral_stalker_lit draws at 10.8 fps; filming at 3.60 ticks a second
+filmed mob_umbral_stalker_lit (65 frames in 18.3 s; 4 repeated)
+setting up biome_hollow_roots (85 frames)
+biome_hollow_roots draws at 20.8 fps; filming at 5.00 ticks a second
+filmed biome_hollow_roots (85 frames in 17.3 s; 0 repeated)
+setting up biome_crystal_vaults (85 frames)
+biome_crystal_vaults draws at 20.8 fps; filming at 5.00 ticks a second
+filmed biome_crystal_vaults (85 frames in 17.2 s; 1 repeated)
+setting up mob_watcher (80 frames)
+mob_watcher draws at 11.1 fps; filming at 3.70 ticks a second
+filmed mob_watcher (80 frames in 21.8 s; 2 repeated)
+setting up structure_constellation_maze (110 frames)
+structure_constellation_maze draws at 30.0 fps; filming at 5.00 ticks a second
+filmed structure_constellation_maze (110 frames in 22.3 s; 45 repeated)
+setting up structure_remnant (110 frames)
+structure_remnant draws at 59.9 fps; filming at 5.00 ticks a second
+filmed structure_remnant (110 frames in 22.3 s; 0 repeated)
+setting up structure_leviathan (160 frames)
+structure_leviathan draws at 16.5 fps; filming at 5.00 ticks a second
+filmed structure_leviathan (160 frames in 32.3 s; 81 repeated)
+setting up structure_leviathan_maw (110 frames)
+structure_leviathan_maw draws at 14.9 fps; filming at 4.98 ticks a second
+filmed structure_leviathan_maw (110 frames in 22.5 s; 26 repeated)
+setting up structure_leviathan_reliquary (110 frames)
+structure_leviathan_reliquary draws at 14.2 fps; filming at 4.72 ticks a second
+filmed structure_leviathan_reliquary (110 frames in 23.5 s; 30 repeated)
+setting up structure_leviathan_heart (80 frames)
+structure_leviathan_heart draws at 20.0 fps; filming at 5.00 ticks a second
+filmed structure_leviathan_heart (80 frames in 16.2 s; 16 repeated)
+setting up mob_curator (90 frames)
+mob_curator draws at 18.9 fps; filming at 5.00 ticks a second
+filmed mob_curator (90 frames in 18.4 s; 22 repeated)
+setting up starforge_astral_forge (75 frames)
+starforge_astral_forge draws at 15.4 fps; filming at 5.00 ticks a second
+filmed starforge_astral_forge (75 frames in 15.2 s; 17 repeated)
+setting up eclipse_aerial (150 frames)
+eclipse_aerial draws at 20.0 fps; filming at 5.00 ticks a second
+filmed eclipse_aerial (150 frames in 30.3 s; 34 repeated)
+ASTRALEND TRAILER DONE
