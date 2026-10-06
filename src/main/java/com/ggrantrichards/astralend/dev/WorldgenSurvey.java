@@ -320,6 +320,7 @@ public final class WorldgenSurvey {
             MechanicsSurvey.checkHandBuiltPortal(end, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkWyrmFight(end, failures, WorldgenSurvey::log);
         }
+        checkCaves(areas.get('D'), areas.get('X'), end, failures);   // (before the viewpoints: it adds the caves' shots)
         writeViewpoints(areas, end, structures);
         checkNebula(areas.get('N'), failures);
         checkAurora(areas.get('A'), failures);
@@ -333,7 +334,6 @@ public final class WorldgenSurvey {
         checkCrags(areas.get('G'), end, failures);
         checkDeepHollows(areas.get('V'), failures);
         checkShatteredCrags(areas.get('X'), failures);
-        checkCaves(areas.get('D'), areas.get('X'), end, failures);
         checkLowGravity(areas.get('N'), vanillaSpot, end, failures);
         checkMobs(areas, end, failures);
     }
