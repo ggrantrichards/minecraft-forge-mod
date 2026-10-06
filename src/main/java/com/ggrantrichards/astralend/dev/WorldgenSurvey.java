@@ -442,9 +442,12 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('G'), end, "spire_wyrm", 16.0, 6.0, 5.0);
         mobShot(lines, areas.get('E'), end, "hushback", 3.2, 0.5, 1.4);
         mobShot(lines, areas.get('E'), end, "hydragrip", 3.8, 0.3, 1.3);
-        mobShot(lines, areas.get('C'), end, "mirror_wretch", 6.0, 0.8, 2.0);
+        mobShot(lines, areas.get('C'), end, "mirror_wretch angled", 5.0, 0.0, 1.6);
+        mobShot(lines, areas.get('C'), end, "mirror_wretch reared,angled", 6.0, 0.0, 2.0);
         mobShot(lines, areas.get('A'), end, "hollowback", 3.2, 0.5, 1.4);
         mobShot(lines, areas.get('A'), end, "curator", 8.0, 0.5, 3.2);
+        mobShot(lines, areas.get('N'), end, "gloamgrub lit", 2.2, 0.0, 1.0);
+        mobShot(lines, areas.get('D'), end, "shardback angled", 3.4, 0.0, 1.4);
         // Phase 5: the sky and Sunstorms.
         skyShot(lines, areas.get('A'), "sky_ashen_barrens", -45.0F, -32.0F, null, "flare=calm");
         skyShot(lines, areas.get('N'), "sky_nebula_fields", -45.0F, -32.0F, null, "flare=calm");

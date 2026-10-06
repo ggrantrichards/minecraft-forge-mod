@@ -44,7 +44,7 @@ public final class ClientScreenshots {
     // A viewpoint; mob shots also name a mob to summon (with its AI off) at mobX/Y/Z, facing the
     // camera ("display" instead of a mob builds a small display of the Phase 5 flare blocks there).
     // The optional last word lists styles, comma-separated: "lit" puts a Spore Lantern beside it,
-    // "side" turns it side-on, "angled" three-quarters on, "flare=<phase>" sets the Sunstorm
+    // "side" turns it side-on, "angled" three-quarters on, "reared" marks it hunting, "flare=<phase>" sets the Sunstorm
     // phase for the shot (calm, warning, flare, afterglow), "clear" removes every mob nearby.
     record Shot(String name, double x, double y, double z, float yaw, float pitch,
                         String mob, double mobX, double mobY, double mobZ, String style) {}
@@ -302,6 +302,9 @@ public final class ClientScreenshots {
                 mob.setNoAi(true);
                 mob.setPersistenceRequired();
                 mob.yBodyRot = yaw;
+                if (shot.style().contains("reared")) {
+                    mob.setAggressive(true);    // the Mirror Wretch rears up when it hunts
+                }
             }
             end.addFreshEntity(entity);
             summoned = entity;

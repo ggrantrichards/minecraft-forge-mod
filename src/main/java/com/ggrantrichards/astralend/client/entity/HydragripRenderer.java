@@ -47,13 +47,16 @@ public class HydragripRenderer extends MobRenderer<Hydragrip, HydragripRenderer.
         public float attackTime;
     }
 
-    // Scurries on land, splayed and low; in the water its legs fold back and its body and finned tail
-    // undulate. Its gill frills ripple all the while, and its jaw snaps open when it bites.
+    // Trots on land, high on its legs, its long neck bobbing and its tail swaying behind; in the water
+    // its legs fold back and its body and finned tail undulate. Its frills ripple all the while, and
+    // its jaw snaps open when it bites.
     public static class Model extends EntityModel<State> {
         private final ModelPart body;
+        private final ModelPart neck;
         private final ModelPart head;
         private final ModelPart jaw;
         private final ModelPart tail;
+        private final ModelPart tailMid;
         private final ModelPart tailTip;
         private final ModelPart[] legs = new ModelPart[4];
         private final ModelPart[] frills = new ModelPart[6];
@@ -61,10 +64,12 @@ public class HydragripRenderer extends MobRenderer<Hydragrip, HydragripRenderer.
         public Model(ModelPart root) {
             super(root);
             this.body = root.getChild("body");
-            this.head = this.body.getChild("head");
+            this.neck = this.body.getChild("neck");
+            this.head = this.neck.getChild("head");
             this.jaw = this.head.getChild("jaw");
             this.tail = this.body.getChild("tail");
-            this.tailTip = this.tail.getChild("tail_tip");
+            this.tailMid = this.tail.getChild("tail_mid");
+            this.tailTip = this.tailMid.getChild("tail_tip");
             String[] names = {"leg_fr", "leg_fl", "leg_br", "leg_bl"};
             for (int i = 0; i < 4; i++) {
                 this.legs[i] = root.getChild(names[i]);
@@ -81,8 +86,10 @@ public class HydragripRenderer extends MobRenderer<Hydragrip, HydragripRenderer.
             float t = state.ageInTicks;
             float pos = state.walkAnimationPos * 0.9F;
             float speed = Math.min(state.walkAnimationSpeed, 1.0F);
-            this.head.yRot += state.yRot * Mth.DEG_TO_RAD * 0.6F;
+            this.neck.yRot += state.yRot * Mth.DEG_TO_RAD * 0.4F;
+            this.head.yRot += state.yRot * Mth.DEG_TO_RAD * 0.4F;
             this.head.xRot += state.xRot * Mth.DEG_TO_RAD * 0.6F;
+            this.neck.xRot += Mth.sin(t * 0.05F) * 0.04F + Mth.sin(pos * 2.0F) * 0.08F * speed;   // breathing; a bob as it trots
             for (int k = 0; k < 6; k++) {
                 this.frills[k].yRot += Mth.sin(t * 0.15F + k) * 0.18F * (k < 3 ? 1 : -1);
             }
@@ -95,16 +102,18 @@ public class HydragripRenderer extends MobRenderer<Hydragrip, HydragripRenderer.
                     leg.xRot += 1.2F;
                 }
                 this.body.yRot += Mth.sin(t * 0.3F) * 0.12F;
-                this.tail.yRot += Mth.sin(t * 0.3F - 0.8F) * 0.5F;
-                this.tailTip.yRot += Mth.sin(t * 0.3F - 1.6F) * 0.6F;
+                this.tail.yRot += Mth.sin(t * 0.3F - 0.8F) * 0.4F;
+                this.tailMid.yRot += Mth.sin(t * 0.3F - 1.6F) * 0.5F;
+                this.tailTip.yRot += Mth.sin(t * 0.3F - 2.4F) * 0.6F;
             } else {
                 this.legs[0].xRot += Mth.cos(pos) * 0.9F * speed;
                 this.legs[1].xRot += Mth.cos(pos + Mth.PI) * 0.9F * speed;
                 this.legs[2].xRot += Mth.cos(pos + Mth.PI) * 0.9F * speed;
                 this.legs[3].xRot += Mth.cos(pos) * 0.9F * speed;
-                this.body.yRot += Mth.sin(pos) * 0.08F * speed;                             // a salamander's wriggle
-                this.tail.yRot += Mth.sin(t * 0.1F) * 0.15F + Mth.cos(pos) * 0.3F * speed;
-                this.tailTip.yRot += Mth.sin(t * 0.1F - 0.5F) * 0.2F;
+                this.body.yRot += Mth.sin(pos) * 0.04F * speed;
+                this.tail.yRot += Mth.sin(t * 0.1F) * 0.12F + Mth.cos(pos) * 0.2F * speed;
+                this.tailMid.yRot += Mth.sin(t * 0.1F - 0.5F) * 0.15F + Mth.cos(pos - 0.6F) * 0.2F * speed;
+                this.tailTip.yRot += Mth.sin(t * 0.1F - 1.0F) * 0.2F;
             }
         }
     }

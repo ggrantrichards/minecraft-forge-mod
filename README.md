@@ -50,13 +50,15 @@ From playing beta.3. These replace what the distillation's notes below say about
   - **far from the land:** it floats 100+ blocks up, and only where no island comes near it. It's about
     370 blocks long, skull and all, and less rare than before (so the wormhole road is worth waking).
   - Its shulkers now actually stay on the towers.
-- **The Mirror Wretch is the Choir:** no mirror and no face, only a round mouth ringed with teeth. Half
-  of it crawls on a row of small legs, the front half rears up like a cobra over two blocks tall, and down its throat hang
-  five vocal sacs - one for every voice it has stolen - that swell in turn as it calls you, in voices
-  you know, from the void's edge.
-- **The Hydragrip is the Gripmouth:** long and low like a salamander, with feathery gill frills that
-  glow at the tips, frog's eyes with slit pupils (and a smaller pair below), a wide jaw with small
-  teeth that snaps open when it bites, a line of lights down each flank, and a finned tail.
+- **The Mirror Wretch is the Choir:** no mirror and no face, only a round mouth ringed with teeth. A
+  long worm on a row of small legs, it slithers low with its head carried a little way up; when it
+  hunts it rears up like a cobra, over two blocks tall, its back legs still on the ground, and strikes
+  down from there. Down its throat hang five vocal sacs - one for every voice it has stolen - that
+  swell in turn as it calls you, in voices you know, from the void's edge.
+- **The Hydragrip is redrawn:** sleek and otter-built, high on webbed, clawed feet; dark indigo skin
+  with a violet-and-teal sheen and a scatter of cyan lights; a long neck, a smooth round head with big
+  dark glossy eyes and a quiet smile, small pink frills, and a long tail ending in a ribbed violet fin.
+- **The Watcher's eye is white and cyan again** (the red-and-orange nebula eye is gone).
 - **Summoned Watchers stay.** A Watcher from a spawn egg or a command hangs where it's put; the two
   the pedestal calls stay for half a minute. (A wild one still fades when you look straight at it or
   come within 24 blocks - that's how it leads you.)
@@ -139,7 +141,7 @@ centre.
 - **Its mobs:**
   - the **Hushback**, a see-through grazer whose herd blinks away when one is hurt; it gives fleece
     and meat;
-  - the **Hydragrip** (the Gripmouth since beta.3); it hunts endermites and gives a pearl;
+  - the **Hydragrip**, sleek, dark and cyan-spotted; it hunts endermites and gives a pearl;
   - the **Mirror Wretch** (the Choir since beta.3), which prowls the border between the halves, throws familiar sounds from the
     void's edge to lure you, and hunts endermen. Endermen that wander in scream and flee.
 
@@ -186,7 +188,7 @@ centre.
   the Watchers come to look.
 - **Colour, only in the Eclipse:** crimson over the hell half and teal-cyan over the heaven half, in the
   auroras, fog and water. The rest of the End stays muted.
-- **The Watcher's eye** is the Hourglass Nebula: red lobes, a rose ring, a glowing teal iris.
+- **The Watcher's eye** is the Hourglass Nebula: red lobes, a rose ring, a glowing teal iris. (Undone after beta.3: it is white and cyan again.)
 - **Advancements:** The Leviathan, The Collection Closes, Keeper of the Egg, Wellspring and Led.
   Wyrmslayer and Ring Out are gone with the Spire Wyrm.
 

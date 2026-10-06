@@ -33,17 +33,22 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-// The Mirror Wretch: a gaunt, too-tall thing that prowls the border between the Eclipse's two halves,
-// its face a sheet of something like silvered glass. It never comes straight at you. Now and then it
-// throws a sound you know - a chest opening, a door, footsteps, a sheep - from somewhere near the
-// island's edge, to draw you over; when you stand at an edge with it close, it lunges, and its blow
-// throws you outward. It craves Memory Moss (hold some and it follows you, and won't strike). It hunts endermen (which is why they won't stay in the Eclipse). It doesn't
-// burn, doesn't despawn in daylight - there is none - and doesn't follow you off the Eclipse.
+// The Mirror Wretch (the Choir): a long grey worm that prowls the border between the Eclipse's two
+// halves. It has no face, only a round mouth ringed with teeth, and down its throat a vocal sac for
+// every voice it has stolen. It slithers low, its back half crawling on a row of small legs; when it
+// hunts it rears up over two blocks high and strikes down from there. It never comes straight at
+// you. Now and then it throws a sound you know - a chest opening, a door, footsteps, a sheep - from
+// somewhere near the island's edge, to draw you over; when you stand at an edge with it close, it
+// lunges, and its blow throws you outward. It craves Memory Moss (hold some and it follows you, and
+// won't strike). It hunts endermen (which is why they won't stay in the Eclipse). It doesn't burn,
+// doesn't despawn in daylight - there is none - and doesn't follow you off the Eclipse.
 public class MirrorWretch extends Monster {
     private static final List<SoundEvent> LURES = List.of(SoundEvents.CHEST_OPEN, SoundEvents.WOODEN_DOOR_OPEN,
         SoundEvents.SHEEP_AMBIENT, SoundEvents.ITEM_PICKUP, SoundEvents.STONE_STEP, SoundEvents.WOODEN_DOOR_CLOSE,
         SoundEvents.EXPERIENCE_ORB_PICKUP, SoundEvents.BELL_BLOCK);
     private int lureCooldown = 200;
+    private float rear, rearO;          // (client) how far it has reared: 0 low, 1 up - eased
+    private boolean reared;
 
     public MirrorWretch(EntityType<? extends MirrorWretch> type, Level level) {
         super(type, level);
@@ -113,6 +118,32 @@ public class MirrorWretch extends Monster {
             }
         }
         return false;
+    }
+
+    // Hunting (its melee goal marks it aggressive), it rears up: its hitbox is the full 2.2 blocks
+    // then, half that while it slithers.
+    @Override
+    public void tick() {
+        super.tick();
+        boolean up = this.isAggressive();
+        if (up != this.reared) {
+            this.reared = up;
+            this.refreshDimensions();
+        }
+        if (this.level().isClientSide()) {
+            this.rearO = this.rear;
+            this.rear = net.minecraft.util.Mth.approach(this.rear, up ? 1.0F : 0.0F, 0.12F);
+        }
+    }
+
+    public float rear(float partialTick) {
+        return net.minecraft.util.Mth.lerp(partialTick, this.rearO, this.rear);
+    }
+
+    @Override
+    public net.minecraft.world.entity.EntityDimensions getDefaultDimensions(net.minecraft.world.entity.Pose pose) {
+        var full = super.getDefaultDimensions(pose);
+        return this.reared ? full : full.scale(1.0F, 0.5F);
     }
 
     @Override

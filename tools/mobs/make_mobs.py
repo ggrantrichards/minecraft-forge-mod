@@ -934,18 +934,15 @@ def stone(face, px, py, fw, fh, rnd):
 RUNE = hexc("63e6ff")
 MONO_PAL = {".": stone, "S": stone, "d": STONE[0], "W": hexc("f2f6ff"), "I": hexc("39c6e8"), "P": hexc("0a0c16"),
             "G": GOLD[2], "g": GOLD[1], "r": hexc("2b6f86")}
-# The distillation: its eye is the Hourglass Nebula's - red lobes above and below, a rose ring, a teal
-# iris that glows.
-MONO_PAL.update({"O": hexc("d8482a"), "h": hexc("2a1612"), "R": hexc("ee8aa0"), "T": hexc("3edcc8")})
 MONO_EYE = ["GGGGGGGGGG",
-            "SOOOOOOOOS",
-            "SSOhhhhOSS",
-            "SSSORROSSS",
-            "SSRTTTTRSS",
-            "SSRTTTTRSS",
-            "SSSORROSSS",
-            "SSOhhhhOSS",
-            "SOOOOOOOOS",
+            "SSSSddSSSS",
+            "SSSdWWdSSS",
+            "SSdWIIWdSS",
+            "SdWIPPIWdS",
+            "SdWIPPIWdS",
+            "SSdWIIWdSS",
+            "SSSdWWdSSS",
+            "SSSSddSSSS",
             "GGGGGGGGGG"]
 MONO_SIDE = ["GGGGGGGGGG",
              "SSSSSSSSSS",
@@ -958,9 +955,9 @@ MONO_SIDE = ["GGGGGGGGGG",
              "SSSSSSSSSS",
              "GGGGGGGGGG"]
 MONO_HEAD = {"north": MONO_EYE, "east": MONO_SIDE, "west": MONO_SIDE, "south": MONO_SIDE}
-MONO_HEAD_GLOW = {"north": [r.replace("h", ".") for r in MONO_EYE], "east": MONO_SIDE, "west": MONO_SIDE,
+MONO_HEAD_GLOW = {"north": [r.replace("P", ".") for r in MONO_EYE], "east": MONO_SIDE, "west": MONO_SIDE,
                   "south": MONO_SIDE}
-mono_glow_pal = {"W": hexc("ffffff"), "I": RUNE, "r": RUNE, "O": hexc("ff6a3a"), "R": hexc("ffa0b4"), "T": hexc("62f6e2")}
+mono_glow_pal = {"W": hexc("ffffff"), "I": RUNE, "r": RUNE}
 COLUMN_FRONT = ["SSSSSS", "SSrrSS", "SSSSSS", "SrSSrS", "SSrrSS", "SSSSSS", "SSrrSS", "SrSSrS", "SSSSSS",
                 "SSrrSS", "SSSSSS", "GGGGGG"]
 
@@ -1235,118 +1232,144 @@ def smooth(pal, top=0.85, bottom=0.25, belly=None, spots=None):
     return f
 
 
-# Hydragrip (the Gripmouth): a long, low, salamander-built hunter of the Wellspring's banks. Gill
-# frills behind its broad head, lit at the tips; frog's eyes on top with slit pupils, and a second,
-# smaller pair below them; a wide hinged jaw with a row of small pale teeth; a line of lights down
-# each flank; a finned tail it swims with.
-GRIP = ramp("0a1f24", "5fb3a8")
-GRIP_BELLY = ramp("6e6488", "e4dcf0")
-GRIP_GLOW = hexc("8ff5e6")
+# Hydragrip: a sleek, otter-built salamander of the Wellspring's banks, standing high on webbed,
+# clawed feet. Dark indigo skin with a violet-and-teal sheen and a scatter of cyan lights; a long neck
+# and a smooth round head with big dark glossy eyes and a wide, quiet smile; small pink frills behind
+# its jaw; a long tail ending in a ribbed violet fin it swims with.
+HG = ramp("0f0d26", "4b4282")
+HG_BELLY = ramp("3a3058", "8a7aac")
+HG_SPOT = hexc("7ff0ff")
+HG_VIOLET = hexc("8a5aa8")
+HG_TEAL = hexc("3a7a9a")
 
 
-def grip_lights(face, px, py, fw, fh):
-    if face in ("east", "west"):
-        return fh >= 6 and py == fh // 3 and px % 3 == 1
+def _hg_hash(face, px, py, fw, fh):
+    h = (px * 73856093) ^ (py * 19349663) ^ (fw * 83492791) ^ (fh * 2654435761) ^ (ord(face[0]) * 97)
+    h = (h ^ (h >> 13)) * 1274126177
+    return ((h ^ (h >> 16)) & 0xFFFF) / 65536.0
+
+
+def hg_spot(face, px, py, fw, fh):
+    if face == "down":
+        return False
     if face == "up":
-        return fw >= 8 and px in (2, fw - 3) and py % 3 == 1
-    return False
+        density = 0.08
+    elif face in ("east", "west"):
+        density = 0.07 if py < fh * 0.55 else 0.015
+    else:
+        density = 0.03
+    return _hg_hash(face, px, py, fw, fh) < density
 
 
-def grip_skin(face, px, py, fw, fh, rnd):
-    return smooth(GRIP, 0.9, 0.3, belly=GRIP_BELLY, spots=grip_lights)(face, px, py, fw, fh, rnd)
+def hg_skin(face, px, py, fw, fh, rnd):
+    if hg_spot(face, px, py, fw, fh):
+        return HG_SPOT
+    c = smooth(HG, 0.8, 0.2, belly=HG_BELLY)(face, px, py, fw, fh, rnd)
+    if face != "down":
+        band = math.sin(px * 0.55 + py * 0.35 + fw * 0.3)      # an oily, shifting sheen
+        c = mix(c, HG_VIOLET, 0.28 * max(0.0, band)) if band > 0 else mix(c, HG_TEAL, 0.2 * -band)
+    return c
 
 
-def grip_skin_glow(face, px, py, fw, fh, rnd):
-    return hexc("3fa89a") if grip_lights(face, px, py, fw, fh) else None
+def hg_skin_glow(face, px, py, fw, fh, rnd):
+    return HG_SPOT if hg_spot(face, px, py, fw, fh) else None
 
 
-def grip_head(face, px, py, fw, fh, rnd):
-    if face == "north":
-        if py == fh - 1:
-            return GRIP_BELLY[4] if px in (1, 3, fw - 4, fw - 2) else hexc("1a0c14")       # a few small teeth over the dark of the mouth
-        if py == 1 and px in (2, fw - 3):
-            return hexc("041014")                                                          # the lower pair of eyes
-        if py == 0:
-            return GRIP[1]                                                                 # the brow
-    return grip_skin(face, px, py, fw, fh, rnd)
-
-
-def grip_head_glow(face, px, py, fw, fh, rnd):
-    if face == "north" and py == 1 and px in (2, fw - 3):
-        return GRIP_GLOW
-    return None
-
-
-def grip_jaw(face, px, py, fw, fh, rnd):
-    if face == "north" and py == 0:
-        return GRIP_BELLY[4] if px in (2, fw - 3) else hexc("1a0c14")
+def hg_head(face, px, py, fw, fh, rnd):
     if face == "up":
-        return hexc("3a1a2a") if 0 < px < fw - 1 and py > 0 else GRIP_BELLY[2]            # the inside of the mouth
-    return smooth(GRIP_BELLY, 0.85, 0.35)(face, px, py, fw, fh, rnd)
+        return hg_skin(face, px, py, fw, fh, rnd)
+    return smooth(HG, 0.85, 0.35, belly=HG_BELLY)(face, px, py, fw, fh, rnd)
 
 
-def grip_eye(face, px, py, fw, fh, rnd):
+def hg_muzzle(face, px, py, fw, fh, rnd):
     if face == "north":
-        if px == fw // 2:
-            return hexc("020608")                                                          # a slit pupil
-        if 0 < py or 0 < px < fw - 1:
-            return hexc("2a8a80")
-    return grip_skin(face, px, py, fw, fh, rnd)
+        if py == fh - 1 and 0 < px < fw - 1:
+            return HG[0]                                        # the long, quiet smile
+        if py == fh - 2 and px in (0, fw - 1):
+            return HG[0]                                        # its upturned corners
+    if face in ("east", "west") and py == fh - 1:
+        return HG[0]                                            # the smile runs back along its cheeks
+    return smooth(HG, 0.9, 0.45, belly=HG_BELLY)(face, px, py, fw, fh, rnd)
 
 
-def grip_eye_glow(face, px, py, fw, fh, rnd):
-    if face == "north" and px != fw // 2 and (0 < py or 0 < px < fw - 1):
-        return GRIP_GLOW
-    return None
+def hg_eye(face, px, py, fw, fh, rnd):
+    if face in ("north", "east", "west"):
+        if px == 0 and py == 0:
+            return hexc("e8f4ff")                               # the glint
+        return hexc("2a1814") if py == fh - 1 and px == fw - 1 else hexc("06050c")
+    return hg_skin(face, px, py, fw, fh, rnd)
 
 
-def grip_frill(face, px, py, fw, fh, rnd):
+def hg_eye_glow(face, px, py, fw, fh, rnd):
+    return hexc("c8e8ff") if face in ("north", "east", "west") and px == 0 and py == 0 else None
+
+
+def hg_jaw(face, px, py, fw, fh, rnd):
+    if face == "up":
+        return hexc("3a1a2e") if 0 < px < fw - 1 and py > 0 else HG_BELLY[2]   # the inside of its mouth
+    return smooth(HG_BELLY, 0.7, 0.3)(face, px, py, fw, fh, rnd)
+
+
+def hg_frill(face, px, py, fw, fh, rnd):
     t = px / max(1, fw - 1)
-    if py % 2 == 1 and t > 0.55:
-        return None                                                                        # feathered tips
-    return mix(GRIP[3], hexc("9ff0e4"), t)
+    if py % 2 == 1 and t > 0.5:
+        return None                                             # feathered tips
+    return mix(hexc("8a4a6e"), hexc("f4b8d0"), t)
 
 
-def grip_frill_glow(face, px, py, fw, fh, rnd):
-    return hexc("6fe0d0") if px >= fw - 2 and py % 2 == 0 else None
-
-
-def grip_fin(face, px, py, fw, fh, rnd):
-    if face in ("east", "west"):
-        return mix(GRIP[2], hexc("7fd8cc"), py / max(1, fh - 1)) if (px + py) % 5 else GRIP[3]
+def hg_frill_glow(face, px, py, fw, fh, rnd):
     return None
 
 
-def grip_foot(face, px, py, fw, fh, rnd):
-    return smooth(GRIP_BELLY, 0.8, 0.4)(face, px, py, fw, fh, rnd)
+def hg_fin(face, px, py, fw, fh, rnd):
+    if face in ("east", "west"):
+        if px % 3 == 0:
+            return hexc("3a2a5a")                               # the ribs
+        return mix(hexc("4a3a7a"), hexc("b07ab0"), py / max(1, fh - 1))
+    return None
 
 
-def _grip_leg(name, side, z):
-    return Part(name, (side * 5, 19, z, 0, 0, side * -0.9), [B(-1.5, 0, -1.5, 3, 7, 3, grip_skin, key="gleg")], [
-        Part(name + "_foot", (0, 7, 0, 0, 0, side * 0.9), [B(-2, -0.5, -2.5, 4, 1, 5, grip_foot, key="gfoot")]),
+def hg_foot(face, px, py, fw, fh, rnd):
+    if face == "north" and px % 2 == 0:
+        return hexc("d8c8d8")                                   # claws
+    if face == "up" and py == 0 and px % 2 == 0:
+        return HG[0]                                            # between the toes
+    return smooth(HG, 0.6, 0.15)(face, px, py, fw, fh, rnd)
+
+
+def _hg_leg(name, side, z):
+    return Part(name, (side * 3.5, 17, z, 0, 0, side * -0.08), [B(-1.5, 0, -1.5, 3, 6, 3, hg_skin, hg_skin_glow, key="hgleg")], [
+        Part(name + "_foot", (0, 6, -0.5, 0, 0, side * 0.08), [B(-2, 0, -3, 4, 1, 5, hg_foot, key="hgfoot")]),
     ])
 
 
-def _grip_frills(side):
+def _hg_frills(side):
     out = []
-    for k, (dy, rz) in enumerate(((-3, -0.35), (-1, 0.0), (1, 0.35))):
-        out.append(Part(f"frill_{'l' if side > 0 else 'r'}{k}", (side * 5.5, dy, -1, 0, side * -0.4, side * rz + (0 if side > 0 else math.pi)),
-                        [B(0, -1, 0, 7, 2, 0, grip_frill, grip_frill_glow, key="gfrill")]))
+    for k, (dy, rz) in enumerate(((-5, -0.4), (-3.5, 0.0), (-2, 0.4))):
+        out.append(Part(f"frill_{'l' if side > 0 else 'r'}{k}", (side * 3.5, dy, 0.5, 0, side * -0.8, side * rz + (0 if side > 0 else math.pi)),
+                        [B(0, -1, 0, 3, 2, 0, hg_frill, hg_frill_glow, key="hgfrill")]))
     return out
 
 
 HYDRAGRIP = Mob("hydragrip", (128, 64), [
-    Part("body", (0, 18, 0), [B(-5, -4.5, -4, 10, 8, 16, grip_skin, grip_skin_glow)], [
-        Part("head", (0, -2, -4), [B(-5.5, -4, -6, 11, 5, 6, grip_head, grip_head_glow),
-                                   B(-5, -6, -5.5, 3, 3, 3, grip_eye, grip_eye_glow, key="geye"),
-                                   B(2, -6, -5.5, 3, 3, 3, grip_eye, grip_eye_glow, key="geye", mirror=True)],
-             [Part("jaw", (0, 1, -1), [B(-5, 0, -5, 10, 2, 5, grip_jaw)])] + _grip_frills(1) + _grip_frills(-1)),
-        Part("tail", (0, -1, 12, -0.15, 0, 0), [B(-2, -2, 0, 4, 4, 8, grip_skin), B(0, -5, 0, 0, 10, 9, grip_fin)], [
-            Part("tail_tip", (0, 0, 8), [B(-1, -1, 0, 2, 2, 6, grip_skin), B(0, -3, 0, 0, 6, 7, grip_fin)]),
+    Part("body", (0, 14, 0), [B(-4, -3.5, -6, 8, 7, 14, hg_skin, hg_skin_glow),
+                              B(-3.5, -3, 8, 7, 6, 3, hg_skin, hg_skin_glow)], [
+        Part("neck", (0, -1.5, -5, -0.8, 0, 0), [B(-2.5, -2.5, -8, 5, 5, 8, hg_skin, hg_skin_glow)], [
+            Part("head", (0, -0.5, -7.5, 0.8, 0, 0), [B(-3.5, -6, -5, 7, 6, 6, hg_head),
+                                                      B(-3, -7, -4.5, 6, 1, 5, hg_skin, hg_skin_glow),
+                                                      B(-2.5, -3, -7, 5, 3, 2, hg_muzzle),
+                                                      B(-3.7, -5.5, -5.4, 2, 2, 1, hg_eye, hg_eye_glow, key="hgeye"),
+                                                      B(1.7, -5.5, -5.4, 2, 2, 1, hg_eye, hg_eye_glow, key="hgeye", mirror=True)],
+                 [Part("jaw", (0, 0, -2), [B(-2.5, 0, -5, 5, 1, 6, hg_jaw)])] + _hg_frills(1) + _hg_frills(-1)),
+        ]),
+        Part("tail", (0, -1, 11, -0.25, 0, 0), [B(-2.5, -2.5, 0, 5, 5, 7, hg_skin, hg_skin_glow)], [
+            Part("tail_mid", (0, 0, 7, 0.15, 0, 0), [B(-2, -2, 0, 4, 4, 6, hg_skin, hg_skin_glow), B(0, -4, 1, 0, 2, 5, hg_fin)], [
+                Part("tail_tip", (0, 0, 6, 0.25, 0, 0), [B(-1, -1.5, 0, 2, 3, 5, hg_skin, hg_skin_glow), B(0, -4, 0, 0, 8, 9, hg_fin)]),
+            ]),
         ]),
     ]),
-    _grip_leg("leg_fr", -1, -1), _grip_leg("leg_fl", 1, -1), _grip_leg("leg_br", -1, 9), _grip_leg("leg_bl", 1, 9),
-], egg=(GRIP[2], GRIP_BELLY[3]))
+    _hg_leg("leg_fr", -1, -3.5), _hg_leg("leg_fl", 1, -3.5), _hg_leg("leg_br", -1, 7), _hg_leg("leg_bl", 1, 7),
+], egg=(HG[2], HG_SPOT))
 
 
 # Mirror Wretch (the Choir): it has no mirror and no face - only a round mouth ringed with teeth. Half
@@ -1412,24 +1435,37 @@ def _wretch_segment(i):
 
 
 def _wretch_sacs():
+    # Down the underside of its neck, behind the head: they hang in front of it when it rears.
     out = []
     for k in range(5):
         size = 3 if k in (0, 4) else 4
-        out.append(Part(f"sac{k}", (0, -18 + k * 3.2, -3), [B(-size / 2 - 1, -size / 2, -size, size + 2, size, size,
-                                                               wretch_sac, wretch_sac_glow, key=f"wsac{size}")]))
+        out.append(Part(f"sac{k}", (0, 1.5, -10.5 + k * 2.2), [B(-size / 2 - 1, 0, -size / 2, size + 2, size, size,
+                                                                wretch_sac, wretch_sac_glow, key=f"wsac{size}")]))
     return out
 
 
+def _wretch_front_feet():
+    return [Part("chest_foot_l", (4, 1, -6, 0, 0, -0.6), [B(-0.5, 0, -0.5, 1, 4, 1, wretch_dark, key="wfoot")]),
+            Part("chest_foot_r", (-4, 1, -6, 0, 0, 0.6), [B(-0.5, 0, -0.5, 1, 4, 1, wretch_dark, key="wfoot")])]
+
+
+# One worm, lying along the ground: the crawling segments behind, then the chest (with a pair of front
+# legs) and the neck, which lifts the head a little as it slithers. Hunting, it rears: the chest swings
+# up from where it joins the segments, the front legs leave the ground, and the neck and the head
+# with it rise over two blocks high - the back legs never leave the ground. (The renderer does the
+# rearing; this is the model at rest.)
 MIRROR_WRETCH = Mob("mirror_wretch", (128, 64), [
     _wretch_segment(0), _wretch_segment(1), _wretch_segment(2), _wretch_segment(3),
-    Part("chest", (0, 18, 0, 0.3, 0, 0), [B(-4, -21, -3, 8, 21, 6, wretch_skin)], [
-        Part("head", (0, -21, -1, -0.3, 0, 0), [B(-4, -4, -6, 8, 8, 7, wretch_mouth, wretch_mouth_glow)], [
-            Part(f"spine{k}", (dx, -4, -1 + k % 2 * 2, -1.1, 0, 0), [B(-0.5, -3, -0.5, 1, 3, 1, wretch_dark, key="wspine")])
-            for k, dx in enumerate((-2.5, -1, 1, 2.5))
-        ]),
-        Part("fin_l", (4, -14, 0, 0, 0.3, 0.35), [B(0, -3, 0, 7, 9, 0, wretch_fin, key="wfin")]),
-        Part("fin_r", (-4, -14, 0, 0, -0.3, -0.35), [B(-7, -3, 0, 7, 9, 0, wretch_fin, key="wfin", mirror=True)]),
-    ] + _wretch_sacs()),
+    Part("chest", (0, 20, 1.5), [B(-4, -3.5, -9, 8, 7, 9, wretch_skin)], [
+        Part("neck", (0, -0.5, -8.5, -0.45, 0, 0), [B(-3.5, -3, -12, 7, 6, 12, wretch_skin)], [
+            Part("head", (0, -0.5, -11, 0.45, 0, 0), [B(-4, -4, -7, 8, 8, 7, wretch_mouth, wretch_mouth_glow)], [
+                Part(f"spine{k}", (dx, -4, -2 + k % 2 * 2, -1.1, 0, 0), [B(-0.5, -3, -0.5, 1, 3, 1, wretch_dark, key="wspine")])
+                for k, dx in enumerate((-2.5, -1, 1, 2.5))
+            ]),
+            Part("fin_l", (3.5, -1, -5, 0, 0.3, 0.35), [B(0, -3, -3, 6, 7, 0, wretch_fin, key="wfin")]),
+            Part("fin_r", (-3.5, -1, -5, 0, -0.3, -0.35), [B(-6, -3, -3, 6, 7, 0, wretch_fin, key="wfin", mirror=True)]),
+        ] + _wretch_sacs()),
+    ] + _wretch_front_feet()),
 ], egg=(WRETCH[2], WRETCH_FLESH[3]))
 
 # ---- The distillation's Leviathan mobs.

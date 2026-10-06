@@ -56,7 +56,7 @@ public final class ModEntities {
         () -> EntityType.Builder.of(Hushback::new, MobCategory.CREATURE).sized(1.0F, 1.3F).eyeHeight(1.15F)
             .clientTrackingRange(10).build(ENTITY_TYPES.key("hushback")));
     public static final RegistryObject<EntityType<Hydragrip>> HYDRAGRIP = ENTITY_TYPES.register("hydragrip",
-        () -> EntityType.Builder.of(Hydragrip::new, MobCategory.CREATURE).sized(0.9F, 0.7F).eyeHeight(0.55F)
+        () -> EntityType.Builder.of(Hydragrip::new, MobCategory.CREATURE).sized(1.0F, 1.2F).eyeHeight(1.05F)
             .clientTrackingRange(8).build(ENTITY_TYPES.key("hydragrip")));
     public static final RegistryObject<EntityType<MirrorWretch>> MIRROR_WRETCH = ENTITY_TYPES.register("mirror_wretch",
         () -> EntityType.Builder.of(MirrorWretch::new, MobCategory.MONSTER).sized(1.2F, 2.2F).eyeHeight(2.0F)

@@ -48,8 +48,8 @@ spyglass, and only from here can you sight the constellations the Starforge need
 - **Drift Whales** travel in pods toward the Eclipse, no two alike - big leaders, calves by their
   mothers, curious ones and shy ones - answering each other's hums, rolling and breaching at play. Sing
   one a song (Memory Moss, a note block, Chorus Fruit) and it's yours to ride.
-- **Hushbacks**, clear-hided grazers whose herd blinks away when one is hurt; **Hydragrips**, frilled
-  and frog-eyed, which hunt endermites by the water; and the **Mirror Wretch**, a rearing worm with a
+- **Hushbacks**, clear-hided grazers whose herd blinks away when one is hurt; **Hydragrips**, sleek,
+  dark and cyan-spotted, which hunt endermites by the water; and the **Mirror Wretch**, a slithering worm with a
   round toothed mouth and a vocal sac for every voice it has stolen, calling you in voices you know from
   the void's edge.
 - **The Watcher** is only ever seen from the corner of your eye. Look straight at it and it fades - and
