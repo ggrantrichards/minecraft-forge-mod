@@ -198,7 +198,7 @@ public final class ModBlocks {
         () -> endStone(MapColor.SAND).strength(4.5F, 9.0F).lightLevel(state -> 3));
     public static final RegistryObject<Block> RAW_SOLARITE_BLOCK = register("raw_solarite_block", Block::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).instrument(NoteBlockInstrument.BASEDRUM)
-            .requiresCorrectToolForDrops().strength(5.0F, 6.0F));
+            .requiresCorrectToolForDrops().strength(5.0F, 6.0F).lightLevel(state -> 6));   // raw sun-metal, still warm
     public static final RegistryObject<Block> SOLARITE_BLOCK = register("solarite_block", Block::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).instrument(NoteBlockInstrument.BELL)
             .requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.METAL).lightLevel(state -> 7));

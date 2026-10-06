@@ -557,7 +557,7 @@ public final class WorldgenSurvey {
         BlockPos heart = null;
         for (int y = end.getMinY() + 120; y < end.getMinY() + 230 && heart == null; y++) {
             BlockPos p = new BlockPos(start.getX() + 8, y, start.getZ() + 8);
-            if (end.getBlockState(p).is(Blocks.SHROOMLIGHT) && end.getBlockState(p.above(2)).is(ModBlocks.SOLARITE_BLOCK.get())) {
+            if (end.getBlockState(p).is(ModBlocks.SOLARITE_BLOCK.get()) && end.getBlockState(p.above(2)).is(ModBlocks.RAW_SOLARITE_BLOCK.get())) {
                 heart = p;
             }
         }
@@ -571,7 +571,7 @@ public final class WorldgenSurvey {
             double d = Math.sqrt(p.distSqr(heart));
             if (d > 3.5 && d < 6.5 && state.isAir()) {
                 air++;
-            } else if (state.is(Blocks.MAGMA_BLOCK) || state.is(Blocks.SHROOMLIGHT)) {
+            } else if (state.is(Blocks.MAGMA_BLOCK) || state.is(ModBlocks.RAW_SOLARITE_BLOCK.get())) {
                 glow++;
             } else if (!state.isAir()) {
                 rock++;
@@ -1012,7 +1012,7 @@ public final class WorldgenSurvey {
         for (Wanted w : List.of(new Wanted("comet_crater", 'A', Blocks.CHEST), new Wanted("wanderer_relay", 'D', ModBlocks.VOID_CRYSTAL_BLOCK.get()),
                                 new Wanted("shattered_observatory", 'N', Blocks.VAULT),
                                 new Wanted("solar_array", 'C', ModBlocks.COLLECTOR_PEDESTAL.get()),
-                                new Wanted("remnant", 'C', Blocks.SHROOMLIGHT),
+                                new Wanted("remnant", 'C', ModBlocks.SOLARITE_BLOCK.get()),
                                 new Wanted("constellation_maze", 'N', ModBlocks.STAR_BRIDGE.get()))) {
             Area area = areas.get(w.biome());
             BlockPos from = area != null ? area.centre : BlockPos.ZERO;
@@ -1097,7 +1097,7 @@ public final class WorldgenSurvey {
                 }
                 if (w.name().equals("comet_crater")) {
                     for (BlockPos q : BlockPos.betweenClosed(marker.offset(-10, 0, -10), marker.offset(10, 10, 10))) {
-                        if (end.getBlockState(q).is(Blocks.MAGMA_BLOCK)) {
+                        if (end.getBlockState(q).is(ModBlocks.RAW_SOLARITE_BLOCK.get())) {
                             hot = true;
                             break;
                         }
@@ -1629,7 +1629,7 @@ public final class WorldgenSurvey {
         if (!enoughLand(area, failures)) {
             return;
         }
-        // Its ground: Sunscorched Stone, its Solarite, and the charred lips and magma of its fissures.
+        // Its ground: Sunscorched Stone, its Solarite, and the charred lips and hot raw Solarite of its fissures.
         int scorchedTops = area.tops(ModBlocks.SUNSCORCHED_STONE.get()) + area.tops(ModBlocks.SOLARITE_ORE.get())
             + area.tops(ModBlocks.CHARRED_END_STONE.get()) + area.tops(Blocks.MAGMA_BLOCK) + area.tops(ModBlocks.RAW_SOLARITE_BLOCK.get());
         if (scorchedTops < 0.8 * area.landColumnsIn) {

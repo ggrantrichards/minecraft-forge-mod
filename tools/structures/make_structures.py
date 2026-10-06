@@ -39,7 +39,7 @@ def comet_crater(seed, hot):
     """A bowl blasted into an island by a comet: a raised rim of Charred End Stone thrown up by the
     impact, a scorched floor glazed with blue ice, and the Comet Core (a boulder with a heart of
     Meteoric Iron Ore) half sunk at the bottom, with a cache buried under it. Stardust only lies
-    under the floor, where it can't fall up. Hot craters still smoulder: magma in the floor's cracks
+    under the floor, where it can't fall up. Hot craters still smoulder: raw Solarite in the floor's cracks
     and fires burning along the rim, and no ice."""
     t = Template(29, 14, 29, seed)
     rnd = t.rnd
@@ -62,7 +62,7 @@ def comet_crater(seed, hot):
                 if y == top and d < r_bowl:
                     roll = rnd.random()
                     if hot and roll < 0.16 and d < r_bowl - 1:
-                        state = "minecraft:magma_block"
+                        state = a("raw_solarite_block")
                     elif not hot and roll < 0.2 + 0.25 * (1 - d / r_bowl):
                         state = "minecraft:blue_ice"
                     elif roll > 0.94:
@@ -74,11 +74,11 @@ def comet_crater(seed, hot):
                 t.set(x, y, z, state)
             for y in range(top + 1, 14):
                 t.set(x, y, z, "minecraft:air")
-    # Hot craters: fire burns along the rim, kept alight by magma under it.
+    # Hot craters: fire burns along the rim, forever, on raw Solarite (it's in #infiniburn_end).
     if hot:
         for (x, z), (top, d) in tops.items():
             if r_bowl + 0.6 < d < r_rim - 0.6 and rnd.random() < 0.22:
-                t.set(x, top, z, "minecraft:magma_block")
+                t.set(x, top, z, a("raw_solarite_block"))
                 t.set(x, top + 1, z, "minecraft:fire")
     floor = ground - 6
     # The Comet Core: a scorched boulder with a heart of Meteoric Iron, half sunk in the floor.
@@ -95,7 +95,7 @@ def comet_crater(seed, hot):
                     elif roll < 0.6:
                         state = a("raw_meteoric_iron_block")
                     elif hot and roll < 0.8:
-                        state = "minecraft:magma_block"
+                        state = a("raw_solarite_block")
                     elif not hot and roll < 0.72:
                         state = "minecraft:blue_ice"
                     else:
@@ -503,8 +503,8 @@ def solar_array(seed):
                 t.set(x, ground + 1, z, a("sunscorched_stone_brick_wall"))
     for ang in (math.pi / 4, 3 * math.pi / 4, 5 * math.pi / 4, 7 * math.pi / 4):
         x, z = round(c + math.cos(ang) * 17.5), round(c + math.sin(ang) * 17.5)
-        t.set(x, ground, z, "minecraft:magma_block")
-        t.set(x, ground + 1, z, "minecraft:campfire[lit=true,signal_fire=false,facing=north,waterlogged=false]")
+        t.set(x, ground, z, a("raw_solarite_block"))     # a brazier: fire that never goes out (#infiniburn_end)
+        t.set(x, ground + 1, z, "minecraft:fire")
     return t
 
 

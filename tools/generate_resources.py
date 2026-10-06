@@ -1151,7 +1151,7 @@ def worldgen_phase3():
     plant_patch("corona_petrified_vines", "petrified_astral_vine", rarity=3, count=6, spread=5)
     plant_patch("corona_pollinator_husks", "pollinator_husk", rarity=12, count=2, spread=3, vertical=1,
                 on=[rid("sunscorched_stone"), rid("charred_end_stone")])
-    # Phase 11: the Corona's ground has shape - glazed spires and cracks glowing with magma.
+    # Phase 11: the Corona's ground has shape - glazed spires and cracks glowing with raw Solarite.
     big_feature("corona_solarite_spires", "solarite_spire", rarity=2, heightmap="WORLD_SURFACE_WG")
     big_feature("corona_scorch_fissures", "scorch_fissure", rarity=2, heightmap="WORLD_SURFACE_WG")
     end_biome("corona", "The Corona", fog="#3c0a18", water="#b8183e",   # crimson, after the Horsehead Nebula
@@ -1308,6 +1308,8 @@ def mobs_phase4():
     drop_self("leviathan_heart")
     tag("block", "minecraft:mineable/hoe", rid("leviathan_heart"))
     drop_self("leviathan_flesh")
+    # Raw Solarite holds fire forever in the End, as bedrock does (the craters' rims, the Solar Array's braziers).
+    tag("block", "minecraft:infiniburn_end", rid("raw_solarite_block"))
     tag("block", "minecraft:mineable/hoe", rid("leviathan_flesh"))
     shaped("spore_lantern", "spore_lantern", [" S ", "SGS", " S "], {"S": rid("glowing_spores"), "G": rid("astral_glass")})
     recipe("glow_ink_sac_from_glowing_spores", {"type": "minecraft:crafting_shapeless", "category": "misc",
@@ -1546,7 +1548,7 @@ def structures_phase6():
         {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 5}, "entries": [
             entry("raw_solarite", 5, (2, 6)), entry("solarite_ingot", 3, (1, 3)), entry("void_crystal", 3, (2, 4)),
             entry("charged_void_crystal", 2, (1, 1)), entry("minecraft:blaze_powder", 2, (2, 5)),
-            entry("minecraft:magma_cream", 2, (1, 4)), entry("minecraft:shroomlight", 2, (1, 3))]},
+            entry("minecraft:magma_cream", 2, (1, 4)), entry("raw_solarite_block", 2, (1, 2))]},
         {"rolls": 1, "entries": [entry("temporal_crystal")]},
         chance("starforge_template", 0.5),
     ])

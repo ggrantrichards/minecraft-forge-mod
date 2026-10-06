@@ -82,6 +82,11 @@ From playing beta.3. These replace what the distillation's notes below say about
   Hollow Vines glow, and both biomes' fog is lighter.
 - **The Wellspring** sits in a basin of End Stone, not on glass.
 - **The Solar Array** stands high on a stepped mesa, ringed with lava and lit by braziers.
+- **End-native blocks only:** no more Nether blocks in End structures. The Leviathan's heart is Leviathan
+  Flesh, not Nether Wart; its sockets are rimmed in obsidian. Raw Solarite (now faintly glowing, and
+  holding fire forever in the End, as bedrock does) replaces Magma in the Corona's fissures, the hot
+  comet craters and the Solar Array's braziers, and Shroomlight in the Remnant - which keeps its Magma,
+  Blackstone and Basalt: the cinders of a dead star.
 - **Upwelling:** turning the view works while you're upside down.
 - **The Spire Wyrm's spawn egg** is out of the creative menu.
 

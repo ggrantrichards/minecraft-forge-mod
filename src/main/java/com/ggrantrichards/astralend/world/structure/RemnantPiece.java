@@ -137,19 +137,19 @@ public class RemnantPiece extends StructurePiece {
         double surface = CRUST + 2.6 * this.noise(x, y, z, 0) + 1.2 * this.noise(x * 2.3, y * 2.3, z * 2.3, 3);
         if (d <= surface) {
             if (d < 1.6) {
-                result = Blocks.SHROOMLIGHT.defaultBlockState();                   // the last ember
+                result = ModBlocks.SOLARITE_BLOCK.get().defaultBlockState();        // the last ember
             } else if (d < 3.0) {
-                result = ModBlocks.SOLARITE_BLOCK.get().defaultBlockState();       // its heart
+                result = ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState();   // its heart
             } else if (d < CHAMBER) {
                 result = Blocks.AIR.defaultBlockState();
             } else if (d < MANTLE) {
-                result = h < 0.45 ? Blocks.MAGMA_BLOCK.defaultBlockState() : h < 0.7 ? Blocks.SHROOMLIGHT.defaultBlockState()
+                result = h < 0.45 ? Blocks.MAGMA_BLOCK.defaultBlockState() : h < 0.7 ? ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState()
                     : h < 0.85 ? ModBlocks.SOLARITE_ORE.get().defaultBlockState() : ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState();
             } else {
                 // The crust, cracked through by fissures that glow.
                 double crack = Math.abs(this.noise(x * 1.6, y * 1.6, z * 1.6, 6));
                 if (crack < 0.06) {
-                    result = h < 0.6 ? Blocks.MAGMA_BLOCK.defaultBlockState() : Blocks.SHROOMLIGHT.defaultBlockState();
+                    result = h < 0.6 ? Blocks.MAGMA_BLOCK.defaultBlockState() : ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState();
                 } else {
                     double depth = surface - d;
                     result = depth < 1.5 ? (h < 0.5 ? ModBlocks.CHARRED_END_STONE.get().defaultBlockState()
@@ -176,7 +176,7 @@ public class RemnantPiece extends StructurePiece {
             Vec3 flat = q.subtract(loop[1].scale(up));
             double tube = Math.sqrt(Math.pow(flat.length() - loop[2].x, 2) + up * up);
             if (tube < 1.3 && d > surface - 0.5) {
-                result = h < 0.35 ? Blocks.MAGMA_BLOCK.defaultBlockState() : Blocks.SHROOMLIGHT.defaultBlockState();
+                result = h < 0.35 ? Blocks.MAGMA_BLOCK.defaultBlockState() : ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState();
             }
         }
         // The ring of broken rock.

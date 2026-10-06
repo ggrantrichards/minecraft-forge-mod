@@ -11,7 +11,7 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 
 // A scorch fissure of the Corona: a crack wandering across the ground, a few blocks deep, its lips
-// charred black and magma glowing at the bottom - where a flare split the stone. (Within 7 blocks.)
+// charred black and raw Solarite glowing at the bottom - where a flare split the stone. (Within 7 blocks.)
 public record ScorchFissureFeature() implements Feature {
     public static final MapCodec<ScorchFissureFeature> CODEC = MapCodec.unit(ScorchFissureFeature::new);
 
@@ -26,7 +26,7 @@ public record ScorchFissureFeature() implements Feature {
         if (start == null || !level.getBlockState(start).is(ModBlocks.SUNSCORCHED_STONE.get())) {
             return false;
         }
-        BlockState magma = Blocks.MAGMA_BLOCK.defaultBlockState();
+        BlockState hot = ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState();   // raw sun-metal, still hot
         BlockState charred = ModBlocks.CHARRED_END_STONE.get().defaultBlockState();
         double angle = random.nextDouble() * Math.PI * 2;
         int length = 9 + random.nextInt(5);
@@ -48,7 +48,7 @@ public record ScorchFissureFeature() implements Feature {
                 for (int k = 0; k < depth; k++) {
                     Build.force(level, col.below(k), Blocks.AIR.defaultBlockState());
                 }
-                Build.force(level, col.below(depth), magma);
+                Build.force(level, col.below(depth), hot);
                 // The lips, charred.
                 for (int s = -1; s <= 1; s += 2) {
                     BlockPos lip = col.offset((int) Math.round(-Math.sin(angle) * s * (width + 1)), 0, (int) Math.round(Math.cos(angle) * s * (width + 1)));
