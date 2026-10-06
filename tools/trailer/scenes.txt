@@ -48,7 +48,7 @@ mob_hushback 75 orbit=50 | Hushback
 mob_hydragrip 70 orbit=-40 | Hydragrip
 mob_drift_whale_side 130 track=0.12 | Drift Whale
 vo 0.3 | Some will call you to the edge.
-mob_mirror_wretch 75 orbit=30 | Mirror Wretch
+mob_mirror_wretch_reared 75 orbit=30 | Mirror Wretch
 mob_umbral_stalker_lit 65 orbit=30 | Umbral Stalker
 biome_hollow_roots 85 fwd=3 | The Hollow Roots
 biome_crystal_vaults 85 fwd=2 | The Crystal Vaults

@@ -193,6 +193,9 @@ public class Curator extends Monster {
     @Override
     protected void customServerAiStep(ServerLevel level) {
         super.customServerAiStep(level);
+        if (this.tickCount % 10 == 0) {
+            this.updateBossBar(level);
+        }
         BlockPos centre = this.home != null ? this.home : this.blockPosition();
         Player target = null;
         double best = ARENA * ARENA;
@@ -326,11 +329,20 @@ public class Curator extends Monster {
     }
 
     // ---- the boss bar
+    // Shown only while it's awake, and only to whoever is within 64 blocks. (It's tracked from 256
+    // blocks off; resting in its reliquary, it shouldn't put its name on the screen of everyone near.)
 
-    @Override
-    public void startSeenByPlayer(ServerPlayer player) {
-        super.startSeenByPlayer(player);
-        this.bossEvent.addPlayer(player);
+    private void updateBossBar(ServerLevel level) {
+        boolean awake = this.isAlive() && !this.isDormant();
+        for (ServerPlayer player : level.players()) {
+            boolean show = awake && player.distanceToSqr(this) < 64.0 * 64.0;
+            boolean shown = this.bossEvent.getPlayers().contains(player);
+            if (show && !shown) {
+                this.bossEvent.addPlayer(player);
+            } else if (!show && shown) {
+                this.bossEvent.removePlayer(player);
+            }
+        }
     }
 
     @Override
