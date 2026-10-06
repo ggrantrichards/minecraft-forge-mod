@@ -123,7 +123,7 @@ public final class ModBlocks {
     // Chorus Moss: the soft ground cover of the Nebula Fields. It's springy:
     // you walk a little slower on it, and it softens a fall (ChorusMossBlock).
     public static final RegistryObject<Block> CHORUS_MOSS = register("chorus_moss", com.ggrantrichards.astralend.block.ChorusMossBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.1F).sound(SoundType.MOSS)
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.1F).sound(SoundType.MOSS)
             .speedFactor(0.9F).pushReaction(PushReaction.POPPED));
 
     // ---- Plants ----
@@ -135,8 +135,9 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollision().instabreak()
             .sound(SoundType.GRASS).offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.POPPED));
     // Astral Vine: grows upward like twisting vines. The "plant" block is the vine's body and has no item.
+    // Its tip glows cold pale blue (after beta.4): the reed groves light the Nebula Fields' rose moss.
     public static final RegistryObject<Block> ASTRAL_VINE = register("astral_vine", AstralVineBlock::new,
-        () -> vine());
+        () -> vine().lightLevel(state -> 7));
     public static final RegistryObject<Block> ASTRAL_VINE_PLANT = registerNoItem("astral_vine_plant", AstralVinePlantBlock::new,
         () -> vine());
     // The distillation: Hollow Vines hang from the Deep Hollows' Nullwood to the ground, like weeping vines.
@@ -239,7 +240,7 @@ public final class ModBlocks {
             .lightLevel(state -> state.getValue(com.ggrantrichards.astralend.maze.StarBridgeBlock.LIT) ? 10 : 0));
     // Phase 9: Chorus Moss carpet, like moss carpet.
     public static final RegistryObject<Block> CHORUS_MOSS_CARPET = register("chorus_moss_carpet", net.minecraft.world.level.block.CarpetBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.1F).sound(SoundType.MOSS_CARPET)
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.1F).sound(SoundType.MOSS_CARPET)
             .pushReaction(PushReaction.POPPED));
     // Phase 8 (Starforging): the Astral Forge, and the tiles Rift Walker boots lay over a drop.
     public static final RegistryObject<Block> ASTRAL_FORGE = register("astral_forge", com.ggrantrichards.astralend.starforge.AstralForgeBlock::new,

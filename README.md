@@ -38,6 +38,10 @@ and the distillation renamed or removed some of them.
 - That leaves five biomes - the **Nebula Fields**, the **Deep Hollows**, the **Glimmering Crags**,
   the **Ashen Barrens** and **the Eclipse** - plus the Shattered Crags (a variant) and two caves. Each
   is getting its own colour, creatures and polish next.
+- **The Nebula Fields are an emission nebula** now, the colours of glowing gas: rose **Nebula Moss**
+  (it was Chorus Moss), reed groves of magenta Astral Vines whose tips glow cold pale blue, rose fog,
+  and low clouds of drifting gas - rose haze pricked with pale-blue motes - that you walk into and out
+  of. Pollinators live here now. The giant Lumineshrooms and Starblooms belong to the Eclipse.
 
 ### After beta.3: the reworks
 

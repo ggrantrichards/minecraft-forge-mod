@@ -17,7 +17,8 @@ your face: the End tells you things with sound and light.
 
 ## The islands
 
-- **Nebula Fields:** violet Chorus Moss plains, and low gravity.
+- **Nebula Fields:** an emission nebula you can walk in - rose Nebula Moss, groves of magenta reeds
+  whose tips glow cold blue, clouds of glowing gas drifting low over it all, Pollinators, and low gravity.
 - **Deep Hollows:** the End's only forest, dark Nullwood on ring-shaped islands, hung with Hollow
   Vines whose black thorns carve pumpkins into violet Hollow Lanterns; Upwells beneath. Under it all, the **Hollow Roots**: caves through the dead roots, lit
   by glowcaps and amber Starsap, where fireflies drift.

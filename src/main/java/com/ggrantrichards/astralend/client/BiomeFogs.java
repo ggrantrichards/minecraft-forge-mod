@@ -12,6 +12,7 @@ public final class BiomeFogs {
         Map.entry("astralend:eclipse", 0x2A1E2E),
         Map.entry("astralend:glimmering_crags", 0x3A3450),
         Map.entry("astralend:hollow_roots", 0x2A1C3A),
+        Map.entry("astralend:nebula_fields", 0x3A1230),
         Map.entry("astralend:shattered_crags", 0x34304A),
         Map.entry("minecraft:end_barrens", 0xA080A0),
         Map.entry("minecraft:end_highlands", 0xA080A0),

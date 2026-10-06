@@ -1454,8 +1454,6 @@ public final class WorldgenSurvey {
             return;
         }
         landCoverage(area, 30, failures);
-        atLeast(area, ModBlocks.LUMINE_STEM.get(), 2, failures);       // giant Lumineshroom stemss
-        atLeast(area, ModBlocks.LUMINE_CAP.get(), 8, failures);
         atLeast(area, ModBlocks.NEBULA_TUFTS.get(), 20, failures);
         atLeast(area, ModBlocks.NEBULA_TENDRIL.get(), 1, failures);
         // Oases: water standing on the surface.
@@ -1464,21 +1462,20 @@ public final class WorldgenSurvey {
         if (water < area.landChunks()) {
             failures.add("Nebula Fields: hardly any oases (" + water + " columns of water)");
         }
-        // Where the ground itself is the top block (not a giant mushroom's cap), it should be moss.
+        // Where the ground itself is the top block, it should be moss.
         int mossTops = area.tops(ModBlocks.CHORUS_MOSS.get());
         int groundTops = mossTops + area.tops(Blocks.END_STONE);
         if (mossTops < 0.9 * groundTops) {
-            failures.add("Nebula Fields: only " + mossTops + " of " + groundTops + " bare-ground columns are topped with Chorus Moss");
+            failures.add("Nebula Fields: only " + mossTops + " of " + groundTops + " bare-ground columns are topped with Nebula Moss");
         }
-        // Chorus grows on Chorus Moss now (#minecraft:supports_chorus_plant), as in the rest of the living End.
-        int chorus = area.in(Blocks.CHORUS_PLANT) + area.in(Blocks.CHORUS_FLOWER);
-        log("Nebula Fields: " + chorus + " chorus blocks");
-        if (chorus == 0) {
-            failures.add("Nebula Fields: no chorus grew (it should, on Chorus Moss)");
+        // After beta.4 (an emission nebula): reed groves of Astral Vines, their tips glowing pale blue,
+        // a few Lumineshrooms; no giant Lumineshrooms or Starblooms (the Eclipse's).
+        atLeast(area, ModBlocks.ASTRAL_VINE.get(), 2, failures);
+        atLeast(area, ModBlocks.ASTRAL_VINE_PLANT.get(), 8, failures);
+        atLeast(area, ModBlocks.LUMINESHROOM.get(), 0.5, failures);
+        if (area.in(ModBlocks.LUMINE_CAP.get()) > 0 || area.in(ModBlocks.STARBLOOM.get()) > 0) {
+            failures.add("Nebula Fields: giant Lumineshrooms or Starblooms grew there (they're the Eclipse's now)");
         }
-        atLeast(area, ModBlocks.LUMINESHROOM.get(), 2, failures);
-        atLeast(area, ModBlocks.STARBLOOM.get(), 1, failures);
-        atLeast(area, ModBlocks.ASTRAL_VINE.get(), 0.3, failures);
     }
 
     private static void checkAurora(Area area, List<String> failures) {

@@ -49,7 +49,7 @@ SIMPLE_CUBES = [
     ("raw_meteoric_iron_block", "Block of Raw Meteoric Iron"),
     ("stardust_block", "Stardust"),
     ("astral_glass", "Astral Glass"),
-    ("chorus_moss", "Chorus Moss"),
+    ("chorus_moss", "Nebula Moss"),
     # Phase 3
     ("pale_end_stone_tiles", "Pale End Stone Tiles"),
     ("solarite_ore", "Solarite Ore"),
@@ -814,11 +814,9 @@ def worldgen():
     ]})
     terrain()
 
-    # Plants of the Nebula Fields.
-    plant_patch("nebula_lumineshrooms", "lumineshroom", rarity=1, count=40, spread=6)
-    plant_patch("nebula_starblooms", "starbloom", rarity=1, count=32, spread=6)
-    # A forest of giant Lumineshrooms over a carpet of Nebula Tufts, with tendrils hanging below.
-    big_feature("nebula_giant_lumineshrooms", "giant_lumineshroom", count=1)
+    # Plants of the Nebula Fields (after beta.4, an emission nebula: rose moss, magenta growth with cold
+    # pale-blue glowing tips; the giant Lumineshrooms and Starblooms belong to the Eclipse now).
+    plant_patch("nebula_lumineshrooms", "lumineshroom", rarity=1, count=14, spread=6)
     # Oases: ponds sunk into the moss, reeds and lumineshrooms crowding their banks.
     big_feature("nebula_oases", "oasis", rarity=4, heightmap="WORLD_SURFACE_WG")
     ground_cover("nebula_tufts", "nebula_tufts", 110)
@@ -830,7 +828,7 @@ def worldgen():
         "allowed_placement": {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
         "direction": "up",
         "layers": [
-            {"height": {"type": "minecraft:uniform", "min_inclusive": 0, "max_inclusive": 5},
+            {"height": {"type": "minecraft:uniform", "min_inclusive": 2, "max_inclusive": 9},
              "provider": {"id": rid("astral_vine_plant")}},
             {"height": 1, "provider": {"type": "minecraft:randomized_int", "property": "age",
                                        "source": {"id": rid("astral_vine"), "properties": {"age": "0"}},
@@ -838,8 +836,10 @@ def worldgen():
         ],
         "prioritize_tip": True,
     })
+    # Reed groves: Astral Vines standing in clumps, their glowing tips lighting the moss pale blue, with
+    # open moss between the groves.
     placed("nebula_astral_vines", {"feature": rid("astral_vine"), "placement": [
-        {"type": "minecraft:rarity_filter", "chance": 2},
+        {"type": "minecraft:noise_threshold_count", "noise_level": 0.1, "below_noise": 0, "above_noise": 3},
         {"type": "minecraft:in_square"},
         {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"},
         {"type": "minecraft:biome"},
@@ -851,26 +851,12 @@ def worldgen():
         ]}},
     ]})
 
-    # The biome itself. Endermen spawn as in the rest of the End; violet fog and drifting motes.
-    write(WG / "biome" / "nebula_fields.json", {
-        "attributes": {
-            "minecraft:gameplay/natural_mob_spawns": mob_spawns("nebula_fields"),
-            **background_music("nebula_fields"),
-            "minecraft:visual/ambient_particles": {"argument": [
-                {"particle": {"type": "minecraft:reverse_portal"}, "probability": 0.012}], "modifier": "append"},
-            "minecraft:visual/fog_color": "#2b1d45",
-        },
-        "carvers": [],
-        "downfall": 0.5,
-        "effects": {"water_color": "#7a5fc4"},
-        # Features by generation step. Step 4 (surface structures) has the return gateway, the
-        # same as in the End Highlands; step 9 (vegetal decoration) has the plants.
-        "features": [[], [rid("nebula_oases")], [], [], ["minecraft:end_gateway_return"], [], [], [], [],
-                     [rid("nebula_giant_lumineshrooms"), rid("nebula_lumineshrooms"), rid("nebula_starblooms"),
-                      rid("nebula_astral_vines"), rid("nebula_tufts"), rid("nebula_tendrils"), "minecraft:chorus_plant"]],
-        "has_precipitation": False,
-        "temperature": 0.5,
-    })
+    # The biome itself: rose fog, and drifting clouds of glowing motes (client/NebulaMist.java).
+    end_biome("nebula_fields", "Nebula Fields", fog="#3a1230", water="#c4568a",
+              features_step1=[rid("nebula_oases")],
+              features_step9=[rid("nebula_astral_vines"), rid("nebula_lumineshrooms"), rid("nebula_tufts"),
+                              rid("nebula_tendrils")],
+              particle="minecraft:glow", particle_chance=0.003)
 
     tag("worldgen/biome", "minecraft:is_end", rid("nebula_fields"))
     # Biomes in this tag get the End's low gravity. To turn it off, override this tag with an
@@ -945,14 +931,14 @@ def java_feature(name):
 # where the Eclipse will be - the Corona for now - Void Rays circle the Shattered Crags' gaps, and the
 # Umbral Stalker lives in the Glimmering Crags' caves.)
 MOB_SPAWNS = {
-    "nebula_fields": {"creature": [("void_wanderer", 4, 1)]},
+    "nebula_fields": {"creature": [("pollinator", 10, 3), ("void_wanderer", 3, 1)]},
     "deep_hollows": {"creature": [("void_wanderer", 4, 1)]},
     # The Umbral Stalker hunts only in the Crags' root caves (its spawn rule wants a roof of rock overhead).
     "glimmering_crags": {"monster": [("umbral_stalker", 6, 1)]},
     "shattered_crags": {"creature": [("void_ray", 8, 3)]},
     # The Eclipse: its heaven half's life, endermites for the Hydragrips to hunt, and on the border
     # between the halves (its spawn rule decides), the Mirror Wretch.
-    "eclipse": {"creature": [("pollinator", 10, 3), ("hushback", 10, 4), ("hydragrip", 5, 2)],
+    "eclipse": {"creature": [("hushback", 10, 4), ("hydragrip", 5, 2)],
                 "monster": [("minecraft:endermite", 3, 2), ("mirror_wretch", 6, 1)]},
     "corona": {"monster": [("mirror_wretch", 6, 1)]},
     # The caves: the Crystal Vaults' hunters.
@@ -993,7 +979,7 @@ FOGS = {}   # each End biome's fog colour, for the client's fog blending (client
 
 
 def end_biome(name, english, fog, water, features_step4=(), features_step7=(), features_step9=(),
-              particle=None, particle_chance=0.0):
+              particle=None, particle_chance=0.0, features_step1=()):
     FOGS[rid(name)] = fog
     attributes = {
         "minecraft:gameplay/natural_mob_spawns": mob_spawns(name),
@@ -1010,6 +996,7 @@ def end_biome(name, english, fog, water, features_step4=(), features_step7=(), f
         attributes["minecraft:visual/ambient_particles"] = {"argument": [
             {"particle": {"type": particle}, "probability": particle_chance}], "modifier": "append"}
     steps = [[] for _ in range(10)]
+    steps[1] = list(features_step1)   # lakes
     steps[4] = ["minecraft:end_gateway_return"] + list(features_step4)
     steps[7] = list(features_step7)   # underground ores
     steps[9] = list(features_step9)   # vegetation
@@ -1743,7 +1730,7 @@ def round_out_phase9():
     item_def("chorus_moss_carpet", rid("block/chorus_moss_carpet"))
     drop_self("chorus_moss_carpet")
     tag("block", "minecraft:mineable/hoe", rid("chorus_moss_carpet"))
-    lang[f"block.{NS}.chorus_moss_carpet"] = "Chorus Moss Carpet"
+    lang[f"block.{NS}.chorus_moss_carpet"] = "Nebula Moss Carpet"
     shaped("chorus_moss_carpet", "chorus_moss_carpet", ["##"], {"#": rid("chorus_moss")}, count=3, category="building")
 
     # Glowing Stew: Lumineshroom, Comet Cress and a bowl. Food, and 30 seconds of Night Vision.

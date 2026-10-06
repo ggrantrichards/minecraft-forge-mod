@@ -13,15 +13,21 @@
           ],
           "creature": [
             {
+              "type": "astralend:pollinator",
+              "count": 3,
+              "weight": 10
+            },
+            {
               "type": "astralend:void_wanderer",
               "count": 1,
-              "weight": 4
+              "weight": 3
             }
           ]
         }
       },
       "modifier": "overlay"
     },
+    "minecraft:visual/fog_color": "#3a1230",
     "minecraft:audio/background_music": {
       "default": {
         "sound": "astralend:music.nebula_fields",
@@ -30,23 +36,35 @@
         "replace_current_music": false
       }
     },
+    "minecraft:audio/ambient_sounds": {
+      "loop": "astralend:ambient.nebula_fields.loop",
+      "additions": {
+        "sound": "astralend:ambient.nebula_fields.additions",
+        "tick_chance": 0.006
+      },
+      "mood": {
+        "sound": "minecraft:ambient.cave",
+        "tick_delay": 6000,
+        "block_search_extent": 8,
+        "offset": 2.0
+      }
+    },
     "minecraft:visual/ambient_particles": {
       "argument": [
         {
           "particle": {
-            "type": "minecraft:reverse_portal"
+            "type": "minecraft:glow"
           },
-          "probability": 0.012
+          "probability": 0.003
         }
       ],
       "modifier": "append"
-    },
-    "minecraft:visual/fog_color": "#2b1d45"
+    }
   },
   "carvers": [],
   "downfall": 0.5,
   "effects": {
-    "water_color": "#7a5fc4"
+    "water_color": "#c4568a"
   },
   "features": [
     [],
@@ -63,13 +81,10 @@
     [],
     [],
     [
-      "astralend:nebula_giant_lumineshrooms",
-      "astralend:nebula_lumineshrooms",
-      "astralend:nebula_starblooms",
       "astralend:nebula_astral_vines",
+      "astralend:nebula_lumineshrooms",
       "astralend:nebula_tufts",
-      "astralend:nebula_tendrils",
-      "minecraft:chorus_plant"
+      "astralend:nebula_tendrils"
     ]
   ],
   "has_precipitation": false,

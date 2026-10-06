@@ -77,6 +77,7 @@ public final class AstralEnd {
             AstralSky.register();            // the End's sky: stars, auroras, the Remnant, flares
             com.ggrantrichards.astralend.client.UpsideDown.register();      // Upwelling: the view, controls and bodies turned over
             com.ggrantrichards.astralend.client.FogBlend.register();        // fog eased between biomes over ~50 blocks
+            com.ggrantrichards.astralend.client.NebulaMist.register();      // the Nebula Fields' drifting clouds
             com.ggrantrichards.astralend.client.starforge.StarforgeClient.register(modBusGroup);  // the Forge's screen, armour accents
         }
         WorldgenSurvey.register(); // does nothing unless started with -Dastralend.survey=true

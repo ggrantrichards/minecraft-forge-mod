@@ -108,8 +108,6 @@ public record OasisFeature() implements Feature {
                 }
             } else if (random.nextInt(3) == 0) {
                 Build.put(level, at, ModBlocks.LUMINESHROOM.get().defaultBlockState());
-            } else if (random.nextInt(4) == 0) {
-                Build.put(level, at, ModBlocks.STARBLOOM.get().defaultBlockState());
             } else {
                 Build.put(level, at, ModBlocks.NEBULA_TUFTS.get().defaultBlockState());
             }
