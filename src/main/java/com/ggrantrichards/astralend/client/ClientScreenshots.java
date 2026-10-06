@@ -234,6 +234,15 @@ public final class ClientScreenshots {
                 default -> LOGGER.error("[AstralEnd screenshots] unknown event {}", style);
             }
         }
+        if (style.equals("wake")) {
+            // (The trailer's wake@N: the Maw nearest the camera - its throat looked for round about.)
+            for (BlockPos p : BlockPos.betweenClosed(here.offset(-130, -60, -130), here.offset(130, 40, 130))) {
+                if (end.getBlockState(p).is(ModBlocks.MAW_THROAT.get())) {
+                    event(end, here, "wake=" + p.getX() + ";" + p.getY() + ";" + p.getZ());
+                    break;
+                }
+            }
+        }
         if (style.startsWith("wake=")) {
             // A Leviathan's Maw, woken: light its eyes and open its throat (wake=x;y;z, the throat).
             String[] c = style.substring(5).split(";");

@@ -43,6 +43,7 @@ public record BorderBlendFeature() implements Feature {
             return false;                                   // the main island and its gap: vanilla's own
         }
         Climate.Sampler sampler = EclipseLayout.sampler(level.getLevel().getChunkSource().randomState());
+        var resolver = generator.getBiomeSource().createResolver(sampler);
         // The ground on a coarse grid round the chunk.
         int n = (16 + 2 * REACH) / STEP + 1;
         Ground[][] grid = new Ground[n][n];
@@ -51,7 +52,7 @@ public record BorderBlendFeature() implements Feature {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 int gx = x0 - REACH + i * STEP, gz = z0 - REACH + j * STEP;
-                Holder<Biome> biome = generator.getBiomeSource().getNoiseBiome(QuartPos.fromBlock(gx), QuartPos.fromBlock(64), QuartPos.fromBlock(gz), sampler);
+                Holder<Biome> biome = resolver.getNoiseBiome(QuartPos.fromBlock(gx), QuartPos.fromBlock(64), QuartPos.fromBlock(gz));
                 grid[i][j] = ground(biome);
                 if (first == null) {
                     first = grid[i][j];

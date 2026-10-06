@@ -842,6 +842,7 @@ public final class WorldgenSurvey {
     private static void checkCaves(Area roots, Area vaults, ServerLevel end, List<String> failures) {
         if (roots != null) {
             int glowcaps = 0, sap = 0, chunks = 0;
+            BlockPos cap = null;
             for (int cx = -4; cx <= 4; cx++) {
                 for (int cz = -4; cz <= 4; cz++) {
                     var chunk = end.getChunk((roots.centre.getX() >> 4) + cx, (roots.centre.getZ() >> 4) + cz);
@@ -851,6 +852,9 @@ public final class WorldgenSurvey {
                         BlockState state = end.getBlockState(p);
                         if (state.is(ModBlocks.HOLLOW_GLOWCAP.get())) {
                             glowcaps++;
+                            if (cap == null || glowcaps % 17 == 0) {
+                                cap = p.immutable();
+                            }
                         } else if (state.is(ModBlocks.STARSAP_ORE.get())) {
                             sap++;
                         }
@@ -862,6 +866,12 @@ public final class WorldgenSurvey {
             var biome = end.getBiome(roots.centre.atY(30)).unwrapKey().map(k -> k.identifier().toString()).orElse("?");
             log(String.format("caves: the Hollow Roots (%s at y=30 under the Hollow Isles' centre): %d glowcaps, %d Starsap ore, %d Gloamgrubs in %d chunks",
                 biome, glowcaps, sap, grubs.size(), chunks));
+            if (cap != null) {
+                // A view along the cave, from a few blocks off a glowcap, at eye height.
+                BlockPos eye = caveEye(end, cap);
+                EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "biome_hollow_roots %d.5 %d %d.5 %.1f 10.0", eye.getX(), eye.getY(), eye.getZ(),
+                    yawTo(eye, cap)));
+            }
             if (!biome.equals("astralend:hollow_roots") || glowcaps + sap == 0) {
                 failures.add("caves: expected the Hollow Roots under the Hollow Isles, with glowcaps and Starsap");
             }
@@ -884,10 +894,32 @@ public final class WorldgenSurvey {
             var biome = end.getBiome(vaults.centre.atY(20)).unwrapKey().map(k -> k.identifier().toString()).orElse("?");
             log(String.format("caves: the Crystal Vaults (%s at y=20 under the Shattered Crags' centre): %d Glimmer Crystal in geodes, %d Shardbacks (%d hidden)",
                 biome, crystal, hunters.size(), hunters.stream().filter(com.ggrantrichards.astralend.entity.Shardback::isHidden).count()));
+            if (!hunters.isEmpty()) {
+                BlockPos at = hunters.get(0).blockPosition();
+                BlockPos eye = caveEye(end, at);
+                EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "biome_crystal_vaults %d.5 %d %d.5 %.1f 15.0", eye.getX(), eye.getY(), eye.getZ(),
+                    yawTo(eye, at)));
+            }
             if (!biome.equals("astralend:crystal_vaults") || crystal == 0) {
                 failures.add("caves: expected the Crystal Vaults under the Shattered Crags, with geodes");
             }
         }
+    }
+
+    // Somewhere to stand in a cave a few blocks from `at`: two blocks of air (cave or not), looked for
+    // round it; else just above it.
+    private static BlockPos caveEye(ServerLevel end, BlockPos at) {
+        for (int r = 5; r >= 2; r--) {
+            for (int[] d : new int[][] {{r, 0}, {-r, 0}, {0, r}, {0, -r}, {r, r}, {-r, -r}}) {
+                for (int dy = 0; dy <= 2; dy++) {
+                    BlockPos p = at.offset(d[0], dy, d[1]);
+                    if (end.getBlockState(p).isAir() && end.getBlockState(p.above()).isAir()) {
+                        return p;               // (the shot's position is where its feet are)
+                    }
+                }
+            }
+        }
+        return at.above();
     }
 
     // Borders blend (BorderBlendFeature): along lines across the edge of the Nebula Fields, the top

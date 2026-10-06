@@ -50,17 +50,20 @@ mob_drift_whale_side 130 track=0.12 | Drift Whale
 vo 0.3 | Some will call you to the edge.
 mob_mirror_wretch 75 orbit=30 | Mirror Wretch
 mob_umbral_stalker_lit 65 orbit=30 | Umbral Stalker
+biome_hollow_roots 85 fwd=3 | The Hollow Roots
+biome_crystal_vaults 85 fwd=2 | The Crystal Vaults
 vo 0.4 | Don't look straight at it.
 mob_watcher 80 fwd=2.5 | The Watcher
 vo 0.3 | Someone built here. No one is left to say why.
 card 3.2 | No one is left to say why.
-structure_rift_maw 110 fwd=4 wake@30 | Rift Maws
 structure_constellation_maze 110 orbit=20 focus=hit bridges@30 | Constellation Mazes
 structure_remnant 110 orbit=20 focus=hit | The Remnant
 vo 0.5 | The greatest of them... a whole leviathan, made a citadel.
 structure_leviathan 160 fwd=12 | The Leviathan
+structure_leviathan_maw 110 fwd=4 wake@30 | The Maw
 vo 0.3 | Its keeper is only resting.
 structure_leviathan_reliquary 110 fwd=5 | The Reliquary
+structure_leviathan_heart 80 fwd=1 | Its heart, still beating
 mob_curator 90 orbit=25 | The Curator
 vo 0.3 | Take what it keeps.
 card 2.8 | Take what it keeps.

@@ -399,7 +399,7 @@ public final class ModBlocks {
     // The Deep Hollows' carving: a pumpkin carved with a Hollow Thorn.
     public static final RegistryObject<Block> HOLLOW_LANTERN = register("hollow_lantern", com.ggrantrichards.astralend.block.HollowLanternBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(1.0F).sound(SoundType.WOOD)
-            .lightLevel(state -> 15).pushReaction(PushReaction.DESTROY));
+            .lightLevel(state -> 15));
 
     // Leviathan Heart: in the Leviathan's ribcage, dormant, still beating crimson.
     public static final RegistryObject<Block> LEVIATHAN_HEART = register("leviathan_heart", com.ggrantrichards.astralend.block.LeviathanHeartBlock::new,
