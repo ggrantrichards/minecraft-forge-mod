@@ -133,6 +133,13 @@ public final class ModItems {
     public static final RegistryObject<Item> HOLLOWBACK_SPAWN_EGG = spawnEgg("hollowback", ModEntities.HOLLOWBACK);
     public static final RegistryObject<Item> CURATOR_SPAWN_EGG = spawnEgg("curator", ModEntities.CURATOR);
 
+    // The caves: Starsap (furnace fuel, and its block); the Hollow Thorn that carves Hollow Lanterns.
+    public static final RegistryObject<Item> STARSAP = simple("starsap");
+    public static final RegistryObject<Item> HOLLOW_THORN = register("hollow_thorn", com.ggrantrichards.astralend.item.HollowThornItem::new,
+        new Item.Properties().durability(64));
+    public static final RegistryObject<Item> GLOAMGRUB_SPAWN_EGG = spawnEgg("gloamgrub", ModEntities.GLOAMGRUB);
+    public static final RegistryObject<Item> SHARDBACK_SPAWN_EGG = spawnEgg("shardback", ModEntities.SHARDBACK);
+
     private static net.minecraft.tags.TagKey<net.minecraft.world.level.block.entity.BannerPattern> patternTag(String name) {
         return net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.BANNER_PATTERN,
             net.minecraft.resources.Identifier.fromNamespaceAndPath(AstralEnd.MODID, "pattern_item/" + name));

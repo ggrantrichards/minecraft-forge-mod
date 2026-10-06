@@ -53,6 +53,9 @@ public final class ModWorldgen {
         // The distillation
         FEATURE_TYPES.register("root_cave", () -> com.ggrantrichards.astralend.world.feature.RootCaveFeature.CODEC);
         FEATURE_TYPES.register("eclipse_terrain", () -> com.ggrantrichards.astralend.world.feature.EclipseTerrainFeature.CODEC);
+        FEATURE_TYPES.register("border_blend", () -> com.ggrantrichards.astralend.world.feature.BorderBlendFeature.CODEC);
+        FEATURE_TYPES.register("hollow_roots", () -> com.ggrantrichards.astralend.world.feature.HollowRootsFeature.CODEC);
+        FEATURE_TYPES.register("crystal_vault", () -> com.ggrantrichards.astralend.world.feature.CrystalVaultFeature.CODEC);
         FEATURE_TYPES.register("eclipse_landmarks", () -> com.ggrantrichards.astralend.world.feature.EclipseLandmarksFeature.CODEC);
         FEATURE_TYPES.register("memory_moss", () -> com.ggrantrichards.astralend.world.feature.MemoryMossFeature.CODEC);
     }

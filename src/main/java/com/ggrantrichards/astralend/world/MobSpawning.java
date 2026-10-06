@@ -1,6 +1,7 @@
 package com.ggrantrichards.astralend.world;
 
 import com.ggrantrichards.astralend.AstralEnd;
+import com.ggrantrichards.astralend.ModBlocks;
 import com.ggrantrichards.astralend.ModItems;
 import com.ggrantrichards.astralend.entity.DriftWhale;
 import com.ggrantrichards.astralend.entity.ModEntities;
@@ -30,7 +31,7 @@ import net.minecraftforge.fml.LogicalSide;
 // lists can't promise "at most one near you", so these are placed here instead, checked for each
 // player in the End a few times a minute.
 //
-// Also: a Bottled Flare burns in a furnace for as long as it takes to smelt 120 items.
+// Also: a Bottled Flare burns in a furnace for as long as it takes to smelt 120 items, and Starsap 12.
 public final class MobSpawning {
     private static final int CHECK_EVERY = 200;  // ticks
     public static final ResourceKey<Structure> OBSERVATORY = ResourceKey.create(Registries.STRUCTURE,
@@ -41,6 +42,10 @@ public final class MobSpawning {
         FurnaceFuelBurnTimeEvent.BUS.addListener(event -> {
             if (event.getItemStack().is(ModItems.BOTTLED_FLARE.get())) {
                 event.setBurnTime(24000);   // a captured Sunstorm: 120 items, more than a lava bucket
+            } else if (event.getItemStack().is(ModItems.STARSAP.get())) {
+                event.setBurnTime(2400);    // old amber burns long: 12 items, half again a piece of coal
+            } else if (event.getItemStack().is(ModBlocks.STARSAP_BLOCK.get().asItem())) {
+                event.setBurnTime(24000);
             }
         });
     }

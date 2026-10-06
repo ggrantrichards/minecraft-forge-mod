@@ -63,6 +63,9 @@ SIMPLE_CUBES = [
     ("whalelight_scale", "Whalelight Scale"),
     # The Leviathan's heart, dormant, still beating
     ("leviathan_heart", "Leviathan Heart"),
+    # The caves: Starsap, the dead Nullwood's amber
+    ("starsap_ore", "Starsap Ore"),
+    ("starsap_block", "Block of Starsap"),
 ]
 PILLARS = [
     ("leviathan_bone_block", "Leviathan Bone Block", "leviathan_bone"),
@@ -74,7 +77,8 @@ CROSS_PLANTS = [
     ("lumineshroom", "Lumineshroom"), ("starbloom", "Starbloom"),
     ("shimmer_grass", "Shimmer Grass"), ("ashen_lumineshroom", "Ashen Lumineshroom"),
     ("petrified_astral_vine", "Petrified Astral Vine"),
-    ("nebula_tufts", "Nebula Tufts"), ("nullwood_sapling", "Nullwood Sapling")
+    ("nebula_tufts", "Nebula Tufts"), ("nullwood_sapling", "Nullwood Sapling"),
+    ("hollow_glowcap", "Hollow Glowcap"),
 ]
 ITEMS = [
     ("void_crystal", "Void Crystal"),
@@ -98,6 +102,9 @@ ITEMS = [
     ("hushfleece", "Hushfleece"),
     ("hushback_flank", "Raw Hushback Flank"),
     ("cooked_hushback_flank", "Cooked Hushback Flank"),
+    # The caves
+    ("starsap", "Starsap"),
+    ("hollow_thorn", "Hollow Thorn"),
 ]
 
 PLURAL = {"nightstone_bricks": "nightstone_brick", "pale_end_stone_bricks": "pale_end_stone_brick",
@@ -802,6 +809,9 @@ def worldgen():
         # Whole islands of a different stone:
         in_biome("ashen_barrens", block("pale_end_stone")),
         in_biome("hollow_isles", block("nightstone")),
+        # The caves under them: the same stone (the islands' lower parts are in the cave biomes).
+        in_biome("hollow_roots", block("nightstone")),
+        in_biome("crystal_vaults", block("nightstone")),
         # (The Eclipse's heaven half is End Stone: no rule. Its moss, round the water, is placed by its features.)
         # The Corona (the Eclipse's hell half): a crimson crust of Sunscorched Stone over Charred End Stone.
         in_biome("corona", {"type": "minecraft:sequence", "sequence": [
@@ -953,11 +963,14 @@ MOB_SPAWNS = {
     "eclipse": {"creature": [("pollinator", 10, 3), ("hushback", 10, 4), ("hydragrip", 5, 2)],
                 "monster": [("minecraft:endermite", 3, 2), ("mirror_wretch", 6, 1)]},
     "corona": {"monster": [("mirror_wretch", 6, 1)]},
+    # The caves: the Hollow Roots' grubs (ambient, like bats), the Crystal Vaults' hunters.
+    "hollow_roots": {"ambient": [("gloamgrub", 10, 2)]},
+    "crystal_vaults": {"monster": [("shardback", 6, 1)], "creature": [("void_ray", 4, 2)]},
 }
 
 
 # Endermen live where the End is alive; the dead Ashen Barrens and the sun-scorched Corona have none.
-NO_ENDERMEN = ("corona", "eclipse")   # (in the Ashen Barrens they stand at the edges: EclipseLife)
+NO_ENDERMEN = ("corona", "eclipse", "hollow_roots", "crystal_vaults")   # (in the Ashen Barrens they stand at the edges: EclipseLife)
 
 
 def mob_spawns(biome):
@@ -974,7 +987,7 @@ def mob_spawns(biome):
 BIOME_MUSIC = {"nebula_fields": "music.nebula_fields", "chorus_thicket": "music.nebula_fields", "eclipse": "music.eclipse",
                "glimmering_crags": "music.glimmering_crags", "shattered_crags": "music.glimmering_crags",
                "hollow_isles": "music.outer_end", "deep_hollows": "music.outer_end",
-               "corona": "music.outer_end"}
+               "corona": "music.outer_end", "hollow_roots": "music.outer_end", "crystal_vaults": "music.glimmering_crags"}
 
 
 def background_music(biome):
@@ -985,8 +998,12 @@ def background_music(biome):
     return {"minecraft:audio/background_music": {"default": music}}
 
 
+FOGS = {}   # each End biome's fog colour, for the client's fog blending (client/BiomeFogs.java)
+
+
 def end_biome(name, english, fog, water, features_step4=(), features_step7=(), features_step9=(),
               particle=None, particle_chance=0.0):
+    FOGS[rid(name)] = fog
     attributes = {
         "minecraft:gameplay/natural_mob_spawns": mob_spawns(name),
         "minecraft:visual/fog_color": fog,
@@ -1110,6 +1127,12 @@ def worldgen_phase3():
     # (the Eclipse's hell half since the distillation; its landmarks run in both halves)
     # The Eclipse's island, built before anything else in every End biome (a Forge biome modifier adds it;
     # it does nothing outside an Eclipse).
+    # Biome borders blended: near a border, the neighbour's ground mixes into this one's in soft blots
+    # (BorderBlendFeature), in every End chunk, before anything grows.
+    java_feature("border_blend")
+    placed("border_blend", {"feature": rid("border_blend"), "placement": []})
+    write(RES / "data" / NS / "forge" / "biome_modifier" / "border_blend.json", {
+        "type": "forge:add_features", "biomes": "#minecraft:is_end", "features": rid("border_blend"), "step": "local_modifications"})
     java_feature("eclipse_terrain")
     placed("eclipse_terrain", {"feature": rid("eclipse_terrain"), "placement": []})
     write(RES / "data" / NS / "forge" / "biome_modifier" / "eclipse_terrain.json", {
@@ -1214,6 +1237,9 @@ MOBS = [
     ("mirror_wretch", "Mirror Wretch"),
     ("hollowback", "Hollowback"),
     ("curator", "The Curator"),
+    # The caves
+    ("gloamgrub", "Gloamgrub"),
+    ("shardback", "Shardback"),
 ]
 
 
@@ -1773,7 +1799,7 @@ def round_out_phase9():
 
 
 ASTRAL_BIOMES = ("nebula_fields", "ashen_barrens", "hollow_isles", "corona", "chorus_thicket", "glimmering_crags",
-                "deep_hollows", "shattered_crags", "eclipse")
+                "deep_hollows", "shattered_crags", "eclipse", "hollow_roots", "crystal_vaults")
 
 
 def has_item(item):
@@ -1997,10 +2023,13 @@ def content_phase10():
               "music.glimmering_crags": "music/space_music", "music.outer_end": "music/out_there",
               "music_disc.observing_the_star": "records/observing_the_star"}
     sounds = {event: {"sounds": [{"name": rid(path), "stream": True}]} for event, path in tracks.items()}
-    for biome in ("nebula_fields", "chorus_thicket", "ashen_barrens", "hollow_isles", "corona", "glimmering_crags",
-                  "deep_hollows", "shattered_crags", "eclipse"):
-        sounds[f"ambient.{biome}.loop"] = {"sounds": [{"name": rid(f"ambient/{biome}/loop"), "stream": True, "volume": 0.6}]}
-        sounds[f"ambient.{biome}.additions"] = {"sounds": [{"name": rid(f"ambient/{biome}/additions{i}"), "volume": 0.5}
+    # (The caves borrow their parents' recordings: the Roots the Deep Hollows', the Vaults the Shattered Crags'.)
+    for biome, folder in (("nebula_fields", "nebula_fields"), ("chorus_thicket", "chorus_thicket"), ("ashen_barrens", "ashen_barrens"),
+                          ("hollow_isles", "hollow_isles"), ("corona", "corona"), ("glimmering_crags", "glimmering_crags"),
+                          ("deep_hollows", "deep_hollows"), ("shattered_crags", "shattered_crags"), ("eclipse", "eclipse"),
+                          ("hollow_roots", "deep_hollows"), ("crystal_vaults", "shattered_crags")):
+        sounds[f"ambient.{biome}.loop"] = {"sounds": [{"name": rid(f"ambient/{folder}/loop"), "stream": True, "volume": 0.6}]}
+        sounds[f"ambient.{biome}.additions"] = {"sounds": [{"name": rid(f"ambient/{folder}/additions{i}"), "volume": 0.5}
                                                           for i in range(1, 4)]}
     # The void hum, near island edges (client/VoidHum.java).
     sounds["ambient.void_hum"] = {"sounds": [{"name": rid("ambient/void_hum"), "stream": True}]}
@@ -2283,6 +2312,11 @@ def main():
                  "name": rid("hollow_vines")},
             ]}],
             "rolls": 1,
+        }, {
+            # Now and then a Hollow Thorn: the black thorn that carves Hollow Lanterns.
+            "conditions": [{"condition": "minecraft:random_chance", "chance": 0.05}],
+            "entries": [{"type": "minecraft:item", "name": rid("hollow_thorn")}],
+            "rolls": 1,
         }])
 
     # Two-block-tall plants (like a lilac). Only the lower half drops the item.
@@ -2418,7 +2452,7 @@ def main():
                        ("shimmer_grass", "minecraft:tool/can_shear"), ("nebula_tufts", "minecraft:tool/can_shear")):
         loot(name, [{"condition": tool, "entries": [{"type": "minecraft:item", "name": rid(name)}], "rolls": 1}])
     for ore, drop in (("void_crystal_ore", "void_crystal"), ("meteoric_iron_ore", "raw_meteoric_iron"),
-                      ("solarite_ore", "raw_solarite")):
+                      ("solarite_ore", "raw_solarite"), ("starsap_ore", "starsap")):
         loot(ore, [{
             "entries": [{"type": "minecraft:alternatives", "children": [
                 {"type": "minecraft:item", "condition": "minecraft:tool/can_silk_touch", "name": rid(ore)},
@@ -2562,6 +2596,7 @@ def main():
     mechanics_phase10()
     content_phase10()
     distillation_blocks()
+    caves()
     recipe_unlocks()      # last: it reads every recipe written above
 
     # ---------------------------------------------------------------- write tags + lang
@@ -2570,7 +2605,71 @@ def main():
         folder = RES / "data" / ns / "tags" / registry
         write(folder / f"{path}.json", {"replace": False, "values": sorted(set(values))})
     write(ASSETS / "lang" / "en_us.json", dict(sorted(lang.items())))
+    write_biome_fogs()
     print(f"Wrote {len(written)} files")
+
+
+def caves():
+    """After beta.3: a cave biome under each of two biomes, and the Deep Hollows' carving."""
+    # ---- The Hollow Roots (under the Hollow Isles, below y=46: AstralEndBiomeSource).
+    java_feature("hollow_roots")
+    placed("hollow_roots_caves", {"feature": rid("hollow_roots"), "placement": [
+        {"type": "minecraft:rarity_filter", "chance": 2}, {"type": "minecraft:biome"}]})
+    end_biome("hollow_roots", "Hollow Roots", fog="#2a1c3a", water="#3a2a66",
+              features_step4=[rid("hollow_isles_upwells")],
+              features_step7=[rid("hollow_isles_stardust_veins"), rid("hollow_roots_caves")],
+              features_step9=[rid("hollow_isles_voidgel"), rid("hollow_isles_stardust_underhangs")],
+              particle="minecraft:spore_blossom_air", particle_chance=0.002)
+    tag("block", "minecraft:mineable/pickaxe", rid("starsap_ore"))
+    drop_self("starsap_block")
+    drop_self("hollow_glowcap")
+    shaped("starsap_block", "starsap_block", ["###", "###", "###"], {"#": rid("starsap")})
+    recipe("starsap_from_block", {"type": "minecraft:crafting_shapeless", "category": "misc", "ingredients": [rid("starsap_block")],
+                                  "result": {"id": rid("starsap"), "count": 9}})
+    entity_loot("gloamgrub", [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("glowing_spores"), "functions": [
+        {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 1, "max": 3}}]}]}])
+    # ---- The Crystal Vaults (under the Shattered Crags, below y=38): drifting geodes, a Shardback in each.
+    java_feature("crystal_vault")
+    placed("crystal_vaults_geodes", {"feature": rid("crystal_vault"), "placement": [
+        {"type": "minecraft:rarity_filter", "chance": 3}, {"type": "minecraft:biome"}]})
+    end_biome("crystal_vaults", "Crystal Vaults", fog="#2e2a44", water="#7c7290",
+              features_step7=[rid("crystal_vaults_geodes")],
+              features_step9=[rid("glimmering_crags_voidgel")],
+              particle="minecraft:white_ash", particle_chance=0.004)
+    entity_loot("shardback", [player_kill_drop("void_crystal", 1),
+                              {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("glimmer_cluster"), "functions": [
+                                  {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 1, "max": 2}}]}]}])
+    # ---- The Deep Hollows' carving: a Hollow Thorn (from the Hollow Vines) carves a Hollow Lantern.
+    variants = {}
+    for facing, y in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+        for face in range(4):
+            variants[f"face={face},facing={facing}"] = {"model": rid(f"block/hollow_lantern_{face}"), "y": y}
+    blockstate("hollow_lantern", {"variants": variants})
+    for face in range(4):
+        block_model(f"hollow_lantern_{face}", {"parent": "minecraft:block/orientable", "textures": {
+            "front": rid(f"block/hollow_lantern_{face}"), "side": "minecraft:block/pumpkin_side", "top": "minecraft:block/pumpkin_top"}})
+    item_def("hollow_lantern", rid("block/hollow_lantern_0"))
+    lang[f"block.{NS}.hollow_lantern"] = "Hollow Lantern"
+    drop_self("hollow_lantern")
+    tag("block", "minecraft:mineable/axe", rid("hollow_lantern"))
+    lang[f"biome.{NS}.hollow_roots"] = "Hollow Roots"
+    lang[f"biome.{NS}.crystal_vaults"] = "Crystal Vaults"
+
+
+def write_biome_fogs():
+    """client/BiomeFogs.java: every End biome's fog colour (vanilla's too), for FogBlend."""
+    fogs = dict(FOGS)
+    for vanilla in ("the_end", "end_highlands", "end_midlands", "small_end_islands", "end_barrens"):
+        fogs[f"minecraft:{vanilla}"] = "#a080a0"
+    lines = ["package com.ggrantrichards.astralend.client;", "", "import java.util.Map;", "",
+             "// GENERATED by tools/generate_resources.py from the biomes' fog colours - edit them there.",
+             "public final class BiomeFogs {",
+             "    public static final Map<String, Integer> FOG = Map.ofEntries("]
+    entries = [f'        Map.entry("{k}", 0x{v.lstrip("#").upper()})' for k, v in sorted(fogs.items())]
+    lines.append(",\n".join(entries))
+    lines += ["    );", "", "    private BiomeFogs() {}", "}", ""]
+    path = ROOT / "src/main/java/com/ggrantrichards/astralend/client/BiomeFogs.java"
+    path.write_text("\n".join(lines))
 
 
 if __name__ == "__main__":

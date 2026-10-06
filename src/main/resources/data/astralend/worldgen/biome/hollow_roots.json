@@ -1,0 +1,81 @@
+{
+  "attributes": {
+    "minecraft:gameplay/natural_mob_spawns": {
+      "argument": {
+        "spawn_costs": {},
+        "spawns_by_category": {
+          "monster": [],
+          "ambient": [
+            {
+              "type": "astralend:gloamgrub",
+              "count": 2,
+              "weight": 10
+            }
+          ]
+        }
+      },
+      "modifier": "overlay"
+    },
+    "minecraft:visual/fog_color": "#2a1c3a",
+    "minecraft:audio/background_music": {
+      "default": {
+        "sound": "astralend:music.outer_end",
+        "min_delay": 3000,
+        "max_delay": 12000,
+        "replace_current_music": false
+      }
+    },
+    "minecraft:audio/ambient_sounds": {
+      "loop": "astralend:ambient.hollow_roots.loop",
+      "additions": {
+        "sound": "astralend:ambient.hollow_roots.additions",
+        "tick_chance": 0.006
+      },
+      "mood": {
+        "sound": "minecraft:ambient.cave",
+        "tick_delay": 6000,
+        "block_search_extent": 8,
+        "offset": 2.0
+      }
+    },
+    "minecraft:visual/ambient_particles": {
+      "argument": [
+        {
+          "particle": {
+            "type": "minecraft:spore_blossom_air"
+          },
+          "probability": 0.002
+        }
+      ],
+      "modifier": "append"
+    }
+  },
+  "carvers": [],
+  "downfall": 0.5,
+  "effects": {
+    "water_color": "#3a2a66"
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [
+      "minecraft:end_gateway_return",
+      "astralend:hollow_isles_upwells"
+    ],
+    [],
+    [],
+    [
+      "astralend:hollow_isles_stardust_veins",
+      "astralend:hollow_roots_caves"
+    ],
+    [],
+    [
+      "astralend:hollow_isles_voidgel",
+      "astralend:hollow_isles_stardust_underhangs"
+    ]
+  ],
+  "has_precipitation": false,
+  "temperature": 0.5
+}

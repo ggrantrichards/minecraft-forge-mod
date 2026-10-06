@@ -21,6 +21,9 @@ public final class ModBiomes {
     // The distillation's variants: denser, darker Hollow Isles, and the Crags broken into fragments.
     public static final ResourceKey<Biome> DEEP_HOLLOWS = key("deep_hollows");
     public static final ResourceKey<Biome> SHATTERED_CRAGS = key("shattered_crags");
+    // The caves (after beta.3): under the Hollow Isles, and under the Shattered Crags.
+    public static final ResourceKey<Biome> HOLLOW_ROOTS = key("hollow_roots");
+    public static final ResourceKey<Biome> CRYSTAL_VAULTS = key("crystal_vaults");
 
     // Biomes with low gravity. Datapacks can empty this tag to turn low gravity off.
     public static final TagKey<Biome> LOW_GRAVITY = TagKey.create(Registries.BIOME, id("low_gravity"));

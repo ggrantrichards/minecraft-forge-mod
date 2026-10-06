@@ -264,6 +264,56 @@
       }
     ]
   },
+  "ambient.hollow_roots.loop": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/deep_hollows/loop",
+        "stream": true,
+        "volume": 0.6
+      }
+    ]
+  },
+  "ambient.hollow_roots.additions": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/deep_hollows/additions1",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/deep_hollows/additions2",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/deep_hollows/additions3",
+        "volume": 0.5
+      }
+    ]
+  },
+  "ambient.crystal_vaults.loop": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/shattered_crags/loop",
+        "stream": true,
+        "volume": 0.6
+      }
+    ]
+  },
+  "ambient.crystal_vaults.additions": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/shattered_crags/additions1",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/shattered_crags/additions2",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/shattered_crags/additions3",
+        "volume": 0.5
+      }
+    ]
+  },
   "ambient.void_hum": {
     "sounds": [
       {

@@ -1546,14 +1546,118 @@ CURATOR = Mob("curator", (64, 64), [
     Part("left_leg", (2, 0, 0), [B(-1, 0, -1, 2, 22, 2, curator_limb, key="cleg", mirror=True)]),
 ], egg=(OBSIDIAN[2], hexc("9c6ad8")))
 
+
+# ---- The caves (after beta.3).
+
+# Gloamgrub: a fat, soft grub of the Hollow Roots - pale, ringed, and down its back a row of lantern-
+# lights that brighten when it has eaten. Small dark eyes, two little mandibles.
+GRUB = ramp("6e6278", "efe6dc")
+GRUB_GLOW = hexc("f6d27a")
+
+
+def grub_skin(face, px, py, fw, fh, rnd):
+    def ring(face, px, py, fw, fh):
+        return False
+    base = smooth(GRUB, 0.95, 0.45, belly=ramp("8a7a80", "c8bcbc"))(face, px, py, fw, fh, rnd)
+    if face in ("east", "west", "north", "south") and py == 0:
+        return GRUB[2]                                                  # the fold between rings
+    return base
+
+
+def grub_lantern(face, px, py, fw, fh, rnd):
+    if face == "up" and abs(px + 0.5 - fw / 2) < 1.1 and abs(py + 0.5 - fh / 2) < 1.1:
+        return hexc("e8b860")
+    return grub_skin(face, px, py, fw, fh, rnd)
+
+
+def grub_lantern_glow(face, px, py, fw, fh, rnd):
+    if face == "up" and abs(px + 0.5 - fw / 2) < 1.1 and abs(py + 0.5 - fh / 2) < 1.1:
+        return GRUB_GLOW
+    return None
+
+
+def grub_head(face, px, py, fw, fh, rnd):
+    if face == "north":
+        if py == 1 and px in (1, fw - 2):
+            return hexc("140c10")
+        if py == fh - 1 and 1 < px < fw - 2:
+            return hexc("4a2a2a")
+    return grub_skin(face, px, py, fw, fh, rnd)
+
+
+def grub_mandible(face, px, py, fw, fh, rnd):
+    return hexc("5a3a2a") if py < fh - 1 else hexc("2a1a14")
+
+
+GLOAMGRUB = Mob("gloamgrub", (64, 64), [
+    Part("head", (0, 24, -6), [B(-2.5, -5, -4, 5, 5, 4, grub_head)], [
+        Part("mandible_l", (1.5, -1, -4, 0, -0.3, 0), [B(-0.5, -0.5, -2, 1, 1, 2, grub_mandible, key="gmand")]),
+        Part("mandible_r", (-1.5, -1, -4, 0, 0.3, 0), [B(-0.5, -0.5, -2, 1, 1, 2, grub_mandible, key="gmand")]),
+    ]),
+    Part("seg1", (0, 24, -2), [B(-3.5, -6.5, -4, 7, 6.5, 4, grub_lantern, grub_lantern_glow, key="gseg1")]),
+    Part("seg2", (0, 24, 2), [B(-3.5, -6.5, -4, 7, 6.5, 4, grub_lantern, grub_lantern_glow, key="gseg1")]),
+    Part("seg3", (0, 24, 5), [B(-3, -5.5, -3, 6, 5.5, 3, grub_lantern, grub_lantern_glow)]),
+    Part("seg4", (0, 24, 7.5), [B(-2, -4, -2.5, 4, 4, 2.5, grub_skin)]),
+], egg=(GRUB[4], GRUB_GLOW))
+
+
+# Shardback: the Crystal Vaults' hunter. A low, heavy, dark body, its back grown over in shards of
+# Glimmer Crystal that catch the light; a blunt head with two pairs of small violet eyes. Folded
+# down, it's one more crystal cluster on the vault floor.
+SHARD_HIDE = ramp("140f1c", "5a4a6c")
+SHARD_CRYSTAL = ramp("4a3a6a", "e0d0ff")
+
+
+def shard_hide(face, px, py, fw, fh, rnd):
+    return smooth(SHARD_HIDE, 0.75, 0.2)(face, px, py, fw, fh, rnd)
+
+
+def shard_crystal(face, px, py, fw, fh, rnd):
+    t = 0.85 - 0.5 * py / max(1, fh) + (0.15 if px == 0 else 0)
+    return SHARD_CRYSTAL[max(0, min(5, int(round(t * 5))))]
+
+
+def shard_crystal_glow(face, px, py, fw, fh, rnd):
+    return hexc("6a4aa0") if py < 2 else None
+
+
+def shard_head(face, px, py, fw, fh, rnd):
+    if face == "north" and py in (1, 3) and px in (1, fw - 2):
+        return hexc("05030a")
+    return shard_hide(face, px, py, fw, fh, rnd)
+
+
+def shard_eyes(face, px, py, fw, fh, rnd):
+    if face == "north" and py in (1, 3) and px in (1, fw - 2):
+        return hexc("c49aff")
+    return None
+
+
+def _shard(name, x, z, h, xr, zr):
+    return Part(name, (x, -3, z, xr, 0, zr), [B(-1, -h, -1, 2, h, 2, shard_crystal, shard_crystal_glow, key=f"shard{h}")])
+
+
+SHARDBACK = Mob("shardback", (64, 64), [
+    Part("body", (0, 16, 0), [B(-6, -3, -8, 12, 7, 15, shard_hide)], [
+        _shard("shard0", -3, -4, 7, -0.3, 0.35), _shard("shard1", 3, -3, 6, -0.25, -0.4),
+        _shard("shard2", 0, -1, 9, 0.1, 0.05), _shard("shard3", -4, 2, 6, 0.3, 0.45),
+        _shard("shard4", 4, 3, 7, 0.35, -0.3), _shard("shard5", 0, 5, 5, 0.5, 0.0),
+    ]),
+    Part("head", (0, 17, -8), [B(-4, -3, -6, 8, 6, 6, shard_head, shard_eyes)]),
+    Part("leg_fr", (-4.5, 19, -5), [B(-1.5, 0, -1.5, 3, 5, 3, shard_hide, key="sleg")]),
+    Part("leg_fl", (4.5, 19, -5), [B(-1.5, 0, -1.5, 3, 5, 3, shard_hide, key="sleg")]),
+    Part("leg_br", (-4.5, 19, 5), [B(-1.5, 0, -1.5, 3, 5, 3, shard_hide, key="sleg")]),
+    Part("leg_bl", (4.5, 19, 5), [B(-1.5, 0, -1.5, 3, 5, 3, shard_hide, key="sleg")]),
+], egg=(SHARD_HIDE[2], SHARD_CRYSTAL[4]))
+
 MOBS = [POLLINATOR, WANDERER, STALKER, VOID_RAY, WHALE, WATCHER, SPIRE_WYRM, HUSHBACK, HYDRAGRIP, MIRROR_WRETCH,
-        HOLLOWBACK, CURATOR]
+        HOLLOWBACK, CURATOR, GLOAMGRUB, SHARDBACK]
 # Cut by the distillation (their definitions stay above, unused): the Cinder Mite, the Hollow and the
 # Live Comet. Each mob's texture is painted from a seed fixed by its place in the original list, so
 # cutting some doesn't repaint the rest.
 SEED_INDEX = {"pollinator": 0, "void_wanderer": 1, "umbral_stalker": 2, "cinder_mite": 3, "void_ray": 4, "hollow": 5,
               "drift_whale": 6, "watcher": 7, "live_comet": 8, "spire_wyrm": 9, "hushback": 10, "hydragrip": 11,
-              "mirror_wretch": 12, "hollowback": 13, "curator": 14}
+              "mirror_wretch": 12, "hollowback": 13, "curator": 14, "gloamgrub": 15, "shardback": 16}
 for _mob in MOBS:
     auto_uv(_mob)          # boxes drawn without a texture position get one
 

@@ -141,6 +141,34 @@
           }
         }
       }
+    },
+    "hollow_roots": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "biomes": "astralend:hollow_roots"
+            }
+          }
+        }
+      }
+    },
+    "crystal_vaults": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "biomes": "astralend:crystal_vaults"
+            }
+          }
+        }
+      }
     }
   },
   "requirements": [
@@ -153,7 +181,9 @@
       "glimmering_crags",
       "deep_hollows",
       "shattered_crags",
-      "eclipse"
+      "eclipse",
+      "hollow_roots",
+      "crystal_vaults"
     ]
   ]
 }

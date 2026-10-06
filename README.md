@@ -60,6 +60,22 @@ From playing beta.3. These replace what the distillation's notes below say about
 - **Summoned Watchers stay.** A Watcher from a spawn egg or a command hangs where it's put; the two
   the pedestal calls stay for half a minute. (A wild one still fades when you look straight at it or
   come within 24 blocks - that's how it leads you.)
+- **Two cave biomes:**
+  - **The Hollow Roots**, under the Hollow Isles: caves through the old root mass, some opening out
+    through the islands' undersides. Hollow Glowcaps light their floors, dead roots hang from their
+    roofs, and **Starsap** - the dead Nullwood's amber - glows in the walls (a long-burning fuel, and a
+    glowing block). **Gloamgrubs** graze the glowcaps: fat, harmless, lit down their backs, brighter
+    when they've eaten.
+  - **The Crystal Vaults**, under the Shattered Crags: geodes drifting in the void below the shards,
+    Nightstone outside and Glimmer Crystal within, cracked open on one side. In each waits a
+    **Shardback**, folded down among the crystals and looking like one of them, until you come close.
+- **The Hollow Thorn** (the Deep Hollows): Hollow Vines now and then drop a long black thorn. Use it on a
+  pumpkin and it carves a **Hollow Lantern**, a jack-o'-lantern that glows violet from inside; carve it
+  again for another face (four in all).
+- **Biomes blend:** near a border, the neighbour's ground mixes into this one's in soft blots for 24
+  blocks either side, so an island across a border is mottled rather than cut in two; borders weave
+  into each other in wider lobes; and the fog eases from one biome's colour to the next over about
+  fifty blocks.
 - **The Ashen Barrens:** ribcages and comet craters are rare now - a couple per biome at most - and a
   ribcage only stands where there's ground under all of it, so no bones hang in the air.
 - **Lighter Crags and Hollows:** Nightstone is lighter, Glimmer Clusters brighter and more of them,

@@ -105,6 +105,32 @@
       "if_true": {
         "type": "minecraft:biome",
         "biome_is": [
+          "astralend:hollow_roots"
+        ]
+      },
+      "then_run": {
+        "type": "minecraft:block",
+        "result_state": "astralend:nightstone"
+      }
+    },
+    {
+      "type": "minecraft:condition",
+      "if_true": {
+        "type": "minecraft:biome",
+        "biome_is": [
+          "astralend:crystal_vaults"
+        ]
+      },
+      "then_run": {
+        "type": "minecraft:block",
+        "result_state": "astralend:nightstone"
+      }
+    },
+    {
+      "type": "minecraft:condition",
+      "if_true": {
+        "type": "minecraft:biome",
+        "biome_is": [
           "astralend:corona"
         ]
       },

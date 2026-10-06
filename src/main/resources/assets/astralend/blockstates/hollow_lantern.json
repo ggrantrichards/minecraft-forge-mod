@@ -1,0 +1,68 @@
+{
+  "variants": {
+    "face=0,facing=north": {
+      "model": "astralend:block/hollow_lantern_0",
+      "y": 0
+    },
+    "face=1,facing=north": {
+      "model": "astralend:block/hollow_lantern_1",
+      "y": 0
+    },
+    "face=2,facing=north": {
+      "model": "astralend:block/hollow_lantern_2",
+      "y": 0
+    },
+    "face=3,facing=north": {
+      "model": "astralend:block/hollow_lantern_3",
+      "y": 0
+    },
+    "face=0,facing=east": {
+      "model": "astralend:block/hollow_lantern_0",
+      "y": 90
+    },
+    "face=1,facing=east": {
+      "model": "astralend:block/hollow_lantern_1",
+      "y": 90
+    },
+    "face=2,facing=east": {
+      "model": "astralend:block/hollow_lantern_2",
+      "y": 90
+    },
+    "face=3,facing=east": {
+      "model": "astralend:block/hollow_lantern_3",
+      "y": 90
+    },
+    "face=0,facing=south": {
+      "model": "astralend:block/hollow_lantern_0",
+      "y": 180
+    },
+    "face=1,facing=south": {
+      "model": "astralend:block/hollow_lantern_1",
+      "y": 180
+    },
+    "face=2,facing=south": {
+      "model": "astralend:block/hollow_lantern_2",
+      "y": 180
+    },
+    "face=3,facing=south": {
+      "model": "astralend:block/hollow_lantern_3",
+      "y": 180
+    },
+    "face=0,facing=west": {
+      "model": "astralend:block/hollow_lantern_0",
+      "y": 270
+    },
+    "face=1,facing=west": {
+      "model": "astralend:block/hollow_lantern_1",
+      "y": 270
+    },
+    "face=2,facing=west": {
+      "model": "astralend:block/hollow_lantern_2",
+      "y": 270
+    },
+    "face=3,facing=west": {
+      "model": "astralend:block/hollow_lantern_3",
+      "y": 270
+    }
+  }
+}

@@ -127,7 +127,7 @@ final class MechanicsSurvey {
     // still there (and, for the Umbral Stalker, visible) a couple of seconds later?
     static void checkSpawnEggs(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
         String[] mobs = {"pollinator", "void_wanderer", "umbral_stalker", "void_ray", "drift_whale", "watcher", "spire_wyrm",
-                         "hushback", "hydragrip", "mirror_wretch", "hollowback", "curator"};
+                         "hushback", "hydragrip", "mirror_wretch", "hollowback", "curator", "gloamgrub", "shardback"};
         net.minecraft.server.level.ServerPlayer player = standIn(end);
         player.snapTo(standOn.getX() + 0.5, standOn.getY(), standOn.getZ() - 4.5, 0.0F, 30.0F);
         StringBuilder report = new StringBuilder("spawn eggs:");
@@ -300,6 +300,25 @@ final class MechanicsSurvey {
             }
             whale.discard();
         }
+        // The Hollow Thorn carves a pumpkin into a Hollow Lantern, and carves the next face.
+        BlockPos pumpkin = standOn.above(2).east(6);
+        end.setBlockAndUpdate(pumpkin, Blocks.PUMPKIN.defaultBlockState());
+        net.minecraft.server.level.ServerPlayer carver = standIn(end);
+        carver.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(com.ggrantrichards.astralend.ModItems.HOLLOW_THORN.get()));
+        var hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(pumpkin), net.minecraft.core.Direction.NORTH, pumpkin, false);
+        var use = new net.minecraft.world.item.context.UseOnContext(carver, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
+        com.ggrantrichards.astralend.ModItems.HOLLOW_THORN.get().useOn(use);
+        net.minecraft.world.level.block.state.BlockState carved = end.getBlockState(pumpkin);
+        com.ggrantrichards.astralend.ModItems.HOLLOW_THORN.get().useOn(use);
+        net.minecraft.world.level.block.state.BlockState again = end.getBlockState(pumpkin);
+        boolean lantern = carved.is(ModBlocks.HOLLOW_LANTERN.get()) && again.is(ModBlocks.HOLLOW_LANTERN.get())
+            && again.getValue(com.ggrantrichards.astralend.block.HollowLanternBlock.FACE) == 1;
+        log.accept("systems: a Hollow Thorn on a pumpkin carves " + carved.getBlock().getName().getString()
+            + (lantern ? ", and again the next face" : " (and again: " + again + ")"));
+        if (!lantern) {
+            failures.add("systems: a Hollow Thorn should carve a pumpkin into a Hollow Lantern, then its next face");
+        }
+        end.setBlockAndUpdate(pumpkin, Blocks.AIR.defaultBlockState());
     }
 
     // Lets the next blow land at once (26.3 keeps the hurt cooldown private; Forge runs on Mojang's names).

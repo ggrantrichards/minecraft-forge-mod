@@ -333,6 +333,7 @@ public final class WorldgenSurvey {
         checkCrags(areas.get('G'), end, failures);
         checkDeepHollows(areas.get('V'), failures);
         checkShatteredCrags(areas.get('X'), failures);
+        checkCaves(areas.get('D'), areas.get('X'), end, failures);
         checkLowGravity(areas.get('N'), vanillaSpot, end, failures);
         checkMobs(areas, end, failures);
     }
@@ -458,6 +459,7 @@ public final class WorldgenSurvey {
         structureShot(lines, structures, "solar_array", 34.0, 36.0, 4.0);
         structureShot(lines, structures, "solar_array_room", 3.0, 2.2, 0.0);
         borderShot(lines, areas.get('N'), end);
+        checkBlend(areas.get('N'), end);
         lines.addAll(EXTRA_SHOTS);
         try {
             java.nio.file.Files.write(java.nio.file.Path.of("astralend-shots.txt"), lines);
@@ -756,10 +758,10 @@ public final class WorldgenSurvey {
         double dx = throat.getX() - arena.getX(), dz = throat.getZ() - arena.getZ(), len = Math.hypot(dx, dz);
         double ax = dx / len, az = dz / len;                // along the body, toward the head
         BlockPos mid = new BlockPos((int) Math.round(arena.getX() + ax * 40), throat.getY(), (int) Math.round(arena.getZ() + az * 40));
-        BlockPos cam = mid.offset((int) Math.round(-az * 190), 70, (int) Math.round(ax * 190));
+        BlockPos cam = mid.offset((int) Math.round(-az * 115 - ax * 30), 45, (int) Math.round(ax * 115 - az * 30));   // (within the render distance)
         EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan %d.5 %d %d.5 %.1f 18.0 clear", cam.getX(), cam.getY(), cam.getZ(),
             yawTo(cam, mid)));
-        BlockPos front = throat.offset((int) Math.round(ax * 120 - az * 45), 18, (int) Math.round(az * 120 + ax * 45));
+        BlockPos front = throat.offset((int) Math.round(ax * 95 - az * 55), 22, (int) Math.round(az * 95 + ax * 55));
         EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan_maw %d.5 %d %d.5 %.1f 8.0 wake=%d;%d;%d", front.getX(), front.getY(),
             front.getZ(), yawTo(front, throat), throat.getX(), throat.getY(), throat.getZ()));
         BlockPos hall = head.hall().above();
@@ -833,6 +835,103 @@ public final class WorldgenSurvey {
         double pitch = Math.toDegrees(Math.atan2(20.0, 34.0));
         EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_constellation_maze %.1f %d %.1f -45 %.1f bridges",
             centre.getX() + 0.5 - d, centre.getY() + 18, centre.getZ() + 0.5 - d, pitch));
+    }
+
+    // The caves: under the Hollow Isles, the Hollow Roots (glowcaps, Starsap, Gloamgrubs); under the
+    // Shattered Crags, the Crystal Vaults (geodes of Glimmer Crystal, each with its Shardback).
+    private static void checkCaves(Area roots, Area vaults, ServerLevel end, List<String> failures) {
+        if (roots != null) {
+            int glowcaps = 0, sap = 0, chunks = 0;
+            for (int cx = -4; cx <= 4; cx++) {
+                for (int cz = -4; cz <= 4; cz++) {
+                    var chunk = end.getChunk((roots.centre.getX() >> 4) + cx, (roots.centre.getZ() >> 4) + cz);
+                    chunks++;
+                    for (BlockPos p : BlockPos.betweenClosed(chunk.getPos().getMinBlockX(), 10, chunk.getPos().getMinBlockZ(),
+                            chunk.getPos().getMaxBlockX(), com.ggrantrichards.astralend.world.AstralEndBiomeSource.ROOTS_BELOW, chunk.getPos().getMaxBlockZ())) {
+                        BlockState state = end.getBlockState(p);
+                        if (state.is(ModBlocks.HOLLOW_GLOWCAP.get())) {
+                            glowcaps++;
+                        } else if (state.is(ModBlocks.STARSAP_ORE.get())) {
+                            sap++;
+                        }
+                    }
+                }
+            }
+            var grubs = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.Gloamgrub.class,
+                new net.minecraft.world.phys.AABB(roots.centre).inflate(80, 80, 80));
+            var biome = end.getBiome(roots.centre.atY(30)).unwrapKey().map(k -> k.identifier().toString()).orElse("?");
+            log(String.format("caves: the Hollow Roots (%s at y=30 under the Hollow Isles' centre): %d glowcaps, %d Starsap ore, %d Gloamgrubs in %d chunks",
+                biome, glowcaps, sap, grubs.size(), chunks));
+            if (!biome.equals("astralend:hollow_roots") || glowcaps + sap == 0) {
+                failures.add("caves: expected the Hollow Roots under the Hollow Isles, with glowcaps and Starsap");
+            }
+        }
+        if (vaults != null) {
+            int crystal = 0;
+            for (int cx = -4; cx <= 4; cx++) {
+                for (int cz = -4; cz <= 4; cz++) {
+                    var chunk = end.getChunk((vaults.centre.getX() >> 4) + cx, (vaults.centre.getZ() >> 4) + cz);
+                    for (BlockPos p : BlockPos.betweenClosed(chunk.getPos().getMinBlockX(), 4, chunk.getPos().getMinBlockZ(),
+                            chunk.getPos().getMaxBlockX(), com.ggrantrichards.astralend.world.AstralEndBiomeSource.VAULTS_BELOW, chunk.getPos().getMaxBlockZ())) {
+                        if (end.getBlockState(p).is(ModBlocks.GLIMMER_CRYSTAL.get())) {
+                            crystal++;
+                        }
+                    }
+                }
+            }
+            var hunters = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.Shardback.class,
+                new net.minecraft.world.phys.AABB(vaults.centre).inflate(80, 80, 80));
+            var biome = end.getBiome(vaults.centre.atY(20)).unwrapKey().map(k -> k.identifier().toString()).orElse("?");
+            log(String.format("caves: the Crystal Vaults (%s at y=20 under the Shattered Crags' centre): %d Glimmer Crystal in geodes, %d Shardbacks (%d hidden)",
+                biome, crystal, hunters.size(), hunters.stream().filter(com.ggrantrichards.astralend.entity.Shardback::isHidden).count()));
+            if (!biome.equals("astralend:crystal_vaults") || crystal == 0) {
+                failures.add("caves: expected the Crystal Vaults under the Shattered Crags, with geodes");
+            }
+        }
+    }
+
+    // Borders blend (BorderBlendFeature): along lines across the edge of the Nebula Fields, the top
+    // block - its Chorus Moss, or the neighbour's ground - should switch back and forth, not once.
+    // Logged rather than failed: whether a border crosses land at all depends on the seed.
+    private static void checkBlend(Area area, ServerLevel end) {
+        if (area == null) {
+            return;
+        }
+        var here = end.getBiome(area.centre);
+        for (int dx = 4; dx < 4000; dx += 4) {
+            BlockPos edge = area.centre.offset(dx, 0, 0);
+            if (end.getBiome(edge).equals(here)) {
+                continue;
+            }
+            int rows = 0, switches = 0;
+            for (int dz = -96; dz <= 96; dz += 3) {
+                int run = 0;
+                Boolean last = null;
+                int changes = 0;
+                for (int ex = -24; ex <= 24; ex++) {
+                    BlockPos column = edge.offset(ex, 0, dz);
+                    int top = end.getChunk(column).getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE,
+                        column.getX() & 15, column.getZ() & 15);
+                    BlockState state = end.getBlockState(column.atY(top));
+                    if (state.isAir()) {
+                        continue;
+                    }
+                    run++;
+                    boolean moss = state.is(ModBlocks.CHORUS_MOSS.get());
+                    if (last != null && moss != last) {
+                        changes++;
+                    }
+                    last = moss;
+                }
+                if (run >= 30 && changes > 0) {
+                    rows++;
+                    switches += changes;
+                }
+            }
+            log(String.format("border blend: at %s, %d rows across it on land, %.1f switches of ground per row (a hard border: 1)",
+                edge.toShortString(), rows, rows == 0 ? 0.0 : switches / (double) rows));
+            return;
+        }
     }
 
     // For the playtests: where to start a flight east across the edge of the Nebula Fields - 100 blocks

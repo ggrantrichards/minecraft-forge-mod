@@ -313,17 +313,17 @@ public final class ClientPlaytests {
                 }
                 keys.keyUp.setDown(t > 120 && t < 220);              // walk along the ceiling
                 // Turn as the mouse does (Entity.turn), and check the view went the mirrored way, all of it.
-                if (t == 160) {
+                if (t == 60) {
                     turnFrom = new float[] {player.getYRot(), player.getXRot()};
                 }
-                if (t >= 160 && t < 200) {
+                if (t >= 60 && t < 100) {   // hanging from the ceiling, before walking off it
                     player.turn(20.0, -4.0);
                     if (t % 8 == 0) {
                         LOGGER.info(TAG + "upwelling turning t={} yaw {} pitch {}", t, String.format("%.1f", player.getYRot()),
                             String.format("%.1f", player.getXRot()));
                     }
                 }
-                if (t == 205) {
+                if (t == 105) {
                     float dy = player.getYRot() - turnFrom[0], dp = player.getXRot() - turnFrom[1];
                     LOGGER.info(TAG + "upwelling turn: the mouse moved +120 yaw, -24 pitch; the view turned {} yaw, {} pitch ({})",
                         String.format("%.1f", dy), String.format("%.1f", dp),

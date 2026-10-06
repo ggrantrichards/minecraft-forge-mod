@@ -35,6 +35,21 @@
         }
       ],
       "rolls": 1
+    },
+    {
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.05
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "astralend:hollow_thorn"
+        }
+      ],
+      "rolls": 1
     }
   ],
   "random_sequence": "astralend:blocks/hollow_vines_plant"

@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#minecraft:is_end",
+  "features": "astralend:border_blend",
+  "step": "local_modifications"
+}

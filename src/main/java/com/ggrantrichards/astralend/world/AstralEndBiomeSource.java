@@ -35,7 +35,9 @@ public class AstralEndBiomeSource extends BiomeSource {
                 RegistryOps.retrieveElement(ModBiomes.GLIMMERING_CRAGS),
                 RegistryOps.retrieveElement(ModBiomes.DEEP_HOLLOWS),
                 RegistryOps.retrieveElement(ModBiomes.SHATTERED_CRAGS),
-                RegistryOps.retrieveElement(ModBiomes.ECLIPSE)
+                RegistryOps.retrieveElement(ModBiomes.ECLIPSE),
+                RegistryOps.retrieveElement(ModBiomes.HOLLOW_ROOTS),
+                RegistryOps.retrieveElement(ModBiomes.CRYSTAL_VAULTS)
             )
             .apply(i, i.stable(AstralEndBiomeSource::new))
     );
@@ -57,12 +59,18 @@ public class AstralEndBiomeSource extends BiomeSource {
     private final Holder<Biome> deepHollows;
     private final Holder<Biome> shatteredCrags;
     private final Holder<Biome> eclipse;
+    private final Holder<Biome> hollowRoots;
+    private final Holder<Biome> crystalVaults;
+    // The caves: under the Hollow Isles below this height, the Hollow Roots; under the Shattered Crags
+    // below this one, the Crystal Vaults.
+    public static final int ROOTS_BELOW = 46, VAULTS_BELOW = 38;
 
     private AstralEndBiomeSource(Holder<Biome> end, Holder<Biome> highlands, Holder<Biome> midlands,
                                  Holder<Biome> islands, Holder<Biome> barrens, Holder<Biome> nebulaFields,
                                  Holder<Biome> ashenBarrens, Holder<Biome> hollowIsles,
                                  Holder<Biome> corona, Holder<Biome> chorusThicket, Holder<Biome> glimmeringCrags,
-                                 Holder<Biome> deepHollows, Holder<Biome> shatteredCrags, Holder<Biome> eclipse) {
+                                 Holder<Biome> deepHollows, Holder<Biome> shatteredCrags, Holder<Biome> eclipse,
+                                 Holder<Biome> hollowRoots, Holder<Biome> crystalVaults) {
         this.end = end;
         this.highlands = highlands;
         this.midlands = midlands;
@@ -77,13 +85,15 @@ public class AstralEndBiomeSource extends BiomeSource {
         this.deepHollows = deepHollows;
         this.shatteredCrags = shatteredCrags;
         this.eclipse = eclipse;
+        this.hollowRoots = hollowRoots;
+        this.crystalVaults = crystalVaults;
     }
 
     @Override
     protected Stream<Holder<Biome>> collectPossibleBiomes() {
         return Stream.of(this.end, this.highlands, this.midlands, this.islands, this.barrens, this.nebulaFields,
             this.ashenBarrens, this.hollowIsles, this.corona, this.chorusThicket,
-            this.glimmeringCrags, this.deepHollows, this.shatteredCrags, this.eclipse);
+            this.glimmeringCrags, this.deepHollows, this.shatteredCrags, this.eclipse, this.hollowRoots, this.crystalVaults);
     }
 
     @Override
@@ -106,8 +116,9 @@ public class AstralEndBiomeSource extends BiomeSource {
             return this.end;
         }
         // Borders interlock rather than run as hard lines: the regions are read a little to one side
-        // or the other of where we are (by up to ~14 blocks, varying smoothly), so near a border the
-        // two biomes - astral or vanilla - reach into each other in lobes and patches over 15-25 blocks.
+        // or the other of where we are (by up to ~24 blocks, varying smoothly), so near a border the
+        // two biomes - astral or vanilla - reach into each other in lobes and patches over 30-50 blocks.
+        // (And their grounds mix on top of that: BorderBlendFeature.)
         int warpedX = blockX + (int) Math.round(warp(blockX, blockZ, 0x51ED));
         int warpedZ = blockZ + (int) Math.round(warp(blockX, blockZ, 0x7A3B));
         // The rare Eclipse comes first: its heaven half, or its hell half (the Corona).
@@ -122,11 +133,11 @@ public class AstralEndBiomeSource extends BiomeSource {
         switch (region(sampler, warpedX, warpedZ)) {
             case NEBULA_FIELDS: return this.nebulaFields;
             case ASHEN_BARRENS: return this.ashenBarrens;
-            case HOLLOW_ISLES: return this.hollowIsles;
+            case HOLLOW_ISLES: return blockY < ROOTS_BELOW ? this.hollowRoots : this.hollowIsles;
             case CHORUS_THICKET: return this.chorusThicket;
             case GLIMMERING_CRAGS: return this.glimmeringCrags;
-            case DEEP_HOLLOWS: return this.deepHollows;
-            case SHATTERED_CRAGS: return this.shatteredCrags;
+            case DEEP_HOLLOWS: return blockY < ROOTS_BELOW ? this.hollowRoots : this.deepHollows;
+            case SHATTERED_CRAGS: return blockY < VAULTS_BELOW ? this.crystalVaults : this.shatteredCrags;
             case VANILLA: break;
         }
         // Vanilla's outer-End choice, unchanged.
@@ -142,9 +153,9 @@ public class AstralEndBiomeSource extends BiomeSource {
         }
     }
 
-    // A smooth offset in blocks: two octaves of value noise (about 40 and 12 blocks across).
+    // A smooth offset in blocks: two octaves of value noise (about 64 and 20 blocks across).
     public static double warp(int x, int z, int salt) {
-        return valueNoise(x / 40.0, z / 40.0, salt) * 10.0 + valueNoise(x / 12.0, z / 12.0, salt * 31) * 4.0;
+        return valueNoise(x / 64.0, z / 64.0, salt) * 17.0 + valueNoise(x / 20.0, z / 20.0, salt * 31) * 7.0;
     }
 
     private static double valueNoise(double x, double z, int salt) {

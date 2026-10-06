@@ -385,6 +385,22 @@ public final class ModBlocks {
     public static final RegistryObject<Block> SPORE_LANTERN = register("spore_lantern", Block::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).strength(0.3F).sound(SoundType.GLASS)
             .lightLevel(state -> 15).isRedstoneConductor((state, level, pos) -> false));
+    // The caves (after beta.3). The Hollow Roots: Hollow Glowcaps on the cave floors, Starsap - old
+    // amber sap of the dead Nullwood - in the walls, and the Starsap block it makes.
+    public static final RegistryObject<Block> HOLLOW_GLOWCAP = register("hollow_glowcap",
+        p -> new EndPlantBlock(Block.column(8.0, 0.0, 9.0), ASTRAL_SOIL, p),
+        () -> plant(MapColor.COLOR_PURPLE, SoundType.FUNGUS).lightLevel(state -> 9));
+    public static final RegistryObject<Block> STARSAP_ORE = register("starsap_ore",
+        p -> new DropExperienceBlock(UniformInt.of(1, 4), p),
+        () -> stone(SoundType.DEEPSLATE).strength(3.5F, 3.0F).lightLevel(state -> 3));
+    public static final RegistryObject<Block> STARSAP_BLOCK = register("starsap_block", Block::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(1.0F).sound(SoundType.HONEY_BLOCK)
+            .lightLevel(state -> 12));
+    // The Deep Hollows' carving: a pumpkin carved with a Hollow Thorn.
+    public static final RegistryObject<Block> HOLLOW_LANTERN = register("hollow_lantern", com.ggrantrichards.astralend.block.HollowLanternBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(1.0F).sound(SoundType.WOOD)
+            .lightLevel(state -> 15).pushReaction(PushReaction.DESTROY));
+
     // Leviathan Heart: in the Leviathan's ribcage, dormant, still beating crimson.
     public static final RegistryObject<Block> LEVIATHAN_HEART = register("leviathan_heart", com.ggrantrichards.astralend.block.LeviathanHeartBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.CRIMSON_STEM).strength(1.5F).sound(SoundType.WART_BLOCK)
