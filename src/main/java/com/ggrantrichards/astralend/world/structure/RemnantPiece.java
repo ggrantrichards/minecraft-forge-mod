@@ -39,7 +39,7 @@ public class RemnantPiece extends StructurePiece {
     private static final ResourceKey<LootTable> LOOT = ResourceKey.create(Registries.LOOT_TABLE,
         Identifier.fromNamespaceAndPath(AstralEnd.MODID, "chests/remnant"));
     public static final double CRATER = 24.0;
-    private static final double DEPTH = 8.0, RIM = 3.5, SCORCH = 10.0;
+    private static final double DEPTH = 11.0, RIM = 3.5, SCORCH = 10.0;
     private static final double CINDER = 12.0, MANTLE = 2.0, CRUST = 2.0, HOLLOW = 5.5;
     private static final double FURROW_END = 46.0;
     private static final int REACH = 48;

@@ -604,6 +604,17 @@ public final class WorldgenSurvey {
         EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "eclipse_wellspring %.1f %d %.1f %.1f 25.0", wx - 26, 72, wz - 26, -45.0));
     }
 
+    // The highest solid block of a column below `from` (plants don't count).
+    private static int topSolid(ServerLevel end, int x, int z, int from) {
+        for (int y = from; y > end.getMinY(); y--) {
+            BlockState state = end.getBlockState(new BlockPos(x, y, z));
+            if (!state.isAir() && !state.canBeReplaced()) {
+                return y;
+            }
+        }
+        return end.getMinY();
+    }
+
     private static void testRemnant(ServerLevel end, BlockPos start, List<String> failures) {
         // The start is reported at its chunk's corner; the Remnant lies in a crater at the chunk's middle.
         BlockPos heart = null;
@@ -631,10 +642,11 @@ public final class WorldgenSurvey {
                 nether++;
             }
         }
-        // The crater: the ground round the cinder sunk below the land outside it.
+        // The crater: the ground round the cinder sunk below the land outside it. (Read from the blocks: the
+        // heightmaps aren't lowered when a structure digs out the ground.)
         int ground = 0;
         for (int[] c : new int[][] {{32, 32}, {-32, 32}, {32, -32}, {-32, -32}}) {   // the land well outside it
-            ground += end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, heart.getX() + c[0], heart.getZ() + c[1]);
+            ground += topSolid(end, heart.getX() + c[0], heart.getZ() + c[1], heart.getY() + 30);
         }
         ground /= 4;
         int sunk = 0, ring = 0;
@@ -642,7 +654,7 @@ public final class WorldgenSurvey {
             double a = k * Math.PI / 8;
             int x = heart.getX() + (int) Math.round(Math.cos(a) * 17), z = heart.getZ() + (int) Math.round(Math.sin(a) * 17);
             ring++;
-            if (end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) < ground - 2) {
+            if (topSolid(end, x, z, heart.getY() + 30) < ground - 2) {
                 sunk++;
             }
         }
