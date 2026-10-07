@@ -15,6 +15,7 @@ public final class ModBiomes {
     // The Eclipse: its heaven half ("eclipse") and its hell half, the old Corona ("corona").
     public static final ResourceKey<Biome> ECLIPSE = key("eclipse");
     public static final ResourceKey<Biome> CORONA = key("corona");
+    public static final ResourceKey<Biome> SEAM = key("seam");   // where the Eclipse's halves meet
     public static final ResourceKey<Biome> GLIMMERING_CRAGS = key("glimmering_crags");
     // The Deep Hollows: the dark Nullwood forests on ring islands (after beta.4 they took in the Hollow
     // Isles, which they had been a variant of).

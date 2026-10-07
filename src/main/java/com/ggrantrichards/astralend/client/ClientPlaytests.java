@@ -42,8 +42,8 @@ import org.slf4j.Logger;
 //   biome_border   fly east out of the Nebula Fields across its border: does the sky shift gently,
 //                  do the biomes interlock?
 //   maw_hall       stand in the hall inside a Leviathan's skull and look all round it
-//   remnant_flight fly in toward the Remnant from far off: the picture of it in the sky gives way to
-//                  the real thing
+//   remnant_flight fly in toward the Remnant from far off across the Corona: the ember where it hung,
+//                  then its crater and the cinder half buried in it
 public final class ClientPlaytests {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String TAG = "[AstralEnd playtest] ";

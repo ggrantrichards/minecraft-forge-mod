@@ -9,13 +9,15 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 
 // The Remnant: what is left of the star that burned out here - a cinder the size of a hill, still
-// glowing through its cracks, hanging high over the Eclipse's hell half (the Corona) with its broken
-// pieces circling it. One per Eclipse, over the heart of that half (EclipseLayout.REMNANT): every chunk
-// is asked (its structure set spaces starts one chunk apart) and only that one says yes. The sky shows
-// it from far off (AstralSkyRenderer); come close and it's really there. RemnantPiece builds it.
+// glowing through its cracks. It hung over the Eclipse's hell half (the Corona) until it fell (after
+// beta.4): now it lies half buried in a crater at the heart of that half (EclipseLayout.REMNANT), and
+// the furrow it ploughed runs out to the Seam, the scar between the halves. One per Eclipse: every chunk
+// is asked (its structure set spaces starts one chunk apart) and only that one says yes. Where it hung,
+// HEIGHT blocks up, the sky still shows a faint ember (AstralSkyRenderer), and the Sunstorms still
+// break from there. RemnantPiece builds it.
 public class RemnantStructure extends Structure {
     public static final MapCodec<RemnantStructure> CODEC = simpleCodec(RemnantStructure::new);
-    public static final int HEIGHT = 165;     // its centre, this far above the bottom of the world
+    public static final int HEIGHT = 165;     // where it hung, this far above the bottom of the world
 
     public RemnantStructure(StructureSettings settings) {
         super(settings);
@@ -40,9 +42,16 @@ public class RemnantStructure extends Structure {
         if (anchor == null || anchor.getX() != cx || anchor.getZ() != cz) {
             return Optional.empty();
         }
-        BlockPos origin = new BlockPos(cx, context.heightAccessor().getMinY() + HEIGHT + context.random().nextInt(10), cz);
+        // On the ground (the Eclipse's terrain is level about there), the furrow pointing at the nearest
+        // point of the Seam: on the circle of radius 1/2 round (0, 1/2) in the Eclipse's frame.
+        BlockPos origin = new BlockPos(cx, (int) com.ggrantrichards.astralend.world.feature.EclipseTerrainFeature.TOP - 1, cz);
+        EclipseLayout.Eclipse e = EclipseLayout.nearest(cx, cz, EclipseLayout.sampler(context.randomState()), 0);
+        double u = EclipseLayout.REMNANT[0], v = EclipseLayout.REMNANT[1];
+        double len = Math.hypot(u, v - 0.5);
+        double su = u / len * 0.5, sv = 0.5 + (v - 0.5) / len * 0.5;
+        float heading = (float) Math.atan2(e.worldZ(su, sv) - e.worldZ(u, v), e.worldX(su, sv) - e.worldX(u, v));
         long seed = context.seed() ^ (cx * 341873128712L + cz * 132897987541L) ^ 0x5A4DL;
-        return Optional.of(new GenerationStub(origin, builder -> builder.addPiece(new RemnantPiece(origin, seed))));
+        return Optional.of(new GenerationStub(origin, builder -> builder.addPiece(new RemnantPiece(origin, seed, heading))));
     }
 
     @Override

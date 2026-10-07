@@ -872,7 +872,7 @@ def worldgen():
     # Phase 9: data-pack switches for the two events (empty a tag to turn its event off).
     tag("worldgen/biome", f"{NS}:sunstorms", rid("corona"))
     # The Eclipse (both halves): where the astral sky shows.
-    for half in ("eclipse", "corona"):
+    for half in ("eclipse", "corona", "seam"):
         tag("worldgen/biome", f"{NS}:eclipse", rid(half))
     # Biomes where Upwell Cores flip gravity. Empty this tag in a datapack to turn it off.
     tag("worldgen/biome", f"{NS}:upwells", rid("deep_hollows"))
@@ -944,18 +944,18 @@ MOB_SPAWNS = {
     # The Umbral Stalker hunts only in the Crags' root caves (its spawn rule wants a roof of rock overhead).
     "glimmering_crags": {"monster": [("umbral_stalker", 6, 1)]},
     "shattered_crags": {"creature": [("void_ray", 8, 3)]},
-    # The Eclipse: its heaven half's life, endermites for the Hydragrips to hunt, and on the border
-    # between the halves (its spawn rule decides), the Mirror Wretch.
+    # The Eclipse: its heaven half's life, endermites for the Hydragrips to hunt, and in the Seam
+    # between the halves, the Mirror Wretch (after beta.4 the Seam is its own biome, and the Wretch's).
     "eclipse": {"creature": [("hushback", 10, 4), ("hydragrip", 5, 2)],
-                "monster": [("minecraft:endermite", 3, 2), ("mirror_wretch", 6, 1)]},
-    "corona": {"monster": [("mirror_wretch", 6, 1)]},
+                "monster": [("minecraft:endermite", 3, 2)]},
+    "seam": {"monster": [("mirror_wretch", 10, 1)]},
     # The caves: the Crystal Vaults' hunters.
     "crystal_vaults": {"monster": [("shardback", 6, 1)], "creature": [("void_ray", 4, 2)]},
 }
 
 
 # Endermen live where the End is alive; the dead Ashen Barrens and the sun-scorched Corona have none.
-NO_ENDERMEN = ("corona", "eclipse", "hollow_roots", "crystal_vaults")   # (in the Ashen Barrens they stand at the edges: EclipseLife)
+NO_ENDERMEN = ("corona", "eclipse", "seam", "hollow_roots", "crystal_vaults")   # (in the Ashen Barrens they stand at the edges: EclipseLife)
 
 
 def mob_spawns(biome):
@@ -972,7 +972,7 @@ def mob_spawns(biome):
 BIOME_MUSIC = {"nebula_fields": "music.nebula_fields", "ashen_barrens": "music.outer_end", "eclipse": "music.eclipse",
                "glimmering_crags": "music.glimmering_crags", "shattered_crags": "music.glimmering_crags",
                "deep_hollows": "music.outer_end",
-               "corona": "music.outer_end", "hollow_roots": "music.outer_end", "crystal_vaults": "music.glimmering_crags"}
+               "corona": "music.outer_end", "seam": "music.eclipse", "hollow_roots": "music.outer_end", "crystal_vaults": "music.glimmering_crags"}
 
 
 def background_music(biome):
@@ -1167,11 +1167,30 @@ def worldgen_phase3():
             {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
             {"type": "minecraft:matching_blocks", "blocks": ["minecraft:end_stone", rid("living_turf"), rid("breathcomb")], "offset": [0, -1, 0]}]}},
     ]})
-    end_biome("eclipse", "The Eclipse", fog="#2a1e2e", water="#34c8bc",   # a warm dark purple: teal or blue fog turned End Stone green
+    # (After beta.4 the heaven half is gold, with teal for an accent - its water, its Lumineshrooms, the
+    # turf round the Wellspring: amber fog, gold dust in the air (client/BiomeMist), gold and blue gas in
+    # its sky. Teal or blue fog turned End Stone green; amber turns it to old gold.)
+    end_biome("eclipse", "The Eclipse", fog="#36291a", water="#34c8bc",
               features_step4=[rid("eclipse_landmarks")],
               features_step9=[rid("eclipse_giant_lumineshrooms"), rid("eclipse_breathcomb"), rid("eclipse_lumineshrooms"),
                               rid("eclipse_starblooms")],
               particle="minecraft:end_rod", particle_chance=0.002)
+
+    # ---- The Seam (after beta.4): where the Eclipse's halves meet, the scar the Remnant tore when it fell -
+    # a gouge of Obsidian down the S-shaped border with a line of embers in it (EclipseTerrainFeature), shards
+    # of black glass standing out of it, sparks of gold and crimson drifting up (client/BiomeMist), and under
+    # the Eclipse's star the Mirror Wretches, which belong to neither half.
+    feature("seam_shard", {"type": "minecraft:block_column", "allowed_placement": air, "direction": "up",
+                           "layers": [{"height": {"type": "minecraft:biased_to_bottom", "min_inclusive": 1, "max_inclusive": 4},
+                                       "provider": {"id": "minecraft:obsidian"}}],
+                           "prioritize_tip": True})
+    surface_feature("seam_shards", "seam_shard", rarity=1, count=3,
+                    extra=[{"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
+                        air, {"type": "minecraft:matching_blocks", "blocks": ["minecraft:obsidian"], "offset": [0, -1, 0]}]}}])
+    end_biome("seam", "The Seam", fog="#3a1c18", water="#c89048",
+              features_step4=[rid("eclipse_landmarks")],
+              features_step9=[rid("seam_shards")],
+              particle="minecraft:end_rod", particle_chance=0.004)
 
     # ---- Glimmering Crags (Phase 10): the petrified trunks of colossal Nullwood that died long ago,
     # grown through with Glimmer Crystal - cold white-lavender since beta.4, and lit, so the spires stand
@@ -1780,7 +1799,7 @@ def round_out_phase9():
 
 
 ASTRAL_BIOMES = ("nebula_fields", "ashen_barrens", "corona", "glimmering_crags",
-                "deep_hollows", "shattered_crags", "eclipse", "hollow_roots", "crystal_vaults")
+                "deep_hollows", "shattered_crags", "eclipse", "seam", "hollow_roots", "crystal_vaults")
 
 
 def has_item(item):
@@ -2021,6 +2040,9 @@ def content_phase10():
         sounds[f"ambient.{biome}.loop"] = {"sounds": [{"name": rid(f"ambient/{folder}/loop"), "stream": True, "volume": 0.6}]}
         sounds[f"ambient.{biome}.additions"] = {"sounds": [{"name": rid(f"ambient/{folder}/additions{i}"), "volume": 0.5}
                                                           for i in range(1, 4)]}
+    # The Seam hears both halves at once: the heaven half's loop under the Corona's sounds.
+    sounds["ambient.seam.loop"] = {"sounds": [{"name": rid("ambient/eclipse/loop"), "stream": True, "volume": 0.5}]}
+    sounds["ambient.seam.additions"] = {"sounds": [{"name": rid(f"ambient/corona/additions{i}"), "volume": 0.5} for i in range(1, 4)]}
     # The void hum, near island edges (client/VoidHum.java).
     sounds["ambient.void_hum"] = {"sounds": [{"name": rid("ambient/void_hum"), "stream": True}]}
     # The Spire Wyrm's voice (tools/sounds/wyrm_sounds.py): each sound and how many variants it has.

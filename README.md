@@ -36,8 +36,8 @@ and the distillation renamed or removed some of them.
   in their own right: dark Nullwood forest on ring islands, Hollow Vines hanging to the ground, Mimic
   Plants, Voidgel and Stardust, Upwells beneath, and the Hollow Roots caves under it all.
 - That leaves five biomes - the **Nebula Fields**, the **Deep Hollows**, the **Glimmering Crags**,
-  the **Ashen Barrens** and **the Eclipse** - plus the Shattered Crags (a variant) and two caves. Each
-  is getting its own colour, creatures and polish next.
+  the **Ashen Barrens** and **the Eclipse** (its two halves, and the Seam between them) - plus the
+  Shattered Crags (a variant) and two caves. Each is getting its own colour, creatures and polish.
 - **The Nebula Fields are an emission nebula** now, the colours of glowing gas: rose **Nebula Moss**
   (it was Chorus Moss), reed groves of magenta Astral Vines whose tips glow cold pale blue, rose fog,
   and low clouds of drifting gas - rose haze pricked with pale-blue motes - that you walk into and out
@@ -60,6 +60,27 @@ and the distillation renamed or removed some of them.
     through like old bone; the tall withered stalks of long-dead giant Lumineshrooms, caps drooping;
     and a thick, pale mist of ash lying over the shelves - the only pale air in the End.
   - **Shattered Crags:** starlight falling between the shards and on into the void.
+- **The Eclipse: gold, crimson, and the Seam between** (from the James Webb pictures - golden dust, blue
+  haze, crimson filaments, one bright spiked star):
+  - **The heaven half is gold**, teal only for an accent (its water, its Lumineshrooms, the turf round
+    the Wellspring): amber fog that turns the End Stone to old gold, gold dust hanging in the air with
+    now and then a teal glint, and in its sky great soft clouds of gold dust and blue haze instead of
+    the teal aurora.
+  - **The hell half keeps its crimson**, and its sky gains long crimson filaments.
+  - **The Seam** is a new biome where the halves meet, a band some 18 blocks wide all along the S: the
+    scar the Remnant tore when it fell. A shallow gouge of Obsidian fraying into either half's ground,
+    a broken line of embers (Solarite ore) down its middle, shards of black glass standing out of it, and
+    a curtain of gold, crimson and white sparks rising off it. It hears both halves at once. High over
+    the whole Eclipse hangs a white star with six long spikes, brightest from the Seam. The **Mirror
+    Wretch** lives here now, and only here.
+- **The Remnant has fallen.** It was a ball of Nether rock hanging in the sky with debris circling it;
+  now it lies half buried in a crater at the heart of the hell half, built like a geode and only of the
+  End's own blocks: a crust of Obsidian and Charred End Stone with veins of raw Solarite glowing through
+  its cracks, a mantle of Sunscorched Stone, a lining of raw Solarite round a hollow, and in the hollow
+  the star's last ember and its chest. A cleft splits it open on one side; the crater's floor is glazed
+  black, its rim thrown up with lumps of ejecta round it, and a furrow runs out of it to the Seam - the
+  way it came down. Where it hung, a faint ember still glows in the sky, and the Sunstorms still break
+  from there.
 
 ### After beta.3: the reworks
 
@@ -125,8 +146,8 @@ From playing beta.3. These replace what the distillation's notes below say about
 - **End-native blocks only:** no more Nether blocks in End structures. The Leviathan's heart is Leviathan
   Flesh, not Nether Wart; its sockets are rimmed in obsidian. Raw Solarite (now faintly glowing, and
   holding fire forever in the End, as bedrock does) replaces Magma in the Corona's fissures, the hot
-  comet craters and the Solar Array's braziers, and Shroomlight in the Remnant - which keeps its Magma,
-  Blackstone and Basalt: the cinders of a dead star.
+  comet craters and the Solar Array's braziers, and Shroomlight in the Remnant - which kept its Magma,
+  Blackstone and Basalt until it fell, after beta.4.
 - **Upwelling:** turning the view works while you're upside down.
 - **The Spire Wyrm's spawn egg** is out of the creative menu.
 

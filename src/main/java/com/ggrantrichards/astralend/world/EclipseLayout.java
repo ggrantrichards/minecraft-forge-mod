@@ -21,6 +21,8 @@ import net.minecraft.world.level.levelgen.densityfunction.SamplerContext;
 //   - the heaven half: u > 0, plus the disc of radius 1/2 round (0, 1/2), minus that round (0, -1/2);
 //   - the hell half: the rest - its S-shaped border runs through the middle;
 //   - and each holds a seed of the other: a small disc of hell round (0, 1/2) and of heaven round (0, -1/2).
+// Where the halves meet, the Seam (after beta.4): a band SEAM_HALF blocks either side of the S-shaped
+// border, its own biome - the scar the Remnant left when it fell, black glass with a line of embers.
 public final class EclipseLayout {
     public static final int CELL = 4096;
     public static final double RADIUS = 180.0;
@@ -32,9 +34,11 @@ public final class EclipseLayout {
     // Anchors, in the Eclipse's frame (u, v).
     public static final double[] WELLSPRING = {0.6, -0.1};  // the heart of the heaven half
     public static final double WELLSPRING_RADIUS = 0.15;
-    public static final double[] REMNANT = {-0.6, 0.1};     // over the heart of the hell half
+    public static final double[] REMNANT = {-0.6, 0.1};     // the heart of the hell half, where it fell
     public static final double[] HELL_SEED = {0.0, 0.5};    // in heaven: one burnt spire
     public static final double[] HEAVEN_SEED = {0.0, -0.5}; // in hell: one small living pool
+
+    public static final double SEAM_HALF = 9.0;              // the Seam's half-width, in blocks
 
     public enum Part { NONE, HEAVEN, HELL }
 
@@ -71,6 +75,15 @@ public final class EclipseLayout {
         public Part part(double wx, double wz) {
             return EclipseLayout.part(this.u(wx, wz), this.v(wx, wz));
         }
+
+        // How far a spot is from the S-shaped border between the halves, in blocks.
+        public double seam(double wx, double wz) {
+            return EclipseLayout.seam(this.u(wx, wz), this.v(wx, wz)) * RADIUS;
+        }
+
+        public boolean inSeam(double wx, double wz) {
+            return this.part(wx, wz) != Part.NONE && this.seam(wx, wz) < SEAM_HALF;
+        }
     }
 
     // The yin-yang, in the unit disc.
@@ -86,6 +99,20 @@ public final class EclipseLayout {
         if (top < 0.25) return Part.HEAVEN;
         if (bottom < 0.25) return Part.HELL;
         return u > 0 ? Part.HEAVEN : Part.HELL;
+    }
+
+    // The distance (in the unit disc) from (u, v) to the S-shaped border: the left half of the circle of
+    // radius 1/2 round (0, 1/2), and the right half of the one round (0, -1/2). (The seeds' rims don't count.)
+    public static double seam(double u, double v) {
+        return Math.min(halfCircle(u, v - 0.5, -1.0), halfCircle(u, v + 0.5, 1.0));
+    }
+
+    // From (x, y) to the half (side -1: x <= 0; side 1: x >= 0) of the circle of radius 1/2 round the origin.
+    private static double halfCircle(double x, double y, double side) {
+        if (x * side >= 0.0) {
+            return Math.abs(Math.sqrt(x * x + y * y) - 0.5);
+        }
+        return Math.min(Math.hypot(x, y - 0.5), Math.hypot(x, y + 0.5));   // nearest is an end of the arc
     }
 
     // The Eclipse of the cell holding this spot, or null if that cell has none.

@@ -264,6 +264,31 @@
       }
     ]
   },
+  "ambient.seam.loop": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/eclipse/loop",
+        "stream": true,
+        "volume": 0.5
+      }
+    ]
+  },
+  "ambient.seam.additions": {
+    "sounds": [
+      {
+        "name": "astralend:ambient/corona/additions1",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/corona/additions2",
+        "volume": 0.5
+      },
+      {
+        "name": "astralend:ambient/corona/additions3",
+        "volume": 0.5
+      }
+    ]
+  },
   "ambient.void_hum": {
     "sounds": [
       {

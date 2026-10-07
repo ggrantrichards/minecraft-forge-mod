@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "astralend:corona",
-    "astralend:eclipse"
+    "astralend:eclipse",
+    "astralend:seam"
   ]
 }

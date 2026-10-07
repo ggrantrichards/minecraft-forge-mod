@@ -37,10 +37,13 @@ your face: the End tells you things with sound and light.
 ## The Eclipse
 
 Rare, far out, and unlike anything else in the End: one great disc of land, a yin-yang of **heaven and
-hell**. Bare End Stone and a teal sky on one side, with moss only round its water and the **Wellspring**,
-a basin of water sunk into the stone; crimson stone under a crimson sky on the other, where Sunstorms rage
-and the **Remnant**, a dead star's cinder, hangs overhead. Only here do the stars show without a
-spyglass, and only from here can you sight the constellations the Starforge needs.
+hell**. On one side, End Stone turned old gold under amber fog, gold dust in the air and clouds of gold
+and blue in the sky, with teal moss only round its water and the **Wellspring**, a basin of water sunk
+into the stone. On the other, crimson stone under crimson filaments, where Sunstorms rage and the
+**Remnant**, a dead star's cinder, lies half buried in the crater it made when it fell. Between them runs
+**the Seam**, the black-glass scar it tore coming down, sparks rising off it all along its length and the
+Mirror Wretches prowling it, under a white star with six long spikes. Only here do the stars show without
+a spyglass, and only from here can you sight the constellations the Starforge needs.
 
 {{The Eclipse's hell half}}
 
@@ -80,7 +83,7 @@ every other Leviathan you've woken.
 ## Ruins and Starforging
 
 The Leviathans' **Maws**, which wake into a travel network; **Constellation Mazes** whose bridges
-show only through a spyglass; the Remnant's burning heart. Bring back what they guard to
+show only through a spyglass; the burning heart of the fallen Remnant. Bring back what they guard to
 an **Astral Forge**: five sidegrades for diamond and netherite gear - Void Recall, Echo Strike, Lensing,
 Radiant, Rift Walker - each needing its constellation sighted from the Eclipse, and a rare material from
 somewhere else.

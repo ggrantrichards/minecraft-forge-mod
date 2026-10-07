@@ -17,36 +17,46 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.phys.Vec3;
 
-// Builds the Remnant a chunk at a time, every block decided from shapes:
-//   - a lumpy ball about 40 blocks across: a crust of charred and scorched stone and blackstone,
-//     split all over by glowing fissures of magma and shroomlight;
-//   - under the crust, a mantle still molten (magma, shroomlight, Solarite);
-//   - at the middle, a hollow chamber with the star's last ember in it - a heart of Solarite round a
-//     core of light - and the chest of whoever reached it first; two rifts lead in from outside;
-//   - three loops of fire arching off the surface, and a ring of broken rock circling it.
+// Builds the crashed Remnant a chunk at a time, every block decided from shapes (after beta.4: it used
+// to hang in the sky; now it has fallen). Like a geode, it's layers round a hollow, half buried:
+//   - a crater dug into the hell half, its floor glazed black (Obsidian) toward the middle, its rim
+//     thrown up in a ragged ring of Charred End Stone, with lumps of ejecta round it;
+//   - a furrow running out of the crater toward the Seam - the way it came down;
+//   - in the middle, the cinder, sunk to its waist: a crust of Obsidian and Charred End Stone with veins
+//     of raw Solarite glowing through its cracks, a mantle of Sunscorched Stone, and a lining of raw
+//     Solarite and its ore round a hollow. In the hollow, the star's last ember - a heart of raw Solarite
+//     round a Solarite core - and the chest of whoever reached it first. A cleft split open on the side
+//     away from the furrow leads in; anyone can also dig.
+// Only End blocks and the mod's own: no Nether blocks.
 public class RemnantPiece extends StructurePiece {
     private static final ResourceKey<LootTable> LOOT = ResourceKey.create(Registries.LOOT_TABLE,
         Identifier.fromNamespaceAndPath(AstralEnd.MODID, "chests/remnant"));
-    private static final double CRUST = 19.0, MANTLE = 11.5, CHAMBER = 7.0;
+    public static final double CRATER = 24.0;
+    private static final double DEPTH = 8.0, RIM = 3.5, SCORCH = 10.0;
+    private static final double CINDER = 12.0, MANTLE = 2.0, CRUST = 2.0, HOLLOW = 5.5;
+    private static final double FURROW_END = 46.0;
     private static final int REACH = 48;
+    // The cinder's middle, relative to the origin: sunk to its waist in the crater floor, its top
+    // standing well over the land round the crater.
+    public static final int CINDER_Y = -3;
 
-    private final BlockPos origin;
+    private final BlockPos origin;      // the ground level at the crater's middle
     private final long seed;
+    private final float heading;        // the furrow's direction (radians: x = cos, z = sin)
     private final double[] phase = new double[9];
-    private final List<Vec3[]> loops = new ArrayList<>();      // {centre, normal, (radius, 0, 0)}
-    private final List<double[]> rocks = new ArrayList<>();    // {x, y, z, r}
-    private final List<Vec3> rifts = new ArrayList<>();        // directions of the ways in
+    private final List<double[]> ejecta = new ArrayList<>();   // {x, y, z, r}: y is above the ground
 
-    public RemnantPiece(BlockPos origin, long seed) {
+    public RemnantPiece(BlockPos origin, long seed, float heading) {
         super(ModWorldgen.REMNANT_PIECE.get(), 0, new BoundingBox(origin).inflatedBy(REACH));
         this.origin = origin;
         this.seed = seed;
+        this.heading = heading;
         this.build();
     }
 
@@ -54,6 +64,7 @@ public class RemnantPiece extends StructurePiece {
         super(ModWorldgen.REMNANT_PIECE.get(), tag);
         this.origin = new BlockPos(tag.getIntOr("OX", 0), tag.getIntOr("OY", 0), tag.getIntOr("OZ", 0));
         this.seed = tag.getLongOr("Seed", 0L);
+        this.heading = tag.getFloatOr("Heading", 0.0F);
         this.build();
     }
 
@@ -63,6 +74,7 @@ public class RemnantPiece extends StructurePiece {
         tag.putInt("OY", this.origin.getY());
         tag.putInt("OZ", this.origin.getZ());
         tag.putLong("Seed", this.seed);
+        tag.putFloat("Heading", this.heading);
     }
 
     private void build() {
@@ -70,25 +82,12 @@ public class RemnantPiece extends StructurePiece {
         for (int i = 0; i < this.phase.length; i++) {
             this.phase[i] = rnd.nextDouble() * Math.PI * 2;
         }
-        for (int i = 0; i < 3; i++) {
-            Vec3 at = randomDir(rnd).scale(CRUST - 1);
-            Vec3 normal = at.normalize().cross(randomDir(rnd)).normalize();
-            this.loops.add(new Vec3[] {at, normal, new Vec3(7 + rnd.nextDouble() * 6, 0, 0)});
+        // Lumps thrown out by the impact, round the rim and beyond (none in the furrow's path).
+        for (int i = 0; i < 9; i++) {
+            double a = this.heading + Math.PI * (0.35 + 1.3 * rnd.nextDouble());
+            double r = CRATER + 2 + rnd.nextDouble() * 15;
+            this.ejecta.add(new double[] {Math.cos(a) * r, rnd.nextDouble() * 1.5, Math.sin(a) * r, 1.3 + rnd.nextDouble() * 1.4});
         }
-        double tilt = rnd.nextDouble() * 0.5;
-        for (int i = 0; i < 16; i++) {
-            double a = i * Math.PI * 2 / 16 + rnd.nextDouble() * 0.3;
-            double r = 30 + rnd.nextDouble() * 13;
-            double y = Math.sin(a) * r * tilt + (rnd.nextDouble() - 0.5) * 6;
-            this.rocks.add(new double[] {Math.cos(a) * r, y, Math.sin(a) * r * Math.cos(tilt), 1.6 + rnd.nextDouble() * 2.2});
-        }
-        this.rifts.add(new Vec3(1.0, 0.25, 0.1).normalize());
-        this.rifts.add(new Vec3(-0.4, -0.15, -1.0).normalize());
-    }
-
-    private static Vec3 randomDir(RandomSource rnd) {
-        double z = rnd.nextDouble() * 2 - 1, a = rnd.nextDouble() * Math.PI * 2, s = Math.sqrt(1 - z * z);
-        return new Vec3(Math.cos(a) * s, z, Math.sin(a) * s);
     }
 
     // Smooth noise in [-1, 1].
@@ -109,85 +108,139 @@ public class RemnantPiece extends StructurePiece {
     public void postProcess(WorldGenLevel level, StructureManager structures, ChunkGenerator generator, RandomSource random,
                             BoundingBox chunk, ChunkPos chunkPos, BlockPos reference) {
         BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
-        for (int x = Math.max(chunk.minX(), this.origin.getX() - REACH); x <= Math.min(chunk.maxX(), this.origin.getX() + REACH); x++) {
-            for (int z = Math.max(chunk.minZ(), this.origin.getZ() - REACH); z <= Math.min(chunk.maxZ(), this.origin.getZ() + REACH); z++) {
-                for (int y = Math.max(chunk.minY(), this.origin.getY() - REACH); y <= Math.min(chunk.maxY(), this.origin.getY() + REACH); y++) {
-                    int dx = x - this.origin.getX(), dy = y - this.origin.getY(), dz = z - this.origin.getZ();
-                    BlockState state = this.blockAt(dx, dy, dz);
+        int ox = this.origin.getX(), oy = this.origin.getY(), oz = this.origin.getZ();
+        double hx = Math.cos(this.heading), hz = Math.sin(this.heading);
+        for (int x = Math.max(chunk.minX(), ox - REACH); x <= Math.min(chunk.maxX(), ox + REACH); x++) {
+            for (int z = Math.max(chunk.minZ(), oz - REACH); z <= Math.min(chunk.maxZ(), oz + REACH); z++) {
+                int dx = x - ox, dz = z - oz;
+                double r = Math.sqrt(dx * dx + dz * dz);
+                if (r > REACH) {
+                    continue;
+                }
+                // The land here before the fall (the Eclipse's terrain), relative to the origin.
+                int ground = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z) - 1 - oy;
+                boolean land = ground > -30;
+                double ragged = 1.2 * this.noise(dx, 0, dz, 0) + 0.8 * this.noise(dx * 2.7, 0, dz * 2.7, 3);
+                // The crater's surface: a bowl, with its rim thrown up.
+                double rim = RIM * Math.exp(-Math.pow((r - CRATER) / 3.5, 2)) * (1.0 + 0.35 * ragged);
+                int top;
+                if (r < CRATER) {
+                    top = (int) Math.round(-DEPTH * (1.0 - (r / CRATER) * (r / CRATER)) + rim + 0.5 * ragged);
+                } else {
+                    top = Math.max(ground, (int) Math.round(rim));
+                }
+                // The furrow, ploughed out toward the Seam.
+                double along = dx * hx + dz * hz, across = Math.abs(-dx * hz + dz * hx);
+                boolean furrow = false;
+                if (land && along > CRATER - 6 && along < FURROW_END) {
+                    double t = (along - (CRATER - 6)) / (FURROW_END - (CRATER - 6));
+                    if (across < 4.5 - 3.0 * t + 0.6 * ragged) {
+                        int floor = ground - (int) Math.round(3.0 * (1.0 - t) + 0.5);
+                        if (floor < top) {
+                            top = floor;
+                            furrow = true;
+                        }
+                    }
+                }
+                boolean scorched = r < CRATER + SCORCH + 3.0 * ragged || furrow;
+                for (int y = -REACH; y <= 16; y++) {
+                    int wy = oy + y;
+                    if (wy < chunk.minY() || wy > chunk.maxY()) {
+                        continue;
+                    }
+                    BlockState state = this.cinderAt(dx, y, dz);
+                    if (state == null && land) {
+                        state = this.ejectaAt(dx, y - top, dz);
+                    }
+                    if (state == null && (land || r < CRATER) && scorched) {
+                        state = this.groundAt(x, y, z, r, top, ground, furrow);
+                    }
                     if (state != null) {
-                        level.setBlock(p.set(x, y, z), state, 2);
+                        level.setBlock(p.set(x, wy, z), state, 2);
                     }
                 }
             }
         }
-        // The chest, on the floor of the chamber.
-        BlockPos chest = this.origin.offset(3, (int) -CHAMBER + 1, -2);
+        // The chest, on the floor of the hollow.
+        BlockPos chest = this.origin.offset(3, CINDER_Y - 2, 0);
         if (chunk.isInside(chest)) {
             this.createChest(level, chunk, RandomSource.create(this.seed), chest, LOOT, null);
         }
     }
 
-    private BlockState blockAt(int x, int y, int z) {
-        double d = Math.sqrt(x * x + y * y + z * z);
-        if (d > REACH) {
+    // The crater's ground in one column: air above its surface, glazed or charred rock at it, and
+    // solid under it however the land lay (so nothing hangs and nothing is left floating).
+    private BlockState groundAt(int x, int y, int z, double r, int top, int ground, boolean furrow) {
+        if (y > top) {
+            // the old land cleared out of the crater and the furrow
+            return y <= Math.max(ground, top) + 2 && (r < CRATER + 2 || furrow) ? Blocks.AIR.defaultBlockState() : null;
+        }
+        if (y < top - 3) {
+            return y > ground ? ModBlocks.CHARRED_END_STONE.get().defaultBlockState() : null;   // fill under a raised rim
+        }
+        if (y == top) {
+            // Glazed black where the heat was worst - the floor's middle and the furrow - and charred
+            // round it, fading back into the Corona's crust: in patches, not a speckle.
+            double v = 0.75 * (0.5 + 0.5 * this.noise(x * 0.8, 0, z * 0.8, 6)) + 0.25 * this.hash(x, y, z);
+            double glaze = furrow ? 0.75 : r < CRATER ? 1.1 - r / CRATER : 0.0;
+            if (v < glaze) {
+                return Blocks.OBSIDIAN.defaultBlockState();
+            }
+            double fade = r < CRATER ? 0.1 : 0.1 + 0.9 * (r - CRATER) / SCORCH;
+            return v > 1.0 - fade ? ModBlocks.SUNSCORCHED_STONE.get().defaultBlockState() : ModBlocks.CHARRED_END_STONE.get().defaultBlockState();
+        }
+        return ModBlocks.CHARRED_END_STONE.get().defaultBlockState();
+    }
+
+    // A lump of ejecta, with `y` measured from the ground under it.
+    private BlockState ejectaAt(int x, int y, int z) {
+        for (double[] e : this.ejecta) {
+            double d = Math.sqrt((x - e[0]) * (x - e[0]) + (y - e[1]) * (y - e[1]) * 1.4 + (z - e[2]) * (z - e[2]));
+            if (d <= e[3] * (1 + 0.25 * this.noise(x * 3, y * 3, z * 3, 6))) {
+                return this.hash(x, y, z) < 0.4 ? Blocks.OBSIDIAN.defaultBlockState() : ModBlocks.CHARRED_END_STONE.get().defaultBlockState();
+            }
+        }
+        return null;
+    }
+
+    // The cinder: null outside it.
+    private BlockState cinderAt(int x, int y, int z) {
+        double cy = y - CINDER_Y;
+        double d = Math.sqrt(x * x + cy * cy + z * z);
+        double surface = CINDER + 1.4 * this.noise(x, y, z, 0) + 0.7 * this.noise(x * 2.3, y * 2.3, z * 2.3, 3);
+        if (d > surface) {
             return null;
         }
+        // The hollow, with the heart a little below its middle, and a flat floor for the chest.
+        double heart = Math.sqrt(x * x + (cy + 1.0) * (cy + 1.0) + z * z);
+        if (heart < 1.3) {
+            return ModBlocks.SOLARITE_BLOCK.get().defaultBlockState();     // the last ember
+        }
+        if (heart < 2.3) {
+            return ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState(); // its heart
+        }
+        if (d < HOLLOW && cy > -3.0) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        // The cleft: split open on the side away from the furrow, from the top down to the hollow.
+        double away = -(x * Math.cos(this.heading) + z * Math.sin(this.heading));
+        double side = Math.abs(-x * Math.sin(this.heading) + z * Math.cos(this.heading));
+        if (away > 1.0 && cy > -2.0 && side < 1.2 + 0.11 * (cy + 2.0) + 0.4 * this.noise(x, y, z, 2)) {
+            return Blocks.AIR.defaultBlockState();
+        }
         double h = this.hash(x, y, z);
-        BlockState result = null;
-        double surface = CRUST + 2.6 * this.noise(x, y, z, 0) + 1.2 * this.noise(x * 2.3, y * 2.3, z * 2.3, 3);
-        if (d <= surface) {
-            if (d < 1.6) {
-                result = ModBlocks.SOLARITE_BLOCK.get().defaultBlockState();        // the last ember
-            } else if (d < 3.0) {
-                result = ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState();   // its heart
-            } else if (d < CHAMBER) {
-                result = Blocks.AIR.defaultBlockState();
-            } else if (d < MANTLE) {
-                result = h < 0.45 ? Blocks.MAGMA_BLOCK.defaultBlockState() : h < 0.7 ? ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState()
-                    : h < 0.85 ? ModBlocks.SOLARITE_ORE.get().defaultBlockState() : ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState();
-            } else {
-                // The crust, cracked through by fissures that glow.
-                double crack = Math.abs(this.noise(x * 1.6, y * 1.6, z * 1.6, 6));
-                if (crack < 0.06) {
-                    result = h < 0.6 ? Blocks.MAGMA_BLOCK.defaultBlockState() : ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState();
-                } else {
-                    double depth = surface - d;
-                    result = depth < 1.5 ? (h < 0.5 ? ModBlocks.CHARRED_END_STONE.get().defaultBlockState()
-                            : h < 0.8 ? Blocks.BLACKSTONE.defaultBlockState() : ModBlocks.SUNSCORCHED_STONE.get().defaultBlockState())
-                        : (h < 0.5 ? Blocks.BLACKSTONE.defaultBlockState() : h < 0.8 ? Blocks.BASALT.defaultBlockState()
-                            : Blocks.MAGMA_BLOCK.defaultBlockState());
-                }
+        double depth = surface - d;
+        if (depth < CRUST) {
+            // The crust, cracked through by veins that still glow.
+            if (Math.abs(this.noise(x * 1.6, y * 1.6, z * 1.6, 6)) < 0.045) {
+                return ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState();
             }
-            // The rifts: two ways in, from the surface to the chamber.
-            for (Vec3 rift : this.rifts) {
-                double along = x * rift.x + y * rift.y + z * rift.z;
-                if (along > 0) {
-                    double off = new Vec3(x, y, z).subtract(rift.scale(along)).length();
-                    if (off < 2.2 + 0.6 * this.noise(along, along, along, 2) && d > 3.0) {
-                        result = Blocks.AIR.defaultBlockState();
-                    }
-                }
-            }
+            return h < 0.6 ? Blocks.OBSIDIAN.defaultBlockState() : ModBlocks.CHARRED_END_STONE.get().defaultBlockState();
         }
-        // Loops of fire, arching off the surface.
-        for (Vec3[] loop : this.loops) {
-            Vec3 q = new Vec3(x, y, z).subtract(loop[0]);
-            double up = q.dot(loop[1]);
-            Vec3 flat = q.subtract(loop[1].scale(up));
-            double tube = Math.sqrt(Math.pow(flat.length() - loop[2].x, 2) + up * up);
-            if (tube < 1.3 && d > surface - 0.5) {
-                result = h < 0.35 ? Blocks.MAGMA_BLOCK.defaultBlockState() : ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState();
-            }
+        if (depth < CRUST + MANTLE) {
+            return h < 0.85 ? ModBlocks.SUNSCORCHED_STONE.get().defaultBlockState() : ModBlocks.SOLARITE_ORE.get().defaultBlockState();
         }
-        // The ring of broken rock.
-        for (double[] rock : this.rocks) {
-            double rd = Math.sqrt(Math.pow(x - rock[0], 2) + Math.pow(y - rock[1], 2) + Math.pow(z - rock[2], 2));
-            double r = rock[3] * (1 + 0.25 * this.noise(x * 3, y * 3, z * 3, 4));
-            if (rd <= r) {
-                result = rd < r - 1.4 ? Blocks.MAGMA_BLOCK.defaultBlockState()
-                    : h < 0.6 ? ModBlocks.CHARRED_END_STONE.get().defaultBlockState() : Blocks.BLACKSTONE.defaultBlockState();
-            }
-        }
-        return result;
+        // The lining round the hollow: the star's metal.
+        return h < 0.4 ? ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState() : ModBlocks.SOLARITE_ORE.get().defaultBlockState();
     }
 }

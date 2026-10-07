@@ -24,22 +24,32 @@ import net.minecraftforge.event.TickEvent;
 //   - the Ashen Barrens (after beta.4): a thick, pale, suffocating mist of ash lying over the shelves,
 //     the only pale air in the End;
 //   - the Shattered Crags (after beta.4): starlight falling - sparks drifting down between the shards
-//     and on into the void.
+//     and on into the void;
+//   - the Eclipse's heaven half (after beta.4): gold dust hanging in the air, like pollen in low sun,
+//     with now and then a teal glint;
+//   - the Seam: a curtain of sparks - gold, crimson and white - rising off the scar all along it.
 public final class BiomeMist {
     private record Profile(ResourceKey<Biome> biome, ParticleOptions[] haze, ParticleOptions glow, float glowShare,
                            double scale, double threshold, int tries, double minAbove, double maxAbove,
-                           boolean overVoid, double fall) {}
+                           boolean overVoid, double fall, double rise) {}
 
     private static final List<Profile> PROFILES = List.of(
         new Profile(ModBiomes.NEBULA_FIELDS,
             new ParticleOptions[] {new DustParticleOptions(0xF08CBC, 3.0F), new DustParticleOptions(0xC04C88, 3.6F)},
-            ParticleTypes.GLOW, 0.4F, 18.0, 0.56, 120, 1.0, 12.0, false, 0.0),
+            ParticleTypes.GLOW, 0.4F, 18.0, 0.56, 120, 1.0, 12.0, false, 0.0, 0.0),
         new Profile(ModBiomes.ASHEN_BARRENS,
             new ParticleOptions[] {new DustParticleOptions(0xDCD6C8, 4.0F), new DustParticleOptions(0xB8B2A4, 3.4F)},
-            ParticleTypes.WHITE_ASH, 0.15F, 22.0, 0.44, 150, 0.0, 9.0, false, 0.0),
+            ParticleTypes.WHITE_ASH, 0.15F, 22.0, 0.44, 150, 0.0, 9.0, false, 0.0, 0.0),
+        new Profile(ModBiomes.ECLIPSE,
+            new ParticleOptions[] {new DustParticleOptions(0xF2C45A, 1.1F), new DustParticleOptions(0xE0A23A, 0.8F)},
+            ParticleTypes.GLOW, 0.1F, 20.0, 0.5, 50, 1.0, 10.0, false, 0.0, 0.0),
+        new Profile(ModBiomes.SEAM,
+            new ParticleOptions[] {new DustParticleOptions(0xFFD27A, 1.0F), new DustParticleOptions(0xD8243C, 1.0F),
+                new DustParticleOptions(0xFFF4E0, 0.8F)},
+            ParticleTypes.END_ROD, 0.2F, 8.0, 0.3, 90, 0.0, 14.0, false, 0.03, 0.02),
         new Profile(ModBiomes.SHATTERED_CRAGS,
             new ParticleOptions[0],
-            ParticleTypes.END_ROD, 1.0F, 14.0, 0.5, 26, -40.0, 30.0, true, -0.05));
+            ParticleTypes.END_ROD, 1.0F, 14.0, 0.5, 26, -40.0, 30.0, true, -0.05, 0.0));
 
     public static void register() {
         TickEvent.ClientTickEvent.Post.BUS.addListener(BiomeMist::onClientTick);
@@ -86,7 +96,7 @@ public final class BiomeMist {
                 level.addParticle(profile.glow(), x, y, z, (random.nextDouble() - 0.5) * 0.01,
                     profile.fall() != 0.0 ? profile.fall() : 0.004, (random.nextDouble() - 0.5) * 0.01);
             } else {
-                level.addParticle(profile.haze()[random.nextInt(profile.haze().length)], x, y, z, 0.01, 0.0, 0.006);
+                level.addParticle(profile.haze()[random.nextInt(profile.haze().length)], x, y, z, 0.01, profile.rise(), 0.006);
             }
         }
     }

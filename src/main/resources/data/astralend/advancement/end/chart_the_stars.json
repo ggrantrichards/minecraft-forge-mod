@@ -114,6 +114,20 @@
         }
       }
     },
+    "seam": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "biomes": "astralend:seam"
+            }
+          }
+        }
+      }
+    },
     "hollow_roots": {
       "trigger": "minecraft:location",
       "conditions": {
@@ -164,6 +178,9 @@
     ],
     [
       "eclipse"
+    ],
+    [
+      "seam"
     ],
     [
       "hollow_roots"

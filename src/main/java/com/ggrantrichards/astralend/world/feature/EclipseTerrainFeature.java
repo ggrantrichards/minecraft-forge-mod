@@ -22,6 +22,9 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 // heaven half (moss, Living Turf, only round the Wellspring's water, as vanilla's End has no ground
 // cover), a crimson crust of Sunscorched Stone over Charred End Stone in the hell half -
 // read with the same warp as the biome source, so the ground and the biomes agree.
+// Where the halves meet, the Seam (after beta.4): the scar the Remnant tore when it fell - a shallow
+// gouge of Obsidian, fused black glass, fraying into either half's ground at its edges, with a broken
+// line of embers (Solarite ore, still warm) down its middle.
 public record EclipseTerrainFeature() implements Feature {
     public static final MapCodec<EclipseTerrainFeature> CODEC = MapCodec.unit(EclipseTerrainFeature::new);
     public static final double TOP = 62.0;          // the Eclipse's ground level
@@ -66,12 +69,25 @@ public record EclipseTerrainFeature() implements Feature {
                 int wxp = x + (int) Math.round(AstralEndBiomeSource.warp(x, z, 0x51ED));
                 int wzp = z + (int) Math.round(AstralEndBiomeSource.warp(x, z, 0x7A3B));
                 boolean hell = e.part(wxp, wzp) == EclipseLayout.Part.HELL;
+                // The Seam: 0 at its middle line, 1 at its edges, more outside.
+                double seam = e.seam(wxp, wzp) / EclipseLayout.SEAM_HALF;
+                boolean scar = land && seam < 1.0;
+                if (scar) {
+                    top -= (int) Math.round(2.0 * (1.0 - seam) * (1.0 - seam));   // gouged out, deepest down the middle
+                }
+                double grain = (lattice(x, z, 0x5EA) + 1.0) * 0.5;
+                boolean glass = scar && (seam < 0.45 || grain > (seam - 0.45) / 0.55);
+                boolean ember = scar && seam < 0.14 && valueNoise(x / 5.0, z / 5.0, 0xE3B) > -0.15;
                 // Moss only round the water: a ragged ring a few blocks wide about the Wellspring.
                 boolean oasis = Math.hypot(x + 0.5 - wx, z + 0.5 - wz) < well + 6.0 + 2.5 * hills(x * 3, z * 3);
                 for (int y = minY; y < maxY; y++) {
                     BlockState want;
                     if (!land || y > top || y < bottom) {
                         want = air;
+                    } else if (ember && y == top) {
+                        want = ModBlocks.SOLARITE_ORE.get().defaultBlockState();   // (ore, not raw blocks: the scar is long)
+                    } else if (glass && y > top - (seam < 0.45 ? 3 : 1)) {
+                        want = Blocks.OBSIDIAN.defaultBlockState();
                     } else if (y == top) {
                         want = hell ? ModBlocks.SUNSCORCHED_STONE.get().defaultBlockState()
                             : oasis ? ModBlocks.LIVING_TURF.get().defaultBlockState() : Blocks.END_STONE.defaultBlockState();

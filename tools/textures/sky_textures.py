@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """The sky's textures for Phase 5, written to assets/astralend/textures/environment/:
 
-  remnant.png         the Remnant: the dim, dying ember of the collapsed star (a disc with a corona)
-  remnant_flare.png   the glow that swells round it during a Sunstorm
+  remnant_flare.png   the ember where the Remnant hung before it fell, which swells during a Sunstorm
   star.png            one soft star (tinted per star by the sky renderer)
   aurora.png          a curtain of aurora: bright lower hem, streaks fading upward
   flare_sheet.png     a sheet of flare light that rolls across the Corona's sky
@@ -29,38 +28,6 @@ def hexc(h, a=255):
 
 def lerp(a, b, t):
     return tuple(int(round(a[i] + (b[i] - a[i]) * t)) for i in range(len(a)))
-
-
-def remnant():
-    """32x32: a deep red ember disc with darker, cooler patches and a hot rim, inside a soft corona."""
-    size, r_disc = 32, 9.5
-    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    rnd = random.Random(7)
-    spots = [(rnd.uniform(10, 22), rnd.uniform(10, 22), rnd.uniform(1.5, 3.2)) for _ in range(6)]
-    ember = [hexc("4a0c08"), hexc("7a1a0c"), hexc("a8300f"), hexc("d65a18"), hexc("f59a3a"), hexc("ffd88a")]
-    for y in range(size):
-        for x in range(size):
-            dx, dy = x + 0.5 - size / 2, y + 0.5 - size / 2
-            d = math.hypot(dx, dy)
-            if d <= r_disc:
-                t = d / r_disc
-                i = 3 if t > 0.85 else 2
-                if t > 0.93:
-                    i = 4                                         # the hot limb
-                for (sx, sy, sr) in spots:
-                    if math.hypot(x + 0.5 - sx, y + 0.5 - sy) < sr:
-                        i -= 1                                    # cooler, darker patches
-                if (x * 7 + y * 13) % 11 == 0 and t < 0.8:
-                    i += 1                                        # a few bright granules
-                img.putpixel((x, y), ember[max(0, min(5, i))])
-            else:
-                glow = max(0.0, 1.0 - (d - r_disc) / 6.0)
-                if glow > 0:
-                    a = int(150 * glow ** 1.6)
-                    a = (a // 30) * 30                            # stepped, like vanilla's sunrise
-                    if a > 0:
-                        img.putpixel((x, y), hexc("e0501c", a))
-    return img
 
 
 def remnant_flare():
@@ -211,7 +178,7 @@ def silhouette_ring():
 
 
 TEXTURES = {
-    "remnant.png": remnant, "remnant_flare.png": remnant_flare, "star.png": star, "aurora.png": aurora,
+    "remnant_flare.png": remnant_flare, "star.png": star, "aurora.png": aurora,
     "flare_sheet.png": flare_sheet, "comet.png": comet, "silhouette_whale.png": silhouette_whale,
     "silhouette_ring.png": silhouette_ring,
 }

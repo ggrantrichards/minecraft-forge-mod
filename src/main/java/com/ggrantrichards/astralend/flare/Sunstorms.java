@@ -66,7 +66,7 @@ public class Sunstorms extends SavedData {
     private int phaseLength;
     private float windYaw;
 
-    // Per player, not saved: how long they've been exposed this flare, and where their Remnant hangs.
+    // Per player, not saved: how long they've been exposed this flare, and where their Remnant hung.
     private final Map<UUID, Integer> exposure = new HashMap<>();
     private final Map<UUID, BlockPos> remnants = new HashMap<>();
     private final Map<UUID, BlockPos> remnantSearchedFrom = new HashMap<>();
@@ -280,12 +280,12 @@ public class Sunstorms extends SavedData {
         }
     }
 
-    // ------------------------------------------------------------------ where the Remnant hangs
+    // ------------------------------------------------------------------ where the Remnant hung
 
-    // The Remnant hangs over the nearest Corona: the nearest Corona is found from the biome layout
+    // The Remnant hung over the nearest Corona: the nearest Corona is found from the biome layout
     // itself (no chunks are generated), searching outward in rings, then the Remnant structure nearest
-    // to it - a real place, so the sky shows it where it truly is. Looked up again only when the player
-    // has moved far.
+    // to it - a real place, so the sky's ember is right over its crater. Looked up again only when the
+    // player has moved far.
     private BlockPos remnantFor(ServerLevel level, ServerPlayer player, boolean force) {
         UUID id = player.getUUID();
         BlockPos here = player.blockPosition();
@@ -306,7 +306,8 @@ public class Sunstorms extends SavedData {
     public static final net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> REMNANT =
         net.minecraft.tags.TagKey.create(Registries.STRUCTURE, net.minecraft.resources.Identifier.fromNamespaceAndPath(AstralEnd.MODID, "remnant"));
 
-    // The Remnant nearest `from` (its middle): one hangs over the hell half of every Eclipse.
+    // Where the Remnant nearest `from` hung before it fell (high over its crater, in the hell half of
+    // every Eclipse): the Sunstorms still break from there.
     public static BlockPos nearestRemnant(ServerLevel level, BlockPos from) {
         BlockPos anchor = com.ggrantrichards.astralend.world.structure.RemnantStructure.anchor(
             com.ggrantrichards.astralend.world.EclipseLayout.sampler(level.getChunkSource().randomState()), from.getX(), from.getZ(), 3);

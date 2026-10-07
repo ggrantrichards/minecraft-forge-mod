@@ -4,7 +4,6 @@ import com.ggrantrichards.astralend.world.ModBiomes;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -29,7 +28,6 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
@@ -223,24 +221,9 @@ public class MirrorWretch extends Monster {
         return SoundEvents.GLASS_BREAK;
     }
 
-    // Spawns only on the border between the Eclipse's two halves: somewhere within 10 blocks, the
-    // other half begins.
+    // Spawns only in the Seam, the scar between the Eclipse's two halves (its own biome since beta.4).
     public static boolean checkWretchSpawnRules(EntityType<? extends Monster> type, ServerLevelAccessor level,
                                                 EntitySpawnReason reason, BlockPos pos, RandomSource random) {
-        if (!Monster.checkMonsterSpawnRules(type, level, reason, pos, random)) {
-            return false;
-        }
-        Holder<Biome> here = level.getBiome(pos);
-        boolean heaven = here.is(ModBiomes.ECLIPSE);
-        if (!heaven && !here.is(ModBiomes.CORONA)) {
-            return false;
-        }
-        for (Direction d : Direction.Plane.HORIZONTAL) {
-            Holder<Biome> there = level.getBiome(pos.relative(d, 10));
-            if (heaven ? there.is(ModBiomes.CORONA) : there.is(ModBiomes.ECLIPSE)) {
-                return true;
-            }
-        }
-        return false;
+        return Monster.checkMonsterSpawnRules(type, level, reason, pos, random) && level.getBiome(pos).is(ModBiomes.SEAM);
     }
 }

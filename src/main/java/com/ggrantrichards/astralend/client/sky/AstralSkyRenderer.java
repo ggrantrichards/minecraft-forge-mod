@@ -47,11 +47,13 @@ import org.joml.Vector4f;
 // The End's sky. Draws vanilla's End sky first - black and starless, as it should stay - and adds:
 //
 //   - everywhere: now and then a void streak, a faint pale line falling down the far sky;
-//   - only over the Eclipse (either half), the astral sky, fading in over 10-15 blocks as you
-//     cross into it: a starfield in two layers (one fixed, one turning once in 40 minutes), the
-//     constellations, green and gold auroras, the Remnant (the cinder of the collapsed star; it's a real
-//     structure, and close up the real one takes over), a far-off comet now and then, and very rarely
-//     something huge - a whale, a ring - drifting across;
+//   - only over the Eclipse (either half, and the Seam between), the astral sky, fading in over 10-15
+//     blocks as you cross into it: a starfield in two layers (one fixed, one turning once in 40 minutes),
+//     the constellations, a far-off comet now and then, and very rarely something huge - a whale, a ring -
+//     drifting across. And after beta.4 (from the James Webb pictures): over the heaven half, clouds of
+//     gold dust and blue haze; over the hell half (the Corona), crimson filaments and its crimson aurora;
+//     high over the whole Eclipse, the white star with six long spikes that the Seam lies under; and a
+//     faint ember where the Remnant hung before it fell (a real structure now, in its crater);
 //   - in the Corona during a Sunstorm: the sky turns gold and sheets of light roll across it.
 //   - through a spyglass, anywhere: the stars and constellations the void hides (the Constellation
 //     Mazes are solved by sighting them).
@@ -62,7 +64,6 @@ public class AstralSkyRenderer extends SkyRenderer {
     private static final float DISTANCE = 100.0F;
     private static final int MAX_DYNAMIC_QUADS = 640;
     private static final Identifier STAR = texture("star");
-    private static final Identifier REMNANT = texture("remnant");
     private static final Identifier REMNANT_FLARE = texture("remnant_flare");
     private static final Identifier AURORA = texture("aurora");
     private static final Identifier FLARE_SHEET = texture("flare_sheet");
@@ -70,6 +71,7 @@ public class AstralSkyRenderer extends SkyRenderer {
     private static final Identifier WHALE = texture("silhouette_whale");
     private static final Identifier RING = texture("silhouette_ring");
     private static final Identifier NEBULA_CLOUD = texture("nebula_cloud");
+    private static final Identifier SEAM_STAR = texture("seam_star");
 
     private final RenderTarget target;
     private final TextureManager textures;
@@ -90,6 +92,8 @@ public class AstralSkyRenderer extends SkyRenderer {
     private float corona;     // 0..1: how much of the view round the camera is the Corona (eased)
     private float eclipse;    // 0..1: how much of it is the Eclipse, either half (eased)
     private float nebula;     // 0..1: how much of it is the Nebula Fields (eased)
+    private float heaven;     // 0..1: how much of it is the Eclipse's heaven half (eased)
+    private float seam;       // 0..1: how much of it is the Seam (eased)
     private float scope;      // 0..1: looking through a spyglass (eased) - it shows the stars the void hides
     private float auroraStrength;
     private final float[] auroraTarget = new float[7];   // strength, then two colours (r, g, b)
@@ -99,7 +103,7 @@ public class AstralSkyRenderer extends SkyRenderer {
         super(textures, atlases, target);
         this.target = target;
         this.textures = textures;
-        for (Identifier id : List.of(STAR, REMNANT, REMNANT_FLARE, AURORA, FLARE_SHEET, COMET, WHALE, RING, NEBULA_CLOUD)) {
+        for (Identifier id : List.of(STAR, REMNANT_FLARE, AURORA, FLARE_SHEET, COMET, WHALE, RING, NEBULA_CLOUD, SEAM_STAR)) {
             this.loaded.put(id, textures.getTexture(id));
         }
         int[] counts = new int[2];
@@ -129,7 +133,7 @@ public class AstralSkyRenderer extends SkyRenderer {
         float[] t = this.auroraTarget;
         java.util.Arrays.fill(t, 0.0F);
         float[] one = new float[7];
-        float corona = 0.0F, eclipse = 0.0F, nebula = 0.0F, weights = 0.0F;
+        float corona = 0.0F, eclipse = 0.0F, nebula = 0.0F, heaven = 0.0F, seam = 0.0F, weights = 0.0F;
         for (int sx = -12; sx <= 12; sx += 12) {
             for (int sz = -12; sz <= 12; sz += 12) {
                 float w = sx == 0 && sz == 0 ? 2.0F : 1.0F;
@@ -139,7 +143,9 @@ public class AstralSkyRenderer extends SkyRenderer {
                     t[i] += one[i] * w;
                 }
                 corona += biome.is(ModBiomes.CORONA) ? w : 0.0F;
-                eclipse += biome.is(ModBiomes.CORONA) || biome.is(ModBiomes.ECLIPSE) ? w : 0.0F;
+                eclipse += biome.is(ModBiomes.CORONA) || biome.is(ModBiomes.ECLIPSE) || biome.is(ModBiomes.SEAM) ? w : 0.0F;
+                heaven += biome.is(ModBiomes.ECLIPSE) ? w : 0.0F;
+                seam += biome.is(ModBiomes.SEAM) ? w : 0.0F;
                 nebula += biome.is(ModBiomes.NEBULA_FIELDS) ? w : 0.0F;
                 weights += w;
             }
@@ -151,6 +157,8 @@ public class AstralSkyRenderer extends SkyRenderer {
         this.corona += (corona / weights - this.corona) * 0.03F;
         this.eclipse += (eclipse / weights - this.eclipse) * 0.03F;
         this.nebula += (nebula / weights - this.nebula) * 0.03F;
+        this.heaven += (heaven / weights - this.heaven) * 0.03F;
+        this.seam += (seam / weights - this.seam) * 0.03F;
         this.inCorona = this.corona > 0.5F;
         var player = net.minecraft.client.Minecraft.getInstance().player;
         this.scope += ((player != null && player.isScoping() ? 1.0F : 0.0F) - this.scope) * 0.15F;
@@ -158,13 +166,12 @@ public class AstralSkyRenderer extends SkyRenderer {
     }
 
     // The auroras of a biome: strength, then two colours (r, g, b each).
-    // The distillation: the End's sky stays vanilla's, black and starless - auroras (like the stars,
-    // the constellations and the Remnant) only show over the Eclipse, and they're the only vivid colour in
-    // the End: teal and pale cyan over its heaven half, crimson and deep rose over its hell half (the
-    // Corona) - the colours of the Horsehead Nebula's glow and the reflection nebula at its foot.
+    // The distillation: the End's sky stays vanilla's, black and starless - auroras (like the stars and
+    // the constellations) only show over the Eclipse: crimson and deep rose over its hell half (the
+    // Corona), fainter over the Seam. (The heaven half's teal aurora gave way to gold clouds after beta.4.)
     private static void auroraFor(Holder<Biome> biome, float[] t) {
-        if (biome.is(ModBiomes.ECLIPSE)) {
-            set(t, 1.0F, 0.22F, 0.92F, 0.80F, 0.50F, 0.80F, 1.0F);
+        if (biome.is(ModBiomes.SEAM)) {
+            set(t, 0.4F, 0.86F, 0.06F, 0.24F, 0.55F, 0.04F, 0.20F);
         } else if (biome.is(ModBiomes.CORONA)) {
             set(t, 0.9F, 0.86F, 0.06F, 0.24F, 0.55F, 0.04F, 0.20F);
         } else {
@@ -200,6 +207,10 @@ public class AstralSkyRenderer extends SkyRenderer {
             this.nebulaClouds(quads, this.nebula);
         }
         float sky = this.eclipse;    // how much of the astral sky shows: only over the Eclipse
+        if (sky > 0.01F) {
+            quads.group(NEBULA_CLOUD);
+            this.eclipseClouds(quads, this.heaven, this.corona + 0.5F * this.seam);
+        }
         float seen = Math.max(sky, this.scope);   // the stars and constellations: there too through a spyglass
         if (sky > 0.01F) {
             this.silhouette(quads, sky);
@@ -210,6 +221,9 @@ public class AstralSkyRenderer extends SkyRenderer {
         if (this.auroraStrength > 0.01F) {
             quads.group(AURORA);
             this.auroras(quads);
+        }
+        if (sky > 0.01F) {
+            this.seamStar(quads, sky * Mth.clamp(1.0F - 1.2F * coronaFlare, 0.0F, 1.0F));
         }
         if (flare.hasRemnant() && sky > 0.01F) {
             this.remnant(quads, flare, intensity, sky);
@@ -410,32 +424,78 @@ public class AstralSkyRenderer extends SkyRenderer {
         }
     }
 
-    // The Remnant, where it really hangs over the nearest Corona: low on the horizon from far away,
-    // high overhead beneath it. Far off it's drawn larger than it is (as the moon is); close enough for
-    // the real thing to be in view, the picture of it fades away and leaves the real one.
+    // Where the Remnant hung before it fell: a faint ember, still glowing high over the Corona's
+    // crater - small from far off, never gone (the real thing is on the ground now). It burns up when a
+    // Sunstorm comes, as the Remnant did.
     private void remnant(Quads quads, FlareState flare, float intensity, float sky) {
         double dx = flare.remnantX() + 0.5 - this.camera.x;
         double dy = flare.remnantY() + 0.5 - this.camera.y;
         double dz = flare.remnantZ() + 0.5 - this.camera.z;
         double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-        float view = Minecraft.getInstance().options.getEffectiveRenderDistance() * 16.0F;
-        float fade = sky * (float) Mth.clamp((distance - view * 0.75) / (view * 0.45), 0.0, 1.0);
-        if (fade <= 0.0F || distance < 1.0) {
+        if (distance < 1.0) {
             return;
         }
         Vector3f dir = new Vector3f((float) (dx / distance), (float) (dy / distance), (float) (dz / distance));
-        float closeness = (float) Mth.clamp(1.0 - (distance - 300.0) / 3000.0, 0.0, 1.0);
-        float pulse = 1.0F + 0.05F * Mth.sin((float) this.time * 0.02F);
-        float real = (float) (DISTANCE * 22.0 / distance);
-        float size = Math.max(real, 7.0F + 9.0F * closeness) * pulse * (1.0F + 0.25F * intensity);
-        float glow = (0.3F + 0.7F * intensity) * fade;
+        float closeness = (float) Mth.clamp(1.0 - (distance - 150.0) / 2000.0, 0.0, 1.0);
+        float pulse = 1.0F + 0.08F * Mth.sin((float) this.time * 0.015F);
+        float size = (2.5F + 3.5F * closeness) * pulse * (1.0F + 0.6F * intensity);
         quads.group(REMNANT_FLARE);
-        float haloSize = size * (1.7F + 1.1F * intensity);
-        quads.sprite(dir, haloSize, haloSize, 0.0F, 0, 0, 1, 1,
-            argb(Math.min(1.0F, glow), 1.0F, 0.75F, 0.45F));
-        float bright = 0.75F + 0.25F * intensity;
-        quads.group(REMNANT);
-        quads.sprite(dir, size, size, 0.0F, 0, 0, 1, 1, argb(fade, bright, 0.55F + 0.45F * intensity, 0.5F + 0.5F * intensity));
+        quads.sprite(dir, size, size, 0.0F, 0, 0, 1, 1, argb(Math.min(1.0F, (0.35F + 0.65F * intensity) * sky), 1.0F, 0.62F, 0.36F));
+    }
+
+    // The Eclipse's own sky (after beta.4, from the James Webb pictures): over its heaven half, great soft
+    // clouds of gold dust with blue haze between them; over its hell half, crimson filaments, long and thin.
+    // Both are fixed shapes (one seed each), drifting very slowly round, as the Nebula Fields' gas does.
+    private void eclipseClouds(Quads quads, float heaven, float hell) {
+        float drift = (float) (this.time * 0.00003);
+        if (heaven > 0.01F) {
+            RandomSource random = RandomSource.createThreadLocalInstance(77031L);
+            for (int i = 0; i < 14; i++) {
+                float yaw = (float) Math.toRadians(i * 137.5F + random.nextFloat() * 40.0F) + drift;
+                float elevation = (float) Math.toRadians(8.0F + random.nextFloat() * 50.0F);
+                float w = 22.0F + random.nextFloat() * 24.0F;
+                float h = w * (0.5F + random.nextFloat() * 0.35F);
+                float roll = random.nextFloat() * Mth.TWO_PI;
+                int q = random.nextInt(4);
+                float u0 = (q % 2) * 0.5F, v0 = (q / 2) * 0.5F;
+                int kind = random.nextInt(8);
+                float r = kind < 4 ? 1.0F : kind < 6 ? 1.0F : 0.42F;
+                float g = kind < 4 ? 0.74F : kind < 6 ? 0.88F : 0.6F;
+                float b = kind < 4 ? 0.34F : kind < 6 ? 0.6F : 1.0F;
+                float breathe = 0.85F + 0.15F * Mth.sin((float) this.time * 0.002F + i * 1.7F);
+                quads.sprite(direction(yaw, elevation), w, h, roll, u0, v0, u0 + 0.5F, v0 + 0.5F,
+                    argb(0.5F * heaven * breathe, r, g, b));
+            }
+        }
+        if (hell > 0.01F) {
+            RandomSource random = RandomSource.createThreadLocalInstance(90217L);
+            for (int i = 0; i < 12; i++) {
+                float yaw = (float) Math.toRadians(i * 137.5F + random.nextFloat() * 40.0F) - drift;
+                float elevation = (float) Math.toRadians(10.0F + random.nextFloat() * 55.0F);
+                float w = 30.0F + random.nextFloat() * 26.0F;
+                float h = w * (0.12F + random.nextFloat() * 0.1F);
+                float roll = random.nextFloat() * Mth.TWO_PI;
+                int q = random.nextInt(4);
+                float u0 = (q % 2) * 0.5F, v0 = (q / 2) * 0.5F;
+                boolean rose = random.nextInt(3) == 0;
+                float breathe = 0.8F + 0.2F * Mth.sin((float) this.time * 0.003F + i * 2.1F);
+                quads.sprite(direction(yaw, elevation), w, h, roll, u0, v0, u0 + 0.5F, v0 + 0.5F,
+                    argb(Math.min(1.0F, 0.6F * hell * breathe), rose ? 0.96F : 0.85F, rose ? 0.32F : 0.08F, rose ? 0.42F : 0.2F));
+            }
+        }
+    }
+
+    // The Eclipse's star, high in the south-west of its sky: white, with six long spikes and two short.
+    // It's over the whole Eclipse; under it, in the Seam, it's brighter and seems nearer.
+    private void seamStar(Quads quads, float strength) {
+        if (strength < 0.01F) {
+            return;
+        }
+        float twinkle = 0.92F + 0.08F * Mth.sin((float) this.time * 0.07F) * Mth.sin((float) this.time * 0.031F);
+        float size = (5.5F + 3.0F * this.seam) * twinkle;
+        quads.group(SEAM_STAR);
+        quads.sprite(direction((float) Math.toRadians(215.0), (float) Math.toRadians(62.0)), size, size, 0.0F, 0, 0, 1, 1,
+            argb(strength * (0.6F + 0.4F * this.seam) * twinkle, 1.0F, 0.97F, 0.9F));
     }
 
     // Sheets of flare light rolling across the Corona's sky with the wind.

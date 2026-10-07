@@ -35,7 +35,8 @@ public class AstralEndBiomeSource extends BiomeSource {
                 RegistryOps.retrieveElement(ModBiomes.SHATTERED_CRAGS),
                 RegistryOps.retrieveElement(ModBiomes.ECLIPSE),
                 RegistryOps.retrieveElement(ModBiomes.HOLLOW_ROOTS),
-                RegistryOps.retrieveElement(ModBiomes.CRYSTAL_VAULTS)
+                RegistryOps.retrieveElement(ModBiomes.CRYSTAL_VAULTS),
+                RegistryOps.retrieveElement(ModBiomes.SEAM)
             )
             .apply(i, i.stable(AstralEndBiomeSource::new))
     );
@@ -57,6 +58,7 @@ public class AstralEndBiomeSource extends BiomeSource {
     private final Holder<Biome> eclipse;
     private final Holder<Biome> hollowRoots;
     private final Holder<Biome> crystalVaults;
+    private final Holder<Biome> seam;
     // The caves: under the Deep Hollows below this height, the Hollow Roots; under the Shattered Crags
     // below this one, the Crystal Vaults.
     public static final int ROOTS_BELOW = 46, VAULTS_BELOW = 38;
@@ -66,7 +68,7 @@ public class AstralEndBiomeSource extends BiomeSource {
                                  Holder<Biome> ashenBarrens,
                                  Holder<Biome> corona, Holder<Biome> glimmeringCrags,
                                  Holder<Biome> deepHollows, Holder<Biome> shatteredCrags, Holder<Biome> eclipse,
-                                 Holder<Biome> hollowRoots, Holder<Biome> crystalVaults) {
+                                 Holder<Biome> hollowRoots, Holder<Biome> crystalVaults, Holder<Biome> seam) {
         this.end = end;
         this.highlands = highlands;
         this.midlands = midlands;
@@ -81,13 +83,14 @@ public class AstralEndBiomeSource extends BiomeSource {
         this.eclipse = eclipse;
         this.hollowRoots = hollowRoots;
         this.crystalVaults = crystalVaults;
+        this.seam = seam;
     }
 
     @Override
     protected Stream<Holder<Biome>> collectPossibleBiomes() {
         return Stream.of(this.end, this.highlands, this.midlands, this.islands, this.barrens, this.nebulaFields,
             this.ashenBarrens, this.corona,
-            this.glimmeringCrags, this.deepHollows, this.shatteredCrags, this.eclipse, this.hollowRoots, this.crystalVaults);
+            this.glimmeringCrags, this.deepHollows, this.shatteredCrags, this.eclipse, this.hollowRoots, this.crystalVaults, this.seam);
     }
 
     @Override
@@ -115,9 +118,12 @@ public class AstralEndBiomeSource extends BiomeSource {
         // (And their grounds mix on top of that: BorderBlendFeature.)
         int warpedX = blockX + (int) Math.round(warp(blockX, blockZ, 0x51ED));
         int warpedZ = blockZ + (int) Math.round(warp(blockX, blockZ, 0x7A3B));
-        // The rare Eclipse comes first: its heaven half, or its hell half (the Corona).
+        // The rare Eclipse comes first: the Seam where its halves meet, its heaven half, or its hell half (the Corona).
         EclipseLayout.Eclipse e = EclipseLayout.at(warpedX, warpedZ, sampler);
         if (e != null) {
+            if (e.inSeam(warpedX, warpedZ)) {
+                return this.seam;
+            }
             switch (e.part(warpedX, warpedZ)) {
                 case HEAVEN: return this.eclipse;
                 case HELL: return this.corona;

@@ -4,13 +4,7 @@
       "argument": {
         "spawn_costs": {},
         "spawns_by_category": {
-          "monster": [
-            {
-              "type": "astralend:mirror_wretch",
-              "count": 1,
-              "weight": 6
-            }
-          ]
+          "monster": []
         }
       },
       "modifier": "overlay"

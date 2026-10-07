@@ -68,6 +68,7 @@ public final class WorldgenSurvey {
         // The Eclipse: rare, and small (360 blocks across), its two halves.
         new BiomeInfo(ModBiomes.CORONA, 'C', "The Corona", 0.02, 3, 3),
         new BiomeInfo(ModBiomes.ECLIPSE, 'E', "The Eclipse", 0.02, 3, 3),
+        new BiomeInfo(ModBiomes.SEAM, 'S', "The Seam", 0.0, 1, 2),
         // The Crags' variant: patches inside their territory.
         new BiomeInfo(ModBiomes.SHATTERED_CRAGS, 'X', "Shattered Crags", 0.1, 8, 3));
 
@@ -254,7 +255,7 @@ public final class WorldgenSurvey {
             }
             // (Variants are patches inside their parents' territories, so they're allowed to be smaller.)
             double minCoherence = info.symbol() == 'X' ? 35 : 50;
-            boolean small = info.symbol() == 'C' || info.symbol() == 'E';   // the Eclipse is too small for the map's grid
+            boolean small = info.symbol() == 'C' || info.symbol() == 'E' || info.symbol() == 'S';   // the Eclipse is too small for the map's grid
             if (share > 0 && coherence < minCoherence && !small) {
                 failures.add(String.format("%s is scattered, not regions (coherence %.0f%%, expected %.0f%%+)", info.name(),
                     coherence, minCoherence));
@@ -278,6 +279,8 @@ public final class WorldgenSurvey {
             // (In the hell half's lower lobe, ~100 blocks from the Remnant, which hangs over (-0.6, 0.1).)
             spots.put('C', List.of(BlockPos.containing(eclipse.worldX(-0.4, -0.25), 64, eclipse.worldZ(-0.4, -0.25))));
             spots.put('E', List.of(BlockPos.containing(eclipse.worldX(0.5, 0.3), 64, eclipse.worldZ(0.5, 0.3))));
+            // (On the S-shaped border, at the far left of its upper curve.)
+            spots.put('S', List.of(BlockPos.containing(eclipse.worldX(-0.5, 0.5), 64, eclipse.worldZ(-0.5, 0.5))));
         }
         Map<Character, Area> areas = new LinkedHashMap<>();
         for (BiomeInfo info : ASTRAL) {
@@ -325,6 +328,7 @@ public final class WorldgenSurvey {
         checkDeepHollows(areas.get('D'), end, failures);
         checkCorona(areas.get('C'), failures);
         checkEclipse(areas.get('E'), failures);
+        checkSeam(areas.get('S'), failures);
         if (eclipse != null) {
             testEclipse(end, eclipse, failures);
         }
@@ -343,7 +347,7 @@ public final class WorldgenSurvey {
             new Home(ModEntities.UMBRAL_STALKER.get(), 'G'), new Home(ModEntities.VOID_RAY.get(), 'C'),
             new Home(ModEntities.DRIFT_WHALE.get(), 'A'), new Home(ModEntities.WATCHER.get(), 'N'),
             new Home(ModEntities.SPIRE_WYRM.get(), 'G'), new Home(ModEntities.HUSHBACK.get(), 'E'),
-            new Home(ModEntities.HYDRAGRIP.get(), 'E'), new Home(ModEntities.MIRROR_WRETCH.get(), 'C'));
+            new Home(ModEntities.HYDRAGRIP.get(), 'E'), new Home(ModEntities.MIRROR_WRETCH.get(), 'S'));
         for (Home home : homes) {
             Area area = areas.get(home.biome());
             String name = home.type().getDescription().getString();
@@ -408,7 +412,21 @@ public final class WorldgenSurvey {
             int top = area.surfaceHeightsIn.keySet().stream().max(Integer::compare).orElse(60);
             String slug = area.info.name().toLowerCase().replace("the ", "").replace(' ', '_');
             EclipseLayout.Eclipse eclipse = area.info.key() == ModBiomes.ECLIPSE || area.info.key() == ModBiomes.CORONA
+                || area.info.key() == ModBiomes.SEAM
                 ? EclipseLayout.nearest(area.centre.getX(), area.centre.getZ(), EclipseLayout.sampler(end.getChunkSource().randomState()), 1) : null;
+            if (eclipse != null && area.info.key() == ModBiomes.SEAM) {
+                // The Seam: from on it, looking along its curve toward the Eclipse's middle; and from high
+                // over the rim beyond it, the whole S.
+                double[][] from = {{-0.5, 0.5, 9, 14}, {-0.78, 0.98, 70, 38}};
+                for (int k = 0; k < 2; k++) {
+                    int x = (int) Math.round(eclipse.worldX(from[k][0], from[k][1])), z = (int) Math.round(eclipse.worldZ(from[k][0], from[k][1]));
+                    double yaw = Math.toDegrees(Math.atan2(-(eclipse.x() - x), eclipse.z() - z));
+                    int ground = Math.max(end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), (int) com.ggrantrichards.astralend.world.feature.EclipseTerrainFeature.TOP);
+                    lines.add(String.format(java.util.Locale.ROOT, "%s%s %d %d %d %.1f %d", slug, k == 0 ? "" : "_aerial", x, ground + (int) from[k][2], z,
+                        yaw, (int) from[k][3]));
+                }
+                continue;
+            }
             if (eclipse != null) {
                 // The Eclipse's halves: from the spot's outer side, looking in across the disc (from anywhere
                 // else the view runs off its edge into the void, or into the Remnant overhead).
@@ -443,15 +461,18 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('G'), end, "spire_wyrm", 16.0, 6.0, 5.0);
         mobShot(lines, areas.get('E'), end, "hushback", 3.2, 0.5, 1.4);
         mobShot(lines, areas.get('E'), end, "hydragrip angled", 3.4, 0.0, 1.2);
-        mobShot(lines, areas.get('C'), end, "mirror_wretch angled", 5.0, 0.0, 1.6);
-        mobShot(lines, areas.get('C'), end, "mirror_wretch reared,angled", 6.0, 0.0, 2.0);
+        mobShot(lines, areas.get('S'), end, "mirror_wretch angled", 5.0, 0.0, 1.6);
+        mobShot(lines, areas.get('S'), end, "mirror_wretch reared,angled", 6.0, 0.0, 2.0);
         mobShot(lines, areas.get('A'), end, "hollowback", 3.2, 0.5, 1.4);
         mobShot(lines, areas.get('A'), end, "curator", 8.0, 0.5, 3.2);
         mobShot(lines, areas.get('D'), end, "shardback angled", 3.4, 0.0, 1.4);
         // Phase 5: the sky and Sunstorms.
         skyShot(lines, areas.get('A'), "sky_ashen_barrens", -45.0F, -32.0F, null, "flare=calm");
         skyShot(lines, areas.get('N'), "sky_nebula_fields", -45.0F, -32.0F, null, "flare=calm");
-        skyShot(lines, areas.get('A'), "sky_remnant_far", 0.0F, -6.0F, end, "flare=warning");
+        // (The astral sky shows only over the Eclipse: from its heaven half, toward where the Remnant hung -
+        // gold clouds, the ember brightening before a Sunstorm - and from the Seam, up at the Eclipse's star.)
+        skyShot(lines, areas.get('E'), "sky_remnant_far", 0.0F, -18.0F, end, "flare=warning");
+        skyShot(lines, areas.get('S'), "sky_seam", 125.0F, -42.0F, null, "flare=calm");
         skyShot(lines, areas.get('C'), "sky_corona_flare", -45.0F, -18.0F, null, "flare=flare");
         mobShot(lines, areas.get('C'), end, "display flare=flare", 5.5, 0.0, 2.6);
         // Phase 6: each structure, from above and to the north-west of the block the survey found in it.
@@ -475,8 +496,8 @@ public final class WorldgenSurvey {
     // Extra screenshot lines worked out by the structure tests (they need the structure's layout).
     private static final List<String> EXTRA_SHOTS = new ArrayList<>();
 
-    // The Remnant: its heart (light in Solarite) where the structure starts, high over the Corona, a
-    // chamber round it and a way in. Then views: from out in the air beside it, and in the chamber.
+    // The Remnant: its heart (light in Solarite) where the structure starts, in a crater in the Corona, a
+    // hollow round it with the chest. Then views: from the crater's rim, in the hollow, and from above.
     // Where the Remnant nearest `from` starts, as /locate would report it (its chunk's corner).
     private static BlockPos remnantStart(ServerLevel end, BlockPos from) {
         BlockPos anchor = com.ggrantrichards.astralend.world.structure.RemnantStructure.anchor(
@@ -495,6 +516,20 @@ public final class WorldgenSurvey {
         atLeast(area, ModBlocks.LUMINE_CAP.get(), 5, failures);
         int scorched = area.in(ModBlocks.SUNSCORCHED_STONE.get());
         log("The Eclipse: " + scorched + " Sunscorched Stone blocks in the heaven half (its seed of hell is elsewhere)");
+    }
+
+    // The Seam: a scar of Obsidian with a line of embers (Solarite ore) down it, and shards of black glass.
+    private static void checkSeam(Area area, List<String> failures) {
+        if (area == null || area.columnsIn < 200) {
+            failures.add("the Seam: too little of it round its spot to survey (" + (area == null ? 0 : area.columnsIn) + " columns)");
+            return;
+        }
+        int obsidian = area.in(Blocks.OBSIDIAN), embers = area.in(ModBlocks.SOLARITE_ORE.get());
+        log(String.format("The Seam: %d columns, %d Obsidian, %d Solarite ore (its embers)", area.columnsIn, obsidian, embers));
+        if (obsidian < area.columnsIn / 2 || embers < 15) {
+            failures.add("the Seam should be a scar of Obsidian with embers down it (" + obsidian + " Obsidian, " + embers
+                + " ore in " + area.columnsIn + " columns)");
+        }
     }
 
     // The Eclipse's landmarks: the Wellspring (a basin of water on a bed of End Stone and Pale End Stone), its two seeds, and
@@ -548,6 +583,20 @@ public final class WorldgenSurvey {
             }
         }
         log("The Eclipse's halves: " + right + " of " + total + " test points in the right half");
+        // The Seam: a band some 18 blocks wide all along the S, so a few hundred of these 4-block samples.
+        int seam = 0;
+        for (double u = -1.0; u <= 1.0; u += 4.0 / EclipseLayout.RADIUS) {
+            for (double v = -1.0; v <= 1.0; v += 4.0 / EclipseLayout.RADIUS) {
+                if (u * u + v * v < 1.0 && resolver.getNoiseBiome(QuartPos.fromBlock((int) e.worldX(u, v)), QuartPos.fromBlock(64),
+                        QuartPos.fromBlock((int) e.worldZ(u, v))).is(ModBiomes.SEAM)) {
+                    seam++;
+                }
+            }
+        }
+        log("The Seam: " + seam + " biome samples (4 blocks apart) across the Eclipse");
+        if (seam < 250 || seam > 1200) {
+            failures.add("the Seam should be a band some 18 blocks wide along the Eclipse's border (" + seam + " samples)");
+        }
         if (right < total) {
             failures.add("the Eclipse's yin-yang is wrong at " + (total - right) + " of " + total + " test points");
         }
@@ -556,9 +605,9 @@ public final class WorldgenSurvey {
     }
 
     private static void testRemnant(ServerLevel end, BlockPos start, List<String> failures) {
-        // The start is reported at its chunk's corner; the Remnant hangs over the chunk's middle.
+        // The start is reported at its chunk's corner; the Remnant lies in a crater at the chunk's middle.
         BlockPos heart = null;
-        for (int y = end.getMinY() + 120; y < end.getMinY() + 230 && heart == null; y++) {
+        for (int y = end.getMinY() + 30; y < end.getMinY() + 90 && heart == null; y++) {
             BlockPos p = new BlockPos(start.getX() + 8, y, start.getZ() + 8);
             if (end.getBlockState(p).is(ModBlocks.SOLARITE_BLOCK.get()) && end.getBlockState(p.above(2)).is(ModBlocks.RAW_SOLARITE_BLOCK.get())) {
                 heart = p;
@@ -568,32 +617,54 @@ public final class WorldgenSurvey {
             failures.add("remnant: no heart at " + start.toShortString());
             return;
         }
-        int air = 0, glow = 0, rock = 0;
-        for (BlockPos p : BlockPos.betweenClosed(heart.offset(-24, -24, -24), heart.offset(24, 24, 24))) {
+        int air = 0, obsidian = 0, solarite = 0, nether = 0;
+        for (BlockPos p : BlockPos.betweenClosed(heart.offset(-40, -20, -40), heart.offset(40, 20, 40))) {
             BlockState state = end.getBlockState(p);
-            double d = Math.sqrt(p.distSqr(heart));
-            if (d > 3.5 && d < 6.5 && state.isAir()) {
+            double d = Math.sqrt(p.distSqr(heart.above()));
+            if (d > 2.5 && d < 5.0 && state.isAir()) {
                 air++;
-            } else if (state.is(Blocks.MAGMA_BLOCK) || state.is(ModBlocks.RAW_SOLARITE_BLOCK.get())) {
-                glow++;
-            } else if (!state.isAir()) {
-                rock++;
+            } else if (state.is(Blocks.OBSIDIAN)) {
+                obsidian++;
+            } else if (state.is(ModBlocks.RAW_SOLARITE_BLOCK.get())) {
+                solarite++;
+            } else if (state.is(Blocks.MAGMA_BLOCK) || state.is(Blocks.BLACKSTONE) || state.is(Blocks.BASALT) || state.is(Blocks.SHROOMLIGHT)) {
+                nether++;
             }
         }
-        // The land under it (from the terrain alone: the heightmap would count the Remnant itself).
-        int ground = end.getChunkSource().getGenerator().getBaseHeight(heart.getX() - 30, heart.getZ() - 30,
-            net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG, end, end.getChunkSource().randomState());
-        log(String.format("remnant: heart at %s, %d blocks above the ground under it; chamber %d air, %d glowing and %d rock blocks",
-            heart.toShortString(), heart.getY() - ground, air, glow, rock));
-        if (air < 300 || glow < 500 || rock < 8000) {
-            failures.add("remnant: expected a hollow chamber, glowing fissures and a crust of rock round " + heart.toShortString());
+        // The crater: the ground round the cinder sunk below the land outside it.
+        int ground = 0;
+        for (int[] c : new int[][] {{32, 32}, {-32, 32}, {32, -32}, {-32, -32}}) {   // the land well outside it
+            ground += end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, heart.getX() + c[0], heart.getZ() + c[1]);
         }
-        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_remnant %d.5 %d %d.5 -45.0 -8.0 clear",
-            heart.getX() - 48, heart.getY() + 4, heart.getZ() - 48));
+        ground /= 4;
+        int sunk = 0, ring = 0;
+        for (int k = 0; k < 16; k++) {
+            double a = k * Math.PI / 8;
+            int x = heart.getX() + (int) Math.round(Math.cos(a) * 17), z = heart.getZ() + (int) Math.round(Math.sin(a) * 17);
+            ring++;
+            if (end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) < ground - 2) {
+                sunk++;
+            }
+        }
+        boolean chest = end.getBlockState(heart.offset(3, -1, 0)).is(Blocks.CHEST);
+        log(String.format("remnant: heart at %s; hollow %d air, %d Obsidian, %d raw Solarite blocks, %d Nether blocks; crater floor "
+            + "below the land at %d of %d points; chest %s", heart.toShortString(), air, obsidian, solarite, nether, sunk, ring, chest));
+        if (air < 150 || obsidian < 400 || solarite < 100 || !chest) {
+            failures.add("remnant: expected a hollow with a chest, a crust of Obsidian and veins of raw Solarite round " + heart.toShortString());
+        }
+        if (nether > 0) {
+            failures.add("remnant: " + nether + " Nether blocks (it should be built only of the End's own)");
+        }
+        if (sunk < 12) {
+            failures.add("remnant: no crater round it (" + sunk + " of " + ring + " points below the land)");
+        }
+        // From the crater's rim, looking down at the cinder; inside the hollow; and from high above.
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_remnant %d.5 %d %d.5 -45.0 18.0 clear",
+            heart.getX() - 26, heart.getY() + 16, heart.getZ() - 26));
         EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_remnant_chamber %d.5 %d %d.5 -90.0 10.0",
-            heart.getX() - 5, heart.getY() - 1, heart.getZ()));
-        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_remnant_below %d.5 %d %d.5 -45.0 -55.0",
-            heart.getX() - 30, Math.max(ground + 2, heart.getY() - 80), heart.getZ() - 30));
+            heart.getX() - 4, heart.getY(), heart.getZ()));
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_remnant_crater %d.5 %d %d.5 -45.0 48.0 clear",
+            heart.getX() - 42, heart.getY() + 52, heart.getZ() - 42));
     }
 
     // The Leviathan: found the way /locate finds it; its skull built, with the reliquary's pedestal, the
@@ -1609,7 +1680,7 @@ public final class WorldgenSurvey {
         }
         // Its ground: Sunscorched Stone, its Solarite, and the charred lips and hot raw Solarite of its fissures.
         int scorchedTops = area.tops(ModBlocks.SUNSCORCHED_STONE.get()) + area.tops(ModBlocks.SOLARITE_ORE.get())
-            + area.tops(ModBlocks.CHARRED_END_STONE.get()) + area.tops(Blocks.MAGMA_BLOCK) + area.tops(ModBlocks.RAW_SOLARITE_BLOCK.get());
+            + area.tops(ModBlocks.CHARRED_END_STONE.get()) + area.tops(Blocks.OBSIDIAN) + area.tops(ModBlocks.RAW_SOLARITE_BLOCK.get());   // (Obsidian: the Remnant's crater)
         if (scorchedTops < 0.8 * area.landColumnsIn) {
             failures.add("The Corona: only " + scorchedTops + " of " + area.landColumnsIn + " land columns are topped with its scorched ground");
         }
@@ -1706,6 +1777,7 @@ public final class WorldgenSurvey {
         if (biome.is(ModBiomes.DEEP_HOLLOWS)) return 'D';
         if (biome.is(ModBiomes.CORONA)) return 'C';
         if (biome.is(ModBiomes.ECLIPSE)) return 'E';
+        if (biome.is(ModBiomes.SEAM)) return 'S';
         if (biome.is(ModBiomes.GLIMMERING_CRAGS)) return 'G';
         if (biome.is(ModBiomes.SHATTERED_CRAGS)) return 'X';
         if (biome.is(Biomes.THE_END)) return 'O';

@@ -117,7 +117,7 @@ One shot per biome; one line each. Don't explain mechanics yet, just show variet
 > round each other."
 >
 > **ON SCREEN:** The heaven half - bare End Stone, the Wellspring, the teal sky. Then cross the line
-> into the hell half - crimson stone, a Sunstorm, the Remnant hanging overhead.
+> into the hell half - crimson stone, a Sunstorm, the Remnant half buried in its crater.
 >
 > **VO:** "One half still and quiet. The other burning, under what's left of a dead star."
 >
