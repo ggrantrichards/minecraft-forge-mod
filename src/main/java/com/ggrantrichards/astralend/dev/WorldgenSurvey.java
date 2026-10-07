@@ -423,9 +423,14 @@ public final class WorldgenSurvey {
                 }
                 continue;
             }
-            // Yaw -45 looks south-east (+x, +z), across the area from its north-west corner.
-            lines.add(String.format("%s %d %d %d -45 22", slug, area.centre.getX() - 26, top + 10, area.centre.getZ() - 26));
-            lines.add(String.format("%s_aerial %d %d %d -45 38", slug, area.centre.getX() - 64, top + 48, area.centre.getZ() - 64));
+            // Yaw -45 looks south-east (+x, +z), across the land from north-west of a spot on it, at the
+            // height most of the land's surface is at (not its highest point: a Leviathan floating over the
+            // Ashen Barrens put the camera in the sky, looking at the Leviathan instead of the biome).
+            int typical = area.surfaceHeightsIn.entrySet().stream().max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey).orElse(top);
+            BlockPos anchor = area.standOn != null ? area.standOn : area.centre;
+            lines.add(String.format("%s %d %d %d -45 20", slug, anchor.getX() - 22, typical + 9, anchor.getZ() - 22));
+            lines.add(String.format("%s_aerial %d %d %d -45 36", slug, anchor.getX() - 60, typical + 46, anchor.getZ() - 60));
         }
         // One close-up of each mob, summoned in its home biome (see ClientScreenshots).
         mobShot(lines, areas.get('N'), end, "pollinator", 2.0, 1.0, 1.4);

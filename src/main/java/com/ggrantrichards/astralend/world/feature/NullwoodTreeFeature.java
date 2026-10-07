@@ -79,11 +79,12 @@ public record NullwoodTreeFeature() implements Feature {
             blob(level, random, branch.immutable(), 2, leaves);
         }
         setLeafDistances(level, logs, leaves);
-        // Null Lanterns hang from the undersides of the leaf clumps.
+        // Null Lanterns hang from the undersides of the leaf clumps - many (after beta.4), lighting the
+        // dark forest in pools.
         BlockState lantern = ModBlocks.NULL_LANTERN.get().defaultBlockState();
         for (BlockPos leaf : leaves) {
             BlockPos below = leaf.below();
-            if (random.nextInt(7) == 0 && !leaves.contains(below) && level.getBlockState(below).isAir()
+            if (random.nextInt(3) == 0 && !leaves.contains(below) && level.getBlockState(below).isAir()
                 && level.getBlockState(leaf).is(ModBlocks.NULLWOOD_LEAVES.get())) {
                 level.setBlock(below, lantern, 2);
             }

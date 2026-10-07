@@ -53,6 +53,13 @@ and the distillation renamed or removed some of them.
 - **The Glimmering Crags glow cold:** Glimmer Crystal is a cold white-lavender now and gives off more
   light, so the crystal spires stand out pale against the dark Nightstone; the fog is a cold blue-grey
   and pale motes drift through it (the Shattered Crags too).
+- **Merged in from concept art:**
+  - **Deep Hollows:** many more Null Lanterns hanging from the trees, lighting the dark forest in
+    pools; violet Hollow Glowcaps carpeting the floor; and the Umbral Stalker hunts under the canopy.
+  - **Ashen Barrens:** porous spires of pale stone, ten to twenty-odd blocks tall and pitted right
+    through like old bone; the tall withered stalks of long-dead giant Lumineshrooms, caps drooping;
+    and a thick, pale mist of ash lying over the shelves - the only pale air in the End.
+  - **Shattered Crags:** starlight falling between the shards and on into the void.
 
 ### After beta.3: the reworks
 

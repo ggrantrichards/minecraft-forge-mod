@@ -939,7 +939,8 @@ def java_feature(name):
 # Umbral Stalker lives in the Glimmering Crags' caves.)
 MOB_SPAWNS = {
     "nebula_fields": {"creature": [("pollinator", 10, 3), ("void_wanderer", 3, 1)]},
-    "deep_hollows": {"creature": [("void_wanderer", 4, 1)]},
+    "deep_hollows": {"creature": [("void_wanderer", 4, 1)],
+                     "monster": [("umbral_stalker", 4, 1)]},   # under the dark canopy (its rule wants no sky)
     # The Umbral Stalker hunts only in the Crags' root caves (its spawn rule wants a roof of rock overhead).
     "glimmering_crags": {"monster": [("umbral_stalker", 6, 1)]},
     "shattered_crags": {"creature": [("void_ray", 8, 3)]},
@@ -1030,6 +1031,12 @@ def worldgen_phase3():
     big_feature("aurora_ribcages", "leviathan_ribcage", rarity=24, heightmap="WORLD_SURFACE_WG")
     java_feature("bone_fragment")
     surface_feature("ashen_barrens_bones", "bone_fragment", rarity=2)
+    # Landmarks: porous spires of pale stone, weathered like bone, and the withered stalks of giant
+    # Lumineshrooms long dead.
+    java_feature("bone_spire")
+    surface_feature("ashen_barrens_spires", "bone_spire", rarity=3)
+    java_feature("withered_stalk")
+    surface_feature("ashen_barrens_withered_stalks", "withered_stalk", rarity=2)
     feature("standing_stone", {"type": "minecraft:block_column", "allowed_placement": air, "direction": "up",
                                "layers": [{"height": {"type": "minecraft:uniform", "min_inclusive": 1, "max_inclusive": 3},
                                            "provider": {"id": rid("pale_end_stone_bricks")}},
@@ -1046,7 +1053,8 @@ def worldgen_phase3():
     java_feature("memory_moss")
     surface_feature("ashen_barrens_memory_moss", "memory_moss", rarity=3)
     end_biome("ashen_barrens", "Ashen Barrens", fog="#26252a", water="#6e6c6a",
-              features_step4=[rid("aurora_ribcages"), rid("ashen_barrens_bones"), rid("aurora_standing_stones")],
+              features_step4=[rid("aurora_ribcages"), rid("ashen_barrens_spires"), rid("ashen_barrens_bones"),
+                              rid("ashen_barrens_withered_stalks"), rid("aurora_standing_stones")],
               features_step9=[rid("ashen_barrens_memory_moss"), rid("aurora_shimmer_reeds"), rid("aurora_shimmer_grass"),
                               rid("ashen_barrens_withered_lumineshrooms")],
               particle="minecraft:white_ash", particle_chance=0.035)
@@ -1070,6 +1078,8 @@ def worldgen_phase3():
     # The forest: Nullwood thick on the rings, Hollow Vines hanging from it to the ground, Mimic Plants
     # under it, dark fog, almost no light.
     big_feature("deep_hollows_nullwood_trees", "nullwood_tree", count=7)
+    # A faint glowing carpet on the forest floor: violet Hollow Glowcaps, as in the Hollow Roots below.
+    plant_patch("deep_hollows_glowcaps", "hollow_glowcap", rarity=1, count=10, spread=5, on=[rid("nightstone")])
     plant_patch("deep_hollows_mimic_plants", "mimic_plant", rarity=1, count=5, spread=6, on=[rid("nightstone")])
     feature("hollow_vines", {
         "type": "minecraft:block_column",
@@ -1100,7 +1110,7 @@ def worldgen_phase3():
               features_step4=[rid("deep_hollows_upwells")],
               features_step7=[rid("deep_hollows_stardust_veins")],
               features_step9=[rid("deep_hollows_nullwood_trees"), rid("deep_hollows_vines"), rid("deep_hollows_mimic_plants"),
-                              rid("deep_hollows_voidgel"), rid("deep_hollows_stardust_underhangs")],
+                              rid("deep_hollows_glowcaps"), rid("deep_hollows_voidgel"), rid("deep_hollows_stardust_underhangs")],
               particle="minecraft:reverse_portal", particle_chance=0.004)
 
     # ---- The Corona: Sunscorched Stone over Charred End Stone; Solarite; adapted and dead life

@@ -9,6 +9,11 @@
               "type": "minecraft:enderman",
               "count": 4,
               "weight": 10
+            },
+            {
+              "type": "astralend:umbral_stalker",
+              "count": 1,
+              "weight": 4
             }
           ],
           "creature": [
@@ -80,6 +85,7 @@
       "astralend:deep_hollows_nullwood_trees",
       "astralend:deep_hollows_vines",
       "astralend:deep_hollows_mimic_plants",
+      "astralend:deep_hollows_glowcaps",
       "astralend:deep_hollows_voidgel",
       "astralend:deep_hollows_stardust_underhangs"
     ]

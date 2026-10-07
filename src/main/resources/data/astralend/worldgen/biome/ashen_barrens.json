@@ -62,7 +62,9 @@
     [
       "minecraft:end_gateway_return",
       "astralend:aurora_ribcages",
+      "astralend:ashen_barrens_spires",
       "astralend:ashen_barrens_bones",
+      "astralend:ashen_barrens_withered_stalks",
       "astralend:aurora_standing_stones"
     ],
     [],
