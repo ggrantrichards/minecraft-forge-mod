@@ -59,7 +59,82 @@ def recolour(img, gain):
     return out
 
 
+def bladder():
+    """A Drift Bladder: a see-through rose membrane with darker veins round its edge, and a cold
+    pale-blue glow at its heart (the block is translucent: the membrane is half see-through)."""
+    import random
+    rnd = random.Random(23)
+    img = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        for x in range(16):
+            dx, dy = x - 7.5, y - 7.5
+            d = (dx * dx + dy * dy) ** 0.5 / 10.6            # 0 at the middle, ~1 at the corners
+            if d < 0.28:                                      # the glowing heart
+                c = ramp(GLOW, 1.0 - d * 2.2)
+                a = 235
+            elif d < 0.42:
+                c = ramp(GLOW, 0.35)
+                a = 190
+            else:
+                c = ramp(ROSE, 0.85 - 0.45 * d + (rnd.random() - 0.5) * 0.12)
+                a = 150 + int(70 * d)
+            if x in (0, 15) or y in (0, 15):                  # the membrane's edge, a little darker
+                c = ramp(ROSE, 0.42 + rnd.random() * 0.1)
+                a = 235
+            img.putpixel((x, y), c + (a,))
+    # a few darker veins running in from the edge
+    for vx, vy, sx, sy in ((1, 4, 1, 0), (14, 11, -1, 0), (5, 1, 0, 1), (10, 14, 0, -1)):
+        for k in range(4):
+            img.putpixel((vx + sx * k, vy + sy * k), ramp(ROSE, 0.3) + (225,))
+    return img
+
+
+def clouds():
+    """The Nebula Fields' sky: four clouds of glowing gas (white, tinted when drawn), each a 64-pixel
+    square of a 128-pixel sheet - wispy, uneven filaments (layered noise, stretched one way), densest
+    in a lopsided core and fading to nothing well before the edge."""
+    import math
+    import random
+
+    def noise(rnd, cells):
+        grid = [[rnd.random() for _ in range(cells + 1)] for _ in range(cells + 1)]
+
+        def at(x, y):
+            gx, gy = x * cells, y * cells
+            x0, y0 = min(int(gx), cells - 1), min(int(gy), cells - 1)
+            fx, fy = gx - x0, gy - y0
+            fx, fy = fx * fx * (3 - 2 * fx), fy * fy * (3 - 2 * fy)
+            a = grid[y0][x0] + (grid[y0][x0 + 1] - grid[y0][x0]) * fx
+            b = grid[y0 + 1][x0] + (grid[y0 + 1][x0 + 1] - grid[y0 + 1][x0]) * fx
+            return a + (b - a) * fy
+        return at
+
+    img = Image.new("RGBA", (128, 128), (255, 255, 255, 0))
+    for q in range(4):
+        rnd = random.Random(301 + q)
+        octaves = [(noise(rnd, c), w) for c, w in ((3, 0.5), (6, 0.28), (12, 0.15), (24, 0.07))]
+        angle = rnd.uniform(0, math.pi)
+        cx, cy = rnd.uniform(0.4, 0.6), rnd.uniform(0.4, 0.6)
+        ox, oy = (q % 2) * 64, (q // 2) * 64
+        for y in range(64):
+            for x in range(64):
+                u, v = x / 63.0, y / 63.0
+                # stretched along a slant, so the gas lies in streaks
+                su = (u - cx) * math.cos(angle) + (v - cy) * math.sin(angle)
+                sv = -(u - cx) * math.sin(angle) + (v - cy) * math.cos(angle)
+                r = math.hypot(su / 0.48, sv / 0.26)
+                fall = max(0.0, 1.0 - r) ** 1.4
+                nu = min(0.999, max(0.0, 0.1 + u * 0.7 + su * 0.2))
+                nv = min(0.999, max(0.0, 0.1 + v * 0.7 + sv * 0.2))
+                n = sum(f(nu, nv) * w for f, w in octaves)
+                density = max(0.0, (n - 0.28) / 0.72) ** 1.2 * fall
+                img.putpixel((ox + x, oy + y), (255, 255, 255, int(min(1.0, density * 2.2) * 255)))
+    return img
+
+
 def main():
+    bladder().save(TEX / "nebula_bladder.png")
+    clouds().save(TEX.parent / "environment" / "nebula_cloud.png")
     SRC.mkdir(exist_ok=True)
     for name, gain in TEXTURES.items():
         original = SRC / name

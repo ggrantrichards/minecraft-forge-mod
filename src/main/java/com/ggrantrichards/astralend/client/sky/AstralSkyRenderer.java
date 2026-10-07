@@ -69,6 +69,7 @@ public class AstralSkyRenderer extends SkyRenderer {
     private static final Identifier COMET = texture("comet");
     private static final Identifier WHALE = texture("silhouette_whale");
     private static final Identifier RING = texture("silhouette_ring");
+    private static final Identifier NEBULA_CLOUD = texture("nebula_cloud");
 
     private final RenderTarget target;
     private final TextureManager textures;
@@ -88,6 +89,7 @@ public class AstralSkyRenderer extends SkyRenderer {
     private boolean inCorona;
     private float corona;     // 0..1: how much of the view round the camera is the Corona (eased)
     private float eclipse;    // 0..1: how much of it is the Eclipse, either half (eased)
+    private float nebula;     // 0..1: how much of it is the Nebula Fields (eased)
     private float scope;      // 0..1: looking through a spyglass (eased) - it shows the stars the void hides
     private float auroraStrength;
     private final float[] auroraTarget = new float[7];   // strength, then two colours (r, g, b)
@@ -97,7 +99,7 @@ public class AstralSkyRenderer extends SkyRenderer {
         super(textures, atlases, target);
         this.target = target;
         this.textures = textures;
-        for (Identifier id : List.of(STAR, REMNANT, REMNANT_FLARE, AURORA, FLARE_SHEET, COMET, WHALE, RING)) {
+        for (Identifier id : List.of(STAR, REMNANT, REMNANT_FLARE, AURORA, FLARE_SHEET, COMET, WHALE, RING, NEBULA_CLOUD)) {
             this.loaded.put(id, textures.getTexture(id));
         }
         int[] counts = new int[2];
@@ -127,7 +129,7 @@ public class AstralSkyRenderer extends SkyRenderer {
         float[] t = this.auroraTarget;
         java.util.Arrays.fill(t, 0.0F);
         float[] one = new float[7];
-        float corona = 0.0F, eclipse = 0.0F, weights = 0.0F;
+        float corona = 0.0F, eclipse = 0.0F, nebula = 0.0F, weights = 0.0F;
         for (int sx = -12; sx <= 12; sx += 12) {
             for (int sz = -12; sz <= 12; sz += 12) {
                 float w = sx == 0 && sz == 0 ? 2.0F : 1.0F;
@@ -138,6 +140,7 @@ public class AstralSkyRenderer extends SkyRenderer {
                 }
                 corona += biome.is(ModBiomes.CORONA) ? w : 0.0F;
                 eclipse += biome.is(ModBiomes.CORONA) || biome.is(ModBiomes.ECLIPSE) ? w : 0.0F;
+                nebula += biome.is(ModBiomes.NEBULA_FIELDS) ? w : 0.0F;
                 weights += w;
             }
         }
@@ -147,6 +150,7 @@ public class AstralSkyRenderer extends SkyRenderer {
         }
         this.corona += (corona / weights - this.corona) * 0.03F;
         this.eclipse += (eclipse / weights - this.eclipse) * 0.03F;
+        this.nebula += (nebula / weights - this.nebula) * 0.03F;
         this.inCorona = this.corona > 0.5F;
         var player = net.minecraft.client.Minecraft.getInstance().player;
         this.scope += ((player != null && player.isScoping() ? 1.0F : 0.0F) - this.scope) * 0.15F;
@@ -191,6 +195,10 @@ public class AstralSkyRenderer extends SkyRenderer {
         int behindStars = quads.groups.size();
         // Everywhere else the sky is vanilla's; only now and then a void streak falls, far away.
         this.voidStreak(quads, 1.0F - 0.7F * this.eclipse);
+        if (this.nebula > 0.01F) {
+            quads.group(NEBULA_CLOUD);
+            this.nebulaClouds(quads, this.nebula);
+        }
         float sky = this.eclipse;    // how much of the astral sky shows: only over the Eclipse
         float seen = Math.max(sky, this.scope);   // the stars and constellations: there too through a spyglass
         if (sky > 0.01F) {
@@ -345,6 +353,30 @@ public class AstralSkyRenderer extends SkyRenderer {
                 quads.sprite(new Vector3f((float) d.x, (float) d.y, (float) d.z), 0.95F, 0.95F, 0.0F, 0, 0, 1, 1,
                     argb(alpha * twinkle, 0.9F, 0.94F, 1.0F));
             }
+        }
+    }
+
+    // Over the Nebula Fields (after beta.4): the nebula itself, great clouds of glowing gas across the
+    // black sky - rose, deep magenta and a cold oxygen blue - drifting very slowly round, breathing a
+    // little brighter and dimmer. Fixed shapes (one seed), so the same clouds hang there every visit.
+    private void nebulaClouds(Quads quads, float strength) {
+        RandomSource random = RandomSource.createThreadLocalInstance(48121L);
+        float drift = (float) (this.time * 0.00004);
+        for (int i = 0; i < 16; i++) {
+            float yaw = (float) Math.toRadians(i * 137.5F + random.nextFloat() * 30.0F) + drift;
+            float elevation = (float) Math.toRadians(6.0F + random.nextFloat() * 60.0F);
+            float w = 20.0F + random.nextFloat() * 22.0F;
+            float h = w * (0.55F + random.nextFloat() * 0.3F);
+            float roll = random.nextFloat() * Mth.TWO_PI;
+            int q = random.nextInt(4);
+            float u0 = (q % 2) * 0.5F, v0 = (q / 2) * 0.5F;
+            int kind = random.nextInt(5);
+            float r = kind < 2 ? 0.95F : kind < 4 ? 0.78F : 0.55F;
+            float g = kind < 2 ? 0.45F : kind < 4 ? 0.26F : 0.8F;
+            float b = kind < 2 ? 0.66F : kind < 4 ? 0.6F : 1.0F;
+            float breathe = 0.85F + 0.15F * Mth.sin((float) this.time * 0.002F + i * 1.3F);
+            quads.sprite(direction(yaw, elevation), w, h, roll, u0, v0, u0 + 0.5F, v0 + 0.5F,
+                argb(0.6F * strength * breathe, r, g, b));
         }
     }
 

@@ -18,11 +18,11 @@ import net.minecraftforge.event.TickEvent;
 // drift with a faint wind, so you can walk into one, through it and out again; nothing is placed, it's
 // only particles, drawn round you while you're in the biome.
 public final class NebulaMist {
-    private static final DustParticleOptions ROSE = new DustParticleOptions(0xD06A98, 2.2F);
-    private static final DustParticleOptions DEEP_ROSE = new DustParticleOptions(0x9A3A6E, 2.8F);
+    private static final DustParticleOptions ROSE = new DustParticleOptions(0xF08CBC, 3.0F);
+    private static final DustParticleOptions DEEP_ROSE = new DustParticleOptions(0xC04C88, 3.6F);
     private static final double SCALE = 18.0;          // cloud size, in blocks
-    private static final double THRESHOLD = 0.6;       // how much of the air is cloud (higher: less)
-    private static final int TRIES = 70;               // points tried round the player each tick
+    private static final double THRESHOLD = 0.56;      // how much of the air is cloud (higher: less)
+    private static final int TRIES = 120;              // points tried round the player each tick
 
     public static void register() {
         TickEvent.ClientTickEvent.Post.BUS.addListener(NebulaMist::onClientTick);
@@ -55,7 +55,7 @@ public final class NebulaMist {
             if (ground <= level.getMinY() + 1 || y < ground + 1.0 || y > ground + 12.0) {
                 continue;
             }
-            if (random.nextFloat() < 0.22F) {
+            if (random.nextFloat() < 0.4F) {
                 level.addParticle(ParticleTypes.GLOW, x, y, z, (random.nextDouble() - 0.5) * 0.01, 0.004, (random.nextDouble() - 0.5) * 0.01);
             } else {
                 level.addParticle(random.nextBoolean() ? ROSE : DEEP_ROSE, x, y, z, 0.01, 0.0, 0.006);

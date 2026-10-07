@@ -42,6 +42,10 @@ and the distillation renamed or removed some of them.
   (it was Chorus Moss), reed groves of magenta Astral Vines whose tips glow cold pale blue, rose fog,
   and low clouds of drifting gas - rose haze pricked with pale-blue motes - that you walk into and out
   of. Pollinators live here now. The giant Lumineshrooms and Starblooms belong to the Eclipse.
+  Overhead, the nebula itself: great clouds of glowing rose, magenta and cold-blue gas across the
+  black sky, drifting slowly round (only here). And **Drift Bladders** float over the moss - sacs of
+  glowing gas six to fourteen blocks up, each tethered to the ground by a hanging Nebula Tendril,
+  leaking wisps of gas; mined, a glowing glassy block. Far fewer little tufts than before.
 - **The Ashen Barrens are a graveyard again:** bone and ash. Whole Leviathan ribcages lie on the
   shelves about once every 24 chunks, and between them vertebrae and lone ribs stick up out of the
   ground (all of it standing on the ground or sunk in it, none floating). Its grass and reeds are grey

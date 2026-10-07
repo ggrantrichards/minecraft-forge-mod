@@ -819,7 +819,14 @@ def worldgen():
     plant_patch("nebula_lumineshrooms", "lumineshroom", rarity=1, count=14, spread=6)
     # Oases: ponds sunk into the moss, reeds and lumineshrooms crowding their banks.
     big_feature("nebula_oases", "oasis", rarity=4, heightmap="WORLD_SURFACE_WG")
-    ground_cover("nebula_tufts", "nebula_tufts", 110)
+    ground_cover("nebula_tufts", "nebula_tufts", 28)       # (was 110: too many little grasses)
+    # Drift Bladders: sacs of glowing gas floating over the moss, each tethered by a hanging tendril,
+    # in loose drifts across the fields.
+    java_feature("drift_bladder")
+    placed("nebula_drift_bladders", {"feature": rid("drift_bladder"), "placement": [
+        {"type": "minecraft:noise_threshold_count", "noise_level": 0.0, "below_noise": 1, "above_noise": 4},
+        {"type": "minecraft:in_square"}, {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"},
+        {"type": "minecraft:biome"}]})
     feature("tendril_underside", {"type": rid("tendril_underside")})
     placed("nebula_tendrils", {"feature": rid("tendril_underside"), "placement": [
         {"type": "minecraft:count", "count": 14}, {"type": "minecraft:in_square"}, {"type": "minecraft:biome"}]})
@@ -854,8 +861,8 @@ def worldgen():
     # The biome itself: rose fog, and drifting clouds of glowing motes (client/NebulaMist.java).
     end_biome("nebula_fields", "Nebula Fields", fog="#3a1230", water="#c4568a",
               features_step1=[rid("nebula_oases")],
-              features_step9=[rid("nebula_astral_vines"), rid("nebula_lumineshrooms"), rid("nebula_tufts"),
-                              rid("nebula_tendrils")],
+              features_step9=[rid("nebula_drift_bladders"), rid("nebula_astral_vines"), rid("nebula_lumineshrooms"),
+                              rid("nebula_tufts"), rid("nebula_tendrils")],
               particle="minecraft:glow", particle_chance=0.003)
 
     tag("worldgen/biome", "minecraft:is_end", rid("nebula_fields"))
@@ -1879,6 +1886,15 @@ def content_phase10():
     for name in ("glimmer_crystal", "glimmer_cluster"):
         tag("block", "minecraft:mineable/pickaxe", rid(name))
     shaped("glimmer_crystal", "glimmer_crystal", ["CC", "CC"], {"C": rid("glimmer_cluster")}, category="building")
+
+    # Drift Bladders: glowing gas in a see-through rose membrane (after beta.4).
+    blockstate("nebula_bladder", {"variants": {"": {"model": rid("block/nebula_bladder")}}})
+    block_model("nebula_bladder", {"parent": "minecraft:block/cube_all", "render_type": "minecraft:translucent",
+                                   "textures": {"all": rid("block/nebula_bladder")}})
+    item_def("nebula_bladder", rid("block/nebula_bladder"))
+    lang[f"block.{NS}.nebula_bladder"] = "Drift Bladder"
+    drop_self("nebula_bladder")
+    tag("block", "minecraft:mineable/hoe", rid("nebula_bladder"))
 
     # Voidgel: see-through jelly.
     blockstate("voidgel", {"variants": {"": {"model": rid("block/voidgel")}}})

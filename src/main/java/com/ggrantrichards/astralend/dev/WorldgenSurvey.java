@@ -1454,7 +1454,8 @@ public final class WorldgenSurvey {
             return;
         }
         landCoverage(area, 30, failures);
-        atLeast(area, ModBlocks.NEBULA_TUFTS.get(), 20, failures);
+        atLeast(area, ModBlocks.NEBULA_TUFTS.get(), 4, failures);           // a scatter, no longer a carpet
+        atLeast(area, ModBlocks.NEBULA_BLADDER.get(), 0.5, failures);       // Drift Bladders floating over the moss
         atLeast(area, ModBlocks.NEBULA_TENDRIL.get(), 1, failures);
         // Oases: water standing on the surface.
         int water = area.firsts(Blocks.WATER) + area.firsts(Blocks.LILY_PAD);

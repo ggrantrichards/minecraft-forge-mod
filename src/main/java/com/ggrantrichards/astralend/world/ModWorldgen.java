@@ -42,6 +42,7 @@ public final class ModWorldgen {
         FEATURE_TYPES.register("nullwood_tree", () -> NullwoodTreeFeature.CODEC);
         FEATURE_TYPES.register("leviathan_ribcage", () -> LeviathanRibcageFeature.CODEC);
         FEATURE_TYPES.register("bone_fragment", () -> com.ggrantrichards.astralend.world.feature.BoneFragmentFeature.CODEC);
+        FEATURE_TYPES.register("drift_bladder", () -> com.ggrantrichards.astralend.world.feature.DriftBladderFeature.CODEC);
         FEATURE_TYPES.register("crater", () -> CraterFeature.CODEC);
         FEATURE_TYPES.register("petrified_stalk", () -> PetrifiedStalkFeature.CODEC);
         // Phase 10

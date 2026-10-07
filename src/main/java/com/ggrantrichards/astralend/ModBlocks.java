@@ -352,7 +352,14 @@ public final class ModBlocks {
     public static final RegistryObject<Block> NEBULA_TUFTS = register("nebula_tufts",
         p -> new EndPlantBlock(Block.column(12.0, 0.0, 10.0), ASTRAL_SOIL, p),
         () -> plant(MapColor.COLOR_PURPLE, SoundType.GRASS).replaceable().offsetType(BlockBehaviour.OffsetType.XZ));
-    // Nebula Tendrils hang from island undersides and glow at the tip.
+    // A Drift Bladder (after beta.4): glowing gas that floats over the Nebula Fields on a tendril.
+    public static final RegistryObject<Block> NEBULA_BLADDER = register("nebula_bladder",
+        com.ggrantrichards.astralend.block.NebulaBladderBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.3F).sound(SoundType.HONEY_BLOCK)
+            .noOcclusion().lightLevel(state -> 12).isValidSpawn((state, level, pos, type) -> false)
+            .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false)
+            .isViewBlocking((state, level, pos, aabb) -> false));
+    // Nebula Tendrils hang from island undersides (and Drift Bladders) and glow at the tip.
     public static final RegistryObject<Block> NEBULA_TENDRIL = register("nebula_tendril", NebulaTendrilBlock::new,
         () -> tendril().randomTicks().lightLevel(state -> 9));
     public static final RegistryObject<Block> NEBULA_TENDRIL_PLANT = registerNoItem("nebula_tendril_plant", NebulaTendrilPlantBlock::new,
