@@ -17,7 +17,6 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
@@ -29,8 +28,8 @@ import net.minecraft.world.level.storage.loot.LootTable;
 //     thrown up in a ragged ring of Charred End Stone, with lumps of ejecta round it;
 //   - a furrow running out of the crater toward the Seam - the way it came down;
 //   - in the middle, the cinder, sunk to its waist: a crust of Obsidian and Charred End Stone with veins
-//     of raw Solarite glowing through its cracks, a mantle of Sunscorched Stone, and a lining of raw
-//     Solarite and its ore round a hollow. In the hollow, the star's last ember - a heart of raw Solarite
+//     of raw Solarite glowing through its cracks, a mantle of Sunscorched Stone, and a lining of black
+//     glass shot through with Solarite round a hollow. In the hollow, the star's last ember - a heart of raw Solarite
 //     round a Solarite core - and the chest of whoever reached it first. A cleft split open on the side
 //     away from the furrow leads in; anyone can also dig.
 // Only End blocks and the mod's own: no Nether blocks.
@@ -117,8 +116,9 @@ public class RemnantPiece extends StructurePiece {
                 if (r > REACH) {
                     continue;
                 }
-                // The land here before the fall (the Eclipse's terrain), relative to the origin.
-                int ground = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z) - 1 - oy;
+                // The land here before the fall (the Eclipse's terrain), relative to the origin - found by
+                // looking, as the world-gen heightmaps don't know the Eclipse's terrain (a feature builds it).
+                int ground = this.groundIn(level, p, x, z);
                 boolean land = ground > -30;
                 double ragged = 1.2 * this.noise(dx, 0, dz, 0) + 0.8 * this.noise(dx * 2.7, 0, dz * 2.7, 3);
                 // The crater's surface: a bowl, with its rim thrown up.
@@ -166,6 +166,17 @@ public class RemnantPiece extends StructurePiece {
         if (chunk.isInside(chest)) {
             this.createChest(level, chunk, RandomSource.create(this.seed), chest, LOOT, null);
         }
+    }
+
+    // The top solid block of a column, relative to the origin (plants don't count); -100 if none near.
+    private int groundIn(WorldGenLevel level, BlockPos.MutableBlockPos p, int x, int z) {
+        for (int y = 24; y >= -40; y--) {
+            BlockState state = level.getBlockState(p.set(x, this.origin.getY() + y, z));
+            if (!state.isAir() && !state.canBeReplaced()) {
+                return y;
+            }
+        }
+        return -100;
     }
 
     // The crater's ground in one column: air above its surface, glazed or charred rock at it, and
@@ -240,7 +251,9 @@ public class RemnantPiece extends StructurePiece {
         if (depth < CRUST + MANTLE) {
             return h < 0.85 ? ModBlocks.SUNSCORCHED_STONE.get().defaultBlockState() : ModBlocks.SOLARITE_ORE.get().defaultBlockState();
         }
-        // The lining round the hollow: the star's metal.
-        return h < 0.4 ? ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState() : ModBlocks.SOLARITE_ORE.get().defaultBlockState();
+        // The lining round the hollow: fused black glass with the star's metal through it - its glow an
+        // accent, as a geode's crystal is (the heart is the bright thing in here).
+        return h < 0.12 ? ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState() : h < 0.35 ? ModBlocks.SOLARITE_ORE.get().defaultBlockState()
+            : h < 0.85 ? Blocks.OBSIDIAN.defaultBlockState() : ModBlocks.CHARRED_END_STONE.get().defaultBlockState();
     }
 }

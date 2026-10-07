@@ -1156,7 +1156,8 @@ def worldgen_phase3():
     # Sparse, as vanilla's End is: a giant Lumineshroom in one chunk of ten, small plants in patches.
     big_feature("eclipse_giant_lumineshrooms", "giant_lumineshroom", rarity=10)
     plant_patch("eclipse_lumineshrooms", "lumineshroom", rarity=2, count=10, spread=6, on=["minecraft:end_stone", rid("living_turf")])
-    plant_patch("eclipse_starblooms", "starbloom", rarity=3, count=8, spread=6, on=["minecraft:end_stone", rid("living_turf")])
+    # (After beta.4 the Starblooms are the heaven half's gold on the ground: drifts of them in most chunks.)
+    plant_patch("eclipse_starblooms", "starbloom", rarity=1, count=16, spread=7, on=["minecraft:end_stone", rid("living_turf")])
     feature("breathcomb", {"type": "minecraft:simple_block", "to_place": {"id": rid("breathcomb")}})
     placed("eclipse_breathcomb", {"feature": rid("breathcomb"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 2}, {"type": "minecraft:in_square"},

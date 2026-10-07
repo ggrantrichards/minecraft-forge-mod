@@ -42,7 +42,7 @@ public final class BiomeMist {
             ParticleTypes.WHITE_ASH, 0.15F, 22.0, 0.44, 150, 0.0, 9.0, false, 0.0, 0.0),
         new Profile(ModBiomes.ECLIPSE,
             new ParticleOptions[] {new DustParticleOptions(0xF2C45A, 1.1F), new DustParticleOptions(0xE0A23A, 0.8F)},
-            ParticleTypes.GLOW, 0.1F, 20.0, 0.5, 50, 1.0, 10.0, false, 0.0, 0.0),
+            ParticleTypes.GLOW, 0.1F, 20.0, 0.42, 90, 1.0, 10.0, false, 0.0, 0.0),
         new Profile(ModBiomes.SEAM,
             new ParticleOptions[] {new DustParticleOptions(0xFFD27A, 1.0F), new DustParticleOptions(0xD8243C, 1.0F),
                 new DustParticleOptions(0xFFF4E0, 0.8F)},
