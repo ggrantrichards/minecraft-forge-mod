@@ -647,6 +647,13 @@ public final class WorldgenSurvey {
             }
         }
         boolean chest = end.getBlockState(heart.offset(3, -1, 0)).is(Blocks.CHEST);
+        // One column of the crater's floor, 17 blocks out, top down: what's really there.
+        StringBuilder column = new StringBuilder();
+        for (int y = heart.getY() + 16; y >= heart.getY() - 6; y--) {
+            BlockState state = end.getBlockState(new BlockPos(heart.getX() + 17, y, heart.getZ()));
+            column.append(' ').append(y).append('=').append(state.isAir() ? "air" : state.getBlock().getName().getString());
+        }
+        log("remnant: crater column 17 east, ground (4 corners) " + ground + ":" + column);
         log(String.format("remnant: heart at %s; hollow %d air, %d Obsidian, %d raw Solarite blocks, %d Nether blocks; crater floor "
             + "below the land at %d of %d points; chest %s", heart.toShortString(), air, obsidian, solarite, nether, sunk, ring, chest));
         if (air < 150 || obsidian < 400 || solarite < 100 || !chest) {

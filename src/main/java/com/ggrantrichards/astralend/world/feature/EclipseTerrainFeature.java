@@ -107,6 +107,25 @@ public record EclipseTerrainFeature() implements Feature {
         return changed;
     }
 
+    // The top of the Eclipse's land at a column, as place() builds it (before anything is placed on it or
+    // dug out of it), or Integer.MIN_VALUE off the disc. Structures use it: the world-gen heightmaps
+    // don't know this terrain.
+    public static int groundTop(EclipseLayout.Eclipse e, int x, int z) {
+        double d = e.distance(x + 0.5, z + 0.5);
+        if (d > EclipseLayout.RADIUS) {
+            return Integer.MIN_VALUE;
+        }
+        double t = d / EclipseLayout.RADIUS;
+        int top = Mth.floor(TOP + 2.5 * hills(x, z) - 6.0 * t * t * t * t);
+        int wxp = x + (int) Math.round(AstralEndBiomeSource.warp(x, z, 0x51ED));
+        int wzp = z + (int) Math.round(AstralEndBiomeSource.warp(x, z, 0x7A3B));
+        double seam = e.seam(wxp, wzp) / EclipseLayout.SEAM_HALF;
+        if (seam < 1.0) {
+            top -= (int) Math.round(2.0 * (1.0 - seam) * (1.0 - seam));
+        }
+        return top;
+    }
+
     // Gentle rolls across the island: two octaves of smooth value noise, about -1..1.
     static double hills(int x, int z) {
         return valueNoise(x / 48.0, z / 48.0, 0x3C1) * 0.7 + valueNoise(x / 16.0, z / 16.0, 0x9A7) * 0.3;

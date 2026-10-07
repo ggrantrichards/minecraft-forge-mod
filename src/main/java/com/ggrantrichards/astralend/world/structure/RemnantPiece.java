@@ -2,7 +2,9 @@ package com.ggrantrichards.astralend.world.structure;
 
 import com.ggrantrichards.astralend.AstralEnd;
 import com.ggrantrichards.astralend.ModBlocks;
+import com.ggrantrichards.astralend.world.EclipseLayout;
 import com.ggrantrichards.astralend.world.ModWorldgen;
+import com.ggrantrichards.astralend.world.feature.EclipseTerrainFeature;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -109,6 +111,7 @@ public class RemnantPiece extends StructurePiece {
         BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
         int ox = this.origin.getX(), oy = this.origin.getY(), oz = this.origin.getZ();
         double hx = Math.cos(this.heading), hz = Math.sin(this.heading);
+        EclipseLayout.Eclipse eclipse = EclipseLayout.at(ox, oz, EclipseLayout.sampler(level.getLevel().getChunkSource().randomState()));
         for (int x = Math.max(chunk.minX(), ox - REACH); x <= Math.min(chunk.maxX(), ox + REACH); x++) {
             for (int z = Math.max(chunk.minZ(), oz - REACH); z <= Math.min(chunk.maxZ(), oz + REACH); z++) {
                 int dx = x - ox, dz = z - oz;
@@ -116,9 +119,10 @@ public class RemnantPiece extends StructurePiece {
                 if (r > REACH) {
                     continue;
                 }
-                // The land here before the fall (the Eclipse's terrain), relative to the origin - found by
-                // looking, as the world-gen heightmaps don't know the Eclipse's terrain (a feature builds it).
-                int ground = this.groundIn(level, p, x, z);
+                // The land here before the fall (the Eclipse's terrain), relative to the origin - worked out
+                // from the terrain's own shape, as the world-gen heightmaps don't know it (a feature builds it).
+                int surface = eclipse == null ? Integer.MIN_VALUE : EclipseTerrainFeature.groundTop(eclipse, x, z);
+                int ground = surface == Integer.MIN_VALUE ? -100 : surface - oy;
                 boolean land = ground > -30;
                 double ragged = 1.2 * this.noise(dx, 0, dz, 0) + 0.8 * this.noise(dx * 2.7, 0, dz * 2.7, 3);
                 // The crater's surface: a bowl, with its rim thrown up.
@@ -166,17 +170,6 @@ public class RemnantPiece extends StructurePiece {
         if (chunk.isInside(chest)) {
             this.createChest(level, chunk, RandomSource.create(this.seed), chest, LOOT, null);
         }
-    }
-
-    // The top solid block of a column, relative to the origin (plants don't count); -100 if none near.
-    private int groundIn(WorldGenLevel level, BlockPos.MutableBlockPos p, int x, int z) {
-        for (int y = 24; y >= -40; y--) {
-            BlockState state = level.getBlockState(p.set(x, this.origin.getY() + y, z));
-            if (!state.isAir() && !state.canBeReplaced()) {
-                return y;
-            }
-        }
-        return -100;
     }
 
     // The crater's ground in one column: air above its surface, glazed or charred rock at it, and
