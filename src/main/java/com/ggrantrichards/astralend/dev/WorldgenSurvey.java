@@ -481,10 +481,10 @@ public final class WorldgenSurvey {
         atLeast(area, ModBlocks.LUMINE_CAP.get(), 5, failures);
         atLeast(area, ModBlocks.FLAREBLOOM.get(), 0.3, failures);
         atLeast(area, ModBlocks.SUNSCALE_LICHEN.get(), 1, failures);
-        int hell = area.in(ModBlocks.CHARRED_END_STONE.get()) + area.in(Blocks.OBSIDIAN);
-        log("The Gilded Reach: " + hell + " blocks of the old hell half (Charred End Stone, Obsidian)");
+        int hell = area.in(ModBlocks.SUNSCORCHED_STONE.get()) + area.in(ModBlocks.CHARRED_END_STONE.get()) + area.in(Blocks.OBSIDIAN);
+        log("The Gilded Reach: " + hell + " blocks of the old hell half (Sunscorched Stone, Charred End Stone, Obsidian)");
         if (hell > 40) {
-            failures.add("The Gilded Reach: " + hell + " blocks of Charred End Stone or Obsidian (the hell half is gone)");
+            failures.add("The Gilded Reach: " + hell + " blocks of Sunscorched Stone, Charred End Stone or Obsidian (the hell half is gone)");
         }
     }
 
@@ -1531,6 +1531,7 @@ public final class WorldgenSurvey {
         // bottom of the scorch fissures.
         atLeast(area, ModBlocks.SOLARITE_ORE.get(), 0.5, failures);
         atLeast(area, ModBlocks.RAW_SOLARITE_BLOCK.get(), 0.3, failures);
+        atLeast(area, ModBlocks.SUNSCORCHED_STONE.get(), 0.3, failures);   // the baked halo round each fissure
         // Flat shelves: most of the land should be topped at the same height.
         int flat = 0;
         for (int y = 52; y <= 55; y++) {
@@ -1696,6 +1697,7 @@ public final class WorldgenSurvey {
             TOP_SYMBOLS.put(ModBlocks.OBSERVATORY_QUARTZ.get(), 'Q');
             TOP_SYMBOLS.put(ModBlocks.STAR_INLAY_OBSERVATORY_QUARTZ.get(), 'Q');
             TOP_SYMBOLS.put(ModBlocks.OBSERVATORY_QUARTZ_PILLAR.get(), 'K');
+            TOP_SYMBOLS.put(ModBlocks.SUNSCORCHED_STONE.get(), 'C');
             TOP_SYMBOLS.put(ModBlocks.SOLARITE_ORE.get(), 'R');
             TOP_SYMBOLS.put(ModBlocks.FLAREBLOOM.get(), 'F');
             TOP_SYMBOLS.put(ModBlocks.SUNSCALE_LICHEN.get(), 'N');

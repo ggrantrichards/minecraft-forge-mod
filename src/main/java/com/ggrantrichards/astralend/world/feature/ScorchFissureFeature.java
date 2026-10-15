@@ -12,7 +12,8 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 
 // A scorch fissure of the Ashen Barrens (since the golden-meadow rework): a crack wandering across the
 // ground, a few blocks deep, its lips charred black and raw Solarite glowing at the bottom - where a star's
-// flare split the stone long ago. (Within 7 blocks.)
+// flare split the stone long ago - and round the lips a halo of Sunscorched Stone, the pale stone baked
+// amber by the heat. (Within 9 blocks.)
 public record ScorchFissureFeature() implements Feature {
     public static final MapCodec<ScorchFissureFeature> CODEC = MapCodec.unit(ScorchFissureFeature::new);
 
@@ -29,6 +30,7 @@ public record ScorchFissureFeature() implements Feature {
         }
         BlockState hot = ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState();   // raw sun-metal, still hot
         BlockState charred = ModBlocks.CHARRED_END_STONE.get().defaultBlockState();
+        BlockState baked = ModBlocks.SUNSCORCHED_STONE.get().defaultBlockState();
         double angle = random.nextDouble() * Math.PI * 2;
         int length = 9 + random.nextInt(5);
         for (int i = -length / 2; i <= length / 2; i++) {
@@ -56,6 +58,15 @@ public record ScorchFissureFeature() implements Feature {
                     if (scorchable(level.getBlockState(lip)) && random.nextInt(3) != 0) {
                         Build.force(level, lip, charred);
                     }
+                    // Beyond the lip, the baked stone: a ragged band one or two blocks wide.
+                    for (int r = 1; r <= 2; r++) {
+                        BlockPos halo = col.offset((int) Math.round(-Math.sin(angle) * s * (width + 1 + r)), 0,
+                            (int) Math.round(Math.cos(angle) * s * (width + 1 + r)));
+                        BlockState here = level.getBlockState(halo);
+                        if (here.is(ModBlocks.PALE_END_STONE.get()) && random.nextInt(r == 1 ? 4 : 2) != 0) {
+                            Build.force(level, halo, baked);
+                        }
+                    }
                 }
             }
         }
@@ -63,6 +74,6 @@ public record ScorchFissureFeature() implements Feature {
     }
 
     private static boolean scorchable(BlockState state) {
-        return state.is(ModBlocks.PALE_END_STONE.get());
+        return state.is(ModBlocks.PALE_END_STONE.get()) || state.is(ModBlocks.SUNSCORCHED_STONE.get());
     }
 }

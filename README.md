@@ -107,9 +107,11 @@ and the distillation renamed or removed some of them.
   - The **Wanderer Relay** went with the Wanderer, and the free-standing **Constellation Mazes** are folded
     into the one on each Leviathan's last tower: four structures - the Leviathan, the Solar Array, the
     Shattered Observatory and the Comet Crater.
-  - **Fifteen blocks that no longer generated are cut:** the Sunscorched Stone family (the Corona's), the
-    Pollinator Husk and the Petrified Stalk and Astral Vine. The Collector Pedestal is made with Pale End
-    Stone Bricks now (it needed Polished Sunscorched Stone, which couldn't be had).
+  - **Three blocks nothing made or dropped are cut:** the Pollinator Husk and the Petrified Stalk and
+    Astral Vine (relics of the Corona and the Remnant).
+  - **Sunscorched Stone generates again:** a halo of the pale stone baked amber round each scorch
+    fissure's charred lips in the Ashen Barrens (and Pale End Stone still smelts into it), so its family
+    and the Collector Pedestal have a home.
   - **Every drop has a use:** four Abyss Shards (the Mirror Wretch's) round an Ender Pearl make a **Rift
     Pearl**; an Umbral Membrane brews an Awkward Potion straight into **Invisibility**. (The Resonant Key
     went with the Spire Wyrm, out of the creative tab.)

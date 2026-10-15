@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "astralend:block/sunscorched_stone_slab"
+    },
+    "type=double": {
+      "model": "astralend:block/sunscorched_stone"
+    },
+    "type=top": {
+      "model": "astralend:block/sunscorched_stone_slab_top"
+    }
+  }
+}

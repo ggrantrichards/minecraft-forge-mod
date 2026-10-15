@@ -633,6 +633,9 @@ def whalelight_scale():
 
 
 TEXTURES = [
+    ("block/sunscorched_stone.png", sunscorched_stone),
+    ("block/polished_sunscorched_stone.png", sunscorched_polished),
+    ("block/sunscorched_stone_bricks.png", lambda: bricks(125, SUNSCORCHED, mortar=1)),
     ("block/charred_end_stone.png", charred_end_stone),
     ("block/nightstone.png", nightstone),
     ("block/nightstone_bricks.png", lambda: bricks(3, UMBRAL, mortar=0)),

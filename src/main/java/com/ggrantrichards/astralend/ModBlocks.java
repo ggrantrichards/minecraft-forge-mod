@@ -185,6 +185,22 @@ public final class ModBlocks {
     public static final RegistryObject<Block> CHARRED_END_STONE_SLAB = slab("charred_end_stone_slab", CHARRED_END_STONE);
     public static final RegistryObject<Block> CHARRED_END_STONE_WALL = wall("charred_end_stone_wall", CHARRED_END_STONE);
 
+    // ---- The Corona: bleached stone, Solarite, and the life that adapted (or didn't) ----
+    public static final RegistryObject<Block> SUNSCORCHED_STONE = register("sunscorched_stone", Block::new,
+        () -> endStone(MapColor.SAND));
+    public static final RegistryObject<Block> SUNSCORCHED_STONE_STAIRS = stairs("sunscorched_stone_stairs", SUNSCORCHED_STONE);
+    public static final RegistryObject<Block> SUNSCORCHED_STONE_SLAB = slab("sunscorched_stone_slab", SUNSCORCHED_STONE);
+    public static final RegistryObject<Block> SUNSCORCHED_STONE_WALL = wall("sunscorched_stone_wall", SUNSCORCHED_STONE);
+    public static final RegistryObject<Block> POLISHED_SUNSCORCHED_STONE = register("polished_sunscorched_stone", Block::new,
+        () -> endStone(MapColor.SAND));
+    public static final RegistryObject<Block> POLISHED_SUNSCORCHED_STONE_STAIRS = stairs("polished_sunscorched_stone_stairs", POLISHED_SUNSCORCHED_STONE);
+    public static final RegistryObject<Block> POLISHED_SUNSCORCHED_STONE_SLAB = slab("polished_sunscorched_stone_slab", POLISHED_SUNSCORCHED_STONE);
+    public static final RegistryObject<Block> POLISHED_SUNSCORCHED_STONE_WALL = wall("polished_sunscorched_stone_wall", POLISHED_SUNSCORCHED_STONE);
+    public static final RegistryObject<Block> SUNSCORCHED_STONE_BRICKS = register("sunscorched_stone_bricks", Block::new,
+        () -> endStone(MapColor.SAND));
+    public static final RegistryObject<Block> SUNSCORCHED_STONE_BRICK_STAIRS = stairs("sunscorched_stone_brick_stairs", SUNSCORCHED_STONE_BRICKS);
+    public static final RegistryObject<Block> SUNSCORCHED_STONE_BRICK_SLAB = slab("sunscorched_stone_brick_slab", SUNSCORCHED_STONE_BRICKS);
+    public static final RegistryObject<Block> SUNSCORCHED_STONE_BRICK_WALL = wall("sunscorched_stone_brick_wall", SUNSCORCHED_STONE_BRICKS);
     // Solarite: only in the Ashen Barrens (it was the Corona's). Diamond pickaxe; XP comes from smelting, like Meteoric Iron.
     public static final RegistryObject<Block> SOLARITE_ORE = register("solarite_ore",
         p -> new DropExperienceBlock(ConstantInt.of(0), p),

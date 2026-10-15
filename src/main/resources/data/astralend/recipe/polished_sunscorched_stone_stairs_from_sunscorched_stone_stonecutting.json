@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "astralend:sunscorched_stone",
+  "result": {
+    "id": "astralend:polished_sunscorched_stone_stairs"
+  }
+}

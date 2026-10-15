@@ -1361,6 +1361,9 @@ def main():
     charred = stone(CHARRED, 111, blotches=24, specks=16, glint=CHARRED_EMBER, glints=3)
     out.append(save(charred, "block/charred_end_stone.png"))
     # ---- The Corona
+    out.append(save(cracks(stone(SUNSCORCHED, 121, blotches=18, specks=12), SUNSCORCHED[0], 122, n=4), "block/sunscorched_stone.png"))
+    out.append(save(polished(SUNSCORCHED, 123), "block/polished_sunscorched_stone.png"))
+    out.append(save(bricks(SUNSCORCHED, 124), "block/sunscorched_stone_bricks.png"))
     out.append(save(overlay(cracks(stone(SUNSCORCHED, 125, blotches=18, specks=12), SUNSCORCHED[0], 126, n=3), ORE_SOLAR, SOLAR),
                     "block/solarite_ore.png"))
     out.append(save(metal_block(SOLAR, 127), "block/solarite_block.png"))

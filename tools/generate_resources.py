@@ -33,6 +33,9 @@ STONE_FAMILIES = [
     ("pale_end_stone", "Pale End Stone", True),
     ("pale_end_stone_bricks", "Pale End Stone Bricks", True),
     ("charred_end_stone", "Charred End Stone", True),
+    ("sunscorched_stone", "Sunscorched Stone", True),
+    ("polished_sunscorched_stone", "Polished Sunscorched Stone", True),
+    ("sunscorched_stone_bricks", "Sunscorched Stone Bricks", True),
     ("observatory_quartz", "Observatory Quartz", True),
     # The distillation: what the Leviathan's builders laid
     ("purpur_bricks", "Purpur Bricks", True),
@@ -104,7 +107,7 @@ ITEMS = [
 ]
 
 PLURAL = {"nightstone_bricks": "nightstone_brick", "pale_end_stone_bricks": "pale_end_stone_brick",
-          "purpur_bricks": "purpur_brick"}  # "bricks" -> "brick_stairs", like vanilla
+          "sunscorched_stone_bricks": "sunscorched_stone_brick", "purpur_bricks": "purpur_brick"}  # "bricks" -> "brick_stairs", like vanilla
 
 
 def variant_id(base, kind):
@@ -1368,7 +1371,7 @@ def flares_phase5():
     drop_self("collector_pedestal")
     tag("block", "minecraft:mineable/pickaxe", rid("collector_pedestal"))
     shaped("collector_pedestal", "collector_pedestal", ["SGS", " P ", "PPP"],
-           {"S": rid("solarite_ingot"), "G": rid("astral_glass"), "P": rid("pale_end_stone_bricks")})
+           {"S": rid("solarite_ingot"), "G": rid("astral_glass"), "P": rid("polished_sunscorched_stone")})
 
     # Items
     for name, english in (("flare_pollen", "Flare Pollen"), ("charged_void_crystal", "Charged Void Crystal"),
@@ -2485,7 +2488,7 @@ def main():
 
     # What the End's plants grow on (vanilla's moss too: the Eclipse's moss round its water).
     for name in ("minecraft:end_stone", rid("chorus_moss"), rid("nightstone"), rid("pale_end_stone"),
-                 rid("charred_end_stone"), "minecraft:moss_block"):
+                 rid("charred_end_stone"), rid("sunscorched_stone"), "minecraft:moss_block"):
         tag("block", f"{NS}:astral_soil", name)
     tag("block", "minecraft:mineable/shovel", rid("stardust_block"))
     tag("block", "minecraft:mineable/hoe", rid("chorus_moss"))
@@ -2514,18 +2517,28 @@ def main():
     # Phase 3 building blocks
     shaped("pale_end_stone_bricks", "pale_end_stone_bricks", ["##", "##"], {"#": rid("pale_end_stone")}, count=4)
     shaped("pale_end_stone_tiles", "pale_end_stone_tiles", ["##", "##"], {"#": rid("pale_end_stone_bricks")}, count=4)
+    shaped("polished_sunscorched_stone", "polished_sunscorched_stone", ["##", "##"], {"#": rid("sunscorched_stone")}, count=4)
+    shaped("sunscorched_stone_bricks", "sunscorched_stone_bricks", ["##", "##"], {"#": rid("polished_sunscorched_stone")}, count=4)
     shaped("observatory_quartz_pillar", "observatory_quartz_pillar", ["#", "#"], {"#": rid("observatory_quartz")}, count=2)
     shaped("star_inlay_observatory_quartz", "star_inlay_observatory_quartz", ["#", "#"], {"#": rid("observatory_quartz_slab")})
     for src, results in (
         ("pale_end_stone", ["pale_end_stone_bricks", "pale_end_stone_brick_stairs", "pale_end_stone_brick_slab",
                             "pale_end_stone_brick_wall", "pale_end_stone_tiles"]),
         ("pale_end_stone_bricks", ["pale_end_stone_tiles"]),
+        ("sunscorched_stone", ["polished_sunscorched_stone", "polished_sunscorched_stone_stairs", "polished_sunscorched_stone_slab",
+                               "polished_sunscorched_stone_wall", "sunscorched_stone_bricks", "sunscorched_stone_brick_stairs",
+                               "sunscorched_stone_brick_slab", "sunscorched_stone_brick_wall"]),
+        ("polished_sunscorched_stone", ["sunscorched_stone_bricks", "sunscorched_stone_brick_stairs",
+                                        "sunscorched_stone_brick_slab", "sunscorched_stone_brick_wall"]),
         ("observatory_quartz", ["observatory_quartz_pillar", "star_inlay_observatory_quartz"]),
     ):
         for result in results:
             stonecutting(src, result, 2 if result.endswith("_slab") else 1)
     # End Stone scorched by a comet or a flare can be made on purpose, too.
     cooking("charred_end_stone", "smelting", "minecraft:end_stone", "charred_end_stone", 0.1, 200)
+    # Sunscorched Stone: Pale End Stone baked (since the golden-meadow rework the Corona that had it is gone;
+    # this keeps it, its family and the Collector Pedestal obtainable).
+    cooking("sunscorched_stone", "smelting", rid("pale_end_stone"), "sunscorched_stone", 0.1, 200)
 
     shaped("solarite_block", "solarite_block", ["###", "###", "###"], {"#": rid("solarite_ingot")})
     shapeless("solarite_ingot_from_solarite_block", "solarite_ingot", [rid("solarite_block")], count=9)
