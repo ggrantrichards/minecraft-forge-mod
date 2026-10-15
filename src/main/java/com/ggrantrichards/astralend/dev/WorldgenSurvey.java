@@ -433,6 +433,8 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('A'), end, "mirror_wretch reared,angled", 6.0, 0.0, 2.0);
         mobShot(lines, areas.get('A'), end, "hollowback", 3.2, 0.5, 1.4);
         mobShot(lines, areas.get('A'), end, "curator", 8.0, 0.5, 3.2);
+        mobShot(lines, areas.get('A'), end, "curator awake,angled", 7.0, 0.5, 2.8);
+        mobShot(lines, areas.get('A'), end, "curator exposed,awake", 6.0, 0.5, 2.8);
         mobShot(lines, areas.get('D'), end, "shardback angled", 3.4, 0.0, 1.4);
         // Phase 5: the sky and Sunstorms.
         skyShot(lines, areas.get('A'), "sky_ashen_barrens", -45.0F, -32.0F, "flare=calm");

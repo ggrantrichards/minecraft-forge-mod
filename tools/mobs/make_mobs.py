@@ -1512,57 +1512,218 @@ HOLLOWBACK = Mob("hollowback", (128, 64), [
 ], egg=(HOLLOW_HIDE[2], hexc("8a5ab4")))
 
 
-# The Curator: an enderman-like construct (drawn at 1.5x) of obsidian plating inlaid with purpur, no
-# face but one slit of violet light, hovering - its legs end in points, not feet.
+# The Curator: the keeper of a Leviathan's reliquary - a hulking war-construct of the End's builders (after
+# beta.4, from Adam Smasher and Hearthstone's Curator): obsidian and gunmetal plating trimmed with purpur,
+# massive pauldrons, a small helmed head sunk between them with one violet visor slit over a grille,
+# a glass display case in its chest holding its core (the Curator's Core you take from it), a cannon
+# for a right forearm and a heavy fist for its left, exhaust stacks on its back, and thrusters for
+# feet - it hovers a hand's breadth off the floor. Drawn at 1.6x. In its second phase the case
+# shatters (CuratorRenderer hides the "case" part) and the core shows.
 OBSIDIAN = [hexc("0c0812"), hexc("150f1e"), hexc("1f162c"), hexc("2b1f3c"), hexc("3a2b50")]
+GUNMETAL = ramp("1c1926", "77708a", 6)
+C_GLOW, C_HOT, C_DIM = hexc("c49cff"), hexc("f6eaff"), hexc("7a48c8")
 
 
-def curator_plate(face, px, py, fw, fh, rnd):
-    i = 2 + shade_flat(face) + (1 if n() > 0.8 else 0) - (1 if n() < 0.18 else 0)
-    if fh >= 6 and py % 6 == 0 and face in ("north", "south", "east", "west"):
-        return PURPUR[2]                                  # purpur inlay between the plates
-    if fw >= 4 and px == fw // 2 and face in ("north", "south") and fh >= 6:
-        return PURPUR[1]
-    return clamp(i, OBSIDIAN)
+def c_plate(face, px, py, fw, fh, rnd):
+    """Obsidian plates with gunmetal edges, dark seams every five rows, a rivet at each plate's corner."""
+    if edge_dist(px, py, fw, fh) == 0:
+        return GUNMETAL[3 if face in ("up", "north") else 2]
+    if py % 5 == 4 and face not in ("up", "down"):
+        return OBSIDIAN[0]
+    if py % 5 == 1 and px % 6 == 1 and face not in ("up", "down"):
+        return GUNMETAL[4]
+    return clamp(2 + shade_flat(face) + (1 if n() > 0.78 else 0) - (1 if n() < 0.2 else 0), OBSIDIAN)
 
 
-def curator_inlay_glow(face, px, py, fw, fh, rnd):
-    if fh >= 6 and py % 6 == 0 and px % 2 == 0 and face in ("north", "south", "east", "west"):
-        return hexc("9c6ad8")
+def c_gun(face, px, py, fw, fh, rnd):
+    """Gunmetal: steel, lit from above, scuffed lighter in patches."""
+    i = 2 + shade_flat(face) + (1 if n() > 0.75 else 0) - (1 if n() < 0.22 else 0)
+    if edge_dist(px, py, fw, fh) == 0 and face in ("up", "north"):
+        i += 1
+    return clamp(i, GUNMETAL)
+
+
+def c_trim(face, px, py, fw, fh, rnd):
+    return clamp(2 + shade_flat(face) + (1 if n() > 0.7 else 0), PURPUR)
+
+
+def c_torso(face, px, py, fw, fh, rnd):
+    if face == "north":
+        if 1 <= px <= 2 or fw - 3 <= px <= fw - 2:              # vents either side of the case
+            if 2 <= py <= 8:
+                return OBSIDIAN[0] if py % 2 else GUNMETAL[2]
+        if py == fh - 2:
+            return PURPUR[3]                                    # a purpur band at the belly
+    if face == "south" and fw // 2 - 1 <= px <= fw // 2:        # the spine
+        return GUNMETAL[3] if py % 3 else GUNMETAL[1]
+    return c_plate(face, px, py, fw, fh, rnd)
+
+
+def c_torso_glow(face, px, py, fw, fh, rnd):
+    if face == "north" and (1 <= px <= 2 or fw - 3 <= px <= fw - 2) and 2 <= py <= 8 and py % 2:
+        return C_DIM                                            # the vents' light
+    if face == "south" and fw // 2 - 1 <= px <= fw // 2 and py % 3 == 0:
+        return C_DIM
     return None
 
 
-def curator_head(face, px, py, fw, fh, rnd):
-    if face == "north" and py == 4 and 1 <= px <= fw - 2:
-        return hexc("c49cff")                             # the slit
-    return clamp(2 + shade_flat(face) + (1 if n() > 0.8 else 0), OBSIDIAN)
+def c_head(face, px, py, fw, fh, rnd):
+    if face == "north":
+        if py == 2 and 1 <= px <= fw - 2:
+            return hexc("2a1250")                               # the visor slit (its light is the glow layer)
+        if py == 3:
+            return OBSIDIAN[0]
+        if py >= 4:
+            return GUNMETAL[3] if px % 2 == 0 else OBSIDIAN[0]  # the grille over where a mouth would be
+        if px == fw // 2 or px == fw // 2 - 1:
+            return GUNMETAL[2]                                  # a ridge down the brow
+    return c_plate(face, px, py, fw, fh, rnd)
 
 
-def curator_head_glow(face, px, py, fw, fh, rnd):
-    if face == "north" and py == 4 and 1 <= px <= fw - 2:
-        return hexc("e0c8ff")
+def c_head_glow(face, px, py, fw, fh, rnd):
+    if face == "north" and py == 2 and 1 <= px <= fw - 2:
+        return C_HOT if fw // 2 - 1 <= px <= fw // 2 else C_GLOW
     return None
 
 
-def curator_limb(face, px, py, fw, fh, rnd):
-    if py % 7 == 0:
-        return PURPUR[2]
-    return clamp(2 + shade_flat(face) + (1 if n() > 0.8 else 0), OBSIDIAN)
+def c_pauldron(face, px, py, fw, fh, rnd):
+    if face != "up" and py >= fh - 1:
+        return PURPUR[3]                                        # trimmed in purpur along the bottom
+    if face == "up" and py == fh // 2:
+        return OBSIDIAN[0]
+    return c_gun(face, px, py, fw, fh, rnd)
 
 
-CURATOR = Mob("curator", (64, 64), [
-    Part("body", (0, -14, 0), [B(-4, 0, -2, 8, 14, 4, curator_plate, curator_inlay_glow),
-                                B(-6, 0, -2.5, 12, 3, 5, curator_plate, key="mantle")], [
-        Part("head", (0, 0, 0), [B(-4, -8, -4, 8, 8, 8, curator_head, curator_head_glow),
-                                 B(-1, -11, -1, 2, 3, 2, curator_limb)]),
+def c_pauldron_glow(face, px, py, fw, fh, rnd):
+    if face == "up" and py == fh // 2 and 1 <= px <= fw - 2 and px % 2:
+        return C_DIM                                            # a seam of light across the top
+    return None
+
+
+def c_forearm(face, px, py, fw, fh, rnd):
+    if py == 0 or py == fh - 1:
+        return c_trim(face, px, py, fw, fh, rnd)
+    if face in ("east", "west", "south") and 2 <= py <= fh - 3 and px == fw // 2:
+        return OBSIDIAN[0]
+    return c_gun(face, px, py, fw, fh, rnd)
+
+
+def c_forearm_glow(face, px, py, fw, fh, rnd):
+    if face in ("east", "west", "south") and 2 <= py <= fh - 3 and px == fw // 2 and py % 2 == 0:
+        return C_DIM
+    return None
+
+
+def c_fist(face, px, py, fw, fh, rnd):
+    if face == "down":
+        return GUNMETAL[4] if px % 2 == 0 and 0 < py < fh - 1 else OBSIDIAN[1]   # the knuckles
+    return c_plate(face, px, py, fw, fh, rnd)
+
+
+def c_barrel(face, px, py, fw, fh, rnd):
+    if face == "down":
+        return OBSIDIAN[0] if (px, py) == (1, 1) else GUNMETAL[1]
+    return GUNMETAL[2] if py % 2 else GUNMETAL[3]
+
+
+def c_barrel_glow(face, px, py, fw, fh, rnd):
+    if face == "down":
+        return C_HOT if (px, py) == (1, 1) else C_GLOW
+    return None
+
+
+def c_thruster(face, px, py, fw, fh, rnd):
+    if face == "down":
+        return OBSIDIAN[0]
+    return c_gun(face, px, py, fw, fh, rnd)
+
+
+def c_thruster_glow(face, px, py, fw, fh, rnd):
+    if face == "down" and 0 < px < fw - 1 and 0 < py < fh - 1:
+        return C_HOT if edge_dist(px, py, fw, fh) >= 2 else C_GLOW
+    return None
+
+
+def c_stack(face, px, py, fw, fh, rnd):
+    return OBSIDIAN[0] if face == "up" else c_gun(face, px, py, fw, fh, rnd)
+
+
+def c_stack_glow(face, px, py, fw, fh, rnd):
+    return C_DIM if face == "up" else None
+
+
+def c_core(face, px, py, fw, fh, rnd):
+    return hexc("3a1a66")
+
+
+def c_core_glow(face, px, py, fw, fh, rnd):
+    return C_HOT if edge_dist(px, py, fw, fh) >= 1 else C_GLOW
+
+
+def c_case(face, px, py, fw, fh, rnd):
+    """The display case: a gunmetal frame round dark violet glass with a streak of reflection."""
+    if edge_dist(px, py, fw, fh) == 0:
+        return GUNMETAL[3]
+    if face == "north" and px == py:
+        return hexc("6a4a9a")
+    return hexc("2a1840")
+
+
+def c_case_glow(face, px, py, fw, fh, rnd):
+    if face == "north" and edge_dist(px, py, fw, fh) >= 2:
+        return hexc("4a2a80")                                   # the core's light through the glass
+    return None
+
+
+CURATOR = Mob("curator", (128, 128), [
+    Part("body", (0, -11, 0), [
+        B(-7, 0, -4, 14, 12, 8, c_torso, c_torso_glow),
+        B(-4, -2, -3, 8, 2, 6, c_gun),                          # the gorget
+        B(-5, 11, -3.5, 10, 2, 7, c_trim),                      # the belt
+        B(-4, 12, -3, 8, 5, 6, c_plate),                        # the waist
+        B(-2, 3, -5, 4, 4, 1, c_core, c_core_glow),             # the core, in its case
+        B(2.5, -5, 2, 2, 6, 2, c_stack, c_stack_glow, key="stack"),
+        B(-4.5, -5, 2, 2, 6, 2, c_stack, c_stack_glow, key="stack", mirror=True),
+    ], [
+        Part("head", (0, -2, -1), [B(-3, -6, -3.5, 6, 6, 7, c_head, c_head_glow),
+                                   B(-3.5, -6.5, -4, 7, 2, 2, c_gun)]),     # the brow, hooded over the visor
+        Part("case", (0, 0, 0), [B(-3, 2, -6, 6, 6, 1, c_case, c_case_glow)]),
     ]),
-    Part("right_arm", (-7, -13, 0), [B(-1, 0, -1, 2, 30, 2, curator_limb, key="carm"),
-                                    B(-1.5, 16, -1.5, 3, 8, 3, curator_plate, key="cbracer")]),
-    Part("left_arm", (7, -13, 0), [B(-1, 0, -1, 2, 30, 2, curator_limb, key="carm", mirror=True),
-                                  B(-1.5, 16, -1.5, 3, 8, 3, curator_plate, key="cbracer", mirror=True)]),
-    Part("right_leg", (-2, 0, 0), [B(-1, 0, -1, 2, 22, 2, curator_limb, key="cleg")]),
-    Part("left_leg", (2, 0, 0), [B(-1, 0, -1, 2, 22, 2, curator_limb, key="cleg", mirror=True)]),
-], egg=(OBSIDIAN[2], hexc("9c6ad8")))
+    Part("right_arm", (-9, -9, 0), [
+        B(-2.5, 2, -2.5, 5, 7, 5, c_plate, key="upperarm"),
+        B(-3.5, 9, -3.5, 7, 9, 7, c_forearm, c_forearm_glow, key="forearm"),
+        B(-2.5, 18, -2.5, 5, 2, 5, c_trim, key="collar"),       # the cannon's collar
+        B(-2, 20, -2, 4, 5, 4, c_barrel, c_barrel_glow),        # and its barrel
+    ], [
+        # the pauldron, sloping down and out; two blades of plate stand up from it
+        Part("right_pauldron", (0, 0, 0, 0, 0, 0.22), [
+            B(-5.5, -3, -5, 9, 6, 10, c_pauldron, c_pauldron_glow, key="pauldron"),
+            B(-4, -6, -3, 2, 3, 1, c_gun, key="blade"), B(-4, -6, 1, 2, 3, 1, c_gun, key="blade"),
+        ]),
+    ]),
+    Part("left_arm", (9, -9, 0), [
+        B(-2.5, 2, -2.5, 5, 7, 5, c_plate, key="upperarm", mirror=True),
+        B(-3.5, 9, -3.5, 7, 9, 7, c_forearm, c_forearm_glow, key="forearm", mirror=True),
+        B(-3, 18, -3, 6, 5, 6, c_fist),                         # the fist
+    ], [
+        Part("left_pauldron", (0, 0, 0, 0, 0, -0.22), [
+            B(-3.5, -3, -5, 9, 6, 10, c_pauldron, c_pauldron_glow, key="pauldron", mirror=True),
+            B(2, -6, -3, 2, 3, 1, c_gun, key="blade", mirror=True), B(2, -6, 1, 2, 3, 1, c_gun, key="blade", mirror=True),
+        ]),
+    ]),
+    Part("right_leg", (-3.5, 5, 0), [
+        B(-2.5, 0, -2.5, 5, 8, 5, c_plate, key="thigh"),
+        B(-2, 7, -3.5, 4, 3, 1, c_trim, key="knee"),
+        B(-2.5, 8, -2.5, 5, 8, 5, c_gun, key="shin"),
+        B(-3, 16, -3, 6, 2, 6, c_thruster, c_thruster_glow, key="thruster"),
+    ]),
+    Part("left_leg", (3.5, 5, 0), [
+        B(-2.5, 0, -2.5, 5, 8, 5, c_plate, key="thigh", mirror=True),
+        B(-2, 7, -3.5, 4, 3, 1, c_trim, key="knee", mirror=True),
+        B(-2.5, 8, -2.5, 5, 8, 5, c_gun, key="shin", mirror=True),
+        B(-3, 16, -3, 6, 2, 6, c_thruster, c_thruster_glow, key="thruster", mirror=True),
+    ]),
+], egg=(OBSIDIAN[2], hexc("c49cff")))
 
 
 # ---- The caves (after beta.3).

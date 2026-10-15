@@ -78,6 +78,17 @@ and the distillation renamed or removed some of them.
   and the Endermen standing at its edges are listening to it. **Solarite** is found there too: veins in
   the pale stone, and **scorch fissures** with charred lips and raw Solarite glowing at the bottom.
 
+- **The Curator, rebuilt as a mini-boss to be feared:** a hulking war-construct of the End's builders
+  (with nods to Adam Smasher and Hearthstone's Curator) - obsidian and gunmetal plate, massive
+  pauldrons, one violet visor slit, its core behind a glass case in its chest, a cannon for a right
+  forearm and thrusters for feet. Every attack shows before it lands:
+  - **Core Cannon:** at range it raises the cannon (a rising whine, its muzzle sparking), locks its aim
+    a moment before firing, and sends a beam of force down the line. Step aside as it locks.
+  - **Shoulder Charge:** it crouches, thrusters flaring, and hurls itself at you. Sidestep, and if it
+    hits a wall or a pylon instead it is stunned and takes half again as much harm.
+  - **Second phase**, at half health: the case shatters, it calls the reliquary's Hollowbacks, and
+    everything comes faster - but its bare core takes a quarter more harm.
+  - Its old tricks stay: pylons that stop its teleports, the Gravity Toll slam, the Swap, water.
 - **The Leviathan, rebuilt to feel like Minecraft:**
   - **Reads as a skeleton from far off:** vertebrae in separate blocks with tall spines leaning back, ribs
     that sweep back toward the tail as they go down (as a whale's do), and a forehead that slopes onto the

@@ -67,7 +67,7 @@ public final class ModEntities {
         () -> EntityType.Builder.of(Hollowback::new, MobCategory.MONSTER).sized(1.0F, 1.3F).eyeHeight(1.15F)
             .clientTrackingRange(10).build(ENTITY_TYPES.key("hollowback")));
     public static final RegistryObject<EntityType<Curator>> CURATOR = ENTITY_TYPES.register("curator",
-        () -> EntityType.Builder.of(Curator::new, MobCategory.MONSTER).sized(1.1F, 4.4F).eyeHeight(3.9F).fireImmune()
+        () -> EntityType.Builder.of(Curator::new, MobCategory.MONSTER).sized(2.0F, 4.4F).eyeHeight(3.9F).fireImmune()
             .clientTrackingRange(16).build(ENTITY_TYPES.key("curator")));
 
     // ---- The caves: the Hollow Roots' grub, and the Crystal Vaults' hunter.

@@ -298,6 +298,9 @@ public final class ClientScreenshots {
             if (entity instanceof UmbralStalker stalker) {
                 stalker.showAsHunting();   // otherwise, with no prey, there'd be nothing to see
             }
+            if (entity instanceof com.ggrantrichards.astralend.entity.Curator curator && shot.style().contains("awake")) {
+                curator.showAwake(shot.style().contains("exposed"));   // standing as in the fight (or its second phase)
+            }
             if (entity instanceof Mob mob) {
                 mob.setNoAi(true);
                 mob.setPersistenceRequired();

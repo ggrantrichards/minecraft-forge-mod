@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -32,10 +33,18 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-// The Curator: the keeper of a Leviathan's skull reliquary. An enderman-like construct 4.5 blocks tall,
-// of obsidian plating inlaid with purpur, with no face - one slit of violet light - hovering a little
-// off the floor. One to each Leviathan; it never respawns. It's dormant until someone walks into the
-// reliquary, then:
+// The Curator: the keeper of a Leviathan's reliquary, a mini-boss. A hulking war-construct of the End's
+// builders, 4.4 blocks tall (after beta.4, from Adam Smasher and Hearthstone's Curator): obsidian and
+// gunmetal plating, massive pauldrons, one violet visor slit, its core in a glass case in its chest, a
+// cannon for a right forearm, thrusters for feet - it hovers a hand's breadth off the floor. One to each
+// Leviathan; it never respawns. It's dormant until someone walks into the reliquary, then:
+//   - Core Cannon: at range it raises its arm (the visor and muzzle brighten, a rising whine), locks its
+//     aim a moment before it fires, and fires a beam of force down the line. Step aside in that moment.
+//     (Break its line of sight instead, and mind the Swap below.)
+//   - Shoulder Charge: it crouches, thrusters flaring, and hurls itself straight at you. Sidestep: if it
+//     hits a wall or a pylon instead it is stunned, and takes half again as much harm.
+//   - Second phase, at half health: the case in its chest shatters, it calls the Hollowbacks of its
+//     reliquary, and everything comes faster - but its bare core takes a quarter more harm.
 //   - Phase Step: shoot at it and it teleports aside, and strikes where it reappears. Unless...
 //   - Pylons: four End Chimes stand round the arena. Ring one (strike it) and for ten seconds nothing
 //     can teleport near it - the Curator included, so near a still pylon arrows and tridents land. It
@@ -49,6 +58,13 @@ import org.jspecify.annotations.Nullable;
 public class Curator extends Monster {
     private static final EntityDataAccessor<Boolean> DATA_DORMANT = SynchedEntityData.defineId(Curator.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_SLAM = SynchedEntityData.defineId(Curator.class, EntityDataSerializers.INT);
+    // What it's doing (for the renderer): one of the ACT_ codes, and how many ticks of it are left.
+    private static final EntityDataAccessor<Integer> DATA_ACTION = SynchedEntityData.defineId(Curator.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_ACTION_T = SynchedEntityData.defineId(Curator.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> DATA_EXPOSED = SynchedEntityData.defineId(Curator.class, EntityDataSerializers.BOOLEAN);
+    public static final int ACT_NONE = 0, ACT_AIM = 1, ACT_RECOIL = 2, ACT_CROUCH = 3, ACT_CHARGE = 4, ACT_PUNCH_LEFT = 5, ACT_PUNCH_RIGHT = 6;
+    public static final int AIM_TICKS = 32, CROUCH_TICKS = 20, CHARGE_TICKS = 14, RECOIL_TICKS = 10, PUNCH_TICKS = 8;
+    private static final double BEAM_RANGE = 24.0;
     public static final double ARENA = 26.0;     // its reach from home
     private final ServerBossEvent bossEvent = new ServerBossEvent(java.util.UUID.randomUUID(), this.getDisplayName(), BossEvent.BossBarColor.PURPLE,
         BossEvent.BossBarOverlay.NOTCHED_10);
@@ -58,6 +74,10 @@ public class Curator extends Monster {
     private int unseen;
     private int stagger;
     private @Nullable BlockPos smashing;
+    private int cannonCooldown = 80;
+    private int chargeCooldown = 120;
+    private Vec3 aim = Vec3.ZERO;          // where the cannon is locked on, or which way the charge goes
+    private boolean leftNext;
 
     public Curator(EntityType<? extends Curator> type, Level level) {
         super(type, level);
@@ -69,8 +89,9 @@ public class Curator extends Monster {
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
             .add(Attributes.MAX_HEALTH, 300.0)
-            .add(Attributes.ARMOR, 10.0)
-            .add(Attributes.ATTACK_DAMAGE, 9.0)
+            .add(Attributes.ARMOR, 12.0)
+            .add(Attributes.ARMOR_TOUGHNESS, 4.0)
+            .add(Attributes.ATTACK_DAMAGE, 10.0)
             .add(Attributes.ATTACK_KNOCKBACK, 1.0)
             .add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
             .add(Attributes.MOVEMENT_SPEED, 0.3)
@@ -82,6 +103,33 @@ public class Curator extends Monster {
         super.defineSynchedData(builder);
         builder.define(DATA_DORMANT, true);
         builder.define(DATA_SLAM, 0);
+        builder.define(DATA_ACTION, ACT_NONE);
+        builder.define(DATA_ACTION_T, 0);
+        builder.define(DATA_EXPOSED, false);
+    }
+
+    public int action() {
+        return this.entityData.get(DATA_ACTION);
+    }
+
+    public int actionTicks() {
+        return this.entityData.get(DATA_ACTION_T);
+    }
+
+    // Its second phase: the case in its chest shattered, the core bare.
+    public boolean isExposed() {
+        return this.entityData.get(DATA_EXPOSED);
+    }
+
+    // For the screenshots: awake (and, if asked, in its second phase), standing as in the fight.
+    public void showAwake(boolean exposed) {
+        this.entityData.set(DATA_DORMANT, false);
+        this.entityData.set(DATA_EXPOSED, exposed);
+    }
+
+    private void act(int action, int ticks) {
+        this.entityData.set(DATA_ACTION, action);
+        this.entityData.set(DATA_ACTION_T, ticks);
     }
 
     public boolean isDormant() {
@@ -145,11 +193,37 @@ public class Curator extends Monster {
             level.sendParticles(ParticleTypes.SPLASH, this.getX(), this.getY() + 3.0, this.getZ(), 30, 0.6, 1.0, 0.6, 0.1);
             this.playSound(SoundEvents.ENDERMAN_HURT, 1.5F, 0.5F);
         }
-        // Phase Step: a projectile makes it teleport aside - unless a still pylon is near.
-        if (direct instanceof Projectile && this.stagger <= 0 && this.phaseStep(level)) {
+        // Phase Step: a projectile makes it teleport aside - unless a still pylon is near (or it's busy charging).
+        if (direct instanceof Projectile && this.stagger <= 0 && this.action() != ACT_CHARGE && this.phaseStep(level)) {
             return false;
         }
-        return super.hurtServer(level, source, this.stagger > 0 ? amount * 1.5F : amount);
+        float scaled = amount * (this.stagger > 0 ? 1.5F : 1.0F) * (this.isExposed() ? 1.25F : 1.0F);
+        boolean hurt = super.hurtServer(level, source, scaled);
+        if (hurt && !this.isExposed() && this.isAlive() && this.getHealth() <= this.getMaxHealth() * 0.5F) {
+            this.expose(level);
+        }
+        return hurt;
+    }
+
+    // Half its health gone: the case in its chest shatters, and it calls its reliquary's Hollowbacks.
+    private void expose(ServerLevel level) {
+        this.entityData.set(DATA_EXPOSED, true);
+        Vec3 chest = this.position().add(0.0, 2.6, 0.0);
+        level.playSound(null, this.blockPosition(), SoundEvents.GLASS_BREAK, SoundSource.HOSTILE, 3.0F, 0.5F);
+        level.playSound(null, this.blockPosition(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 2.5F, 0.8F);
+        level.sendParticles(ParticleTypes.ELECTRIC_SPARK, chest.x, chest.y, chest.z, 60, 0.6, 0.6, 0.6, 0.4);
+        level.sendParticles(ParticleTypes.REVERSE_PORTAL, chest.x, chest.y, chest.z, 120, 0.4, 0.4, 0.4, 0.6);
+        BlockPos centre = this.home != null ? this.home : this.blockPosition();
+        int near = level.getEntitiesOfClass(Hollowback.class, this.getBoundingBox().inflate(ARENA)).size();
+        for (int i = near; i < 3; i++) {
+            BlockPos at = EndMobs.safeSpotNear(level, centre, 5, 12, this.random);
+            var hollowback = ModEntities.HOLLOWBACK.get().create(level, net.minecraft.world.entity.EntitySpawnReason.EVENT);
+            if (at != null && hollowback != null) {
+                hollowback.snapTo(at.getX() + 0.5, at.getY() + 1.0, at.getZ() + 0.5, this.random.nextFloat() * 360.0F, 0.0F);
+                level.addFreshEntity(hollowback);
+                level.sendParticles(ParticleTypes.REVERSE_PORTAL, at.getX() + 0.5, at.getY() + 1.5, at.getZ() + 0.5, 30, 0.4, 0.8, 0.4, 0.1);
+            }
+        }
     }
 
     private boolean canTeleport(ServerLevel level) {
@@ -219,6 +293,9 @@ public class Curator extends Monster {
         }
         if (this.stagger > 0) {
             this.stagger--;
+            if (this.action() != ACT_NONE) {
+                this.act(ACT_NONE, 0);
+            }
             this.setDeltaMovement(this.getDeltaMovement().scale(0.5));
             return;
         }
@@ -273,20 +350,160 @@ public class Curator extends Monster {
             }
         }
 
-        // Close in, hovering a little off the floor, and strike.
-        Vec3 aim = target.position().add(0.0, 0.5, 0.0);
-        if (this.distanceToSqr(target) > 3.0 * 3.0) {
-            this.moveToward(aim, 0.25);
+        // Its attacks. Each is shown before it lands: the arm coming up, the crouch.
+        float pace = this.isExposed() ? 0.75F : 1.0F;
+        this.cannonCooldown--;
+        this.chargeCooldown--;
+        if (this.action() != ACT_NONE) {
+            this.tickAction(level, target, pace);
         } else {
-            this.setDeltaMovement(this.getDeltaMovement().scale(0.6));
-            if (this.attackCooldown == 0) {
-                this.attackCooldown = 30;
-                this.doHurtTarget(level, target);
+            double d2 = this.distanceToSqr(target);
+            boolean sees = this.hasLineOfSight(target);
+            if (this.cannonCooldown <= 0 && d2 > 7.0 * 7.0 && d2 < BEAM_RANGE * BEAM_RANGE && sees) {
+                this.act(ACT_AIM, (int) (AIM_TICKS * pace));
+                level.playSound(null, this.blockPosition(), SoundEvents.WARDEN_SONIC_CHARGE, SoundSource.HOSTILE, 2.0F, 0.8F);
+            } else if (this.chargeCooldown <= 0 && d2 > 5.0 * 5.0 && d2 < 16.0 * 16.0 && sees) {
+                this.act(ACT_CROUCH, (int) (CROUCH_TICKS * pace));
+                level.playSound(null, this.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 2.0F, 0.6F);
+            } else {
+                // Close in, hovering a hand's breadth off the floor, and strike - one fist, then the other.
+                if (d2 > 3.2 * 3.2) {
+                    this.moveToward(target.position().add(0.0, 0.2, 0.0), 0.25);
+                } else {
+                    this.setDeltaMovement(this.getDeltaMovement().scale(0.6));
+                    if (this.attackCooldown == 0) {
+                        this.attackCooldown = (int) (30 * pace);
+                        this.leftNext = !this.leftNext;
+                        this.act(this.leftNext ? ACT_PUNCH_LEFT : ACT_PUNCH_RIGHT, PUNCH_TICKS);
+                        this.doHurtTarget(level, target);
+                    }
+                }
             }
         }
         // Never leaves its reliquary.
         if (this.position().distanceToSqr(Vec3.atCenterOf(centre)) > ARENA * ARENA) {
             this.moveToward(Vec3.atCenterOf(centre), 0.3);
+        }
+    }
+
+    private void tickAction(ServerLevel level, Player target, float pace) {
+        int t = this.actionTicks() - 1;
+        this.entityData.set(DATA_ACTION_T, Math.max(0, t));
+        switch (this.action()) {
+            case ACT_AIM -> {
+                // Stand and aim; the aim locks eight ticks before it fires - the moment to step aside.
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.5));
+                this.faceToward(target.position());
+                if (t >= 8) {
+                    this.aim = target.getEyePosition();
+                }
+                Vec3 muzzle = this.muzzle();
+                level.sendParticles(t < 8 ? ParticleTypes.ELECTRIC_SPARK : ParticleTypes.REVERSE_PORTAL, muzzle.x, muzzle.y, muzzle.z, 3, 0.15, 0.15, 0.15, 0.02);
+                if (t <= 0) {
+                    this.fireBeam(level);
+                    this.act(ACT_RECOIL, RECOIL_TICKS);
+                    this.cannonCooldown = (int) ((140 + this.random.nextInt(60)) * pace);
+                }
+            }
+            case ACT_CROUCH -> {
+                // Crouch, thrusters flaring; which way it goes is fixed as it springs.
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.4));
+                this.faceToward(target.position());
+                level.sendParticles(ParticleTypes.REVERSE_PORTAL, this.getX(), this.getY() + 0.1, this.getZ(), 6, 0.5, 0.05, 0.5, 0.15);
+                if (t <= 0) {
+                    Vec3 d = target.position().subtract(this.position());
+                    this.aim = new Vec3(d.x, 0.0, d.z).normalize();
+                    this.act(ACT_CHARGE, CHARGE_TICKS);
+                    level.playSound(null, this.blockPosition(), SoundEvents.FIRECHARGE_USE, SoundSource.HOSTILE, 2.0F, 0.5F);
+                }
+            }
+            case ACT_CHARGE -> {
+                BlockPos centre = this.home != null ? this.home : this.blockPosition();
+                double dy = Mth.clamp(target.getY() + 0.2 - this.getY(), -0.3, 0.3);
+                this.setDeltaMovement(this.aim.x * 0.95, dy, this.aim.z * 0.95);
+                level.sendParticles(ParticleTypes.REVERSE_PORTAL, this.getX(), this.getY() + 0.3, this.getZ(), 8, 0.4, 0.2, 0.4, 0.05);
+                for (Player p : level.getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(0.6))) {
+                    if (!p.isSpectator() && !p.isCreative()) {
+                        p.hurtServer(level, level.damageSources().mobAttack(this), 12.0F);
+                        p.knockback(2.2, -this.aim.x, -this.aim.z);
+                        p.push(0.0, 0.45, 0.0);
+                        p.hurtMarked = true;
+                        this.endCharge(level, false);
+                        return;
+                    }
+                }
+                boolean pylon = !level.getBlockStates(this.getBoundingBox().inflate(0.4)).filter(b -> b.is(ModBlocks.END_CHIMES.get())).toList().isEmpty();
+                if (this.horizontalCollision || pylon) {
+                    this.endCharge(level, true);              // into a wall or a pylon: stunned
+                } else if (t <= 0 || this.position().distanceToSqr(Vec3.atCenterOf(centre)) > ARENA * ARENA) {
+                    this.endCharge(level, false);
+                }
+            }
+            default -> {
+                // Recoil and punches: just let them play out.
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.7));
+                if (t <= 0) {
+                    this.act(ACT_NONE, 0);
+                }
+            }
+        }
+    }
+
+    private void endCharge(ServerLevel level, boolean crashed) {
+        this.setDeltaMovement(Vec3.ZERO);
+        this.chargeCooldown = (int) ((160 + this.random.nextInt(80)) * (this.isExposed() ? 0.75F : 1.0F));
+        if (crashed) {
+            this.stagger = 50;
+            level.playSound(null, this.blockPosition(), SoundEvents.ANVIL_LAND, SoundSource.HOSTILE, 2.0F, 0.5F);
+            level.sendParticles(ParticleTypes.ELECTRIC_SPARK, this.getX(), this.getY() + 2.5, this.getZ(), 40, 0.8, 1.0, 0.8, 0.2);
+        }
+        this.act(ACT_NONE, 0);
+    }
+
+    // The cannon's muzzle, roughly: out in front of its right shoulder, at chest height.
+    private Vec3 muzzle() {
+        float yaw = this.yBodyRot * Mth.DEG_TO_RAD;
+        Vec3 forward = new Vec3(-Mth.sin(yaw), 0.0, Mth.cos(yaw));
+        Vec3 right = new Vec3(-forward.z, 0.0, forward.x);
+        return this.position().add(0.0, 2.7, 0.0).add(forward.scale(1.9)).add(right.scale(0.9));
+    }
+
+    // The beam: a straight line of force from the muzzle to where it locked on, stopped by blocks; it
+    // throws back and hurts whoever stands within a block of it.
+    private void fireBeam(ServerLevel level) {
+        Vec3 from = this.muzzle();
+        Vec3 dir = this.aim.subtract(from);
+        if (dir.lengthSqr() < 1.0E-4) {
+            return;
+        }
+        dir = dir.normalize();
+        Vec3 to = from.add(dir.scale(BEAM_RANGE));
+        var hit = level.clip(new net.minecraft.world.level.ClipContext(from, to, net.minecraft.world.level.ClipContext.Block.COLLIDER,
+            net.minecraft.world.level.ClipContext.Fluid.NONE, this));
+        to = hit.getLocation();
+        double length = to.distanceTo(from);
+        for (double d = 1.0; d < length; d += 1.2) {
+            Vec3 p = from.add(dir.scale(d));
+            level.sendParticles(ParticleTypes.SONIC_BOOM, p.x, p.y, p.z, 1, 0.0, 0.0, 0.0, 0.0);
+        }
+        level.playSound(null, this.blockPosition(), SoundEvents.WARDEN_SONIC_BOOM, SoundSource.HOSTILE, 3.0F, 0.8F);
+        for (var e : level.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class, new net.minecraft.world.phys.AABB(from, to).inflate(1.2),
+                e -> e != this && !(e instanceof Hollowback))) {
+            Vec3 c = e.position().add(0.0, e.getBbHeight() / 2.0, 0.0);
+            double along = Mth.clamp(c.subtract(from).dot(dir), 0.0, length);
+            if (c.distanceTo(from.add(dir.scale(along))) <= 1.2 && !(e instanceof Player p && (p.isCreative() || p.isSpectator()))) {
+                e.hurtServer(level, level.damageSources().mobAttack(this), 10.0F);
+                e.knockback(1.6, -dir.x, -dir.z);
+            }
+        }
+    }
+
+    private void faceToward(Vec3 to) {
+        Vec3 d = to.subtract(this.position());
+        if (d.horizontalDistanceSqr() > 0.01) {
+            float yaw = (float) (Math.atan2(d.z, d.x) * (180.0 / Math.PI)) - 90.0F;
+            this.setYRot(yaw);
+            this.yBodyRot = yaw;
         }
     }
 
@@ -355,7 +572,7 @@ public class Curator extends Monster {
 
     @Override
     protected @Nullable SoundEvent getAmbientSound() {
-        return this.isDormant() ? null : SoundEvents.ENDERMAN_AMBIENT;
+        return this.isDormant() ? null : SoundEvents.BEACON_AMBIENT;
     }
 
     @Override
@@ -365,7 +582,7 @@ public class Curator extends Monster {
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENDERMAN_DEATH;
+        return SoundEvents.IRON_GOLEM_DEATH;
     }
 
     @Override
@@ -377,6 +594,7 @@ public class Curator extends Monster {
     protected void addAdditionalSaveData(ValueOutput output) {
         super.addAdditionalSaveData(output);
         output.putBoolean("Dormant", this.isDormant());
+        output.putBoolean("Exposed", this.isExposed());
         if (this.home != null) {
             output.putLong("Home", this.home.asLong());
         }
@@ -386,6 +604,7 @@ public class Curator extends Monster {
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
         this.entityData.set(DATA_DORMANT, input.getBooleanOr("Dormant", true));
+        this.entityData.set(DATA_EXPOSED, input.getBooleanOr("Exposed", false));
         long home = input.getLongOr("Home", Long.MIN_VALUE);
         this.home = home == Long.MIN_VALUE ? null : BlockPos.of(home);
         if (this.hasCustomName()) {
