@@ -43,8 +43,12 @@ import org.jspecify.annotations.Nullable;
 //     (Break its line of sight instead, and mind the Swap below.)
 //   - Shoulder Charge: it crouches, thrusters flaring, and hurls itself straight at you. Sidestep: if it
 //     hits a wall or a pylon instead it is stunned, and takes half again as much harm.
-//   - Second phase, at half health: the case in its chest shatters, it calls the Hollowbacks of its
-//     reliquary, and everything comes faster - but its bare core takes a quarter more harm.
+//   - Second phase, at half health: the case in its chest shatters and the reliquary turns over.
+//     Everyone in it gets Upwelling and falls up onto the ceiling (softly, this once), and the fight goes
+//     on upside down: the Curator turns over and comes up after you, four more pylons hang from the
+//     ceiling, and everything comes faster - but its bare core takes a quarter more harm. Fall through a
+//     gap in the ceiling and you drift back down to the floor... and are drawn up again. When it dies,
+//     gravity comes back, gently (Slow Falling).
 //   - Phase Step: shoot at it and it teleports aside, and strikes where it reappears. Unless...
 //   - Pylons: four End Chimes stand round the arena. Ring one (strike it) and for ten seconds nothing
 //     can teleport near it - the Curator included, so near a still pylon arrows and tridents land. It
@@ -205,25 +209,64 @@ public class Curator extends Monster {
         return hurt;
     }
 
-    // Half its health gone: the case in its chest shatters, and it calls its reliquary's Hollowbacks.
+    // Half its health gone: the case in its chest shatters and the reliquary turns over.
     private void expose(ServerLevel level) {
         this.entityData.set(DATA_EXPOSED, true);
         Vec3 chest = this.position().add(0.0, 2.6, 0.0);
         level.playSound(null, this.blockPosition(), SoundEvents.GLASS_BREAK, SoundSource.HOSTILE, 3.0F, 0.5F);
         level.playSound(null, this.blockPosition(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 2.5F, 0.8F);
+        level.playSound(null, this.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.HOSTILE, 3.0F, 0.5F);
         level.sendParticles(ParticleTypes.ELECTRIC_SPARK, chest.x, chest.y, chest.z, 60, 0.6, 0.6, 0.6, 0.4);
-        level.sendParticles(ParticleTypes.REVERSE_PORTAL, chest.x, chest.y, chest.z, 120, 0.4, 0.4, 0.4, 0.6);
+        level.sendParticles(ParticleTypes.REVERSE_PORTAL, chest.x, chest.y, chest.z, 200, 6.0, 4.0, 6.0, 0.2);
+        this.turnOver(level);
+    }
+
+    // Who is in its reliquary: between the floor and the ceiling, within the ribcage.
+    private List<Player> inReliquary(ServerLevel level) {
         BlockPos centre = this.home != null ? this.home : this.blockPosition();
-        int near = level.getEntitiesOfClass(Hollowback.class, this.getBoundingBox().inflate(ARENA)).size();
-        for (int i = near; i < 3; i++) {
-            BlockPos at = EndMobs.safeSpotNear(level, centre, 5, 12, this.random);
-            var hollowback = ModEntities.HOLLOWBACK.get().create(level, net.minecraft.world.entity.EntitySpawnReason.EVENT);
-            if (at != null && hollowback != null) {
-                hollowback.snapTo(at.getX() + 0.5, at.getY() + 1.0, at.getZ() + 0.5, this.random.nextFloat() * 360.0F, 0.0F);
-                level.addFreshEntity(hollowback);
-                level.sendParticles(ParticleTypes.REVERSE_PORTAL, at.getX() + 0.5, at.getY() + 1.5, at.getZ() + 0.5, 30, 0.4, 0.8, 0.4, 0.1);
+        List<Player> out = new ArrayList<>();
+        for (Player p : level.players()) {
+            double dy = p.getY() - centre.getY();
+            double dx = p.getX() - (centre.getX() + 0.5), dz = p.getZ() - (centre.getZ() + 0.5);
+            if (!p.isSpectator() && !p.isCreative() && p.isAlive() && dy > -3.0 && dy < 17.0 && dx * dx + dz * dz < 30.0 * 30.0) {
+                out.add(p);
             }
         }
+        return out;
+    }
+
+    // Upside down: everyone in the reliquary falls (or stays) up on the ceiling. Someone who has fallen
+    // back to the floor - through a gap - is drawn up again once they land.
+    private void turnOver(ServerLevel level) {
+        for (Player p : this.inReliquary(level)) {
+            var effect = p.getEffect(com.ggrantrichards.astralend.ModEffects.upwelling());
+            if (effect == null) {
+                if (p.onGround() || !this.flippedOnce(p)) {
+                    com.ggrantrichards.astralend.world.UpwellingEffect.softLanding(p);
+                    p.addEffect(new MobEffectInstance(com.ggrantrichards.astralend.ModEffects.upwelling(), 600, 0, false, true), this);
+                    this.flipped.add(p.getUUID());
+                }
+            } else if (effect.getDuration() < 300) {
+                p.addEffect(new MobEffectInstance(com.ggrantrichards.astralend.ModEffects.upwelling(), 600, 0, false, true), this);
+            }
+        }
+    }
+
+    private final java.util.Set<java.util.UUID> flipped = new java.util.HashSet<>();
+
+    private boolean flippedOnce(Player p) {
+        return this.flipped.contains(p.getUUID());
+    }
+
+    // Gravity comes back when it dies: Upwelling ends, and Slow Falling (UpwellingEffect) lets them down.
+    @Override
+    public void die(DamageSource source) {
+        if (this.level() instanceof ServerLevel level && this.isExposed()) {
+            for (Player p : this.inReliquary(level)) {
+                p.removeEffect(com.ggrantrichards.astralend.ModEffects.upwelling());
+            }
+        }
+        super.die(source);
     }
 
     private boolean canTeleport(ServerLevel level) {
@@ -336,8 +379,11 @@ public class Curator extends Monster {
             level.sendParticles(ParticleTypes.REVERSE_PORTAL, theirs.x, theirs.y + 1.0, theirs.z, 40, 0.5, 1.0, 0.5, 0.1);
         }
 
-        // Gravity Toll: a slam whose ring lifts everyone near it.
-        if (--this.slamCooldown <= 0 && this.distanceToSqr(target) < 10.0 * 10.0) {
+        if (this.isExposed() && this.tickCount % 20 == 0) {
+            this.turnOver(level);
+        }
+        // Gravity Toll: a slam whose ring lifts everyone near it. (Not upside down: there's nowhere to lift them.)
+        if (!this.isExposed() && --this.slamCooldown <= 0 && this.distanceToSqr(target) < 10.0 * 10.0) {
             this.slamCooldown = 180 + this.random.nextInt(80);
             this.entityData.set(DATA_SLAM, 20);
             level.playSound(null, this.blockPosition(), SoundEvents.MACE_SMASH_GROUND_HEAVY, SoundSource.HOSTILE, 2.0F, 0.6F);

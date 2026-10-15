@@ -14,7 +14,7 @@ import net.minecraft.util.Mth;
 // bowed, arms hanging, visor dark... awake, it hovers on its thrusters, bobbing, and every attack shows
 // before it lands: the cannon arm raised and aimed (then kicked back by the shot), the crouch before
 // the charge and the lunge of it, a fist drawn back for each punch, both arms up for the slam. In its
-// second phase the display case in its chest is gone and the core shows.
+// second phase the display case in its chest is gone, the core shows, and it hangs upside down.
 public class CuratorRenderer extends MobRenderer<Curator, CuratorRenderer.State, CuratorRenderer.Model> {
     private static final Identifier TEXTURE = ModModelLayers.texture("curator");
     private static final float SCALE = 1.6F;
@@ -42,6 +42,9 @@ public class CuratorRenderer extends MobRenderer<Curator, CuratorRenderer.State,
         state.exposed = entity.isExposed();
         state.action = entity.action();
         state.actionTicks = Math.max(0.0F, entity.actionTicks() - partialTicks);
+        // Its second phase is fought upside down: it turns over with the reliquary (vanilla's own flip, as
+        // for a mob named Dinnerbone).
+        state.isUpsideDown = state.exposed && !state.dormant;
     }
 
     @Override

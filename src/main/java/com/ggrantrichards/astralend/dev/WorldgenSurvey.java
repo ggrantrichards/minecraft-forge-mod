@@ -335,7 +335,7 @@ public final class WorldgenSurvey {
         record Home(net.minecraft.world.entity.EntityType<?> type, char biome) {}
         List<Home> homes = List.of(
             new Home(ModEntities.POLLINATOR.get(), 'N'), new Home(ModEntities.VOID_WANDERER.get(), 'D'),
-            new Home(ModEntities.UMBRAL_STALKER.get(), 'G'), new Home(ModEntities.VOID_RAY.get(), 'X'),
+            new Home(ModEntities.UMBRAL_STALKER.get(), 'G'),
             new Home(ModEntities.DRIFT_WHALE.get(), 'A'), new Home(ModEntities.WATCHER.get(), 'N'),
             new Home(ModEntities.SPIRE_WYRM.get(), 'G'), new Home(ModEntities.HUSHBACK.get(), 'E'),
             new Home(ModEntities.HYDRAGRIP.get(), 'E'), new Home(ModEntities.MIRROR_WRETCH.get(), 'A'));
@@ -423,7 +423,6 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('D'), end, "void_wanderer", 2.6, 1.2, 1.7);
         mobShot(lines, areas.get('D'), end, "umbral_stalker angled", 5.5, 0.0, 1.9);
         mobShot(lines, areas.get('D'), end, "umbral_stalker lit,angled", 5.5, 0.0, 1.9);
-        mobShot(lines, areas.get('X'), end, "void_ray", 3.0, 0.0, 1.6);
         mobShot(lines, areas.get('A'), end, "drift_whale side", 11.0, 7.0, 7.5);
         mobShot(lines, areas.get('N'), end, "watcher", 6.5, 0.5, 2.6);
         mobShot(lines, areas.get('G'), end, "spire_wyrm", 16.0, 6.0, 5.0);
@@ -435,7 +434,6 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('A'), end, "curator", 8.0, 0.5, 3.2);
         mobShot(lines, areas.get('A'), end, "curator awake,angled", 7.0, 0.5, 2.8);
         mobShot(lines, areas.get('A'), end, "curator exposed,awake", 6.0, 0.5, 2.8);
-        mobShot(lines, areas.get('D'), end, "shardback angled", 3.4, 0.0, 1.4);
         // Phase 5: the sky and Sunstorms.
         skyShot(lines, areas.get('A'), "sky_ashen_barrens", -45.0F, -32.0F, "flare=calm");
         skyShot(lines, areas.get('N'), "sky_nebula_fields", -45.0F, -32.0F, "flare=calm");
@@ -810,7 +808,7 @@ public final class WorldgenSurvey {
     }
 
     // The caves: under the Deep Hollows, the Hollow Roots (glowcaps, Starsap, fireflies); under the
-    // Shattered Crags, the Crystal Vaults (geodes of Glimmer Crystal, each with its Shardback).
+    // Shattered Crags, the Crystal Vaults (geodes of Glimmer Crystal, where the Umbral Stalker hunts).
     private static void checkCaves(Area roots, Area vaults, ServerLevel end, List<String> failures) {
         if (roots != null) {
             int glowcaps = 0, sap = 0, chunks = 0;
@@ -848,6 +846,7 @@ public final class WorldgenSurvey {
         }
         if (vaults != null) {
             int crystal = 0;
+            BlockPos geode = null;
             for (int cx = -4; cx <= 4; cx++) {
                 for (int cz = -4; cz <= 4; cz++) {
                     var chunk = end.getChunk((vaults.centre.getX() >> 4) + cx, (vaults.centre.getZ() >> 4) + cz);
@@ -855,17 +854,18 @@ public final class WorldgenSurvey {
                             chunk.getPos().getMaxBlockX(), com.ggrantrichards.astralend.world.AstralEndBiomeSource.VAULTS_BELOW, chunk.getPos().getMaxBlockZ())) {
                         if (end.getBlockState(p).is(ModBlocks.GLIMMER_CRYSTAL.get())) {
                             crystal++;
+                            if (geode == null) {
+                                geode = p.immutable();
+                            }
                         }
                     }
                 }
             }
-            var hunters = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.Shardback.class,
-                new net.minecraft.world.phys.AABB(vaults.centre).inflate(80, 80, 80));
             var biome = end.getBiome(vaults.centre.atY(20)).unwrapKey().map(k -> k.identifier().toString()).orElse("?");
-            log(String.format("caves: the Crystal Vaults (%s at y=20 under the Shattered Crags' centre): %d Glimmer Crystal in geodes, %d Shardbacks (%d hidden)",
-                biome, crystal, hunters.size(), hunters.stream().filter(com.ggrantrichards.astralend.entity.Shardback::isHidden).count()));
-            if (!hunters.isEmpty()) {
-                BlockPos at = hunters.get(0).blockPosition();
+            log(String.format("caves: the Crystal Vaults (%s at y=20 under the Shattered Crags' centre): %d Glimmer Crystal in geodes",
+                biome, crystal));
+            if (geode != null) {
+                BlockPos at = geode;
                 BlockPos eye = caveEye(end, at);
                 EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "biome_crystal_vaults %d.5 %d %d.5 %.1f 15.0", eye.getX(), eye.getY(), eye.getZ(),
                     yawTo(eye, at)));

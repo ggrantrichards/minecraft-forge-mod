@@ -152,6 +152,10 @@ class Leviathan:
                     return "air" if self.gap(u, w) else ("endbrick" if abs(u) == 9 or w in (-54, 6) else "purpur")
                 if v == floor + 1 and abs(u) == 9 and -54 <= w <= 6 and (w - 2) % 7 != 0:
                     return "endbrick_wall"
+                if v == floor + 16 and abs(u) <= 9 and -54 <= w <= 6:      # the ceiling (the Curator's 2nd phase)
+                    if abs(u + 3) <= 1 and abs(w + 31) <= 1:
+                        return "air"
+                    return "air" if self.ceiling_gap(u, w) else ("endbrick" if abs(u) == 9 or w in (-54, 6) else "purpur")
         return None
 
     def rib_half(self, w):
@@ -183,6 +187,14 @@ class Leviathan:
             if abs(u - pu) < 3 and abs(w - pw) < 3:
                 protected = True
         return not protected and self.hash(math.floor(u / 3), math.floor(w / 3), 77) < 0.15
+
+    def ceiling_gap(self, u, w):
+        if (abs(u) < 5 and abs(w + 26) < 6) or (abs(u + 3) < 3 and abs(w + 31) < 3) or w < -42 or w > -4:
+            return False
+        for pu, pw in ((-6, -33), (6, -33), (-6, -19), (6, -19)):
+            if abs(u - pu) < 3 and abs(w - pw) < 3:
+                return False
+        return self.hash(math.floor(u / 3), math.floor(w / 3), 78) < 0.12
 
     def organ(self, u, v, w, sv):
         # the heart: two lobes hung from the spine over the pedestal

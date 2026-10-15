@@ -97,6 +97,12 @@ public final class LeviathanShape {
         return Mth.floor(sv(-24)) - 19;
     }
 
+    // And its ceiling, for the Curator's second phase, when gravity turns over and the fight goes on
+    // upside down (Upwelling lifts no further than 20 blocks).
+    public static int ceiling() {
+        return floor() + 16;
+    }
+
     public int towerHeight(int t) {
         return t == this.mazeTower ? MAZE_HEIGHT : 16 + (int) (this.r(200 + t) * 6);
     }
@@ -237,6 +243,13 @@ public final class LeviathanShape {
                 if (v == floor + 1 && Math.abs(u) == 9 && w >= -54 && w <= 6 && Math.floorMod(w - 2, 7) != 0) {
                     return Material.END_BRICK_WALL;
                 }
+                if (v == ceiling() && Math.abs(u) <= 9 && w >= -54 && w <= 6) {
+                    if (Math.abs(u - LADDER_U) <= 1 && Math.abs(w - LADDER_W) <= 1) {
+                        return Material.AIR;                       // the ladder comes down through it
+                    }
+                    return this.ceilingGap(u, w) ? Material.AIR
+                        : Math.abs(u) == 9 || w == -54 || w == 6 ? Material.END_BRICK : Material.PURPUR;
+                }
             }
         }
         return null;
@@ -289,6 +302,20 @@ public final class LeviathanShape {
             }
         }
         return this.hash(Math.floorDiv(u, 3), Math.floorDiv(w, 3), 77) < 0.15;
+    }
+
+    // The ceiling's own gaps, open to the ribs above: never over the arena's middle, by the hanging pylons or
+    // the ladder.
+    boolean ceilingGap(int u, int w) {
+        if (Math.abs(u) < 5 && Math.abs(w - ARENA_W) < 6 || Math.abs(u - LADDER_U) < 3 && Math.abs(w - LADDER_W) < 3 || w < -42 || w > -4) {
+            return false;
+        }
+        for (int[] p : PYLONS) {
+            if (Math.abs(u - p[0]) < 3 && Math.abs(w - p[1]) < 3) {
+                return false;
+            }
+        }
+        return this.hash(Math.floorDiv(u, 3), Math.floorDiv(w, 3), 78) < 0.12;
     }
 
     public static final int[][] PYLONS = {{-6, -33}, {6, -33}, {-6, -19}, {6, -19}};

@@ -78,6 +78,10 @@ and the distillation renamed or removed some of them.
   and the Endermen standing at its edges are listening to it. **Solarite** is found there too: veins in
   the pale stone, and **scorch fissures** with charred lips and raw Solarite glowing at the bottom.
 
+- **Eight mobs and a mini-boss.** The Void Ray and the Shardback are cut, to keep to the plan: the
+  Drift Whale, Pollinator, Hushback, Hydragrip, Mirror Wretch, Umbral Stalker (now in the Crystal Vaults
+  too), Watcher and Void Wanderer, the Hollowback as a Hushback variant, and the Curator. Sunshades are
+  made from Hushfleece now and Sun Ward is brewed from Sunscale Lichen (both were Ray Film).
 - **The Curator, rebuilt as a mini-boss to be feared:** a hulking war-construct of the End's builders
   (with nods to Adam Smasher and Hearthstone's Curator) - obsidian and gunmetal plate, massive
   pauldrons, one violet visor slit, its core behind a glass case in its chest, a cannon for a right
@@ -86,8 +90,13 @@ and the distillation renamed or removed some of them.
     a moment before firing, and sends a beam of force down the line. Step aside as it locks.
   - **Shoulder Charge:** it crouches, thrusters flaring, and hurls itself at you. Sidestep, and if it
     hits a wall or a pylon instead it is stunned and takes half again as much harm.
-  - **Second phase**, at half health: the case shatters, it calls the reliquary's Hollowbacks, and
-    everything comes faster - but its bare core takes a quarter more harm.
+  - **Second phase, the fight turns over**, at half health: the case shatters and everyone in the
+    reliquary gets Upwelling and falls (softly, this once) onto its new ceiling. The Curator turns over
+    and comes up after you; four more pylons hang from the ceiling; everything comes faster, but its bare
+    core takes a quarter more harm. Fall through a gap and you drift down to the floor - and are drawn up
+    again. When it dies, gravity comes back gently.
+  - **Starforging needs it:** Starforge Templates now drop only from the Curator (two: one to use, one to
+    copy), as netherite's template comes only from bastions.
   - Its old tricks stay: pylons that stop its teleports, the Gravity Toll slam, the Swap, water.
 - **The Leviathan, rebuilt to feel like Minecraft:**
   - **Reads as a skeleton from far off:** vertebrae in separate blocks with tall spines leaning back, ribs

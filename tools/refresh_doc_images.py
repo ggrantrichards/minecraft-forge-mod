@@ -19,7 +19,7 @@ SIZE = (854, 480)
 PICTURES = {
     **{f"screens/{b}": b for b in ("nebula_fields", "ashen_barrens", "gilded_reach", "deep_hollows")},
     "screens/shattered_observatory": "structure_shattered_observatory",
-    **{f"mobs/{m}": f"mob_{m}" for m in ("pollinator", "umbral_stalker_lit", "void_ray",
+    **{f"mobs/{m}": f"mob_{m}" for m in ("pollinator", "umbral_stalker_lit",
                                           "void_wanderer", "watcher")},
     "mobs/drift_whale": "mob_drift_whale_side",
     "mobs/umbral_stalker": "mob_umbral_stalker_angled",

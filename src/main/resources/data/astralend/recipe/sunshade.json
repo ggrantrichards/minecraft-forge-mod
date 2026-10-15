@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "F": "astralend:ray_film",
+    "F": "astralend:hushfleece",
     "S": "astralend:solarite_ingot"
   },
   "pattern": [

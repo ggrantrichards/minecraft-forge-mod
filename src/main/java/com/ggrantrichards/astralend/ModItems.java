@@ -37,7 +37,6 @@ public final class ModItems {
     public static final RegistryObject<Item> CRACKED_LENS = simple("cracked_lens");
     public static final RegistryObject<Item> ABYSS_SHARD = simple("abyss_shard");
     public static final RegistryObject<Item> UMBRAL_MEMBRANE = simple("umbral_membrane");
-    public static final RegistryObject<Item> RAY_FILM = simple("ray_film");
     // Phase 5: Sunstorms
     public static final RegistryObject<Item> FLARE_POLLEN = simple("flare_pollen");
     public static final RegistryObject<Item> CHARGED_VOID_CRYSTAL = register("charged_void_crystal", Item::new,
@@ -123,7 +122,6 @@ public final class ModItems {
     public static final RegistryObject<Item> POLLINATOR_SPAWN_EGG = spawnEgg("pollinator", ModEntities.POLLINATOR);
     public static final RegistryObject<Item> VOID_WANDERER_SPAWN_EGG = spawnEgg("void_wanderer", ModEntities.VOID_WANDERER);
     public static final RegistryObject<Item> UMBRAL_STALKER_SPAWN_EGG = spawnEgg("umbral_stalker", ModEntities.UMBRAL_STALKER);
-    public static final RegistryObject<Item> VOID_RAY_SPAWN_EGG = spawnEgg("void_ray", ModEntities.VOID_RAY);
     public static final RegistryObject<Item> DRIFT_WHALE_SPAWN_EGG = spawnEgg("drift_whale", ModEntities.DRIFT_WHALE);
     public static final RegistryObject<Item> WATCHER_SPAWN_EGG = spawnEgg("watcher", ModEntities.WATCHER);
     public static final RegistryObject<Item> SPIRE_WYRM_SPAWN_EGG = spawnEgg("spire_wyrm", ModEntities.SPIRE_WYRM);
@@ -137,7 +135,6 @@ public final class ModItems {
     public static final RegistryObject<Item> STARSAP = simple("starsap");
     public static final RegistryObject<Item> HOLLOW_THORN = register("hollow_thorn", com.ggrantrichards.astralend.item.HollowThornItem::new,
         new Item.Properties().durability(64));
-    public static final RegistryObject<Item> SHARDBACK_SPAWN_EGG = spawnEgg("shardback", ModEntities.SHARDBACK);
 
     private static net.minecraft.tags.TagKey<net.minecraft.world.level.block.entity.BannerPattern> patternTag(String name) {
         return net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.BANNER_PATTERN,

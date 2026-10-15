@@ -97,7 +97,6 @@ ITEMS = [
     ("cracked_lens", "Cracked Lens"),
     ("abyss_shard", "Abyss Shard"),
     ("umbral_membrane", "Umbral Membrane"),
-    ("ray_film", "Ray Film"),
     ("star_chart", "Star Chart"),
     ("upwell_mote", "Upwell Mote"),
     ("resonant_key", "Resonant Key"),
@@ -939,7 +938,6 @@ MOB_SPAWNS = {
                      "monster": [("umbral_stalker", 4, 1)]},   # under the dark canopy (its rule wants no sky)
     # The Umbral Stalker hunts only in the Crags' root caves (its spawn rule wants a roof of rock overhead).
     "glimmering_crags": {"monster": [("umbral_stalker", 6, 1)]},
-    "shattered_crags": {"creature": [("void_ray", 8, 3)]},
     # The Eclipse, the golden meadow: its grazers, and endermites for the Hydragrips to hunt.
     "eclipse": {"creature": [("hushback", 10, 4), ("hydragrip", 5, 2)],
                 "monster": [("minecraft:endermite", 3, 2)]},
@@ -947,7 +945,7 @@ MOB_SPAWNS = {
     # and the Endermen standing at its edges are listening to it.
     "ashen_barrens": {"monster": [("mirror_wretch", 3, 1)]},
     # The caves: the Crystal Vaults' hunters.
-    "crystal_vaults": {"monster": [("shardback", 6, 1)], "creature": [("void_ray", 4, 2)]},
+    "crystal_vaults": {"monster": [("umbral_stalker", 5, 1)]},   # (the Shardback and the Void Ray are cut)
 }
 
 
@@ -1207,7 +1205,6 @@ MOBS = [
     ("pollinator", "End Pollinator"),
     ("void_wanderer", "Void Wanderer"),
     ("umbral_stalker", "Umbral Stalker"),
-    ("void_ray", "Void Ray"),
     ("drift_whale", "Drift Whale"),
     ("watcher", "The Watcher"),
     ("spire_wyrm", "Spire Wyrm"),
@@ -1218,7 +1215,6 @@ MOBS = [
     ("hollowback", "Hollowback"),
     ("curator", "The Curator"),
     # The caves
-    ("shardback", "Shardback"),
 ]
 
 
@@ -1262,9 +1258,8 @@ def mobs_phase4():
         item_def(egg, rid(f"item/{egg}"))
         lang[f"item.{NS}.{egg}"] = f"{english.replace('The ', '')} Spawn Egg"
 
-    # Drops. Killing a Pollinator or a Void Ray gives nothing useful - there's no reason to.
+    # Drops. Killing a Pollinator gives nothing useful - there's no reason to.
     entity_loot("pollinator", [])
-    entity_loot("void_ray", [])
     # A Drift Whale never fights back; killing one gets you a few scales, and nothing else.
     entity_loot("drift_whale", [])   # Whalelight Scales are only shed by tamed whales (DriftWhale)
     entity_loot("watcher", [])
@@ -1272,7 +1267,7 @@ def mobs_phase4():
     entity_loot("umbral_stalker", [player_kill_drop("umbral_membrane", 1)])
 
     # Flying and floating mobs don't take fall damage.
-    for mob in ("pollinator", "void_wanderer", "void_ray", "drift_whale", "watcher"):
+    for mob in ("pollinator", "void_wanderer", "drift_whale", "watcher"):
         tag("entity_type", "minecraft:fall_damage_immune", rid(mob))
 
     # What End Pollinators visit (and spread when they pollinate it).
@@ -1346,7 +1341,8 @@ def flares_phase5():
     item_def("sunshade", rid("block/sunshade"))
     lang[f"block.{NS}.sunshade"] = "Sunshade"
     drop_self("sunshade")
-    shaped("sunshade", "sunshade", ["FFF", "S S"], {"F": rid("ray_film"), "S": rid("solarite_ingot")}, count=4)
+    # (Hushfleece since the Void Ray, whose Ray Film it was, was cut: shade from the meadow's own herd.)
+    shaped("sunshade", "sunshade", ["FFF", "S S"], {"F": rid("hushfleece"), "S": rid("solarite_ingot")}, count=4)
 
     # Collector Pedestal: a stone base, a column with a sun emblem, a solarite-banded top; what it holds
     # sits on top (a cross of two planes, like a plant).
@@ -1396,7 +1392,7 @@ def flares_phase5():
                           ("lingering_potion", "Lingering Potion of Sun Ward"), ("tipped_arrow", "Arrow of Sun Ward")):
         lang[f"item.minecraft.{kind}.effect.sun_ward"] = english
 
-    # Brewing (26.3 brews from data, like crafting): Awkward + Ray Film -> Sun Ward;
+    # Brewing (26.3 brews from data, like crafting): Awkward + Sunscale Lichen -> Sun Ward;
     # Sun Ward + Flare Pollen -> the long one; gunpowder and dragon's breath as for any potion.
     def brew(name, container, potion, reagent, out_container, out_potion):
         recipe(f"brewing/{name}", {"type": "minecraft:brewing",
@@ -1405,7 +1401,7 @@ def flares_phase5():
             "output": {"id": out_container, "components": {"minecraft:potion_contents": {"potion": out_potion}}}})
     for kind in ("potion", "splash_potion", "lingering_potion"):
         c = f"minecraft:{kind}"
-        brew(f"{kind}_awkward_ray_film", c, "minecraft:awkward", rid("ray_film"), c, rid("sun_ward"))
+        brew(f"{kind}_awkward_sunscale_lichen", c, "minecraft:awkward", rid("sunscale_lichen"), c, rid("sun_ward"))
         brew(f"{kind}_sun_ward_flare_pollen", c, rid("sun_ward"), rid("flare_pollen"), c, rid("long_sun_ward"))
     for potion in ("sun_ward", "long_sun_ward"):
         brew(f"potion_{potion}_gunpowder", "minecraft:potion", rid(potion), "minecraft:gunpowder",
@@ -1534,7 +1530,7 @@ def structures_phase6():
     # The Constellation Maze's reward: a Temporal Crystal, and a Star Chart that marks a Leviathan.
     chest_loot("constellation_maze", [
         {"rolls": 1, "entries": [entry("temporal_crystal")]},
-        {"rolls": 1, "entries": [entry("starforge_template")]},
+        {"rolls": 1, "entries": [entry("starforge_alloy")]},   # (Starforge Templates: only from the Curator)
         {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("star_chart"), "functions": [
             {"function": "minecraft:set_components", "components": {"minecraft:custom_data": {"Structure": "leviathan"}}}]}]},
         {"rolls": {"type": "minecraft:uniform", "min": 2, "max": 4}, "entries": [
@@ -1547,7 +1543,7 @@ def structures_phase6():
     chest_loot("observatory_vault", [
         {"rolls": 1, "entries": [entry("temporal_crystal", 3), entry("charged_void_crystal", 2, (1, 2)),
                                  entry("star_chart", 2), entry("void_crystal_block", 1)]},
-        chance("starforge_template", 0.5),
+        chance("starforge_alloy", 0.5),
         chance("rift_pearl", 0.05),
         {"rolls": {"type": "minecraft:uniform", "min": 1, "max": 3}, "entries": [
             entry("void_crystal", 4, (2, 5)), entry("meteoric_iron_ingot", 3, (1, 3)), entry("chart_fragment", 2, (1, 2)),
@@ -1569,7 +1565,7 @@ def structures_phase6():
             entry("minecraft:golden_apple", 2), entry("sunshade", 3, (2, 4))]},
         chance("temporal_crystal", 0.4),
         chance("bottled_flare", 0.25),
-        chance("starforge_template", 0.35),
+        chance("starforge_alloy", 0.35),
     ])
 
 
@@ -1822,7 +1818,7 @@ def advancements_phase9():
     # The Eclipse's Sunstorms
     advancement("weather_the_storm", rid("sunshade"), "Weather the Storm", "Be in the Gilded Reach when a Sunstorm dies down",
                 parent=root)
-    advancement("harvest_moon", "minecraft:shears", "Harvest Moon", "Shear the film from a Void Ray's wings",
+    advancement("harvest_moon", "minecraft:shears", "Shade from the Herd", "Shear a Hushback (its fleece makes Sunshades)",
                 parent=rid("end/weather_the_storm"))
     advancement("bottled_sunlight", rid("bottled_flare"), "Bottled Sunlight", "Fill a Flare Bottle with a Sunstorm",
                 parent=rid("end/weather_the_storm"), criteria={"bottle": has_item(rid("bottled_flare"))})
@@ -1859,12 +1855,9 @@ def mechanics_phase10():
     advancement("whale_rider", rid("chorus_flower_on_a_stick"), "Whale Rider", "Ride a Drift Whale",
                 parent=rid("end/whale_song"), frame="goal")
 
-    # Starforge Templates turn up in End City treasure (a global loot modifier: StarforgeLoot.Add).
-    write(DATA / "loot_modifiers" / "end_city_templates.json", {
-        "type": rid("add_item"), "item": rid("starforge_template"), "chance": 0.2,
-        "conditions": [{"type": "forge:loot_table_id", "loot_table_id": "minecraft:chests/end_city_treasure"}]})
-    write(RES / "data" / "forge" / "loot_modifiers" / "global_loot_modifiers.json",
-          {"replace": False, "entries": [rid("end_city_templates")]})
+    # (Starforge Templates used to turn up in End City treasure too. Since beta.4 the Curator is the only
+    # source - defeat it to starforge - as netherite's template comes only from bastions.)
+    write(RES / "data" / "forge" / "loot_modifiers" / "global_loot_modifiers.json", {"replace": False, "entries": []})
 
 
 
@@ -2052,7 +2045,9 @@ def distillation_blocks():
     # The Leviathan's keepers. The Curator always gives up its Core (the Starforge's Void Recall needs one).
     entity_loot("hollowback", [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": "minecraft:bone", "functions": [
         {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 0, "max": 2}}]}]}])
+    # The Curator: its Core, and the only Starforge Templates in the End (two: one to use, one to copy).
     entity_loot("curator", [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("curators_core")}]},
+                            {"rolls": 1, "entries": [entry("starforge_template", 1, (2, 2))]},
                             {"rolls": 1, "entries": [{"type": "minecraft:item", "name": "minecraft:obsidian", "functions": [
                                 {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 2, "max": 5}}]}]}])
     for kind, time in (("smelting", 200), ("smoking", 100), ("campfire_cooking", 600)):
@@ -2138,7 +2133,7 @@ def distillation_blocks():
             entry("leviathan_bone_block", 3, (2, 6)), entry("minecraft:ender_pearl", 3, (2, 4)), entry("minecraft:shulker_shell", 1, (1, 1)),
             entry("minecraft:experience_bottle", 2, (2, 5)), entry("minecraft:purpur_block", 2, (4, 12)),
             entry("minecraft:diamond", 1, (1, 3)), entry("minecraft:golden_apple", 1, (1, 1))]},
-        chance("starforge_template", 0.35),
+        chance("starforge_alloy", 0.35),
         chance("temporal_crystal", 0.2),
         chance("rift_pearl", 0.04),
     ])
@@ -2610,7 +2605,7 @@ def caves():
     shaped("starsap_block", "starsap_block", ["###", "###", "###"], {"#": rid("starsap")})
     recipe("starsap_from_block", {"type": "minecraft:crafting_shapeless", "category": "misc", "ingredients": [rid("starsap_block")],
                                   "result": {"id": rid("starsap"), "count": 9}})
-    # ---- The Crystal Vaults (under the Shattered Crags, below y=38): drifting geodes, a Shardback in each.
+    # ---- The Crystal Vaults (under the Shattered Crags, below y=38): drifting geodes; the Umbral Stalker hunts them.
     java_feature("crystal_vault")
     placed("crystal_vaults_geodes", {"feature": rid("crystal_vault"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 3}, {"type": "minecraft:biome"}]})
@@ -2618,9 +2613,6 @@ def caves():
               features_step7=[rid("crystal_vaults_geodes")],
               features_step9=[rid("glimmering_crags_voidgel")],
               particle="minecraft:white_ash", particle_chance=0.004)
-    entity_loot("shardback", [player_kill_drop("void_crystal", 1),
-                              {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("glimmer_cluster"), "functions": [
-                                  {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 1, "max": 2}}]}]}])
     # ---- The Deep Hollows' carving: a Hollow Thorn (from the Hollow Vines) carves a Hollow Lantern.
     variants = {}
     for facing, y in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):

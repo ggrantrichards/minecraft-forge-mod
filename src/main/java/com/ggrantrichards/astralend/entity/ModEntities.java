@@ -33,9 +33,6 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<UmbralStalker>> UMBRAL_STALKER = ENTITY_TYPES.register("umbral_stalker",
         () -> EntityType.Builder.of(UmbralStalker::new, MobCategory.MONSTER).sized(1.4F, 2.2F).eyeHeight(1.5F)
             .clientTrackingRange(8).build(ENTITY_TYPES.key("umbral_stalker")));
-    public static final RegistryObject<EntityType<VoidRay>> VOID_RAY = ENTITY_TYPES.register("void_ray",
-        () -> EntityType.Builder.of(VoidRay::new, MobCategory.CREATURE).sized(1.3F, 0.35F).eyeHeight(0.2F).fireImmune()
-            .clientTrackingRange(10).build(ENTITY_TYPES.key("void_ray")));
     public static final RegistryObject<EntityType<DriftWhale>> DRIFT_WHALE = ENTITY_TYPES.register("drift_whale",
         () -> EntityType.Builder.of(DriftWhale::new, MobCategory.AMBIENT).sized(2.6F, 2.3F).eyeHeight(1.2F).fireImmune()
             .passengerAttachments(3.3F)    // the rider sits on its back (drawn 3.3 blocks up), not inside it
@@ -71,16 +68,12 @@ public final class ModEntities {
             .clientTrackingRange(16).build(ENTITY_TYPES.key("curator")));
 
     // ---- The caves: the Hollow Roots' grub, and the Crystal Vaults' hunter.
-    public static final RegistryObject<EntityType<Shardback>> SHARDBACK = ENTITY_TYPES.register("shardback",
-        () -> EntityType.Builder.of(Shardback::new, MobCategory.MONSTER).sized(1.1F, 1.0F).eyeHeight(0.7F)
-            .clientTrackingRange(10).build(ENTITY_TYPES.key("shardback")));
 
     public static void register() {
         EntityAttributeCreationEvent.BUS.addListener(event -> {
             event.put(POLLINATOR.get(), EndPollinator.createAttributes().build());
             event.put(VOID_WANDERER.get(), VoidWanderer.createAttributes().build());
             event.put(UMBRAL_STALKER.get(), UmbralStalker.createAttributes().build());
-            event.put(VOID_RAY.get(), VoidRay.createAttributes().build());
             event.put(DRIFT_WHALE.get(), DriftWhale.createAttributes().build());
             event.put(WATCHER.get(), Watcher.createAttributes().build());
             event.put(SPIRE_WYRM.get(), SpireWyrm.createAttributes().build());
@@ -89,7 +82,6 @@ public final class ModEntities {
             event.put(MIRROR_WRETCH.get(), MirrorWretch.createAttributes().build());
             event.put(HOLLOWBACK.get(), Hollowback.createAttributes().build());
             event.put(CURATOR.get(), Curator.createAttributes().build());
-            event.put(SHARDBACK.get(), Shardback.createAttributes().build());
         });
         SpawnPlacementRegisterEvent.BUS.addListener(event -> {
             var replace = SpawnPlacementRegisterEvent.Operation.REPLACE;
@@ -97,11 +89,9 @@ public final class ModEntities {
             event.register(POLLINATOR.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::onAstralSoil, replace);
             event.register(VOID_WANDERER.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::onSolidGround, replace);
             event.register(UMBRAL_STALKER.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::inCave, replace);
-            event.register(VOID_RAY.get(), SpawnPlacementTypes.ON_GROUND, ground, VoidRay::checkVoidRaySpawnRules, replace);
             event.register(HUSHBACK.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::onSolidGround, replace);
             event.register(HYDRAGRIP.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::nearWater, replace);
             event.register(MIRROR_WRETCH.get(), SpawnPlacementTypes.ON_GROUND, ground, MirrorWretch::checkWretchSpawnRules, replace);
-            event.register(SHARDBACK.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::inCave, replace);
         });
     }
 

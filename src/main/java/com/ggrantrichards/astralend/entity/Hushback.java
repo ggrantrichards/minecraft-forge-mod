@@ -99,6 +99,9 @@ public class Hushback extends Animal {
                 }
                 level.playSound(null, this, SoundEvents.SHEEP_SHEAR, SoundSource.PLAYERS, 0.6F, 1.4F);
                 held.hurtAndBreak(1, player, hand);
+                if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
+                    com.ggrantrichards.astralend.world.ModAdvancements.award(sp, "harvest_moon");
+                }
             }
             return InteractionResult.SUCCESS;
         }

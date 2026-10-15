@@ -1779,8 +1779,10 @@ SHARDBACK = Mob("shardback", (64, 64), [
     Part("leg_bl", (4.5, 19, 5), [B(-1.5, 0, -1.5, 3, 5, 3, shard_hide, key="sleg")]),
 ], egg=(SHARD_HIDE[2], SHARD_CRYSTAL[4]))
 
-MOBS = [POLLINATOR, WANDERER, STALKER, VOID_RAY, WHALE, WATCHER, SPIRE_WYRM, HUSHBACK, HYDRAGRIP, MIRROR_WRETCH,
-        HOLLOWBACK, CURATOR, SHARDBACK]
+MOBS = [POLLINATOR, WANDERER, STALKER, WHALE, WATCHER, SPIRE_WYRM, HUSHBACK, HYDRAGRIP, MIRROR_WRETCH,
+        HOLLOWBACK, CURATOR]
+# (The Void Ray and the Shardback were cut after beta.4 to keep to eight mobs and a mini-boss; their
+# definitions stay above, unused.)
 # Cut by the distillation (their definitions stay above, unused): the Cinder Mite, the Hollow and the
 # Live Comet. Each mob's texture is painted from a seed fixed by its place in the original list, so
 # cutting some doesn't repaint the rest.

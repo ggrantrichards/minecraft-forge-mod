@@ -192,6 +192,15 @@ public class LeviathanPiece extends StructurePiece {
             this.put(level, chunk, arm, Blocks.PURPUR_BLOCK.defaultBlockState());
             this.put(level, chunk, arm.below(), ModBlocks.END_CHIMES.get().defaultBlockState());
             this.put(level, chunk, base.above(6), Blocks.END_ROD.defaultBlockState());
+            // And its mirror, hanging from the ceiling for the upside-down second phase: a short column, the
+            // arm, the chimes under it - in reach of someone standing on the ceiling.
+            BlockPos top = this.at(pylon[0], LeviathanShape.ceiling() - 1, pylon[1]);
+            for (int h = 0; h < 3; h++) {
+                this.put(level, chunk, top.below(h), h == 2 ? Blocks.PURPUR_BLOCK.defaultBlockState() : Blocks.OBSIDIAN.defaultBlockState());
+            }
+            BlockPos hangArm = Math.abs(dx) >= Math.abs(dz) ? top.offset(Integer.signum(dx), -2, 0) : top.offset(0, -2, Integer.signum(dz));
+            this.put(level, chunk, hangArm, Blocks.PURPUR_BLOCK.defaultBlockState());
+            this.put(level, chunk, hangArm.below(), ModBlocks.END_CHIMES.get().defaultBlockState());
         }
         // The egg's pedestal, under the heart, and a chest beside it.
         this.put(level, chunk, this.pedestal(), ModBlocks.LEVIATHAN_PEDESTAL.get().defaultBlockState());

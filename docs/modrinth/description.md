@@ -25,7 +25,7 @@ your face: the End tells you things with sound and light.
   by glowcaps and amber Starsap, where fireflies drift.
 - **Glimmering Crags:** dark Nightstone peaks grown through with cold, glowing Glimmer Crystal, and root caves where the Umbral
   Stalker waits. Its variant, the **Shattered Crags**, is split into shards over the void; below them
-  drift the **Crystal Vaults**, geodes where a Shardback lies folded among the crystals.
+  drift the **Crystal Vaults**, geodes of crystal where the Umbral Stalker hunts.
 - **Ashen Barrens:** the leviathans' graveyard - a pale, suffocating mist of ash over stone shelves
   strewn with ribcages, vertebrae and lone ribs, porous bone-white spires and the withered stalks of
   dead giant mushrooms; Memory Moss replays what passed over it.
@@ -55,7 +55,7 @@ Starforge needs.
   voices you know from the void's edge - the Endermen at the edges stand listening.
 - **The Watcher** is only ever seen from the corner of your eye. Look straight at it and it teleports
   away - and turns up further along, leading you to the Leviathan.
-- The **Umbral Stalker** in the Crags' caves, the **Void Wanderer**, the **Void Ray**, and Pollinators.
+- The **Umbral Stalker** in the Crags' caves and the Crystal Vaults, the **Void Wanderer**, and Pollinators.
 
 {{Drift Whale}}
 

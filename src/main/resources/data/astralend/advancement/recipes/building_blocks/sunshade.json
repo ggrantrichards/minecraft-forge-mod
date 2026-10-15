@@ -7,12 +7,12 @@
         "recipes": "astralend:sunshade"
       }
     },
-    "has_ray_film": {
+    "has_hushfleece": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": "astralend:ray_film"
+            "items": "astralend:hushfleece"
           }
         ]
       }
@@ -31,7 +31,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_ray_film",
+      "has_hushfleece",
       "has_solarite_ingot"
     ]
   ],

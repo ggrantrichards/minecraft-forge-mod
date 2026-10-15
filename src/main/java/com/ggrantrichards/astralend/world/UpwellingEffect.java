@@ -71,6 +71,11 @@ public final class UpwellingEffect extends MobEffect {
         return true;
     }
 
+    // The next fall upward does no harm (the Curator turning its reliquary over shouldn't cost a dozen hearts).
+    public static void softLanding(LivingEntity entity) {
+        RISING.put(entity, new double[] {entity.getY(), Double.POSITIVE_INFINITY});
+    }
+
     private static void wearOff(LivingEntity entity, MobEffectInstance instance) {
         if (entity == null || instance == null || !instance.is(ModEffects.upwelling()) || entity.level().isClientSide()) {
             return;

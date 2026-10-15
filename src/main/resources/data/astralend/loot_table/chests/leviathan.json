@@ -181,7 +181,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "astralend:starforge_template",
+          "name": "astralend:starforge_alloy",
           "weight": 1
         }
       ]

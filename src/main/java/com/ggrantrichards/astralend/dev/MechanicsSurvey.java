@@ -126,8 +126,8 @@ final class MechanicsSurvey {
     // Every spawn egg, used on the ground the way a player uses it: does the mob appear, and is it
     // still there (and, for the Umbral Stalker, visible) a couple of seconds later?
     static void checkSpawnEggs(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
-        String[] mobs = {"pollinator", "void_wanderer", "umbral_stalker", "void_ray", "drift_whale", "watcher", "spire_wyrm",
-                         "hushback", "hydragrip", "mirror_wretch", "hollowback", "curator", "shardback"};
+        String[] mobs = {"pollinator", "void_wanderer", "umbral_stalker", "drift_whale", "watcher", "spire_wyrm",
+                         "hushback", "hydragrip", "mirror_wretch", "hollowback", "curator"};
         net.minecraft.server.level.ServerPlayer player = standIn(end);
         player.snapTo(standOn.getX() + 0.5, standOn.getY(), standOn.getZ() - 4.5, 0.0F, 30.0F);
         StringBuilder report = new StringBuilder("spawn eggs:");
@@ -476,6 +476,14 @@ final class MechanicsSurvey {
         clearHurtCooldown(curator);
         curator.hurtServer(end, end.damageSources().arrow(arrow, player), 6.0F);
         boolean landed = curator.getHealth() < health && curator.position().distanceTo(standing) < 1.0;
+        // Half its health gone: the case shatters and it turns over for the upside-down second phase.
+        clearHurtCooldown(curator);
+        curator.hurtServer(end, end.damageSources().playerAttack(player), curator.getMaxHealth() * 0.7F);
+        boolean exposed = curator.isExposed() && curator.isAlive();
+        log.accept(String.format("new mobs: Curator - at %.0f of %.0f health, in its second phase: %s", curator.getHealth(), curator.getMaxHealth(), exposed));
+        if (!exposed) {
+            failures.add("new mobs: the Curator should enter its second phase at half health");
+        }
         end.setBlock(chime, Blocks.AIR.defaultBlockState(), 3);
         end.setBlock(chime.above(), Blocks.AIR.defaultBlockState(), 3);
         curator.discard();

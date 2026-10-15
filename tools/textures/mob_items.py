@@ -156,7 +156,6 @@ ITEM_MAPS = {
     "cracked_lens": (CRACKED_LENS, CRACKED_LENS_PAL),
     "abyss_shard": (ABYSS_SHARD, ABYSS_SHARD_PAL),
     "umbral_membrane": (UMBRAL_MEMBRANE, UMBRAL_MEMBRANE_PAL),
-    "ray_film": (RAY_FILM, RAY_FILM_PAL),
 }
 
 # Star Chart: a rolled-out chart of dark vellum with a few bright stars and a route drawn on it.
