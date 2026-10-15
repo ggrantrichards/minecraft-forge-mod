@@ -70,6 +70,8 @@ SIMPLE_CUBES = [
 ]
 PILLARS = [
     ("leviathan_bone_block", "Leviathan Bone Block", "leviathan_bone"),
+    ("weathered_leviathan_bone", "Weathered Leviathan Bone", "weathered_leviathan_bone"),
+    ("lichened_leviathan_bone", "Lichened Leviathan Bone", "lichened_leviathan_bone"),
     ("observatory_quartz_pillar", "Observatory Quartz Pillar", "observatory_quartz_pillar"),
     ("pollinator_husk", "Pollinator Husk", "pollinator_husk"),
     ("petrified_stalk", "Petrified Stalk", "petrified_stalk"),

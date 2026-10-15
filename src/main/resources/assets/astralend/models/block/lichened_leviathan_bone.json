@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "astralend:block/lichened_leviathan_bone_top",
+    "side": "astralend:block/lichened_leviathan_bone_side"
+  }
+}

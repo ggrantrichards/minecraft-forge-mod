@@ -752,8 +752,8 @@ public final class WorldgenSurvey {
         log(String.format("leviathan: start %s; pedestal %s (%s); %d End Chimes, %d Breathcomb in the lungs; heart: %d Leviathan Heart in %d "
             + "muscle; %d Curator(s)%s", start.toShortString(), pedestal.toShortString(), hasPedestal ? "built" : "MISSING", chimes, breathcomb,
             heartBlocks, muscle, curators.size(), curators.isEmpty() ? "" : curators.get(0).isDormant() ? ", dormant" : ", AWAKE"));
-        if (!hasPedestal || chimes != 4 || breathcomb < 600 || heartBlocks < 40 || muscle < 40) {
-            failures.add(String.format("leviathan: expected the pedestal, 4 End Chimes, 600+ Breathcomb and a heart (40+ each); got %s, %d, %d, %d, %d",
+        if (!hasPedestal || chimes != 4 || breathcomb < 150 || heartBlocks < 40 || muscle < 40) {
+            failures.add(String.format("leviathan: expected the pedestal, 4 End Chimes, a lung's Breathcomb (150+) and a heart (40+ each); got %s, %d, %d, %d, %d",
                 hasPedestal, chimes, breathcomb, heartBlocks, muscle));
         }
         if (curators.size() != 1) {
@@ -765,11 +765,11 @@ public final class WorldgenSurvey {
                 failures.add("leviathan: the Curator should be dormant, unhurt by anything but a player, and know its home");
             }
         }
-        // The garrison: two shulkers on each tower's roof but the maze's, still there once the chunks are live.
+        // The garrison: two shulkers on each tower's roof but the maze's (one such tower at least), still there once the chunks are live.
         var shulkers = end.getEntitiesOfClass(net.minecraft.world.entity.monster.Shulker.class, net.minecraft.world.phys.AABB.of(box).inflate(8));
         log("leviathan: " + shulkers.size() + " shulkers on the towers");
-        if (shulkers.size() < 6) {
-            failures.add("leviathan: expected 6 shulkers on the towers, found " + shulkers.size());
+        if (shulkers.size() < 2) {
+            failures.add("leviathan: expected 2+ shulkers on the towers, found " + shulkers.size());
         }
         // The maze on the last tower: its start, a spyglass, and bridges for all four constellations.
         BlockPos maze = body.mazeStart();
@@ -796,17 +796,25 @@ public final class WorldgenSurvey {
                 dark++;
             }
         }
-        int skullBone = 0;
-        for (BlockPos p : BlockPos.betweenClosed(throat.offset(-30, -14, -30), throat.offset(30, 40, 30))) {
-            if (end.getBlockState(p).is(ModBlocks.LEVIATHAN_BONE_BLOCK.get())) {
+        int skullBone = 0, variants = 0;
+        for (BlockPos p : BlockPos.betweenClosed(throat.offset(-40, -24, -40), throat.offset(40, 30, 40))) {
+            BlockState state = end.getBlockState(p);
+            if (state.is(ModBlocks.LEVIATHAN_BONE_BLOCK.get())) {
                 skullBone++;
+            } else if (state.is(ModBlocks.WEATHERED_LEVIATHAN_BONE.get()) || state.is(ModBlocks.LICHENED_LEVIATHAN_BONE.get())) {
+                skullBone++;
+                variants++;
             }
+        }
+        log("leviathan: " + variants + " of its skull's " + skullBone + " bone blocks weathered or lichened");
+        if (variants < skullBone / 10 || variants > skullBone * 2 / 3) {
+            failures.add("leviathan: its bone should be broken up with weathered and lichened bone (" + variants + " of " + skullBone + ")");
         }
         boolean hasThroat = end.getBlockState(throat).is(ModBlocks.MAW_THROAT.get());
         log(String.format("leviathan: skull - %d dark eyes, throat %s (%s), %d bone round it", dark, throat.toShortString(),
             hasThroat ? "built" : "MISSING", skullBone));
-        if (dark != 4 || !hasThroat || skullBone < 8000) {
-            failures.add(String.format("leviathan: expected 4 dark eyes, the throat and 8000+ bone in the skull; got %d, %s, %d", dark, hasThroat, skullBone));
+        if (dark != 4 || !hasThroat || skullBone < 4000) {
+            failures.add(String.format("leviathan: expected 4 dark eyes, the throat and 4000+ bone round the skull; got %d, %s, %d", dark, hasThroat, skullBone));
         }
         // Nothing of the land reaches into it: no End Stone or ground cover anywhere in its bounds.
         int ground = 0;
@@ -850,13 +858,20 @@ public final class WorldgenSurvey {
         // in the skull; the reliquary; the heart from under it; the maze.
         double dx = throat.getX() - arena.getX(), dz = throat.getZ() - arena.getZ(), len = Math.hypot(dx, dz);
         double ax = dx / len, az = dz / len;                // along the body, toward the head
-        BlockPos mid = new BlockPos((int) Math.round(arena.getX() + ax * 40), throat.getY(), (int) Math.round(arena.getZ() + az * 40));
-        BlockPos cam = mid.offset((int) Math.round(-az * 115 - ax * 30), 45, (int) Math.round(ax * 115 - az * 30));   // (within the render distance)
+        BlockPos mid = new BlockPos((int) Math.round(arena.getX() + ax * 8), throat.getY(), (int) Math.round(arena.getZ() + az * 8));
+        BlockPos cam = mid.offset((int) Math.round(-az * 120 - ax * 30), 40, (int) Math.round(ax * 120 - az * 30));   // (within the render distance)
         EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan %d.5 %d %d.5 %.1f 18.0 clear", cam.getX(), cam.getY(), cam.getZ(),
             yawTo(cam, mid)));
         BlockPos front = throat.offset((int) Math.round(ax * 95 - az * 55), 22, (int) Math.round(az * 95 + ax * 55));
         EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan_maw %d.5 %d %d.5 %.1f 8.0 wake=%d;%d;%d", front.getX(), front.getY(),
             front.getZ(), yawTo(front, throat), throat.getX(), throat.getY(), throat.getZ()));
+        // The skull's face, side on and a little in front, close enough to read.
+        BlockPos face = head.frame(46, com.ggrantrichards.astralend.world.structure.LeviathanShape.b() + 18,
+            com.ggrantrichards.astralend.world.structure.LeviathanShape.SKULL_W + 46);
+        BlockPos faceAt = head.frame(0, com.ggrantrichards.astralend.world.structure.LeviathanShape.b() + 6,
+            com.ggrantrichards.astralend.world.structure.LeviathanShape.SKULL_W + 24);
+        EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan_skull %d.5 %d %d.5 %.1f 12.0 clear", face.getX(), face.getY(),
+            face.getZ(), yawTo(face, faceAt)));
         BlockPos hall = head.hall().above();
         EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "structure_leviathan_maw_hall %d.5 %d %d.5 %.1f -12.0", hall.getX(), hall.getY(),
             hall.getZ(), yawTo(hall, throat)));

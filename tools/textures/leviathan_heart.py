@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""The Leviathan Heart's texture: crimson flesh in a net of veins, animated in a slow double beat - the
-veins flush bright twice, close together, then it rests. Writes
-textures/block/leviathan_heart.png (16 x 16 frames, stacked) and its .mcmeta.
+"""The Leviathan's living tissue (after beta.4: black and purple, not crimson - no gore, and the End's own
+colours): the Heart is near-black muscle in a net of violet veins, animated in a slow double beat - the
+veins flush bright twice, close together, then it rests; the Flesh round it is black-purple fibre whose
+veins pulse more faintly, like the Nether's stems. Writes textures/block/leviathan_heart.png and
+leviathan_flesh.png (16 x 16 frames, stacked) and their .mcmeta.
 
     python3 tools/textures/leviathan_heart.py
 """
@@ -13,8 +15,8 @@ from pathlib import Path
 from PIL import Image
 
 OUT = Path(__file__).resolve().parents[2] / "src/main/resources/assets/astralend/textures/block/leviathan_heart.png"
-FLESH = [(38, 5, 12), (56, 8, 18), (76, 12, 24), (96, 18, 30)]
-VEIN = [(122, 22, 34), (164, 32, 44), (212, 60, 62), (250, 120, 104)]
+FLESH = [(16, 8, 24), (28, 13, 40), (42, 19, 58), (58, 26, 80)]
+VEIN = [(96, 36, 156), (140, 58, 210), (196, 112, 255), (238, 196, 255)]
 # The beat, frame by frame (0 = at rest .. 1 = full flush): lub, dub, then a long rest.
 BEAT = [0.0, 0.55, 1.0, 0.45, 0.25, 0.8, 0.5, 0.2, 0.08] + [0.0] * 11
 
@@ -81,23 +83,39 @@ if __name__ == "__main__":
 
 
 def flesh():
-    """Leviathan Flesh: the heart's muscle and its great vessels - crimson in long fibres, still."""
-    tones = [(70, 12, 22), (104, 20, 32), (136, 28, 40), (168, 42, 52), (196, 72, 74)]
+    """Leviathan Flesh: black-purple fibres, with veins of violet running along them that swell and fade
+    with the heart's beat, fainter (an animation, like the Nether's stems)."""
+    tones = [(12, 6, 18), (22, 10, 32), (32, 15, 46), (44, 20, 62), (60, 28, 84)]
+    glow = [(70, 28, 116), (104, 44, 168), (150, 80, 228), (200, 150, 255)]
     rnd = random.Random(2203)
-    img = Image.new("RGBA", (16, 16))
+    base = [[0] * 16 for _ in range(16)]
+    veins = set()
     for y in range(16):
-        band = y % 4                       # fibres four pixels deep: a dark seam, then lighter toward the middle
-        base = (0, 2, 3, 2)[band]
+        band = y % 4
         for x in range(16):
-            t = base
+            t = (0, 2, 3, 2)[band]
             if band and rnd.random() < 0.18:
                 t += rnd.choice((-1, 1))
-            if band == 2 and (x + y * 3) % 7 == 0:
-                t = 4                      # a sheen along the fibre
-            img.putpixel((x, y), tones[max(0, min(4, t))] + (255,))
+            base[y][x] = max(0, min(4, t))
+            if band == 2 and (x + y * 3) % 5 in (0, 1):
+                veins.add((x, y))
+    frames = []
+    for b in BEAT:
+        img = Image.new("RGBA", (16, 16))
+        for y in range(16):
+            for x in range(16):
+                if (x, y) in veins:
+                    img.putpixel((x, y), glow[min(3, int(b * 3.2))] + (255,))
+                else:
+                    img.putpixel((x, y), tones[base[y][x]] + (255,))
+        frames.append(img)
+    sheet = Image.new("RGBA", (16, 16 * len(frames)))
+    for k, fr in enumerate(frames):
+        sheet.paste(fr, (0, 16 * k))
     out = OUT.with_name("leviathan_flesh.png")
-    img.save(out)
-    print("Wrote", out)
+    sheet.save(out)
+    out.with_suffix(".png.mcmeta").write_text(json.dumps({"animation": {"frametime": 3, "interpolate": True}}, indent=2) + "\n")
+    print("Wrote", out, "and its .mcmeta")
 
 
 if __name__ == "__main__":

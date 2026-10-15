@@ -8,10 +8,10 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 
-// The Leviathan: the whole skeleton of a Star Leviathan, some 370 blocks from tail to chin, adrift high
-// over the void - the citadel the End's builders raised on it, the reliquary in its ribcage, its organs
-// still faintly alive, and its skull, the Maw. LeviathanPiece builds the body, LeviathanHeadPiece the
-// skull. It floats well above the islands, and only where no land comes near it.
+// The Leviathan: the skeleton of a Star Leviathan, some 200 blocks from tail to snout, adrift high over the
+// void - no two alike (LeviathanShape) - with the End City its builders raised on its back, the reliquary
+// in its ribcage, its heart still beating, and its skull, the Maw. LeviathanPiece builds the body,
+// LeviathanHeadPiece the skull. It floats well above the islands, and only where no land comes near it.
 public class LeviathanStructure extends Structure {
     public static final MapCodec<LeviathanStructure> CODEC = simpleCodec(LeviathanStructure::new);
 
@@ -26,18 +26,19 @@ public class LeviathanStructure extends Structure {
         int turn = context.random().nextInt(4);
         int minY = context.heightAccessor().getMinY();
         int y0 = minY + 100 + context.random().nextInt(14);
-        double a = Math.PI / 4 + turn * Math.PI / 2, c = Math.cos(a), s = Math.sin(a);
-        // Under the whole of it - body and skull, across its width - at most two points may have land,
-        // and none may come within 15 blocks of its lowest part.
+        int[] cs = LeviathanPiece.CS[turn];
+        // Under the whole of it - tail to snout, across its width - at most two points may have land, and
+        // none may come within 8 blocks of its lowest part (its jaw, some 8 blocks over its origin).
         int land = 0;
-        for (int w = -180; w <= 180; w += 30) {
-            for (int u : new int[] {-28, 0, 28}) {
-                int x = cx + (int) Math.round(w * c - u * s), z = cz + (int) Math.round(w * s + u * c);
+        for (int w = LeviathanShape.TAIL; w <= LeviathanShape.SNOUT; w += 15) {
+            for (int u : new int[] {-20, 0, 20}) {
+                int dw = w - LeviathanShape.W0;
+                int x = cx + dw * cs[0] - u * cs[1], z = cz + dw * cs[1] + u * cs[0];
                 int h = context.chunkGenerator().getBaseHeight(x, z, Heightmap.Types.WORLD_SURFACE_WG, context.heightAccessor(), context.randomState());
-                if (h > y0 - 8) {
+                if (h > y0) {
                     return Optional.empty();
                 }
-                if (h > minY + 1 && h > y0 - 30) {
+                if (h > minY + 1 && h > y0 - 25) {
                     land++;
                 }
             }

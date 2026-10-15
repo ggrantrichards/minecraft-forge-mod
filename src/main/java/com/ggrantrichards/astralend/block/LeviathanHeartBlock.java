@@ -10,9 +10,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 
-// Leviathan Heart: the heart of a dead leviathan, which isn't quite dead. Its crimson light swells
+// Leviathan Heart: the heart of a dead leviathan, which isn't quite dead. Its violet light swells
 // and fades in a slow double beat (the texture's animation), and close by you can hear it - a low
-// heartbeat, now and then, and a breath of red in the air round it.
+// heartbeat, now and then, and a breath of violet in the air round it.
 public class LeviathanHeartBlock extends Block {
     public LeviathanHeartBlock(BlockBehaviour.Properties properties) {
         super(properties);
@@ -25,7 +25,7 @@ public class LeviathanHeartBlock extends Block {
                 0.9F, 0.55F, false);
         }
         if (random.nextInt(8) == 0) {
-            level.addParticle(new DustParticleOptions(0xB01C2E, 1.2F), pos.getX() + random.nextDouble(), pos.getY() + random.nextDouble(),
+            level.addParticle(new DustParticleOptions(0x9B4CFF, 1.2F), pos.getX() + random.nextDouble(), pos.getY() + random.nextDouble(),
                 pos.getZ() + random.nextDouble(), 0.0, 0.01, 0.0);
         }
     }

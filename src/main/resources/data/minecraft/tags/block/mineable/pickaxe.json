@@ -11,6 +11,7 @@
     "astralend:glimmer_cluster",
     "astralend:glimmer_crystal",
     "astralend:leviathan_bone_block",
+    "astralend:lichened_leviathan_bone",
     "astralend:lodestar",
     "astralend:meteoric_iron_block",
     "astralend:meteoric_iron_ore",
@@ -68,6 +69,7 @@
     "astralend:upwell_core",
     "astralend:void_crystal_block",
     "astralend:void_crystal_ore",
+    "astralend:weathered_leviathan_bone",
     "astralend:whalelight_scale"
   ]
 }

@@ -82,6 +82,23 @@ and the distillation renamed or removed some of them.
   way it came down. Where it hung, a faint ember still glows in the sky, and the Sunstorms still break
   from there.
 
+- **The Leviathan, rebuilt to feel like Minecraft:**
+  - **200 blocks**, not 370, and lying square to the compass so its lines stay crisp.
+  - **No two alike:** the seed decides how its tail curls and where it snapped off, which ribs are whole,
+    broken short or gone, which lung rotted away, how many End City towers stand on its back and where,
+    where the hall starts and where its roof has fallen in.
+  - **A skull you can read from a hundred blocks:** a boxy cranium with two eye sockets a side under a
+    heavy brow, a long squared snout with nostrils and blocky fangs, and the lower jaw hanging open.
+  - **Its colours:** ivory bone, broken up with **Weathered Leviathan Bone** (grey, cracked) and
+    **Lichened Leviathan Bone** (violet End lichen on the bone that faces up), in patches, the way
+    vanilla mixes mossy and cracked bricks; the builders' End City blocks - purpur, End Stone bricks,
+    purple glass, End Rods; and its living parts black and purple, the veins pulsing violet like the
+    Nether's stems (no more crimson).
+  - **Every room has one job:** the skull is the Maw (the wormhole) with the first explorers' camp and a
+    ledge up to the eyes; the reliquary in the ribcage is the Curator's arena with the egg's pedestal;
+    the heart hangs over it; the stomach holds what it swallowed; the towers hold loot and shulkers;
+    one tower carries the Constellation Maze.
+
 ### After beta.3: the reworks
 
 From playing beta.3. These replace what the distillation's notes below say about them.

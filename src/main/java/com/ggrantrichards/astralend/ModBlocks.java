@@ -120,6 +120,14 @@ public final class ModBlocks {
     public static final RegistryObject<Block> LEVIATHAN_BONE_BLOCK = register("leviathan_bone_block", RotatedPillarBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).instrument(NoteBlockInstrument.XYLOPHONE)
             .requiresCorrectToolForDrops().strength(2.0F).sound(SoundType.BONE_BLOCK));
+    // Its variants (after beta.4), so a skeleton isn't one block a thousand times over: weathered - grey,
+    // cracked and pitted - and lichened, with the End's violet lichen grown over it.
+    public static final RegistryObject<Block> WEATHERED_LEVIATHAN_BONE = register("weathered_leviathan_bone", RotatedPillarBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.XYLOPHONE)
+            .requiresCorrectToolForDrops().strength(2.0F).sound(SoundType.BONE_BLOCK));
+    public static final RegistryObject<Block> LICHENED_LEVIATHAN_BONE = register("lichened_leviathan_bone", RotatedPillarBlock::new,
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).instrument(NoteBlockInstrument.XYLOPHONE)
+            .requiresCorrectToolForDrops().strength(2.0F).sound(SoundType.BONE_BLOCK));
     // Chorus Moss: the soft ground cover of the Nebula Fields. It's springy:
     // you walk a little slower on it, and it softens a fall (ChorusMossBlock).
     public static final RegistryObject<Block> CHORUS_MOSS = register("chorus_moss", com.ggrantrichards.astralend.block.ChorusMossBlock::new,
@@ -409,12 +417,14 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(1.0F).sound(SoundType.WOOD)
             .lightLevel(state -> 15));
 
-    // Leviathan Flesh: the heart's muscle and its great vessels.
+    // Leviathan Flesh: the heart's muscle and its great vessels - black-purple, its veins pulsing violet
+    // (since beta.4; it was crimson).
     public static final RegistryObject<Block> LEVIATHAN_FLESH = register("leviathan_flesh", Block::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.CRIMSON_STEM).strength(1.0F).sound(SoundType.WART_BLOCK));
-    // Leviathan Heart: in the Leviathan's ribcage, dormant, still beating crimson.
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(1.0F).sound(SoundType.WART_BLOCK)
+            .lightLevel(state -> 3));
+    // Leviathan Heart: in the Leviathan's ribcage, dormant, still beating violet.
     public static final RegistryObject<Block> LEVIATHAN_HEART = register("leviathan_heart", com.ggrantrichards.astralend.block.LeviathanHeartBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.CRIMSON_STEM).strength(1.5F).sound(SoundType.WART_BLOCK)
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(1.5F).sound(SoundType.WART_BLOCK)
             .lightLevel(state -> 11));
 
     // Whalelight Scale: shed, very rarely, by a humming Drift Whale. Glows softly.
