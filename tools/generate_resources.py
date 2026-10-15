@@ -1490,7 +1490,7 @@ def structures_phase6():
     lang.update({
         "maze.astralend.constellation.leviathan": "Leviathan",
         "maze.astralend.constellation.maw": "Maw",
-        "maze.astralend.constellation.lantern": "Lantern",
+        "maze.astralend.constellation.rider": "Rider",
         "maze.astralend.constellation.watcher": "Watcher",
     })
 

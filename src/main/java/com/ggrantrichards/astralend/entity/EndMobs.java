@@ -49,30 +49,29 @@ public final class EndMobs {
     }
 
     // The nearest spot to stand within `range` blocks that has cover overhead (a Lumineshroom's cap,
-    // a ledge, a roof): null if 96 tries find none.
+    // a ledge, a roof), searched ring by ring outward: null if there's none.
     public static @Nullable BlockPos coverNear(ServerLevel level, BlockPos from, int range, RandomSource random) {
-        BlockPos best = null;
-        double bestDistance = Double.MAX_VALUE;
         BlockPos.MutableBlockPos feet = new BlockPos.MutableBlockPos();
-        for (int attempt = 0; attempt < 96; attempt++) {
-            int x = from.getX() + random.nextInt(2 * range + 1) - range;
-            int z = from.getZ() + random.nextInt(2 * range + 1) - range;
-            for (int dy = 4; dy >= -6; dy--) {
-                feet.set(x, from.getY() + dy, z);
-                if (level.getBlockState(feet.below()).isSolidRender() && level.getBlockState(feet).isAir()
-                        && level.getBlockState(feet.above()).isAir()) {
-                    if (!Sunstorms.underOpenSky(level, feet)) {
-                        double d = feet.distSqr(from);
-                        if (d < bestDistance) {
-                            bestDistance = d;
-                            best = feet.immutable();
+        for (int r = 0; r <= range; r++) {
+            for (int dx = -r; dx <= r; dx++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) != r) {
+                        continue;
+                    }
+                    for (int dy = 4; dy >= -6; dy--) {
+                        feet.set(from.getX() + dx, from.getY() + dy, from.getZ() + dz);
+                        if (level.getBlockState(feet.below()).isSolidRender() && level.getBlockState(feet).isAir()
+                                && level.getBlockState(feet.above()).isAir()) {
+                            if (!Sunstorms.underOpenSky(level, feet)) {
+                                return feet.immutable();
+                            }
+                            break;
                         }
                     }
-                    break;
                 }
             }
         }
-        return best;
+        return null;
     }
 
     // The nearest water source with air over it within `range` blocks (a Hydragrip's pond), or null.

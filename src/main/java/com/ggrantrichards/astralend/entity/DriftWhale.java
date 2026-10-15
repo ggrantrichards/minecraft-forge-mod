@@ -113,6 +113,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
     private @Nullable Entity strayChase;
     private @Nullable UUID fetching;        // a mother going after her straying calf
     private final float[] yawHistory = new float[40];
+    private float bodyPitch;                // set after the look control, which zeroes the pitch each tick
     // Client side: how far over it has rolled (it eases back upright when it stops).
     private float roll;
     private float rollO;
@@ -367,6 +368,9 @@ public class DriftWhale extends Mob implements ItemSteerable {
     public void tick() {
         this.setNoGravity(true);
         super.tick();
+        if (!this.level().isClientSide() && this.getControllingPassenger() == null) {
+            this.setXRot(this.bodyPitch);       // (the AI's look control resets it during the tick)
+        }
         this.steering.tickBoost();
         if (this.level().isClientSide()) {
             this.rollO = this.roll;
@@ -502,7 +506,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
         double horizontal = velocity.horizontalDistance();
         float pitch = sleeping ? -80.0F
             : velocity.lengthSqr() > 1.0E-4 ? (float) Mth.clamp(-Mth.atan2(velocity.y, horizontal) * (180.0 / Math.PI), -55.0, 55.0) : 0.0F;
-        this.setXRot(Mth.approach(this.getXRot(), pitch, sleeping ? 1.0F : 2.0F));
+        this.bodyPitch = Mth.approach(this.bodyPitch, pitch, sleeping ? 1.5F : 2.0F);
         this.setDeltaMovement(this.getDeltaMovement().scale(0.9).add(velocity.scale(0.1)));
     }
 

@@ -26,10 +26,14 @@ public final class Constellations {
         new Constellation("maw", -45.0F, -40.0F,
             new float[][] {{-9, 2}, {-4, 7}, {3, 7}, {9, 3}, {-9, -1}, {-4, -6}, {3, -6}, {9, -2}},
             new int[][] {{0, 1}, {1, 2}, {2, 3}, {4, 5}, {5, 6}, {6, 7}, {0, 4}}),
-        // The Lantern: a ring round its light.
-        new Constellation("lantern", 45.0F, -58.0F,
-            new float[][] {{0, 7}, {6, 3}, {6, -3}, {0, -6}, {-6, -3}, {-6, 3}, {0, 0}},
-            new int[][] {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 0}}),
+        // The Rider (from the Mystic Mountain nebula): a knight on a horse, facing you - the horse's long
+        // face in the middle, its shoulders, a foreleg and the near hindquarter; the knight's feet hanging
+        // either side of its neck; helmed and plumed, his lance raised up and to the left.
+        new Constellation("rider", 45.0F, -58.0F,
+            new float[][] {{0, 0}, {0, -5.5F}, {-1.5F, 2.4F}, {1.5F, 2.4F}, {-3.6F, -3.2F}, {3.6F, -3.2F}, {3.9F, -8}, {3.5F, -12},
+                {-6, -4.5F}, {-6.4F, -11.5F}, {0, 4.2F}, {-3.4F, -0.8F}, {3.4F, -0.8F}, {0, 7.6F}, {0, 9.8F}, {1, 11.8F}, {-8, 14}},
+            new int[][] {{0, 1}, {0, 2}, {0, 3}, {4, 5}, {5, 6}, {6, 7}, {4, 8}, {8, 9}, {10, 11}, {10, 12}, {10, 13}, {13, 14},
+                {14, 15}, {13, 16}}),
         // The Watcher: a tall, thin figure.
         new Constellation("watcher", 135.0F, -46.0F,
             new float[][] {{0, 10}, {0, 4}, {-5, 2}, {5, 2}, {0, -3}, {-3, -10}, {3, -10}},

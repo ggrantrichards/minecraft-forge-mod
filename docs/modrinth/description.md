@@ -59,6 +59,15 @@ Starforge needs.
 - The **Umbral Stalker**, unseen in the Crags' caves until it hunts; the **Shardback**, a crystal-backed
   ambusher in the Crystal Vaults; and Pollinators, spreading the Nebula Fields' glowing plants.
 
+### They live with each other
+
+Every creature has its threads: Hushback herds keep a lookout that chimes when something comes (sneak
+up on them); Hydragrips snap up the endermites that pester the herds and lounge on their backs; whale
+calves chase Pollinators until their mothers fetch them home, pods sleep hanging nose-up in the void
+and circle a Leviathan when they pass one; a Mirror Wretch hums at whales in their own voice, and they
+go silent and steer away; a wolf growls where an Umbral Stalker hides; Endermen won't meet the
+Watcher's eye. When a Sunstorm comes, everything alive takes cover.
+
 {{Drift Whale}}
 
 {{Mirror Wretch}}

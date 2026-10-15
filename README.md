@@ -78,14 +78,37 @@ and the distillation renamed or removed some of them.
   and the Endermen standing at its edges are listening to it. **Solarite** is found there too: veins in
   the pale stone, and **scorch fissures** with charred lips and raw Solarite glowing at the bottom.
 
+- **The web of life, in the game.** The creatures live with each other, not only alongside (every
+  thread here is made to happen and checked by the survey on each build):
+  - **Hushbacks keep watch:** one stands lookout, head up, turning slowly; at a monster, an endermite
+    or a player who isn't sneaking (or bringing Breathcomb) it chimes twice and the herd shies away.
+  - **Hydragrips clean the herds:** an endermite near a Hushback is the first thing they go for (the
+    Gilded Reach's endermites creep after the herds), and now and then one lounges on a resting
+    Hushback's back. Their young play tag round the ponds; so will an axolotl, if you bring one.
+  - **The Hollowback remembers:** hold Breathcomb or Hushfleece and it falters, head low, and chimes once.
+  - **The Umbral Stalker** hunts Endermen when no player is about (struck, they often blink away),
+    keeps clear of Pollinators and of a woken Shardback - and a **wolf** stares and growls where it
+    hides, giving it away.
+  - **The Shardback** ambushes an Enderman that wanders close, as it would you.
+  - **Endermen won't meet the Watcher's eye:** near it they turn their backs and walk off.
+  - **The Mirror Wretch** eats endermites (which live in the Ashen Barrens now too) and hums at passing
+    whales in a whale's voice: they answer, then fall silent and steer away. Silent whales mean a
+    Wretch is near.
+  - **Pollinators** rise and drift in a passing whale pod's wake.
+  - **Drift Whale pods** swim as a flock, each turning as the leader turned, a beat late; calves stray
+    (chasing a Pollinator round, never touching it) and their mother calls, fetches and nudges them
+    back; pods sleep hanging nose-up in the void; passing a Leviathan, a pod circles it once, humming
+    its lowest.
+  - **In a Sunstorm** Hushbacks crowd under the Lumineshrooms, Hydragrips slip into the ponds, and whale
+    pods swim out of the Gilded Reach till it's past.
 - **Eight mobs and a mini-boss.** The Void Ray and the Void Wanderer are cut (the Wanderer was too
   like the Watcher), to keep to the plan: the Drift Whale, Pollinator, Hushback, Hydragrip, Mirror
   Wretch, Umbral Stalker, Watcher and Shardback, the Hollowback as a Hushback variant, and the Curator.
   - The **Wanderer Relay** went with the Wanderer, leaving five structures: the Leviathan, the Solar
     Array, the Shattered Observatory, the Constellation Maze and the Comet Crater.
   - **Cracked Lenses and Chart Fragments** come from the builders' chests now (Lenses from the
-    observatories). "Hold Still" is replaced by **Through the Lens**: make a Portal Lens. The Lantern
-    takes the Wanderer's place among the constellations.
+    observatories). "Hold Still" is replaced by **Through the Lens**: make a Portal Lens. The **Rider**
+    (a knight on a horse, from the Mystic Mountain nebula) takes the Wanderer's place among the constellations.
   - Sunshades are made from Hushfleece now and Sun Ward is brewed from Sunscale Lichen (both were Ray
     Film); "Harvest Moon" is now shearing a Hushback.
 - **The Curator, rebuilt as a mini-boss to be feared:** a hulking war-construct of the End's builders
