@@ -1361,9 +1361,6 @@ def main():
     charred = stone(CHARRED, 111, blotches=24, specks=16, glint=CHARRED_EMBER, glints=3)
     out.append(save(charred, "block/charred_end_stone.png"))
     # ---- The Corona
-    out.append(save(cracks(stone(SUNSCORCHED, 121, blotches=18, specks=12), SUNSCORCHED[0], 122, n=4), "block/sunscorched_stone.png"))
-    out.append(save(polished(SUNSCORCHED, 123), "block/polished_sunscorched_stone.png"))
-    out.append(save(bricks(SUNSCORCHED, 124), "block/sunscorched_stone_bricks.png"))
     out.append(save(overlay(cracks(stone(SUNSCORCHED, 125, blotches=18, specks=12), SUNSCORCHED[0], 126, n=3), ORE_SOLAR, SOLAR),
                     "block/solarite_ore.png"))
     out.append(save(metal_block(SOLAR, 127), "block/solarite_block.png"))
@@ -1380,9 +1377,6 @@ def main():
     out.append(save(from_map(FLAREBLOOM_BOTTOM, FLAREBLOOM_PAL), "block/flarebloom_bottom.png"))
     out.append(save(sunscale_lichen(), "block/sunscale_lichen.png"))
     out.append(save(ashen_lumineshroom(), "block/ashen_lumineshroom.png"))
-    out.append(save(pollinator_husk_side(), "block/pollinator_husk_side.png"))
-    out.append(save(pollinator_husk_top(), "block/pollinator_husk_top.png"))
-    out.append(save(from_map(ASTRAL_VINE_TIP, PETRIFIED), "block/petrified_astral_vine.png"))
     # ---- Shattered Observatory
     out.append(save(smooth(OBS_QUARTZ, 131), "block/observatory_quartz.png"))
     out.append(save(pillar_side(OBS_QUARTZ, 132), "block/observatory_quartz_pillar_side.png"))
@@ -1429,8 +1423,6 @@ def main():
     out.append(save(from_map(TENDRIL_PLANT, TENDRIL_PAL), "block/nebula_tendril_plant.png"))
     out.append(save(from_map(SHIMMER_REED_TOP, REED_PAL), "block/shimmer_reed_top.png"))
     out.append(save(from_map(SHIMMER_REED_BOTTOM, REED_PAL), "block/shimmer_reed_bottom.png"))
-    out.append(save(petrified_stalk_side(), "block/petrified_stalk_side.png"))
-    out.append(save(petrified_stalk_top(), "block/petrified_stalk_top.png"))
     out.append(save(from_map(NULL_LANTERN_SIDE, NULL_LANTERN_PAL), "block/null_lantern_side.png"))
     out.append(save(from_map(NULL_LANTERN_END, NULL_LANTERN_PAL), "block/null_lantern_end.png"))
     out.append(save(from_map(NULL_LANTERN_STEM, NULL_LANTERN_PAL), "block/null_lantern_stem.png"))

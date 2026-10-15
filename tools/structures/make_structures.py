@@ -463,90 +463,6 @@ def bone(nx, ny, nz):
     return a("leviathan_bone_block") + ("[axis=z]" if abs(nx) > max(abs(ny), abs(nz)) else "[axis=x]")
 
 
-# ------------------------------------------------------------------ Constellation Maze
-
-def maze_platform(t, cx, y, cz, radius, rnd):
-    """A broken platform floating in the void: polished stone on a rough cone of Nightstone."""
-    for x in range(int(cx - radius - 1), int(cx + radius + 2)):
-        for z in range(int(cz - radius - 1), int(cz + radius + 2)):
-            d = math.hypot(x - cx, z - cz)
-            if d > radius + 0.4:
-                continue
-            edge = d > radius - 0.9
-            if edge and rnd.random() < 0.25:
-                continue                                    # chipped edge
-            t.set(x, y, z, a("nightstone_bricks") if edge else a("polished_nightstone"))
-            for dy in range(1, 5):
-                if d <= radius * (1 - dy / 4.5) + rnd.uniform(-0.4, 0.3):
-                    t.set(x, y - dy, z, a("nightstone"))
-
-
-def bridge(t, a0, a1, bend, constellation):
-    """A star-bridge two blocks wide from a0 to a1, bending sideways by `bend` blocks halfway."""
-    mx, my, mz = [(a0[i] + a1[i]) / 2 for i in range(3)]
-    dx, dz = a1[0] - a0[0], a1[2] - a0[2]
-    length = math.hypot(dx, dz) or 1.0
-    px, pz = -dz / length, dx / length
-    mid = (mx + px * bend, my, mz + pz * bend)
-    state = a("star_bridge") + f"[constellation={constellation},lit=false]"
-    for p, q in ((a0, mid), (mid, a1)):
-        steps = int(max(abs(q[0] - p[0]), abs(q[2] - p[2])) * 2) + 1
-        for s in range(steps + 1):
-            f = s / steps
-            x, y, z = p[0] + (q[0] - p[0]) * f, p[1] + (q[1] - p[1]) * f, p[2] + (q[2] - p[2]) * f
-            for ox, oz in ((0, 0), (1, 0), (0, 1), (1, 1)):
-                if t.get(round(x) + ox, math.floor(y), round(z) + oz) in (None, "minecraft:air"):
-                    t.set(round(x) + ox, math.floor(y), round(z) + oz, state)
-
-
-def constellation_maze(seed):
-    """A ring of broken platforms floating in open void around a central dais, joined by star-bridges
-    that are invisible until lit. Each platform's way on answers to one constellation: find it in
-    the sky through a spyglass and the bridge to the next platform lights for 20 seconds (a barrel on
-    the first platform holds a spyglass). The last bridge leads to the
-    dais and its chest. Fall, and the maze catches you (MazeScoping)."""
-    S = 49
-    t = Template(S, 44, S, seed)
-    rnd = t.rnd
-    c = S // 2
-    stops = [(5, 28, c), (c, 30, 5), (S - 6, 32, c), (c, 34, S - 6)]
-    for i, (x, y, z) in enumerate(stops):
-        maze_platform(t, x, y, z, 3.2, rnd)
-        t.set(x, y, z, a("star_inlay_observatory_quartz"))      # where to stand and look up
-        lx, lz = (x - 2, z + 2) if i % 2 == 0 else (x + 2, z - 2)
-        t.set(lx, y + 1, lz, a("polished_nightstone_wall"))
-        t.set(lx, y + 2, lz, a("null_lantern"))
-        if i == 0:
-            # A spyglass left at the start for whoever came without one.
-            bx, bz = (x - 2, z - 2)
-            t.set(bx, y + 1, bz, "minecraft:barrel[facing=up,open=false]", nbt={
-                "Items": nbt_list_compound({"Slot": Byte(13), "id": "minecraft:spyglass", "count": Int(1)})})
-    # The dais.
-    dy = 36
-    maze_platform(t, c, dy, c, 5.4, rnd)
-    for x in range(c - 5, c + 6):
-        for z in range(c - 5, c + 6):
-            d = math.hypot(x - c, z - c)
-            if d <= 4.6:
-                t.set(x, dy, z, a("star_inlay_observatory_quartz") if 2.6 < d < 3.4 and (x + z) % 2 == 0 else a("observatory_quartz"))
-    for ox, oz in ((-3, -3), (3, -3), (-3, 3), (3, 3)):
-        for k in range(1, 4 if rnd.random() < 0.7 else 2):
-            t.set(c + ox, dy + k, c + oz, a("observatory_quartz_pillar") + "[axis=y]")
-    t.set(c - 3, dy + 4, c - 3, a("null_lantern"))
-    t.set(c + 3, dy + 4, c + 3, a("null_lantern"))
-    chest(t, c, dy + 1, c, "constellation_maze", facing="west")
-    # The bridges, each answering to one constellation (the one sighted from the platform it starts at).
-    ends = stops + [(c, dy, c)]
-    for i in range(4):
-        (x0, y0, z0), (x1, y1, z1) = ends[i], ends[i + 1]
-        r0 = 3.6
-        r1 = 5.8 if i == 3 else 3.6
-        d = math.hypot(x1 - x0, z1 - z0)
-        ux, uz = (x1 - x0) / d, (z1 - z0) / d
-        bridge(t, (x0 + ux * r0, y0, z0 + uz * r0), (x1 - ux * r1, y1, z1 - uz * r1), 5 if i % 2 == 0 else -5, i)
-    return t
-
-
 def nbt_list_compound(*values):
     import nbt as _nbt
     return _nbt.List(list(values), _nbt.COMPOUND)
@@ -748,10 +664,7 @@ STRUCTURES = [
     dict(name="resonant_spire", variants=[lambda: resonant_spire(81)], retired=True,
          biomes=[a("glimmering_crags")], spread=(28, 10, 51772093), height={"absolute": -3},
          heightmap="WORLD_SURFACE_WG", spawns=None, adaptation="beard_thin", ground=(16, 4096, 16)),
-    dict(name="constellation_maze", variants=[lambda: constellation_maze(71)],
-         biomes=["minecraft:small_end_islands", a("nebula_fields")], spread=(24, 8, 77162391),
-         height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 56}, "max_inclusive": {"absolute": 76}},
-         heightmap=None, spawns=None, adaptation=None, ground=(-4096, 40, 22)),
+    # (The free-standing Constellation Maze was folded into the Leviathan's last tower after beta.4.)
 ]
 
 

@@ -104,8 +104,16 @@ and the distillation renamed or removed some of them.
 - **Eight mobs and a mini-boss.** The Void Ray and the Void Wanderer are cut (the Wanderer was too
   like the Watcher), to keep to the plan: the Drift Whale, Pollinator, Hushback, Hydragrip, Mirror
   Wretch, Umbral Stalker, Watcher and Shardback, the Hollowback as a Hushback variant, and the Curator.
-  - The **Wanderer Relay** went with the Wanderer, leaving five structures: the Leviathan, the Solar
-    Array, the Shattered Observatory, the Constellation Maze and the Comet Crater.
+  - The **Wanderer Relay** went with the Wanderer, and the free-standing **Constellation Mazes** are folded
+    into the one on each Leviathan's last tower: four structures - the Leviathan, the Solar Array, the
+    Shattered Observatory and the Comet Crater.
+  - **Fifteen blocks that no longer generated are cut:** the Sunscorched Stone family (the Corona's), the
+    Pollinator Husk and the Petrified Stalk and Astral Vine. The Collector Pedestal is made with Pale End
+    Stone Bricks now (it needed Polished Sunscorched Stone, which couldn't be had).
+  - **Every drop has a use:** four Abyss Shards (the Mirror Wretch's) round an Ender Pearl make a **Rift
+    Pearl**; an Umbral Membrane brews an Awkward Potion straight into **Invisibility**. (The Resonant Key
+    went with the Spire Wyrm, out of the creative tab.)
+  - **A faint aurora** hangs low round the Gilded Reach's sky again: two gold curtains and one teal.
   - **Cracked Lenses and Chart Fragments** come from the builders' chests now (Lenses from the
     observatories). "Hold Still" is replaced by **Through the Lens**: make a Portal Lens. The **Rider**
     (a knight on a horse, from the Mystic Mountain nebula) takes the Wanderer's place among the constellations.

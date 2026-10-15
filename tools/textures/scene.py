@@ -111,7 +111,7 @@ def mushroom_scene():
 
 
 def corona_scene():
-    crust, lichen = texture("sunscorched_stone"), texture("sunscale_lichen")
+    crust, lichen = texture("pale_end_stone"), texture("sunscale_lichen")
     v = ground(14, crust)
     for x in range(8, 14):
         for z in range(0, 5):

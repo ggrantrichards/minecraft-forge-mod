@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 // Flare Bottle) under a Sunshade, and charged Sunscale Lichen on the ground.
 final class FlareDisplay {
     static void build(ServerLevel level, BlockPos centre) {
-        BlockState ground = ModBlocks.SUNSCORCHED_STONE.get().defaultBlockState();
+        BlockState ground = ModBlocks.PALE_END_STONE.get().defaultBlockState();
         for (int dx = -4; dx <= 4; dx++) {
             for (int dz = -4; dz <= 4; dz++) {
                 level.setBlock(centre.offset(dx, -1, dz), ground, 3);

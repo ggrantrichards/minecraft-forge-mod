@@ -6,7 +6,6 @@ import com.ggrantrichards.astralend.world.feature.CraterFeature;
 import com.ggrantrichards.astralend.world.feature.GiantLumineshroomFeature;
 import com.ggrantrichards.astralend.world.feature.LeviathanRibcageFeature;
 import com.ggrantrichards.astralend.world.feature.NullwoodTreeFeature;
-import com.ggrantrichards.astralend.world.feature.PetrifiedStalkFeature;
 import com.ggrantrichards.astralend.world.feature.TendrilUndersideFeature;
 import com.ggrantrichards.astralend.world.feature.UpwellFeature;
 import com.ggrantrichards.astralend.world.feature.StardustUnderhangFeature;
@@ -46,11 +45,9 @@ public final class ModWorldgen {
         FEATURE_TYPES.register("bone_spire", () -> com.ggrantrichards.astralend.world.feature.BoneSpireFeature.CODEC);
         FEATURE_TYPES.register("withered_stalk", () -> com.ggrantrichards.astralend.world.feature.WitheredStalkFeature.CODEC);
         FEATURE_TYPES.register("crater", () -> CraterFeature.CODEC);
-        FEATURE_TYPES.register("petrified_stalk", () -> PetrifiedStalkFeature.CODEC);
         // Phase 10
         FEATURE_TYPES.register("glimmer_spire", () -> com.ggrantrichards.astralend.world.feature.GlimmerSpireFeature.CODEC);
         // Phase 11
-        FEATURE_TYPES.register("solarite_spire", () -> com.ggrantrichards.astralend.world.feature.SolariteSpireFeature.CODEC);
         FEATURE_TYPES.register("scorch_fissure", () -> com.ggrantrichards.astralend.world.feature.ScorchFissureFeature.CODEC);
         FEATURE_TYPES.register("oasis", () -> com.ggrantrichards.astralend.world.feature.OasisFeature.CODEC);
         FEATURE_TYPES.register("underside", () -> com.ggrantrichards.astralend.world.feature.UndersideFeature.CODEC);

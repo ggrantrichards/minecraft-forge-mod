@@ -185,22 +185,6 @@ public final class ModBlocks {
     public static final RegistryObject<Block> CHARRED_END_STONE_SLAB = slab("charred_end_stone_slab", CHARRED_END_STONE);
     public static final RegistryObject<Block> CHARRED_END_STONE_WALL = wall("charred_end_stone_wall", CHARRED_END_STONE);
 
-    // ---- The Corona: bleached stone, Solarite, and the life that adapted (or didn't) ----
-    public static final RegistryObject<Block> SUNSCORCHED_STONE = register("sunscorched_stone", Block::new,
-        () -> endStone(MapColor.SAND));
-    public static final RegistryObject<Block> SUNSCORCHED_STONE_STAIRS = stairs("sunscorched_stone_stairs", SUNSCORCHED_STONE);
-    public static final RegistryObject<Block> SUNSCORCHED_STONE_SLAB = slab("sunscorched_stone_slab", SUNSCORCHED_STONE);
-    public static final RegistryObject<Block> SUNSCORCHED_STONE_WALL = wall("sunscorched_stone_wall", SUNSCORCHED_STONE);
-    public static final RegistryObject<Block> POLISHED_SUNSCORCHED_STONE = register("polished_sunscorched_stone", Block::new,
-        () -> endStone(MapColor.SAND));
-    public static final RegistryObject<Block> POLISHED_SUNSCORCHED_STONE_STAIRS = stairs("polished_sunscorched_stone_stairs", POLISHED_SUNSCORCHED_STONE);
-    public static final RegistryObject<Block> POLISHED_SUNSCORCHED_STONE_SLAB = slab("polished_sunscorched_stone_slab", POLISHED_SUNSCORCHED_STONE);
-    public static final RegistryObject<Block> POLISHED_SUNSCORCHED_STONE_WALL = wall("polished_sunscorched_stone_wall", POLISHED_SUNSCORCHED_STONE);
-    public static final RegistryObject<Block> SUNSCORCHED_STONE_BRICKS = register("sunscorched_stone_bricks", Block::new,
-        () -> endStone(MapColor.SAND));
-    public static final RegistryObject<Block> SUNSCORCHED_STONE_BRICK_STAIRS = stairs("sunscorched_stone_brick_stairs", SUNSCORCHED_STONE_BRICKS);
-    public static final RegistryObject<Block> SUNSCORCHED_STONE_BRICK_SLAB = slab("sunscorched_stone_brick_slab", SUNSCORCHED_STONE_BRICKS);
-    public static final RegistryObject<Block> SUNSCORCHED_STONE_BRICK_WALL = wall("sunscorched_stone_brick_wall", SUNSCORCHED_STONE_BRICKS);
     // Solarite: only in the Ashen Barrens (it was the Corona's). Diamond pickaxe; XP comes from smelting, like Meteoric Iron.
     public static final RegistryObject<Block> SOLARITE_ORE = register("solarite_ore",
         p -> new DropExperienceBlock(ConstantInt.of(0), p),
@@ -261,12 +245,6 @@ public final class ModBlocks {
     public static final RegistryObject<Block> ASHEN_LUMINESHROOM = register("ashen_lumineshroom",
         p -> new EndPlantBlock(Block.column(6.0, 0.0, 10.0), ASTRAL_SOIL, p),
         () -> plant(MapColor.COLOR_GRAY, SoundType.FUNGUS));
-    public static final RegistryObject<Block> PETRIFIED_ASTRAL_VINE = register("petrified_astral_vine",
-        p -> new EndPlantBlock(Block.column(8.0, 0.0, 15.0), ASTRAL_SOIL, p),
-        () -> plant(MapColor.COLOR_GRAY, SoundType.DRIPSTONE_BLOCK));
-    public static final RegistryObject<Block> POLLINATOR_HUSK = register("pollinator_husk", RotatedPillarBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).instrument(NoteBlockInstrument.XYLOPHONE)
-            .strength(1.5F).sound(SoundType.BONE_BLOCK));
 
     // ---- Shattered Observatory: the ruins' cut stone ----
     public static final RegistryObject<Block> OBSERVATORY_QUARTZ = register("observatory_quartz", Block::new,
@@ -391,10 +369,6 @@ public final class ModBlocks {
     // ---- Ashen Barrens and the Corona ----
     public static final RegistryObject<Block> SHIMMER_REED = register("shimmer_reed", EndTallPlantBlock::new,
         () -> plant(MapColor.COLOR_LIGHT_BLUE, SoundType.GRASS).replaceable().offsetType(BlockBehaviour.OffsetType.XZ));
-    // The stone-hard trunk of a giant Astral Vine that died in the Corona long ago.
-    public static final RegistryObject<Block> PETRIFIED_STALK = register("petrified_stalk", RotatedPillarBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).instrument(NoteBlockInstrument.BASEDRUM)
-            .requiresCorrectToolForDrops().strength(2.0F, 6.0F).sound(SoundType.DRIPSTONE_BLOCK));
 
     // ---- Phase 4: from the mobs ----
     // Spore Lantern: Glowing Spores in a glass case. Its light also reveals Umbral Stalkers.

@@ -39,6 +39,7 @@ public final class ModCreativeTabs {
         }
         // Out of the world for now (its code and model are kept): no egg in the tab either.
         items.remove(ModItems.SPIRE_WYRM_SPAWN_EGG.get());
+        items.remove(ModItems.RESONANT_KEY.get());      // (the retired Spire Wyrm's, like its egg)
         return items;
     }
 

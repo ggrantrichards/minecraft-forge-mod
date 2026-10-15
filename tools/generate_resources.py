@@ -33,9 +33,6 @@ STONE_FAMILIES = [
     ("pale_end_stone", "Pale End Stone", True),
     ("pale_end_stone_bricks", "Pale End Stone Bricks", True),
     ("charred_end_stone", "Charred End Stone", True),
-    ("sunscorched_stone", "Sunscorched Stone", True),
-    ("polished_sunscorched_stone", "Polished Sunscorched Stone", True),
-    ("sunscorched_stone_bricks", "Sunscorched Stone Bricks", True),
     ("observatory_quartz", "Observatory Quartz", True),
     # The distillation: what the Leviathan's builders laid
     ("purpur_bricks", "Purpur Bricks", True),
@@ -73,13 +70,10 @@ PILLARS = [
     ("weathered_leviathan_bone", "Weathered Leviathan Bone", "weathered_leviathan_bone"),
     ("lichened_leviathan_bone", "Lichened Leviathan Bone", "lichened_leviathan_bone"),
     ("observatory_quartz_pillar", "Observatory Quartz Pillar", "observatory_quartz_pillar"),
-    ("pollinator_husk", "Pollinator Husk", "pollinator_husk"),
-    ("petrified_stalk", "Petrified Stalk", "petrified_stalk"),
 ]
 CROSS_PLANTS = [
     ("lumineshroom", "Lumineshroom"), ("starbloom", "Starbloom"),
     ("shimmer_grass", "Ashen Grass"), ("ashen_lumineshroom", "Ashen Lumineshroom"),
-    ("petrified_astral_vine", "Petrified Astral Vine"),
     ("nebula_tufts", "Nebula Tufts"), ("nullwood_sapling", "Nullwood Sapling"),
     ("hollow_glowcap", "Hollow Glowcap"),
 ]
@@ -110,7 +104,7 @@ ITEMS = [
 ]
 
 PLURAL = {"nightstone_bricks": "nightstone_brick", "pale_end_stone_bricks": "pale_end_stone_brick",
-          "sunscorched_stone_bricks": "sunscorched_stone_brick", "purpur_bricks": "purpur_brick"}  # "bricks" -> "brick_stairs", like vanilla
+          "purpur_bricks": "purpur_brick"}  # "bricks" -> "brick_stairs", like vanilla
 
 
 def variant_id(base, kind):
@@ -1374,7 +1368,7 @@ def flares_phase5():
     drop_self("collector_pedestal")
     tag("block", "minecraft:mineable/pickaxe", rid("collector_pedestal"))
     shaped("collector_pedestal", "collector_pedestal", ["SGS", " P ", "PPP"],
-           {"S": rid("solarite_ingot"), "G": rid("astral_glass"), "P": rid("polished_sunscorched_stone")})
+           {"S": rid("solarite_ingot"), "G": rid("astral_glass"), "P": rid("pale_end_stone_bricks")})
 
     # Items
     for name, english in (("flare_pollen", "Flare Pollen"), ("charged_void_crystal", "Charged Void Crystal"),
@@ -1401,6 +1395,9 @@ def flares_phase5():
         c = f"minecraft:{kind}"
         brew(f"{kind}_awkward_sunscale_lichen", c, "minecraft:awkward", rid("sunscale_lichen"), c, rid("sun_ward"))
         brew(f"{kind}_sun_ward_flare_pollen", c, rid("sun_ward"), rid("flare_pollen"), c, rid("long_sun_ward"))
+        # The Umbral Stalker's membrane brews invisibility straight from an Awkward Potion (as Phantom
+        # Membrane brews Slow Falling): what hides it, hides you.
+        brew(f"{kind}_awkward_umbral_membrane", c, "minecraft:awkward", rid("umbral_membrane"), c, "minecraft:invisibility")
     for potion in ("sun_ward", "long_sun_ward"):
         brew(f"potion_{potion}_gunpowder", "minecraft:potion", rid(potion), "minecraft:gunpowder",
              "minecraft:splash_potion", rid(potion))
@@ -1454,7 +1451,7 @@ def structures_phase6():
     lang[f"item.{NS}.star_chart.marks_structure"] = "Marks a site: %s"
     for name, english in (("comet_crater", "Comet Crater"),
                           ("shattered_observatory", "Shattered Observatory"), ("solar_array", "Solar Array Ruins"),
-                          ("leviathan", "Leviathan"), ("constellation_maze", "Constellation Maze")):
+                          ("leviathan", "Leviathan")):
         lang[f"structure.{NS}.{name}"] = english
         tag("worldgen/structure", rid(name), rid(name))      # a Star Chart looks each one up by its own tag
 
@@ -1666,6 +1663,10 @@ def starforging_phase8():
     # (The distillation made it a little cheaper: one Meteoric Iron Ingot, not two.)
     shapeless("starforge_alloy", "starforge_alloy", [rid("void_crystal"), rid("meteoric_iron_ingot"),
                                                      "minecraft:dragon_breath", rid("glowing_spores")])
+    # The Mirror Wretch lures you to the void's edge; its shards are how you come back from it. Four
+    # round an Ender Pearl make a Rift Pearl (otherwise found only in the End's best chests).
+    shaped("rift_pearl", "rift_pearl", [" A ", "AEA", " A "], {"A": rid("abyss_shard"), "E": "minecraft:ender_pearl"},
+           category="misc")
     # Templates copy like smithing templates.
     shaped("starforge_template", "starforge_template", ["DTD", "DQD", "DDD"],
            {"D": "minecraft:diamond", "T": rid("starforge_template"), "Q": rid("observatory_quartz")}, count=2, category="misc")
@@ -2379,7 +2380,6 @@ def main():
     drop_self("null_lantern")
     tag("block", "minecraft:mineable/hoe", rid("null_lantern"))
     tag("block", "minecraft:mineable/axe", rid("lumine_cap"))
-    tag("block", "minecraft:mineable/pickaxe", rid("petrified_stalk"))
 
     # Sunscale Lichen: a carpet.
     blockstate("sunscale_lichen", {"variants": {"": {"model": rid("block/sunscale_lichen")}}})
@@ -2422,7 +2422,7 @@ def main():
     for name in ("chiseled_nightstone", "void_crystal_block", "meteoric_iron_block",
                  "raw_meteoric_iron_block", "stardust_block", "chorus_moss", "lumineshroom", "starbloom",
                  "pale_end_stone_tiles", "solarite_block", "raw_solarite_block", "star_inlay_observatory_quartz",
-                 "ashen_lumineshroom", "petrified_astral_vine", "lumine_cap", "nullwood_sapling"):
+                 "ashen_lumineshroom", "lumine_cap", "nullwood_sapling"):
         drop_self(name)
     # Like vanilla grass: nothing without Silk Touch / shears.
     for name, tool in (("upwell_core", "minecraft:tool/can_silk_touch"),
@@ -2470,7 +2470,7 @@ def main():
     # belongs in it, like vanilla's stone, glass, stairs, slabs and walls; plants, vines, carpets
     # and crops don't (vanilla leaves out grass and moss carpet too).
     not_solid = {"mimic_plant", "lumineshroom", "starbloom", "astral_vine", "astral_vine_plant", "hollow_vines", "hollow_vines_plant", "comet_cress", "shimmer_grass",
-                 "flarebloom", "sunscale_lichen", "ashen_lumineshroom", "petrified_astral_vine", "nebula_tufts",
+                 "flarebloom", "sunscale_lichen", "ashen_lumineshroom", "nebula_tufts",
                  "nebula_tendril", "nebula_tendril_plant", "nullwood_leaves", "nullwood_sapling", "shimmer_reed",
                  "null_lantern", "glimmer_cluster", "end_chimes"}
     solid = sorted(set(re.findall(r'\b(?:register|registerNoItem|stairs|slab|wall)\("([a-z0-9_]+)"',
@@ -2485,7 +2485,7 @@ def main():
 
     # What the End's plants grow on (vanilla's moss too: the Eclipse's moss round its water).
     for name in ("minecraft:end_stone", rid("chorus_moss"), rid("nightstone"), rid("pale_end_stone"),
-                 rid("charred_end_stone"), rid("sunscorched_stone"), "minecraft:moss_block"):
+                 rid("charred_end_stone"), "minecraft:moss_block"):
         tag("block", f"{NS}:astral_soil", name)
     tag("block", "minecraft:mineable/shovel", rid("stardust_block"))
     tag("block", "minecraft:mineable/hoe", rid("chorus_moss"))
@@ -2514,28 +2514,18 @@ def main():
     # Phase 3 building blocks
     shaped("pale_end_stone_bricks", "pale_end_stone_bricks", ["##", "##"], {"#": rid("pale_end_stone")}, count=4)
     shaped("pale_end_stone_tiles", "pale_end_stone_tiles", ["##", "##"], {"#": rid("pale_end_stone_bricks")}, count=4)
-    shaped("polished_sunscorched_stone", "polished_sunscorched_stone", ["##", "##"], {"#": rid("sunscorched_stone")}, count=4)
-    shaped("sunscorched_stone_bricks", "sunscorched_stone_bricks", ["##", "##"], {"#": rid("polished_sunscorched_stone")}, count=4)
     shaped("observatory_quartz_pillar", "observatory_quartz_pillar", ["#", "#"], {"#": rid("observatory_quartz")}, count=2)
     shaped("star_inlay_observatory_quartz", "star_inlay_observatory_quartz", ["#", "#"], {"#": rid("observatory_quartz_slab")})
     for src, results in (
         ("pale_end_stone", ["pale_end_stone_bricks", "pale_end_stone_brick_stairs", "pale_end_stone_brick_slab",
                             "pale_end_stone_brick_wall", "pale_end_stone_tiles"]),
         ("pale_end_stone_bricks", ["pale_end_stone_tiles"]),
-        ("sunscorched_stone", ["polished_sunscorched_stone", "polished_sunscorched_stone_stairs", "polished_sunscorched_stone_slab",
-                               "polished_sunscorched_stone_wall", "sunscorched_stone_bricks", "sunscorched_stone_brick_stairs",
-                               "sunscorched_stone_brick_slab", "sunscorched_stone_brick_wall"]),
-        ("polished_sunscorched_stone", ["sunscorched_stone_bricks", "sunscorched_stone_brick_stairs",
-                                        "sunscorched_stone_brick_slab", "sunscorched_stone_brick_wall"]),
         ("observatory_quartz", ["observatory_quartz_pillar", "star_inlay_observatory_quartz"]),
     ):
         for result in results:
             stonecutting(src, result, 2 if result.endswith("_slab") else 1)
     # End Stone scorched by a comet or a flare can be made on purpose, too.
     cooking("charred_end_stone", "smelting", "minecraft:end_stone", "charred_end_stone", 0.1, 200)
-    # Sunscorched Stone: Pale End Stone baked (since the golden-meadow rework the Corona that had it is gone;
-    # this keeps it, its family and the Collector Pedestal obtainable).
-    cooking("sunscorched_stone", "smelting", rid("pale_end_stone"), "sunscorched_stone", 0.1, 200)
 
     shaped("solarite_block", "solarite_block", ["###", "###", "###"], {"#": rid("solarite_ingot")})
     shapeless("solarite_ingot_from_solarite_block", "solarite_ingot", [rid("solarite_block")], count=9)

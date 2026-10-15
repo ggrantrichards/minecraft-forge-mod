@@ -93,8 +93,9 @@ every other Leviathan you've woken.
 
 ## Ruins and Starforging
 
-The Leviathans' **Maws**, which wake into a travel network; **Constellation Mazes** whose bridges
-show only through a spyglass; the Solar Array's mirrors in the meadow. Bring back what they guard to
+The Leviathans' **Maws**, which wake into a travel network, and the **Constellation Maze** on each
+one's last tower, whose bridges show only through a spyglass; the Solar Array's mirrors in the meadow;
+the Shattered Observatory and the Comet Craters. Bring back what they guard to
 an **Astral Forge**: five sidegrades for diamond and netherite gear - Void Recall, Echo Strike, Lensing,
 Radiant, Rift Walker - each needing a Starforge Template from the Curator, its constellation sighted
 from the Gilded Reach, and a rare material from somewhere else.

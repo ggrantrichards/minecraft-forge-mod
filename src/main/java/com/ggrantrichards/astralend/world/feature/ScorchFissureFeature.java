@@ -63,6 +63,6 @@ public record ScorchFissureFeature() implements Feature {
     }
 
     private static boolean scorchable(BlockState state) {
-        return state.is(ModBlocks.PALE_END_STONE.get()) || state.is(ModBlocks.SUNSCORCHED_STONE.get());
+        return state.is(ModBlocks.PALE_END_STONE.get());
     }
 }

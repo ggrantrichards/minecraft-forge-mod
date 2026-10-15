@@ -440,7 +440,6 @@ def charred_end_stone():
 
 TEXTURES = [
     ("block/pale_end_stone.png", pale_end_stone),
-    ("block/sunscorched_stone.png", sunscorched_stone),
     ("block/chorus_moss.png", chorus_moss),
     ("block/lumine_cap.png", lumine_cap),
     ("block/glimmer_crystal.png", glimmer_crystal),
@@ -474,8 +473,6 @@ TEXTURES = [
     *[(f"block/breathcomb_{i}.png", breathcomb(i)) for i in range(4)],
     ("block/hollow_vines_plant.png", hollow_vines("weeping_vines_plant")),
     ("block/pale_end_stone_bricks.png", pale_end_stone_bricks),
-    ("block/sunscorched_stone_bricks.png", sunscorched_stone_bricks),
-    ("block/polished_sunscorched_stone.png", polished_sunscorched_stone),
     ("block/meteoric_iron_ore.png", meteoric_iron_ore),
     ("block/solarite_ore.png", solarite_ore),
     ("block/void_crystal_ore.png", void_crystal_ore),
@@ -491,8 +488,6 @@ TEXTURES = [
     ("block/void_crystal_block.png", void_crystal_block),
     ("block/glimmer_cluster.png", glimmer_cluster),
     ("block/whalelight_scale.png", whalelight_scale),
-    ("block/petrified_stalk_side.png", petrified_stalk_side),
-    ("block/petrified_stalk_top.png", petrified_stalk_top),
     ("block/spore_lantern.png", spore_lantern),
     ("block/voidgel.png", voidgel),
     ("block/lodestar_side.png", lodestar_side),

@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_column",
-  "textures": {
-    "end": "astralend:block/pollinator_husk_top",
-    "side": "astralend:block/pollinator_husk_side"
-  }
-}

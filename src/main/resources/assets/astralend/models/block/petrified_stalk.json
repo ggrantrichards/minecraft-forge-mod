@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_column",
-  "textures": {
-    "end": "astralend:block/petrified_stalk_top",
-    "side": "astralend:block/petrified_stalk_side"
-  }
-}

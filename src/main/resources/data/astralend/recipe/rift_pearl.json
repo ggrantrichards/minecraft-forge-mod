@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "astralend:abyss_shard",
+    "E": "minecraft:ender_pearl"
+  },
+  "pattern": [
+    " A ",
+    "AEA",
+    " A "
+  ],
+  "result": {
+    "id": "astralend:rift_pearl"
+  }
+}

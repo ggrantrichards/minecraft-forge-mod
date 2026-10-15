@@ -633,9 +633,6 @@ def whalelight_scale():
 
 
 TEXTURES = [
-    ("block/sunscorched_stone.png", sunscorched_stone),
-    ("block/polished_sunscorched_stone.png", sunscorched_polished),
-    ("block/sunscorched_stone_bricks.png", lambda: bricks(125, SUNSCORCHED, mortar=1)),
     ("block/charred_end_stone.png", charred_end_stone),
     ("block/nightstone.png", nightstone),
     ("block/nightstone_bricks.png", lambda: bricks(3, UMBRAL, mortar=0)),
@@ -673,8 +670,6 @@ TEXTURES = [
     ("block/meteoric_iron_block.png", lambda: metal_block(ramp("3a3d4a", "eef0f6", 6, hue_shift=0.02), 7)),
     ("block/solarite_block.png", lambda: metal_block(ramp("8a3e06", "fff4b0", 6, hue_shift=0.07), 127)),
     ("block/void_crystal_block.png", lambda: crystal_block(ramp("1e0c44", "e6d4ff", 7, hue_shift=0.03), 9)),
-    ("block/petrified_stalk_side.png", petrified_stalk_side),
-    ("block/petrified_stalk_top.png", petrified_stalk_top),
     ("block/ashen_lumineshroom.png", ashen_lumineshroom),
     ("block/whalelight_scale.png", whalelight_scale),
 ]

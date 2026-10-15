@@ -27,12 +27,12 @@
         ]
       }
     },
-    "has_polished_sunscorched_stone": {
+    "has_pale_end_stone_bricks": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": "astralend:polished_sunscorched_stone"
+            "items": "astralend:pale_end_stone_bricks"
           }
         ]
       }
@@ -43,7 +43,7 @@
       "has_the_recipe",
       "has_solarite_ingot",
       "has_astral_glass",
-      "has_polished_sunscorched_stone"
+      "has_pale_end_stone_bricks"
     ]
   ],
   "rewards": {

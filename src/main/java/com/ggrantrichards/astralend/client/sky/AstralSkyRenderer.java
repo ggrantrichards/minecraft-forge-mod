@@ -61,7 +61,7 @@ import org.joml.Vector4f;
 public class AstralSkyRenderer extends SkyRenderer {
     private static final VertexFormat FORMAT = DefaultVertexFormat.POSITION_TEX_COLOR;
     private static final float DISTANCE = 100.0F;
-    private static final int MAX_DYNAMIC_QUADS = 640;
+    private static final int MAX_DYNAMIC_QUADS = 800;
     private static final Identifier STAR = texture("star");
     private static final Identifier FLARE_SHEET = texture("flare_sheet");
     private static final Identifier COMET = texture("comet");
@@ -69,6 +69,7 @@ public class AstralSkyRenderer extends SkyRenderer {
     private static final Identifier RING = texture("silhouette_ring");
     private static final Identifier NEBULA_CLOUD = texture("nebula_cloud");
     private static final Identifier ECLIPSE_STAR = texture("eclipse_star");
+    private static final Identifier AURORA = texture("aurora");
 
     private final RenderTarget target;
     private final TextureManager textures;
@@ -93,7 +94,7 @@ public class AstralSkyRenderer extends SkyRenderer {
         super(textures, atlases, target);
         this.target = target;
         this.textures = textures;
-        for (Identifier id : List.of(STAR, FLARE_SHEET, COMET, WHALE, RING, NEBULA_CLOUD, ECLIPSE_STAR)) {
+        for (Identifier id : List.of(STAR, FLARE_SHEET, COMET, WHALE, RING, NEBULA_CLOUD, ECLIPSE_STAR, AURORA)) {
             this.loaded.put(id, textures.getTexture(id));
         }
         int[] counts = new int[2];
@@ -163,6 +164,9 @@ public class AstralSkyRenderer extends SkyRenderer {
         if (sky > 0.01F) {
             quads.group(NEBULA_CLOUD);
             this.eclipseClouds(quads, sky);
+            // A faint aurora, gold and teal, low round the Gilded Reach's sky (washed out by a Sunstorm).
+            quads.group(AURORA);
+            this.auroras(quads, 0.45F * sky * Mth.clamp(1.0F - 1.5F * stormFlare, 0.0F, 1.0F));
         }
         float seen = Math.max(sky, this.scope);   // the stars and constellations: there too through a spyglass
         if (sky > 0.01F) {
@@ -366,6 +370,37 @@ public class AstralSkyRenderer extends SkyRenderer {
 
     // The Eclipse's star, high in the south-west of its sky: white, with six long spikes and two short.
     // The Sunstorms come from it: it brightens before one and blazes through it.
+    // Three slow curtains of aurora round the sky, rippling: two gold, one teal between them.
+    private void auroras(Quads quads, float strength) {
+        if (strength <= 0.01F) {
+            return;
+        }
+        int segments = 40;
+        for (int k = 0; k < 3; k++) {
+            float base = (float) Math.toRadians(k * 120.0 + this.time * 0.0008);
+            float r = k == 1 ? 0.30F : 0.95F, g = k == 1 ? 0.85F : 0.78F, b = k == 1 ? 0.80F : 0.36F;
+            Vector3f[] bottom = new Vector3f[segments + 1];
+            Vector3f[] top = new Vector3f[segments + 1];
+            int[] colours = new int[segments + 1];
+            for (int j = 0; j <= segments; j++) {
+                float a = base + (float) Math.toRadians((j / (float) segments - 0.5F) * 75.0F);
+                float radius = 92.0F + 7.0F * Mth.sin(j * 0.55F + (float) this.time * 0.012F + k * 2.0F);
+                float y = 16.0F + 4.0F * Mth.sin(j * 0.3F + (float) this.time * 0.008F + k);
+                bottom[j] = new Vector3f(Mth.cos(a) * radius, y, Mth.sin(a) * radius);
+                top[j] = new Vector3f(Mth.cos(a) * radius * 0.92F, y + 42.0F, Mth.sin(a) * radius * 0.92F);
+                float fade = Mth.sin(Mth.PI * j / segments);
+                float shimmer = 0.7F + 0.3F * Mth.sin(j * 0.9F + (float) this.time * 0.04F + k * 3.0F);
+                colours[j] = argb(Math.min(1.0F, strength * fade * shimmer), r, g, b);
+            }
+            for (int j = 0; j < segments; j++) {
+                float u0 = j / 10.0F;
+                float u1 = (j + 1) / 10.0F;
+                quads.quad(top[j], bottom[j], bottom[j + 1], top[j + 1], u0, 0.0F, u1, 1.0F,
+                    colours[j], colours[j], colours[j + 1], colours[j + 1]);
+            }
+        }
+    }
+
     private void eclipseStar(Quads quads, float strength, float intensity) {
         float twinkle = 0.92F + 0.08F * Mth.sin((float) this.time * 0.07F) * Mth.sin((float) this.time * 0.031F);
         float size = (15.0F + 9.0F * intensity) * twinkle;

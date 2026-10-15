@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/slab",
-  "textures": {
-    "bottom": "astralend:block/sunscorched_stone_bricks",
-    "side": "astralend:block/sunscorched_stone_bricks",
-    "top": "astralend:block/sunscorched_stone_bricks"
-  }
-}

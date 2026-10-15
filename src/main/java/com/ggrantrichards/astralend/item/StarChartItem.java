@@ -40,7 +40,7 @@ import net.minecraft.world.phys.Vec3;
 public class StarChartItem extends Item {
     // Each destination is a structure tag holding just that structure (data/astralend/tags/worldgen/structure).
     private static final List<String> STRUCTURES = List.of("comet_crater", "leviathan",
-        "shattered_observatory", "solar_array", "constellation_maze");
+        "shattered_observatory", "solar_array");
     private static final List<ResourceKey<Biome>> DESTINATIONS = List.of(ModBiomes.NEBULA_FIELDS, ModBiomes.ASHEN_BARRENS,
         ModBiomes.DEEP_HOLLOWS, ModBiomes.ECLIPSE, ModBiomes.GLIMMERING_CRAGS);
 

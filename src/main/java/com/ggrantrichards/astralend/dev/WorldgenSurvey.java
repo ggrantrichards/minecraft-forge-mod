@@ -481,10 +481,10 @@ public final class WorldgenSurvey {
         atLeast(area, ModBlocks.LUMINE_CAP.get(), 5, failures);
         atLeast(area, ModBlocks.FLAREBLOOM.get(), 0.3, failures);
         atLeast(area, ModBlocks.SUNSCALE_LICHEN.get(), 1, failures);
-        int hell = area.in(ModBlocks.SUNSCORCHED_STONE.get()) + area.in(ModBlocks.CHARRED_END_STONE.get()) + area.in(Blocks.OBSIDIAN);
-        log("The Gilded Reach: " + hell + " blocks of the old hell half (Sunscorched Stone, Charred End Stone, Obsidian)");
+        int hell = area.in(ModBlocks.CHARRED_END_STONE.get()) + area.in(Blocks.OBSIDIAN);
+        log("The Gilded Reach: " + hell + " blocks of the old hell half (Charred End Stone, Obsidian)");
         if (hell > 40) {
-            failures.add("The Gilded Reach: " + hell + " blocks of Sunscorched Stone, Charred End Stone or Obsidian (the hell half is gone)");
+            failures.add("The Gilded Reach: " + hell + " blocks of Charred End Stone or Obsidian (the hell half is gone)");
         }
     }
 
@@ -645,6 +645,7 @@ public final class WorldgenSurvey {
             }
         }
         BlockPos pedestal = body.pedestal(), arena = body.arena(), heart = body.heart(), throat = head.throat();
+        testMaze(end, body.mazeStart(), failures);
         // A Drift Whale passing through: once round the skeleton, humming low.
         var passing = ModEntities.DRIFT_WHALE.get().create(end, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
         passing.snapTo(heart.getX() + 0.5, heart.getY() + 2.0, heart.getZ() + 0.5, 0.0F, 0.0F);
@@ -823,14 +824,19 @@ public final class WorldgenSurvey {
     // constellation through a spyglass), bridges for all four constellations - each lighting when its
     // constellation is sighted from its platform - and the spyglass in the barrel on the first. Then a
     // view of the whole maze with its bridges lit, from above its edge.
+    private static boolean quartz(BlockState state) {
+        return state.is(ModBlocks.OBSERVATORY_QUARTZ.get()) || state.is(ModBlocks.STAR_INLAY_OBSERVATORY_QUARTZ.get());
+    }
+
+    // The Constellation Maze on a Leviathan's last tower (since beta.5 the only one): its four starred
+    // platforms, the spyglass at the start, and a bridge that lights for each constellation.
     private static void testMaze(ServerLevel end, BlockPos bridge, List<String> failures) {
         List<BlockPos> spots = new ArrayList<>();
         boolean spyglass = false;
         for (BlockPos p : BlockPos.betweenClosed(bridge.offset(-48, -12, -48), bridge.offset(48, 12, 48))) {
             var state = end.getBlockState(p);
             // A platform's star: set in polished Nightstone (the dais's stars are in quartz).
-            if (state.is(ModBlocks.STAR_INLAY_OBSERVATORY_QUARTZ.get()) && end.getBlockState(p.east()).is(ModBlocks.POLISHED_NIGHTSTONE.get())
-                && end.getBlockState(p.west()).is(ModBlocks.POLISHED_NIGHTSTONE.get())) {
+            if (state.is(ModBlocks.STAR_INLAY_OBSERVATORY_QUARTZ.get()) && !quartz(end.getBlockState(p.east())) && !quartz(end.getBlockState(p.west()))) {
                 spots.add(p.immutable());
             }
             if (state.is(Blocks.BARREL) && end.getBlockEntity(p) instanceof net.minecraft.world.level.block.entity.BarrelBlockEntity barrel) {
@@ -1049,8 +1055,7 @@ public final class WorldgenSurvey {
         record Wanted(String name, char biome, Block marker) {}
         for (Wanted w : List.of(new Wanted("comet_crater", 'A', Blocks.CHEST),
                                 new Wanted("shattered_observatory", 'N', Blocks.VAULT),
-                                new Wanted("solar_array", 'E', ModBlocks.COLLECTOR_PEDESTAL.get()),
-                                new Wanted("constellation_maze", 'N', ModBlocks.STAR_BRIDGE.get()))) {
+                                new Wanted("solar_array", 'E', ModBlocks.COLLECTOR_PEDESTAL.get()))) {
             Area area = areas.get(w.biome());
             BlockPos from = area != null ? area.centre : BlockPos.ZERO;
             net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tag = net.minecraft.tags.TagKey.create(
@@ -1143,10 +1148,6 @@ public final class WorldgenSurvey {
                 log(String.format("%s: built at %s (start %s)%s%s", w.name(), marker.toShortString(), start.toShortString(),
                     hot ? ", still hot" : "", loot));
                 found.putIfAbsent(key, marker);
-                if (w.name().equals("constellation_maze") && !found.containsKey("maze_tested")) {
-                    found.put("maze_tested", marker);
-                    testMaze(end, marker, failures);
-                }
                 if (w.name().equals("solar_array")) {
                     // Inside the control room too: the console, seen from a corner of the room.
                     found.putIfAbsent("solar_array_room", marker.above());
@@ -1695,19 +1696,15 @@ public final class WorldgenSurvey {
             TOP_SYMBOLS.put(ModBlocks.OBSERVATORY_QUARTZ.get(), 'Q');
             TOP_SYMBOLS.put(ModBlocks.STAR_INLAY_OBSERVATORY_QUARTZ.get(), 'Q');
             TOP_SYMBOLS.put(ModBlocks.OBSERVATORY_QUARTZ_PILLAR.get(), 'K');
-            TOP_SYMBOLS.put(ModBlocks.SUNSCORCHED_STONE.get(), 'C');
             TOP_SYMBOLS.put(ModBlocks.SOLARITE_ORE.get(), 'R');
             TOP_SYMBOLS.put(ModBlocks.FLAREBLOOM.get(), 'F');
             TOP_SYMBOLS.put(ModBlocks.SUNSCALE_LICHEN.get(), 'N');
             TOP_SYMBOLS.put(ModBlocks.ASHEN_LUMINESHROOM.get(), 'A');
-            TOP_SYMBOLS.put(ModBlocks.PETRIFIED_ASTRAL_VINE.get(), 'D');
-            TOP_SYMBOLS.put(ModBlocks.POLLINATOR_HUSK.get(), 'W');
             TOP_SYMBOLS.put(ModBlocks.LUMINE_CAP.get(), 'L');
             TOP_SYMBOLS.put(ModBlocks.NEBULA_TUFTS.get(), 'M');
             TOP_SYMBOLS.put(ModBlocks.NULLWOOD_LEAVES.get(), 'V');
             TOP_SYMBOLS.put(ModBlocks.NULLWOOD.log().get(), 'U');
             TOP_SYMBOLS.put(ModBlocks.SHIMMER_REED.get(), 'G');
-            TOP_SYMBOLS.put(ModBlocks.PETRIFIED_STALK.get(), 'D');
         }
         return TOP_SYMBOLS.getOrDefault(block, '#');
     }

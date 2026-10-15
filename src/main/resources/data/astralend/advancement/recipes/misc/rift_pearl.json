@@ -4,15 +4,25 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:sunscorched_stone_stairs_from_sunscorched_stone_stonecutting"
+        "recipes": "astralend:rift_pearl"
       }
     },
-    "has_sunscorched_stone": {
+    "has_abyss_shard": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": "astralend:sunscorched_stone"
+            "items": "astralend:abyss_shard"
+          }
+        ]
+      }
+    },
+    "has_ender_pearl": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:ender_pearl"
           }
         ]
       }
@@ -21,12 +31,13 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_sunscorched_stone"
+      "has_abyss_shard",
+      "has_ender_pearl"
     ]
   ],
   "rewards": {
     "recipes": [
-      "astralend:sunscorched_stone_stairs_from_sunscorched_stone_stonecutting"
+      "astralend:rift_pearl"
     ]
   }
 }
