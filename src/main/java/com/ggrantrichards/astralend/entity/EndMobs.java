@@ -65,7 +65,7 @@ public final class EndMobs {
                             if (!Sunstorms.underOpenSky(level, feet)) {
                                 return feet.immutable();
                             }
-                            break;
+                            // open (the top of a roof, say): look further down the column, under it
                         }
                     }
                 }
