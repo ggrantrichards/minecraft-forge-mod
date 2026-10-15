@@ -60,8 +60,8 @@ public final class EndMobs {
                     }
                     for (int dy = 4; dy >= -6; dy--) {
                         feet.set(from.getX() + dx, from.getY() + dy, from.getZ() + dz);
-                        if (level.getBlockState(feet.below()).isSolidRender() && level.getBlockState(feet).isAir()
-                                && level.getBlockState(feet.above()).isAir()) {
+                        // (grass and flowers don't count: a mob walks through them)
+                        if (level.getBlockState(feet.below()).isSolidRender() && passable(level, feet) && passable(level, feet.above())) {
                             if (!Sunstorms.underOpenSky(level, feet)) {
                                 return feet.immutable();
                             }
@@ -72,6 +72,10 @@ public final class EndMobs {
             }
         }
         return null;
+    }
+
+    private static boolean passable(ServerLevel level, BlockPos pos) {
+        return level.getBlockState(pos).getCollisionShape(level, pos).isEmpty() && level.getFluidState(pos).isEmpty();
     }
 
     // The nearest water source with air over it within `range` blocks (a Hydragrip's pond), or null.
