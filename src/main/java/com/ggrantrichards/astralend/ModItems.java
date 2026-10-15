@@ -120,7 +120,6 @@ public final class ModItems {
 
     // ---- spawn eggs
     public static final RegistryObject<Item> POLLINATOR_SPAWN_EGG = spawnEgg("pollinator", ModEntities.POLLINATOR);
-    public static final RegistryObject<Item> VOID_WANDERER_SPAWN_EGG = spawnEgg("void_wanderer", ModEntities.VOID_WANDERER);
     public static final RegistryObject<Item> UMBRAL_STALKER_SPAWN_EGG = spawnEgg("umbral_stalker", ModEntities.UMBRAL_STALKER);
     public static final RegistryObject<Item> DRIFT_WHALE_SPAWN_EGG = spawnEgg("drift_whale", ModEntities.DRIFT_WHALE);
     public static final RegistryObject<Item> WATCHER_SPAWN_EGG = spawnEgg("watcher", ModEntities.WATCHER);
@@ -130,6 +129,7 @@ public final class ModItems {
     public static final RegistryObject<Item> MIRROR_WRETCH_SPAWN_EGG = spawnEgg("mirror_wretch", ModEntities.MIRROR_WRETCH);
     public static final RegistryObject<Item> HOLLOWBACK_SPAWN_EGG = spawnEgg("hollowback", ModEntities.HOLLOWBACK);
     public static final RegistryObject<Item> CURATOR_SPAWN_EGG = spawnEgg("curator", ModEntities.CURATOR);
+    public static final RegistryObject<Item> SHARDBACK_SPAWN_EGG = spawnEgg("shardback", ModEntities.SHARDBACK);
 
     // The caves: Starsap (furnace fuel, and its block); the Hollow Thorn that carves Hollow Lanterns.
     public static final RegistryObject<Item> STARSAP = simple("starsap");

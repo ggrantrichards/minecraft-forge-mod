@@ -931,11 +931,10 @@ def java_feature(name):
 # Mobs by biome and spawn category (on top of the End's Endermen). The Drift Whale and the Watcher
 # aren't here: MobSpawning.java places them one at a time. (The distillation: Pollinators live only
 # in the Nebula Fields - Void Rays circle the Shattered Crags' gaps, and the
-# Umbral Stalker lives in the Glimmering Crags' caves.)
+# Umbral Stalker lives in the Glimmering Crags' caves. The Void Wanderer was cut after beta.4.)
 MOB_SPAWNS = {
-    "nebula_fields": {"creature": [("pollinator", 10, 3), ("void_wanderer", 3, 1)]},
-    "deep_hollows": {"creature": [("void_wanderer", 4, 1)],
-                     "monster": [("umbral_stalker", 4, 1)]},   # under the dark canopy (its rule wants no sky)
+    "nebula_fields": {"creature": [("pollinator", 10, 3)]},
+    "deep_hollows": {"monster": [("umbral_stalker", 4, 1)]},   # under the dark canopy (its rule wants no sky)
     # The Umbral Stalker hunts only in the Crags' root caves (its spawn rule wants a roof of rock overhead).
     "glimmering_crags": {"monster": [("umbral_stalker", 6, 1)]},
     # The Eclipse, the golden meadow: its grazers, and endermites for the Hydragrips to hunt.
@@ -945,7 +944,7 @@ MOB_SPAWNS = {
     # and the Endermen standing at its edges are listening to it.
     "ashen_barrens": {"monster": [("mirror_wretch", 3, 1)]},
     # The caves: the Crystal Vaults' hunters.
-    "crystal_vaults": {"monster": [("umbral_stalker", 5, 1)]},   # (the Shardback and the Void Ray are cut)
+    "crystal_vaults": {"monster": [("shardback", 6, 1)]},
 }
 
 
@@ -1203,7 +1202,6 @@ def worldgen_phase3():
 MOBS = [
     # (id, English name)
     ("pollinator", "End Pollinator"),
-    ("void_wanderer", "Void Wanderer"),
     ("umbral_stalker", "Umbral Stalker"),
     ("drift_whale", "Drift Whale"),
     ("watcher", "The Watcher"),
@@ -1214,6 +1212,7 @@ MOBS = [
     ("mirror_wretch", "Mirror Wretch"),
     ("hollowback", "Hollowback"),
     ("curator", "The Curator"),
+    ("shardback", "Shardback"),
     # The caves
 ]
 
@@ -1263,11 +1262,10 @@ def mobs_phase4():
     # A Drift Whale never fights back; killing one gets you a few scales, and nothing else.
     entity_loot("drift_whale", [])   # Whalelight Scales are only shed by tamed whales (DriftWhale)
     entity_loot("watcher", [])
-    entity_loot("void_wanderer", [player_kill_drop("cracked_lens", 1, looting=False)])
     entity_loot("umbral_stalker", [player_kill_drop("umbral_membrane", 1)])
 
     # Flying and floating mobs don't take fall damage.
-    for mob in ("pollinator", "void_wanderer", "drift_whale", "watcher"):
+    for mob in ("pollinator", "drift_whale", "watcher"):
         tag("entity_type", "minecraft:fall_damage_immune", rid(mob))
 
     # What End Pollinators visit (and spread when they pollinate it).
@@ -1454,7 +1452,7 @@ def structures_phase6():
     item_def("temporal_crystal", rid("item/temporal_crystal"))
     lang[f"item.{NS}.temporal_crystal"] = "Temporal Crystal"
     lang[f"item.{NS}.star_chart.marks_structure"] = "Marks a site: %s"
-    for name, english in (("comet_crater", "Comet Crater"), ("wanderer_relay", "Wanderer Relay"),
+    for name, english in (("comet_crater", "Comet Crater"),
                           ("shattered_observatory", "Shattered Observatory"), ("solar_array", "Solar Array Ruins"),
                           ("leviathan", "Leviathan"), ("constellation_maze", "Constellation Maze")):
         lang[f"structure.{NS}.{name}"] = english
@@ -1485,14 +1483,14 @@ def structures_phase6():
     item_model("portal_lens", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("item/portal_lens")}})
     item_def("portal_lens", rid("item/portal_lens"))
     lang[f"item.{NS}.portal_lens"] = "Portal Lens"
-    # A spyglass fitted with a Void Wanderer's lens and a crystal to see through time and the void; the
-    # Wanderers' Chart Fragments show it the way.
+    # A spyglass fitted with an old Cracked Lens (from the observatories) and a crystal to see through
+    # time and the void; the builders' Chart Fragments show it the way.
     shapeless("portal_lens", "portal_lens", ["minecraft:spyglass", rid("cracked_lens"), rid("void_crystal"), rid("temporal_crystal"),
                                              rid("chart_fragment"), rid("chart_fragment")], category="equipment")
     lang.update({
         "maze.astralend.constellation.leviathan": "Leviathan",
         "maze.astralend.constellation.maw": "Maw",
-        "maze.astralend.constellation.wanderer": "Wanderer",
+        "maze.astralend.constellation.lantern": "Lantern",
         "maze.astralend.constellation.watcher": "Watcher",
     })
 
@@ -1806,15 +1804,15 @@ def advancements_phase9():
     advancement("void_recall", rid("rift_pearl"), "Not Today, Void", "Fall into the void and be pulled back by a Rift Pearl",
                 parent=rid("end/starforged"), frame="challenge", hidden=True)
     # The Cartographers
-    advancement("hold_still", rid("chart_fragment"), "Hold Still", "Stand still while a Void Wanderer charts you",
-                parent=root)
+    advancement("through_the_lens", rid("portal_lens"), "Through the Lens", "Fit a Cracked Lens to a spyglass: make a Portal Lens",
+                parent=root, criteria={"lens": has_item(rid("portal_lens"))})
     advancement("connect_the_dots", rid("star_inlay_observatory_quartz"), "Connect the Dots",
-                "Cross a Constellation Maze and open the chest on its dais", parent=rid("end/hold_still"),
+                "Cross a Constellation Maze and open the chest on its dais", parent=rid("end/through_the_lens"),
                 criteria={"maze": {"trigger": "minecraft:player_generates_container_loot",
                                    "conditions": {"loot_tables": [rid("chests/constellation_maze")]}}})
-    advancement("say_ahh", rid("portal_lens"), "Say Ahh", "Wake a Leviathan's Maw", parent=rid("end/hold_still"), frame="goal")
+    advancement("say_ahh", rid("portal_lens"), "Say Ahh", "Wake a Leviathan's Maw", parent=rid("end/through_the_lens"), frame="goal")
     advancement("something_looks_back", "minecraft:spyglass", "Something Looks Back",
-                "Catch a glimpse of the Watcher through a spyglass", parent=rid("end/hold_still"), hidden=True)
+                "Catch a glimpse of the Watcher through a spyglass", parent=rid("end/through_the_lens"), hidden=True)
     # The Eclipse's Sunstorms
     advancement("weather_the_storm", rid("sunshade"), "Weather the Storm", "Be in the Gilded Reach when a Sunstorm dies down",
                 parent=root)
@@ -2046,6 +2044,9 @@ def distillation_blocks():
     entity_loot("hollowback", [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": "minecraft:bone", "functions": [
         {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 0, "max": 2}}]}]}])
     # The Curator: its Core, and the only Starforge Templates in the End (two: one to use, one to copy).
+    entity_loot("shardback", [player_kill_drop("void_crystal", 1),
+                              {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("glimmer_cluster"), "functions": [
+                                  {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 1, "max": 2}}]}]}])
     entity_loot("curator", [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("curators_core")}]},
                             {"rolls": 1, "entries": [entry("starforge_template", 1, (2, 2))]},
                             {"rolls": 1, "entries": [{"type": "minecraft:item", "name": "minecraft:obsidian", "functions": [
@@ -2605,7 +2606,7 @@ def caves():
     shaped("starsap_block", "starsap_block", ["###", "###", "###"], {"#": rid("starsap")})
     recipe("starsap_from_block", {"type": "minecraft:crafting_shapeless", "category": "misc", "ingredients": [rid("starsap_block")],
                                   "result": {"id": rid("starsap"), "count": 9}})
-    # ---- The Crystal Vaults (under the Shattered Crags, below y=38): drifting geodes; the Umbral Stalker hunts them.
+    # ---- The Crystal Vaults (under the Shattered Crags, below y=38): drifting geodes, a Shardback in each.
     java_feature("crystal_vault")
     placed("crystal_vaults_geodes", {"feature": rid("crystal_vault"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 3}, {"type": "minecraft:biome"}]})

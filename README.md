@@ -78,10 +78,16 @@ and the distillation renamed or removed some of them.
   and the Endermen standing at its edges are listening to it. **Solarite** is found there too: veins in
   the pale stone, and **scorch fissures** with charred lips and raw Solarite glowing at the bottom.
 
-- **Eight mobs and a mini-boss.** The Void Ray and the Shardback are cut, to keep to the plan: the
-  Drift Whale, Pollinator, Hushback, Hydragrip, Mirror Wretch, Umbral Stalker (now in the Crystal Vaults
-  too), Watcher and Void Wanderer, the Hollowback as a Hushback variant, and the Curator. Sunshades are
-  made from Hushfleece now and Sun Ward is brewed from Sunscale Lichen (both were Ray Film).
+- **Eight mobs and a mini-boss.** The Void Ray and the Void Wanderer are cut (the Wanderer was too
+  like the Watcher), to keep to the plan: the Drift Whale, Pollinator, Hushback, Hydragrip, Mirror
+  Wretch, Umbral Stalker, Watcher and Shardback, the Hollowback as a Hushback variant, and the Curator.
+  - The **Wanderer Relay** went with the Wanderer, leaving five structures: the Leviathan, the Solar
+    Array, the Shattered Observatory, the Constellation Maze and the Comet Crater.
+  - **Cracked Lenses and Chart Fragments** come from the builders' chests now (Lenses from the
+    observatories). "Hold Still" is replaced by **Through the Lens**: make a Portal Lens. The Lantern
+    takes the Wanderer's place among the constellations.
+  - Sunshades are made from Hushfleece now and Sun Ward is brewed from Sunscale Lichen (both were Ray
+    Film); "Harvest Moon" is now shearing a Hushback.
 - **The Curator, rebuilt as a mini-boss to be feared:** a hulking war-construct of the End's builders
   (with nods to Adam Smasher and Hearthstone's Curator) - obsidian and gunmetal plate, massive
   pauldrons, one violet visor slit, its core behind a glass case in its chest, a cannon for a right
@@ -271,8 +277,8 @@ centre.
   - a captured island chained into the jaw;
   - in the skull, the reliquary.
 
-  Shulkers guard the towers, Void Wanderers walk the hall, and **Hollowbacks** (hostile, hollowed-out
-  Hushbacks) roam the cathedral.
+  Shulkers guard the towers and **Hollowbacks** (hostile, hollowed-out Hushbacks) roam the cathedral.
+  (Void Wanderers walked the hall until they were cut after beta.4.)
 - **The Curator** keeps the reliquary. It is a 4.5-block obsidian construct, dormant until you come
   near. The fight:
   - it teleports away from arrows and strikes where it reappears;

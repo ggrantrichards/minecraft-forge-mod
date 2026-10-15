@@ -16,11 +16,6 @@
               "type": "astralend:pollinator",
               "count": 3,
               "weight": 10
-            },
-            {
-              "type": "astralend:void_wanderer",
-              "count": 1,
-              "weight": 3
             }
           ]
         }

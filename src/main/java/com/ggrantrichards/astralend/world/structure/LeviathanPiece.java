@@ -247,12 +247,7 @@ public class LeviathanPiece extends StructurePiece {
         this.put(level, chunk, this.at(2, floor + 2, LeviathanShape.STOMACH_W + 1), ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState());
         this.put(level, chunk, this.at(-2, floor + 2, LeviathanShape.STOMACH_W - 1), ModBlocks.WHALELIGHT_SCALE.get().defaultBlockState());
         this.maze(level, chunk, rnd);
-        // The garrison: Void Wanderers in the hall, Hollowbacks in the reliquary, the Curator in its arena.
-        for (int w : new int[] {-50, -22, 4}) {
-            if (w >= this.shape.hallFrom() + 2 && !this.inTower(w)) {
-                this.spawn(level, chunk, ModEntities.VOID_WANDERER.get(), 0, above(w, 5), w, null);
-            }
-        }
+        // The garrison: Hollowbacks in the reliquary, the Curator in its arena (shulkers keep the towers).
         for (int w : new int[] {-40, -30, -14, -9}) {
             this.spawn(level, chunk, ModEntities.HOLLOWBACK.get(), w % 4 == 0 ? 5 : -5, floor + 1, w, null);
         }

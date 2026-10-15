@@ -115,62 +115,6 @@ def comet_crater(seed, hot):
     return t
 
 
-# ------------------------------------------------------------------ Wanderer Relay
-
-def wanderer_relay(seed):
-    """A thin spire floating over the edge of the Hollow Isles, where Void Wanderers dock: a
-    lump of Nightstone hanging in the air, a tapering tower of Umbral bricks banded with chiseled
-    stone, two mooring rings hung with Null Lanterns, and a Void Crystal light at the top. It holds
-    no loot, but Void Wanderers dock at it."""
-    t = Template(17, 44, 17, seed)
-    rnd = t.rnd
-    c = 8
-    # The floating rock: an upside-down cone, rough at the edges.
-    for y in range(0, 8):
-        radius = 1.0 + (y / 7) ** 0.8 * 5.0
-        for x in range(17):
-            for z in range(17):
-                d = math.hypot(x - c, z - c)
-                if d <= radius + rnd.uniform(-0.5, 0.3):
-                    state = a("nightstone")
-                    if rnd.random() < 0.06:
-                        state = a("void_crystal_ore")
-                    t.set(x, y, z, state)
-    for x in range(17):
-        for z in range(17):
-            if math.hypot(x - c, z - c) <= 5.2:
-                t.set(x, 8, z, a("polished_nightstone"))
-    # The spire.
-    for y in range(9, 38):
-        half = 1 if y < 30 else 0
-        band = (y - 9) % 7 == 6
-        for x in range(c - half, c + half + 1):
-            for z in range(c - half, c + half + 1):
-                t.set(x, y, z, a("chiseled_nightstone") if band else a("nightstone_bricks"))
-    # Mooring rings with spokes; lanterns hang under the ring at the four corners.
-    for ring_y, radius in ((17, 5), (27, 4)):
-        for i in range(64):
-            ang = i / 64 * math.tau
-            t.set(c + round(math.cos(ang) * radius), ring_y, c + round(math.sin(ang) * radius),
-                  a("polished_nightstone_slab") + "[type=bottom]")
-        for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-            for k in range(2, radius):
-                t.set(c + dx * k, ring_y, c + dz * k, a("polished_nightstone_slab") + "[type=bottom]")
-            t.set(c + dx * radius, ring_y - 1, c + dz * radius, a("null_lantern"))
-    # The light at the top, behind glass.
-    t.set(c, 38, c, a("void_crystal_block"))
-    t.set(c, 39, c, a("void_crystal_block"))
-    for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-        t.set(c + dx, 38, c + dz, a("astral_glass"))
-        t.set(c + dx, 39, c + dz, a("astral_glass"))
-    t.set(c, 40, c, a("chiseled_nightstone"))
-    t.set(c, 41, c, a("null_lantern"))
-    # Two Void Wanderers docked at the lower ring.
-    for dx, dz in ((3, 0), (-3, 0)):
-        t.entity(c + dx + 0.5, 17.5, c + dz + 0.5, {"id": a("void_wanderer"), "PersistenceRequired": Byte(1)})
-    return t
-
-
 # ------------------------------------------------------------------ vaults
 
 def vault(t, x, y, z, loot, facing):
@@ -789,11 +733,7 @@ STRUCTURES = [
                                         lambda: comet_crater(13, True)],
          biomes=[a("ashen_barrens")], spread=(64, 24, 61829341), height={"absolute": -8}, heightmap="WORLD_SURFACE_WG",
          spawns=None, adaptation="beard_thin", ground=(16, 4096, 12)),
-    # Relays float out over the void, so they want open space (or low ground) under them.
-    dict(name="wanderer_relay", variants=[lambda: wanderer_relay(21)],
-         biomes=[a("deep_hollows")], spread=(18, 7, 51273391),
-         height={"type": "minecraft:uniform", "min_inclusive": {"absolute": 66}, "max_inclusive": {"absolute": 92}},
-         heightmap=None, spawns=None, adaptation=None, ground=(-4096, 40, 7)),
+    # (The Wanderer Relay was cut with the Void Wanderer, after beta.4.)
     # A landmark: rare, out on the vanilla Highlands or in the Nebula Fields.
     dict(name="shattered_observatory", variants=[lambda: shattered_observatory(41)],
          biomes=["minecraft:end_highlands", a("nebula_fields")], spread=(40, 16, 33094871), height={"absolute": -2},

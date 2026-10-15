@@ -25,7 +25,8 @@ your face: the End tells you things with sound and light.
   by glowcaps and amber Starsap, where fireflies drift.
 - **Glimmering Crags:** dark Nightstone peaks grown through with cold, glowing Glimmer Crystal, and root caves where the Umbral
   Stalker waits. Its variant, the **Shattered Crags**, is split into shards over the void; below them
-  drift the **Crystal Vaults**, geodes of crystal where the Umbral Stalker hunts.
+  drift the **Crystal Vaults**, geodes of crystal where a **Shardback** waits in each, folded down
+  among the clusters and looking like one of them.
 - **Ashen Barrens:** the leviathans' graveyard - a pale, suffocating mist of ash over stone shelves
   strewn with ribcages, vertebrae and lone ribs, porous bone-white spires and the withered stalks of
   dead giant mushrooms; Memory Moss replays what passed over it.
@@ -46,7 +47,7 @@ Starforge needs.
 
 ## The creatures
 
-- **Drift Whales** travel in pods toward the Eclipse, no two alike - big leaders, calves by their
+- **Drift Whales** travel in pods toward the Gilded Reach, no two alike - big leaders, calves by their
   mothers, curious ones and shy ones - answering each other's hums, rolling and breaching at play. Sing
   one a song (Memory Moss, a note block, Chorus Fruit) and it's yours to ride.
 - **Hushbacks**, clear-hided grazers whose herd blinks away when one is hurt; **Hydragrips**, dark
@@ -55,7 +56,8 @@ Starforge needs.
   voices you know from the void's edge - the Endermen at the edges stand listening.
 - **The Watcher** is only ever seen from the corner of your eye. Look straight at it and it teleports
   away - and turns up further along, leading you to the Leviathan.
-- The **Umbral Stalker** in the Crags' caves and the Crystal Vaults, the **Void Wanderer**, and Pollinators.
+- The **Umbral Stalker**, unseen in the Crags' caves until it hunts; the **Shardback**, a crystal-backed
+  ambusher in the Crystal Vaults; and Pollinators, spreading the Nebula Fields' glowing plants.
 
 {{Drift Whale}}
 
@@ -67,8 +69,11 @@ The whole skeleton of a Star Leviathan, some 370 blocks from tail to chin, adrif
 and the purpur citadel someone built on it: a hall along its spine, towers on its vertebrae, a
 Constellation Maze on the last of them. Its heart still beats, crimson, in the ribcage, its lungs of
 Breathcomb still breathe light, and its stomach holds what it last swallowed. The ribcage is a
-cathedral now, the reliquary, kept by **the Curator**: it teleports away from arrows, smashes the End
-Chimes pylons that pin it in place, slams you into the air over the void, and fears water. Set the
+cathedral now, the reliquary, kept by **the Curator**, a hulking war-construct of the builders: it
+raises its cannon arm and locks on before it fires, crouches before it charges (dodge, and it stuns
+itself on a wall or a pylon), and at half health its glass case shatters and **the whole fight turns
+over** - everyone in the reliquary falls up onto its ceiling, and the Curator follows. Its **Starforge
+Templates** are the only ones there are: defeat it to starforge. Set the
 dragon egg on the pedestal under the heart and the skull's eyes light - and the skull itself is the
 **Maw**: teeth like trees, a hall where its brain was, and a throat that wakes into a wormhole to
 every other Leviathan you've woken.
@@ -82,8 +87,8 @@ every other Leviathan you've woken.
 The Leviathans' **Maws**, which wake into a travel network; **Constellation Mazes** whose bridges
 show only through a spyglass; the Solar Array's mirrors in the meadow. Bring back what they guard to
 an **Astral Forge**: five sidegrades for diamond and netherite gear - Void Recall, Echo Strike, Lensing,
-Radiant, Rift Walker - each needing its constellation sighted from the Eclipse, and a rare material from
-somewhere else.
+Radiant, Rift Walker - each needing a Starforge Template from the Curator, its constellation sighted
+from the Gilded Reach, and a rare material from somewhere else.
 
 
 ## Also

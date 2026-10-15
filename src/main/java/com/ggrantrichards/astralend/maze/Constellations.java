@@ -26,8 +26,8 @@ public final class Constellations {
         new Constellation("maw", -45.0F, -40.0F,
             new float[][] {{-9, 2}, {-4, 7}, {3, 7}, {9, 3}, {-9, -1}, {-4, -6}, {3, -6}, {9, -2}},
             new int[][] {{0, 1}, {1, 2}, {2, 3}, {4, 5}, {5, 6}, {6, 7}, {0, 4}}),
-        // The Wanderer: a round shell with its eye.
-        new Constellation("wanderer", 45.0F, -58.0F,
+        // The Lantern: a ring round its light.
+        new Constellation("lantern", 45.0F, -58.0F,
             new float[][] {{0, 7}, {6, 3}, {6, -3}, {0, -6}, {-6, -3}, {-6, 3}, {0, 0}},
             new int[][] {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 0}}),
         // The Watcher: a tall, thin figure.

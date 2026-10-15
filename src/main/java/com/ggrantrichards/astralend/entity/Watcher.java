@@ -25,8 +25,8 @@ import net.minecraft.world.phys.Vec3;
 // It appears only when you're alone, only far away, and only for a while. Look straight at it - with
 // your eyes or through a spyglass - and it teleports away; but it turns up again a little later,
 // further on, always on the way toward the nearest Leviathan: keep it in the corner of your eye and
-// it leads you there. Come close and it is simply gone. It gives nothing (charts are the Void
-// Wanderer's); catching it in a spyglass is "Something Looks Back". It never attacks and can't be
+// it leads you there. Come close and it is simply gone. It gives nothing (charts are found in the
+// builders' chests); catching it in a spyglass is "Something Looks Back". It never attacks and can't be
 // reached. (MobSpawning decides where and when it appears.)
 //
 // One that's summoned stays where it's put: from a spawn egg, a command or a spawner it hangs there,

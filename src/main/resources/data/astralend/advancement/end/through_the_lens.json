@@ -1,0 +1,35 @@
+{
+  "parent": "astralend:end/astral_horizons",
+  "display": {
+    "icon": {
+      "id": "astralend:portal_lens"
+    },
+    "title": {
+      "translate": "advancements.astralend.through_the_lens.title"
+    },
+    "description": {
+      "translate": "advancements.astralend.through_the_lens.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "lens": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "astralend:portal_lens"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "lens"
+    ]
+  ]
+}

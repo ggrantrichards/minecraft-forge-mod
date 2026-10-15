@@ -1,11 +1,13 @@
 package com.ggrantrichards.astralend.world.feature;
 
 import com.ggrantrichards.astralend.ModBlocks;
+import com.ggrantrichards.astralend.entity.ModEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.AmethystClusterBlock;
 import net.minecraft.world.level.block.Blocks;
@@ -16,7 +18,8 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 // The Crystal Vaults: under the Shattered Crags, below the field of shards, great geodes drift in the
 // void - shells of Nightstone lined with Glimmer Crystal, hollow inside, the walls grown over with
 // glimmer clusters and spires of crystal rising from the floor. Each is split open somewhere: a crack
-// you can climb in through. (The Umbral Stalker hunts here, as in the Crags' root caves.)
+// you can climb in through. And in each, folded down among the clusters and looking like one of them,
+// a Shardback waits.
 public record CrystalVaultFeature() implements Feature {
     public static final MapCodec<CrystalVaultFeature> CODEC = MapCodec.unit(CrystalVaultFeature::new);
 
@@ -102,6 +105,17 @@ public record CrystalVaultFeature() implements Feature {
             for (int k = 0; k < height && level.getBlockState(p.set(sx, y + k, sz)).is(Blocks.CAVE_AIR); k++) {
                 level.setBlock(p, crystal, 2);
             }
+        }
+        // Its Shardback, folded down on the floor.
+        int fy = cy;
+        while (fy > cy - ri && level.getBlockState(p.set(cx, fy - 1, cz)).is(Blocks.CAVE_AIR)) {
+            fy--;
+        }
+        var hunter = ModEntities.SHARDBACK.get().create(level.getLevel(), EntitySpawnReason.CHUNK_GENERATION);
+        if (hunter != null && level.getBlockState(p.set(cx, fy, cz)).is(Blocks.CAVE_AIR)) {
+            hunter.snapTo(cx + 0.5, fy, cz + 0.5, random.nextFloat() * 360.0F, 0.0F);
+            hunter.setPersistenceRequired();
+            level.addFreshEntity(hunter);
         }
         return true;
     }

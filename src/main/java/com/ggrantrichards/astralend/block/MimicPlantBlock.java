@@ -1,6 +1,5 @@
 package com.ggrantrichards.astralend.block;
 
-import com.ggrantrichards.astralend.entity.ModEntities;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -19,8 +18,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 // The Mimic Plant: a dark shrub of the Deep Hollows that makes no sound of its own. It copies the
-// sounds of what's near it - your footsteps on the ground you walk on, an enderman's teleport, a Void
-// Wanderer's hum - a little later, from where it stands. The forest feels watched.
+// sounds of what's near it - your footsteps on the ground you walk on, an enderman's teleport - a
+// little later, from where it stands. The forest feels watched.
 public class MimicPlantBlock extends EndPlantBlock {
     public MimicPlantBlock(VoxelShape shape, TagKey<Block> soil, BlockBehaviour.Properties properties) {
         super(shape, soil, properties);
@@ -44,8 +43,6 @@ public class MimicPlantBlock extends EndPlantBlock {
             sound = level.getBlockState(player.getOnPos()).getSoundType().getStepSound();
         } else if (source instanceof Enderman) {
             sound = random.nextBoolean() ? SoundEvents.ENDERMAN_TELEPORT : SoundEvents.ENDERMAN_AMBIENT;
-        } else if (source.getType() == ModEntities.VOID_WANDERER.get()) {
-            sound = SoundEvents.BEACON_AMBIENT;
         } else {
             sound = level.getBlockState(source.getOnPos()).getSoundType().getStepSound();
         }

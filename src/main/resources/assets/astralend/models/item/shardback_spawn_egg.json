@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "astralend:item/void_wanderer_spawn_egg"
+    "layer0": "astralend:item/shardback_spawn_egg"
   }
 }

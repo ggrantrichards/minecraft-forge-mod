@@ -6,9 +6,9 @@
         "spawns_by_category": {
           "monster": [
             {
-              "type": "astralend:umbral_stalker",
+              "type": "astralend:shardback",
               "count": 1,
-              "weight": 5
+              "weight": 6
             }
           ]
         }

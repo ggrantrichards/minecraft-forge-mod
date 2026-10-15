@@ -33,13 +33,13 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.phys.Vec3;
 
 // A Star Chart, found in ruins. It marks a place in the End for you to
-// find: the nearest of a structure picked at random (a crater, a relay, a Leviathan...), or, if none
+// find: the nearest of a structure picked at random (a crater, a Leviathan, an observatory...), or, if none
 // is in reach, the nearest region of a far-off biome. Charts found in chests start out unread and
 // fill in the first time they're used in the End. Use one and a thread of starlight points the way;
 // the chime is higher the nearer the place is.
 public class StarChartItem extends Item {
     // Each destination is a structure tag holding just that structure (data/astralend/tags/worldgen/structure).
-    private static final List<String> STRUCTURES = List.of("comet_crater", "wanderer_relay", "leviathan",
+    private static final List<String> STRUCTURES = List.of("comet_crater", "leviathan",
         "shattered_observatory", "solar_array", "constellation_maze");
     private static final List<ResourceKey<Biome>> DESTINATIONS = List.of(ModBiomes.NEBULA_FIELDS, ModBiomes.ASHEN_BARRENS,
         ModBiomes.DEEP_HOLLOWS, ModBiomes.ECLIPSE, ModBiomes.GLIMMERING_CRAGS);

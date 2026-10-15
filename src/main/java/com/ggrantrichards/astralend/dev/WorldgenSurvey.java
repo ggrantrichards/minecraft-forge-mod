@@ -334,7 +334,7 @@ public final class WorldgenSurvey {
     private static void checkMobs(Map<Character, Area> areas, ServerLevel end, List<String> failures) {
         record Home(net.minecraft.world.entity.EntityType<?> type, char biome) {}
         List<Home> homes = List.of(
-            new Home(ModEntities.POLLINATOR.get(), 'N'), new Home(ModEntities.VOID_WANDERER.get(), 'D'),
+            new Home(ModEntities.POLLINATOR.get(), 'N'),
             new Home(ModEntities.UMBRAL_STALKER.get(), 'G'),
             new Home(ModEntities.DRIFT_WHALE.get(), 'A'), new Home(ModEntities.WATCHER.get(), 'N'),
             new Home(ModEntities.SPIRE_WYRM.get(), 'G'), new Home(ModEntities.HUSHBACK.get(), 'E'),
@@ -420,7 +420,6 @@ public final class WorldgenSurvey {
         }
         // One close-up of each mob, summoned in its home biome (see ClientScreenshots).
         mobShot(lines, areas.get('N'), end, "pollinator", 2.0, 1.0, 1.4);
-        mobShot(lines, areas.get('D'), end, "void_wanderer", 2.6, 1.2, 1.7);
         mobShot(lines, areas.get('D'), end, "umbral_stalker angled", 5.5, 0.0, 1.9);
         mobShot(lines, areas.get('D'), end, "umbral_stalker lit,angled", 5.5, 0.0, 1.9);
         mobShot(lines, areas.get('A'), end, "drift_whale side", 11.0, 7.0, 7.5);
@@ -434,6 +433,7 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('A'), end, "curator", 8.0, 0.5, 3.2);
         mobShot(lines, areas.get('A'), end, "curator awake,angled", 7.0, 0.5, 2.8);
         mobShot(lines, areas.get('A'), end, "curator exposed,awake", 6.0, 0.5, 2.8);
+        mobShot(lines, areas.get('D'), end, "shardback angled", 3.4, 0.0, 1.4);
         // Phase 5: the sky and Sunstorms.
         skyShot(lines, areas.get('A'), "sky_ashen_barrens", -45.0F, -32.0F, "flare=calm");
         skyShot(lines, areas.get('N'), "sky_nebula_fields", -45.0F, -32.0F, "flare=calm");
@@ -445,7 +445,6 @@ public final class WorldgenSurvey {
         // Phase 6: each structure, from above and to the north-west of the block the survey found in it.
         structureShot(lines, structures, "comet_crater", 18.0, 17.0, 2.0);
         structureShot(lines, structures, "comet_crater_hot", 18.0, 17.0, 2.0);
-        structureShot(lines, structures, "wanderer_relay", 30.0, -6.0, -20.0);
         structureShot(lines, structures, "shattered_observatory", 46.0, 26.0, 4.0);
         structureShot(lines, structures, "solar_array", 34.0, 36.0, 4.0);
         structureShot(lines, structures, "solar_array_room", 3.0, 2.2, 0.0);
@@ -808,7 +807,7 @@ public final class WorldgenSurvey {
     }
 
     // The caves: under the Deep Hollows, the Hollow Roots (glowcaps, Starsap, fireflies); under the
-    // Shattered Crags, the Crystal Vaults (geodes of Glimmer Crystal, where the Umbral Stalker hunts).
+    // Shattered Crags, the Crystal Vaults (geodes of Glimmer Crystal, each with its Shardback).
     private static void checkCaves(Area roots, Area vaults, ServerLevel end, List<String> failures) {
         if (roots != null) {
             int glowcaps = 0, sap = 0, chunks = 0;
@@ -862,8 +861,10 @@ public final class WorldgenSurvey {
                 }
             }
             var biome = end.getBiome(vaults.centre.atY(20)).unwrapKey().map(k -> k.identifier().toString()).orElse("?");
-            log(String.format("caves: the Crystal Vaults (%s at y=20 under the Shattered Crags' centre): %d Glimmer Crystal in geodes",
-                biome, crystal));
+            var hunters = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.Shardback.class,
+                new net.minecraft.world.phys.AABB(vaults.centre).inflate(80, 80, 80));
+            log(String.format("caves: the Crystal Vaults (%s at y=20 under the Shattered Crags' centre): %d Glimmer Crystal in geodes, %d Shardbacks (%d hidden)",
+                biome, crystal, hunters.size(), hunters.stream().filter(com.ggrantrichards.astralend.entity.Shardback::isHidden).count()));
             if (geode != null) {
                 BlockPos at = geode;
                 BlockPos eye = caveEye(end, at);
@@ -974,12 +975,12 @@ public final class WorldgenSurvey {
     }
 
     // Phase 6: each structure is found the way /locate finds it, generated, and looked for by a block
-    // only it has: a crater's loot chest, the relay's Void Crystal light behind Astral
-    // Glass. Returns where each was found (for screenshots); a hot crater is reported separately.
+    // only it has: a crater's loot chest, an observatory's vault, the Array's pedestal, a
+    // maze's star-bridge. Returns where each was found (for screenshots); a hot crater is reported separately.
     private static Map<String, BlockPos> checkStructures(Map<Character, Area> areas, ServerLevel end, List<String> failures) {
         Map<String, BlockPos> found = new LinkedHashMap<>();
         record Wanted(String name, char biome, Block marker) {}
-        for (Wanted w : List.of(new Wanted("comet_crater", 'A', Blocks.CHEST), new Wanted("wanderer_relay", 'D', ModBlocks.VOID_CRYSTAL_BLOCK.get()),
+        for (Wanted w : List.of(new Wanted("comet_crater", 'A', Blocks.CHEST),
                                 new Wanted("shattered_observatory", 'N', Blocks.VAULT),
                                 new Wanted("solar_array", 'E', ModBlocks.COLLECTOR_PEDESTAL.get()),
                                 new Wanted("constellation_maze", 'N', ModBlocks.STAR_BRIDGE.get()))) {
