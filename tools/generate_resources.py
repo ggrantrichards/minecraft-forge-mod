@@ -2537,6 +2537,9 @@ def main():
             stonecutting(src, result, 2 if result.endswith("_slab") else 1)
     # End Stone scorched by a comet or a flare can be made on purpose, too.
     cooking("charred_end_stone", "smelting", "minecraft:end_stone", "charred_end_stone", 0.1, 200)
+    # Sunscorched Stone: Pale End Stone baked (since the golden-meadow rework the Corona that had it is gone;
+    # this keeps it, its family and the Collector Pedestal obtainable).
+    cooking("sunscorched_stone", "smelting", rid("pale_end_stone"), "sunscorched_stone", 0.1, 200)
 
     shaped("solarite_block", "solarite_block", ["###", "###", "###"], {"#": rid("solarite_ingot")})
     shapeless("solarite_ingot_from_solarite_block", "solarite_ingot", [rid("solarite_block")], count=9)

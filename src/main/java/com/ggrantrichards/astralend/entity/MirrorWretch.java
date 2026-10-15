@@ -23,7 +23,6 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -31,15 +30,15 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-// The Mirror Wretch (the Choir): a long grey worm that prowls the border between the Eclipse's two
-// halves. It has no face, only a round mouth ringed with teeth, and down its throat a vocal sac for
-// every voice it has stolen. It slithers low, its back half crawling on a row of small legs; when it
+// The Mirror Wretch (the Choir): a long grey worm that prowls the Ashen Barrens (since the golden-meadow
+// rework; it was the Seam's). It has no face, only a round mouth ringed with teeth, and down its throat
+// a vocal sac for every voice it has stolen. It slithers low, its back half crawling on a row of small legs; when it
 // hunts it rears up over two blocks high and strikes down from there. It never comes straight at
 // you. Now and then it throws a sound you know - a chest opening, a door, footsteps, a sheep - from
 // somewhere near the island's edge, to draw you over; when you stand at an edge with it close, it
 // lunges, and its blow throws you outward. It craves Memory Moss (hold some and it follows you, and
-// won't strike). It hunts endermen (which is why they won't stay in the Eclipse). It doesn't burn,
-// doesn't despawn in daylight - there is none - and doesn't follow you off the Eclipse.
+// won't strike). The Ashen Barrens' endermen stand at the edges listening to it
+// (EclipseLife); it leaves them be. It doesn't burn, and doesn't despawn in daylight - there is none.
 public class MirrorWretch extends Monster {
     private static final List<SoundEvent> LURES = List.of(SoundEvents.CHEST_OPEN, SoundEvents.WOODEN_DOOR_OPEN,
         SoundEvents.SHEEP_AMBIENT, SoundEvents.ITEM_PICKUP, SoundEvents.STONE_STEP, SoundEvents.WOODEN_DOOR_CLOSE,
@@ -85,7 +84,6 @@ public class MirrorWretch extends Monster {
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 16.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Enderman.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, false));
     }
 

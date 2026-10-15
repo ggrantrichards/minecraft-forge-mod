@@ -12,10 +12,11 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 
 // What the End's Endermen do that vanilla's don't.
-//   - The Eclipse's heaven half is the one place they won't stay: one that wanders or teleports in
-//     panics - it screams and blinks out again, far off. (The Mirror Wretch hunts them; they know.)
+//   - The Gilded Reach is the one place they won't stay: too much light. One that wanders or teleports
+//     in panics - it screams and blinks out again, far off.
 //   - In the Ashen Barrens they walk to the islands' edges and stand there, motionless, facing the
-//     void. The game never says why.
+//     void - or, when a Mirror Wretch is near, facing it: listening to the voices it has stolen. The game
+//     never says why.
 public final class EclipseLife {
     public static void register() {
         TickEvent.LevelTickEvent.Post.BUS.addListener(EclipseLife::onLevelTick);
@@ -51,6 +52,16 @@ public final class EclipseLife {
                 if (level.getBlockState(side).isAir() && level.getBlockState(side.below()).isAir() && EndMobs.voidBelow(level, side)) {
                     enderman.getNavigation().stop();
                     float yaw = d.toYRot();
+                    com.ggrantrichards.astralend.entity.MirrorWretch wretch = null;
+                    for (var w : level.getEntitiesOfClass(com.ggrantrichards.astralend.entity.MirrorWretch.class,
+                            enderman.getBoundingBox().inflate(32.0), net.minecraft.world.entity.Entity::isAlive)) {
+                        if (wretch == null || w.distanceToSqr(enderman) < wretch.distanceToSqr(enderman)) {
+                            wretch = w;
+                        }
+                    }
+                    if (wretch != null) {
+                        yaw = (float) Math.toDegrees(Math.atan2(-(wretch.getX() - enderman.getX()), wretch.getZ() - enderman.getZ()));
+                    }
                     enderman.setYRot(yaw);
                     enderman.setYHeadRot(yaw);
                     enderman.yBodyRot = yaw;
