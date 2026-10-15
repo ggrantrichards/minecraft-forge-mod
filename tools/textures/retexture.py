@@ -193,7 +193,7 @@ def lumine_cap():
     ls = sorted(lum(src.getpixel((x, y))) for y in range(16) for x in range(16))
     for y in range(16):
         for x in range(16):
-            if lum(src.getpixel((x, y))) >= ls[int(len(ls) * 0.95)]:
+            if lum(src.getpixel((x, y))) >= ls[int(len(ls) * 0.985)]:
                 img.putpixel((x, y), hexc("7fe0d2"))
     return img
 

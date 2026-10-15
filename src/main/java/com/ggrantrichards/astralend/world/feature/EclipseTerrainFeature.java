@@ -67,12 +67,12 @@ public record EclipseTerrainFeature() implements Feature {
                 for (double[] pond : EclipseLayout.PONDS) {
                     wet |= Math.hypot(x + 0.5 - e.worldX(pond[0], pond[1]), z + 0.5 - e.worldZ(pond[0], pond[1])) < pond[2] + 2.5 + ragged * 0.6;
                 }
-                // Bare outcrops of End Stone here and there, a tenth of the meadow or so: low rocky knolls, a block
+                // Bare outcrops of End Stone here and there, one column in twelve or so: low rocky knolls, a block
                 // or three proud of the turf, their tops broken.
                 double rock = valueNoise(x / 9.0, z / 9.0, 0x0C7);
-                boolean outcrop = !wet && rock > 0.55;
+                boolean outcrop = !wet && rock > 0.68;
                 if (land && outcrop) {
-                    top += Mth.clamp((int) ((rock - 0.55) * 14.0 + 1.5 * lattice(x, z, 0x0C8)), 0, 3);
+                    top += Mth.clamp((int) ((rock - 0.68) * 18.0 + 1.5 * lattice(x, z, 0x0C8)), 0, 3);
                 }
                 BlockState ground = wet ? Blocks.MOSS_BLOCK.defaultBlockState()
                     : outcrop ? Blocks.END_STONE.defaultBlockState() : ModBlocks.LIVING_TURF.get().defaultBlockState();
@@ -109,7 +109,9 @@ public record EclipseTerrainFeature() implements Feature {
 
     // Gentle rolls across the island: two octaves of smooth value noise, about -1..1.
     static double hills(int x, int z) {
-        return valueNoise(x / 48.0, z / 48.0, 0x3C1) * 0.7 + valueNoise(x / 16.0, z / 16.0, 0x9A7) * 0.3;
+        // Broad, slow swells (since the golden-meadow rework: a finer octave made a one-block step every few
+        // blocks, and the steps read as contour lines from above).
+        return valueNoise(x / 72.0, z / 72.0, 0x3C1) * 0.85 + valueNoise(x / 30.0, z / 30.0, 0x9A7) * 0.15;
     }
 
     private static double valueNoise(double x, double z, int salt) {

@@ -213,6 +213,12 @@ public class LeviathanPiece extends StructurePiece {
                 this.put(level, chunk, this.at(0, above(w, 10) - 1, w), down);
             }
         }
+        // And standing on the roof's ridge every other bay, so the Leviathan shows from far off in the End's dark.
+        for (int w = this.shape.hallFrom(); w <= LeviathanShape.SKULL_W - 2; w += 12) {
+            if (!this.inTower(w) && (w < this.shape.collapse || w > this.shape.collapse + 5)) {
+                this.put(level, chunk, this.at(0, above(w, 12), w), Blocks.END_ROD.defaultBlockState());
+            }
+        }
         // The towers: a chest inside each, an End Rod on each crown's cap and two shulkers on each roof (but the maze's).
         for (int t : this.shape.towers()) {
             this.chest(level, chunk, rnd, this.at(-2, above(t, 5), t + 2), LOOT);

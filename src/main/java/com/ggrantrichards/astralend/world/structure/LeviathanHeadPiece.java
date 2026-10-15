@@ -98,6 +98,10 @@ public class LeviathanHeadPiece extends StructurePiece {
             }
             this.put(level, chunk, this.at(s * 8, cv + 3, sw + 15), Blocks.END_ROD.defaultBlockState());
         }
+        // Three End Rods standing on the crest down its crown, lights to see the skull by from far off.
+        for (int s : new int[] {4, 10, 16}) {
+            this.put(level, chunk, this.at(0, cv + 13, sw + s), Blocks.END_ROD.defaultBlockState());
+        }
         // The camp of whoever got here first: a ring of slabs round their lantern, chests, a table for charts.
         BlockPos fire = this.at(0, b + 4, sw + 10);
         for (int dx = -3; dx <= 3; dx++) {
