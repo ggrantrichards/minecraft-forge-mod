@@ -29,7 +29,8 @@ import org.jspecify.annotations.Nullable;
 // The Shardback: the Crystal Vaults' hunter. A low, heavy thing with a back grown over in Glimmer
 // Crystal, it waits folded down in a geode, still as the crystals round it, and from a few steps off
 // it's one more cluster. Come within six blocks (or hit it) and it unfolds and leaps. Back in the
-// dark for a while with nothing to hunt, it folds itself down again.
+// dark for a while with nothing to hunt, it folds itself down again. An Enderman that blinks into a
+// vault and stands staring at the crystals gets the same welcome.
 public class Shardback extends Monster {
     private static final EntityDataAccessor<Boolean> DATA_HIDDEN = SynchedEntityData.defineId(Shardback.class, EntityDataSerializers.BOOLEAN);
     private int idle;
@@ -71,6 +72,7 @@ public class Shardback extends Monster {
         this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.25, true));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+        this.targetSelector.addGoal(3, new AmbushEndermanGoal());
     }
 
     @Override
@@ -125,6 +127,27 @@ public class Shardback extends Monster {
     @Override
     protected SoundEvent getDeathSound() {
         return SoundEvents.AMETHYST_CLUSTER_BREAK;
+    }
+
+    // An Enderman within six blocks (where a player would set it off too).
+    private class AmbushEndermanGoal extends Goal {
+        AmbushEndermanGoal() {
+            this.setFlags(EnumSet.of(Goal.Flag.TARGET));
+        }
+
+        @Override
+        public boolean canUse() {
+            Shardback self = Shardback.this;
+            if (self.getTarget() != null || self.random.nextInt(5) != 0) {
+                return false;
+            }
+            for (var e : self.level().getEntitiesOfClass(net.minecraft.world.entity.monster.Enderman.class, self.getBoundingBox().inflate(6.0),
+                    LivingEntity::isAlive)) {
+                self.setTarget(e);
+                break;
+            }
+            return false;
+        }
     }
 
     // Hidden: it doesn't move or turn at all.

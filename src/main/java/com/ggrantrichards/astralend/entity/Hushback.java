@@ -14,7 +14,13 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import java.util.EnumSet;
 import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -41,9 +47,22 @@ import org.jspecify.annotations.Nullable;
 // the way an enderman does, and reappears some way off - so it's food and fleece for the patient, not
 // the greedy. Shear it for Hushfleece (it grows back as it grazes the turf); Breathcomb tempts it and
 // makes it breed.
+//
+// The herd keeps watch: now and then one stands lookout, head up, turning slowly, while the rest
+// graze. If something comes - a monster, an endermite, a player who isn't creeping (sneak up, or bring
+// Breathcomb) - it chimes twice and the whole herd shies away from it. When a Sunstorm comes they
+// crowd under the giant Lumineshrooms' caps (or any cover) and wait it out. A Hydragrip sometimes
+// lounges on a resting one's back, and snaps up the endermites that pester the herd.
 public class Hushback extends Animal {
     private static final EntityDataAccessor<Boolean> SHEARED = SynchedEntityData.defineId(Hushback.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> LOOKOUT = SynchedEntityData.defineId(Hushback.class, EntityDataSerializers.BOOLEAN);
+    private static final double WATCH_MONSTERS = 14.0, WATCH_PLAYERS = 9.0;
     private int regrow;
+    private int lookoutTicks;
+    private int lookoutCooldown = 200;
+    private int alarmTicks;
+    private @Nullable Vec3 alarmFrom;
+    private int secondChime;
 
     public Hushback(EntityType<? extends Hushback> type, Level level) {
         super(type, level);
@@ -59,21 +78,90 @@ public class Hushback extends Animal {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(SHEARED, false);
+        builder.define(LOOKOUT, false);
     }
 
     public boolean isSheared() {
         return this.entityData.get(SHEARED);
     }
 
+    // Standing lookout for the herd (the renderer lifts its head).
+    public boolean isLookout() {
+        return this.entityData.get(LOOKOUT);
+    }
+
+    public boolean isAlarmed() {
+        return this.alarmTicks > 0;
+    }
+
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(2, new BreedGoal(this, 1.0));
-        this.goalSelector.addGoal(3, new TemptGoal(this, 1.1, this::isFood, false));
-        this.goalSelector.addGoal(4, new FollowParentGoal(this, 1.1));
-        this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.8));
-        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
-        this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(1, new ShyAwayGoal());
+        this.goalSelector.addGoal(2, new ShelterGoal());
+        this.goalSelector.addGoal(3, new BreedGoal(this, 1.0));
+        this.goalSelector.addGoal(4, new TemptGoal(this, 1.1, this::isFood, false));
+        this.goalSelector.addGoal(5, new FollowParentGoal(this, 1.1));
+        this.goalSelector.addGoal(6, new LookoutGoal());
+        this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 0.8));
+        this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 6.0F));
+        this.goalSelector.addGoal(9, new RandomLookAroundGoal(this));
+    }
+
+    // Take a turn as lookout (the survey calls it too).
+    public void standLookout(int ticks) {
+        this.lookoutTicks = ticks;
+        this.entityData.set(LOOKOUT, true);
+    }
+
+    // What a lookout watches for: the nearest monster (an endermite too) within 14 blocks, or a player
+    // within 9 who isn't sneaking up or bringing Breathcomb.
+    public @Nullable LivingEntity threatNear(ServerLevel level) {
+        LivingEntity best = null;
+        double bestDistance = Double.MAX_VALUE;
+        for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(WATCH_MONSTERS), LivingEntity::isAlive)) {
+            boolean threat = e instanceof Monster
+                || (e instanceof Player p && !p.isSpectator() && !p.isCreative() && !p.isShiftKeyDown()
+                    && e.distanceToSqr(this) < WATCH_PLAYERS * WATCH_PLAYERS && !this.isFood(p.getMainHandItem()) && !this.isFood(p.getOffhandItem()));
+            if (threat && e.distanceToSqr(this) < bestDistance) {
+                best = e;
+                bestDistance = e.distanceToSqr(this);
+            }
+        }
+        return best;
+    }
+
+    // Two soft chimes, and the herd round it shies away from `from`.
+    public void raiseAlarm(ServerLevel level, Vec3 from) {
+        level.playSound(null, this.getX(), this.getY() + 1.0, this.getZ(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.NEUTRAL, 1.6F, 0.55F);
+        this.secondChime = 6;
+        for (Hushback other : level.getEntitiesOfClass(Hushback.class, this.getBoundingBox().inflate(16.0))) {
+            other.alarmTicks = 100;
+            other.alarmFrom = from;
+        }
+        this.endLookout();
+    }
+
+    private void endLookout() {
+        this.lookoutTicks = 0;
+        this.lookoutCooldown = 600 + this.random.nextInt(600);
+        this.entityData.set(LOOKOUT, false);
+    }
+
+    // A Hydragrip may lounge on its back; it never steers.
+    @Override
+    protected boolean canAddPassenger(Entity passenger) {
+        return this.getPassengers().isEmpty() && passenger instanceof Hydragrip;
+    }
+
+    @Override
+    public @Nullable LivingEntity getControllingPassenger() {
+        return null;
+    }
+
+    // Resting: standing still, not alarmed, not sheltering (a Hydragrip only climbs onto one like that).
+    public boolean isResting() {
+        return this.getDeltaMovement().horizontalDistanceSqr() < 1.0E-4 && this.alarmTicks <= 0 && !this.isVehicle() && !this.isBaby();
     }
 
     @Override
@@ -111,6 +199,25 @@ public class Hushback extends Animal {
     @Override
     public void aiStep() {
         super.aiStep();
+        if (this.level() instanceof ServerLevel level) {
+            if (this.alarmTicks > 0) {
+                this.alarmTicks--;
+            }
+            if (this.secondChime > 0 && --this.secondChime == 0) {
+                level.playSound(null, this.getX(), this.getY() + 1.0, this.getZ(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.NEUTRAL, 1.6F, 0.7F);
+            }
+            if (this.lookoutCooldown > 0) {
+                this.lookoutCooldown--;
+            }
+            if (this.isLookout() && --this.lookoutTicks <= 0) {
+                this.endLookout();
+            }
+            // One of the herd takes a turn on watch, if none near is.
+            if (this.tickCount % 40 == 0 && !this.isLookout() && !this.isBaby() && this.lookoutCooldown <= 0 && this.random.nextInt(3) == 0
+                    && level.getEntitiesOfClass(Hushback.class, this.getBoundingBox().inflate(16.0), Hushback::isLookout).isEmpty()) {
+                this.standLookout(400 + this.random.nextInt(300));
+            }
+        }
         if (!this.level().isClientSide() && this.isSheared() && --this.regrow <= 0
                 && (this.level().getBlockState(this.blockPosition().below()).is(ModBlocks.LIVING_TURF.get())
                     || this.level().getBlockState(this.blockPosition().below()).is(net.minecraft.world.level.block.Blocks.END_STONE))) {
@@ -134,6 +241,7 @@ public class Hushback extends Animal {
         Vec3 from = this.position();
         BlockPos to = EndMobs.safeSpotNear(level, this.blockPosition(), 8, 16, this.random);
         if (to != null) {
+            this.ejectPassengers();
             level.sendParticles(ParticleTypes.REVERSE_PORTAL, from.x, from.y + 0.6, from.z, 24, 0.3, 0.5, 0.3, 0.05);
             level.playSound(null, from.x, from.y, from.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.NEUTRAL, 0.5F, 1.4F);
             this.teleportTo(to.getX() + 0.5, to.getY(), to.getZ() + 0.5);
@@ -166,6 +274,105 @@ public class Hushback extends Animal {
         super.addAdditionalSaveData(output);
         output.putBoolean("Sheared", this.isSheared());
         output.putInt("Regrow", this.regrow);
+    }
+
+    // Stands still, head up, and looks slowly round; chimes the alarm at the first sign of trouble.
+    private class LookoutGoal extends Goal {
+        LookoutGoal() {
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        }
+
+        @Override
+        public boolean canUse() {
+            return Hushback.this.isLookout() && Hushback.this.alarmTicks <= 0;
+        }
+
+        @Override
+        public boolean requiresUpdateEveryTick() {
+            return true;
+        }
+
+        @Override
+        public void tick() {
+            Hushback self = Hushback.this;
+            self.getNavigation().stop();
+            if (self.tickCount % 30 == 0) {
+                double a = self.random.nextDouble() * Math.PI * 2.0;
+                self.getLookControl().setLookAt(self.getX() + Math.cos(a) * 10.0, self.getEyeY() + 1.0, self.getZ() + Math.sin(a) * 10.0, 6.0F, 30.0F);
+            }
+            if (self.tickCount % 10 == 0 && self.level() instanceof ServerLevel level) {
+                LivingEntity threat = self.threatNear(level);
+                if (threat != null) {
+                    self.getLookControl().setLookAt(threat, 30.0F, 30.0F);
+                    self.raiseAlarm(level, threat.position());
+                }
+            }
+        }
+    }
+
+    // Alarmed: it trots away from whatever the lookout saw.
+    private class ShyAwayGoal extends Goal {
+        ShyAwayGoal() {
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+        }
+
+        @Override
+        public boolean canUse() {
+            return Hushback.this.alarmTicks > 0 && Hushback.this.alarmFrom != null;
+        }
+
+        @Override
+        public void start() {
+            Vec3 away = DefaultRandomPos.getPosAway(Hushback.this, 12, 4, Hushback.this.alarmFrom);
+            if (away != null) {
+                Hushback.this.getNavigation().moveTo(away.x, away.y, away.z, 1.35);
+            }
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return Hushback.this.alarmTicks > 0 && !Hushback.this.getNavigation().isDone();
+        }
+    }
+
+    // A Sunstorm coming: get under a cap, and stay there till it's past.
+    private class ShelterGoal extends Goal {
+        ShelterGoal() {
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+        }
+
+        @Override
+        public boolean canUse() {
+            return Hushback.this.random.nextInt(5) == 0 && EndMobs.stormy(Hushback.this.level(), Hushback.this.blockPosition());
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return EndMobs.stormy(Hushback.this.level(), Hushback.this.blockPosition());
+        }
+
+        @Override
+        public boolean requiresUpdateEveryTick() {
+            return true;
+        }
+
+        @Override
+        public void tick() {
+            Hushback self = Hushback.this;
+            if (!com.ggrantrichards.astralend.flare.Sunstorms.underOpenSky(self.level(), self.blockPosition())) {
+                self.getNavigation().stop();       // under cover: wait
+            } else if (self.getNavigation().isDone() && self.tickCount % 20 == 0 && self.level() instanceof ServerLevel level) {
+                BlockPos cover = EndMobs.coverNear(level, self.blockPosition(), 24, self.random);
+                if (cover != null) {
+                    self.getNavigation().moveTo(cover.getX() + 0.5, cover.getY(), cover.getZ() + 0.5, 1.25);
+                }
+            }
+        }
+
+        @Override
+        public void stop() {
+            Hushback.this.getNavigation().stop();
+        }
     }
 
     @Override

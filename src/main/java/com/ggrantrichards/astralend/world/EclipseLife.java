@@ -16,7 +16,7 @@ import net.minecraftforge.event.TickEvent;
 //     in panics - it screams and blinks out again, far off.
 //   - In the Ashen Barrens they walk to the islands' edges and stand there, motionless, facing the
 //     void - or, when a Mirror Wretch is near, facing it: listening to the voices it has stolen. The game
-//     never says why.
+//     never says why. (Unless the Watcher is near: they won't meet its eye - WebOfLife.)
 public final class EclipseLife {
     public static void register() {
         TickEvent.LevelTickEvent.Post.BUS.addListener(EclipseLife::onLevelTick);
@@ -27,7 +27,8 @@ public final class EclipseLife {
             return;
         }
         for (Enderman enderman : level.getEntities(EntityTypes.ENDERMAN, e -> e.isAlive() && e.getTarget() == null
-                && level.getBiome(e.blockPosition()).is(ModBiomes.ASHEN_BARRENS))) {
+                && level.getBiome(e.blockPosition()).is(ModBiomes.ASHEN_BARRENS)
+                && level.getEntitiesOfClass(com.ggrantrichards.astralend.entity.Watcher.class, e.getBoundingBox().inflate(24.0)).isEmpty())) {
             standAtEdge(level, enderman);
         }
         for (Enderman enderman : level.getEntities(EntityTypes.ENDERMAN, e -> e.isAlive() && level.getBiome(e.blockPosition()).is(ModBiomes.ECLIPSE))) {

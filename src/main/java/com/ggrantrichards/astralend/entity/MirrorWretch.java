@@ -39,11 +39,15 @@ import org.jspecify.annotations.Nullable;
 // lunges, and its blow throws you outward. It craves Memory Moss (hold some and it follows you, and
 // won't strike). The Ashen Barrens' endermen stand at the edges listening to it
 // (EclipseLife); it leaves them be. It doesn't burn, and doesn't despawn in daylight - there is none.
+//
+// It eats endermites. And it has the Drift Whales' song: when a pod passes over, it hums at them in a
+// whale's voice. They answer - then fall silent and steer away. Silent whales mean a Wretch is near.
 public class MirrorWretch extends Monster {
     private static final List<SoundEvent> LURES = List.of(SoundEvents.CHEST_OPEN, SoundEvents.WOODEN_DOOR_OPEN,
         SoundEvents.SHEEP_AMBIENT, SoundEvents.ITEM_PICKUP, SoundEvents.STONE_STEP, SoundEvents.WOODEN_DOOR_CLOSE,
         SoundEvents.EXPERIENCE_ORB_PICKUP, SoundEvents.BELL_BLOCK);
     private int lureCooldown = 200;
+    private int mimicCooldown = 400;
     private float rear, rearO;          // (client) how far it has reared: 0 low, 1 up - eased
     private boolean reared;
 
@@ -84,6 +88,7 @@ public class MirrorWretch extends Monster {
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 16.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, net.minecraft.world.entity.monster.Endermite.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, false));
     }
 
@@ -158,6 +163,23 @@ public class MirrorWretch extends Monster {
                 this.lure(level, player);
             }
         }
+        if (--this.mimicCooldown <= 0) {
+            this.mimicCooldown = 300 + this.random.nextInt(300);
+            this.mimicWhales(level);
+        }
+    }
+
+    // A whale's hum, from its own throat, at the whales within 64 blocks. True if any heard it.
+    public boolean mimicWhales(ServerLevel level) {
+        var whales = level.getEntitiesOfClass(DriftWhale.class, this.getBoundingBox().inflate(64.0), DriftWhale::isAlive);
+        if (whales.isEmpty()) {
+            return false;
+        }
+        level.playSound(null, this.getX(), this.getY() + 1.0, this.getZ(), SoundEvents.CONDUIT_AMBIENT, SoundSource.HOSTILE, 3.0F, 0.55F);
+        for (DriftWhale whale : whales) {
+            whale.hearMimic(this.position());
+        }
+        return true;
     }
 
     // A familiar sound from somewhere near an edge, beyond the player as seen from here.

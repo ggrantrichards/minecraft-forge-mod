@@ -33,6 +33,7 @@ import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -64,6 +65,11 @@ import org.jspecify.annotations.Nullable;
 // It hunts like a lion. Hidden, it creeps in low and slow, lumbering on its knuckles; once it is a
 // few blocks behind you and unseen, it pounces - a sudden leap that reveals it and lands a heavy
 // ambush blow. After that it fights in the open for a moment, then melts back into the dark.
+//
+// With no player about it hunts Endermen under the Deep Hollows' canopy - short fights in the dark,
+// the Endermen blinking away. It keeps clear of light in any form: a drifting swarm of Pollinators, or
+// a Shardback that has woken in its geode (two hunters, one dark). And a wolf knows it's there: it
+// stares and growls at the spot, and the Stalker, given away, shows itself.
 public class UmbralStalker extends Monster {
     private static final EntityDataAccessor<Boolean> DATA_REVEALED = SynchedEntityData.defineId(UmbralStalker.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_HUNTING = SynchedEntityData.defineId(UmbralStalker.class, EntityDataSerializers.BOOLEAN);
@@ -108,6 +114,7 @@ public class UmbralStalker extends Monster {
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new FleeFireGoal());
+        this.goalSelector.addGoal(2, new ShunGoal());
         this.goalSelector.addGoal(2, new BackOffWhenWatchedGoal());
         this.goalSelector.addGoal(3, new PounceGoal());
         this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0, true));
@@ -116,6 +123,7 @@ public class UmbralStalker extends Monster {
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new SenseTargetGoal());
+        this.targetSelector.addGoal(3, new HuntEndermenGoal());
     }
 
     public boolean isAfraid() {
@@ -129,6 +137,21 @@ public class UmbralStalker extends Monster {
         }
         this.fearTicks = FEAR_TICKS;
         this.revealTicks = Math.max(this.revealTicks, 40);
+    }
+
+    // Given away (a wolf growling at it): it shows itself for a moment.
+    public void betray(int ticks) {
+        this.revealTicks = Math.max(this.revealTicks, ticks);
+    }
+
+    // What it keeps clear of: a Pollinator (glowing) or a woken Shardback, within 7 blocks.
+    public @Nullable LivingEntity shunned() {
+        for (LivingEntity e : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(7.0), LivingEntity::isAlive)) {
+            if (e instanceof EndPollinator || (e instanceof Shardback shard && !shard.isHidden())) {
+                return e;
+            }
+        }
+        return null;
     }
 
     public boolean isRevealed() {
@@ -213,7 +236,17 @@ public class UmbralStalker extends Monster {
     public boolean doHurtTarget(ServerLevel level, Entity target) {
         this.revealTicks = 40;
         level.broadcastEntityEvent(this, (byte) 4);
-        return super.doHurtTarget(level, target);
+        boolean hit = super.doHurtTarget(level, target);
+        // An Enderman, struck, often blinks away - and the hunt goes on in the dark.
+        if (hit && target instanceof Enderman enderman && enderman.isAlive() && this.random.nextInt(3) == 0) {
+            var to = EndMobs.safeSpotNear(level, enderman.blockPosition(), 8, 16, this.random);
+            if (to != null) {
+                level.sendParticles(ParticleTypes.PORTAL, enderman.getX(), enderman.getY() + 1.5, enderman.getZ(), 30, 0.4, 1.0, 0.4, 0.3);
+                level.playSound(null, enderman.getX(), enderman.getY(), enderman.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.HOSTILE, 1.0F, 1.0F);
+                enderman.teleportTo(to.getX() + 0.5, to.getY(), to.getZ() + 0.5);
+            }
+        }
+        return hit;
     }
 
     @Override
@@ -438,7 +471,8 @@ public class UmbralStalker extends Monster {
         @Override
         public boolean canUse() {
             UmbralStalker self = UmbralStalker.this;
-            if (self.getTarget() != null || self.tickCount % 10 != 0 || !(self.level() instanceof ServerLevel level)) {
+            if ((self.getTarget() != null && !(self.getTarget() instanceof Enderman)) || self.tickCount % 10 != 0
+                    || !(self.level() instanceof ServerLevel level)) {
                 return false;
             }
             Player player = level.getNearestPlayer(SENSES, self);
@@ -447,6 +481,67 @@ public class UmbralStalker extends Monster {
             }
             self.setTarget(player);
             return false;
+        }
+    }
+
+    // The nearest Enderman within 24 blocks, when no player is about (a player always comes first).
+    private class HuntEndermenGoal extends Goal {
+        HuntEndermenGoal() {
+            this.setFlags(EnumSet.of(Goal.Flag.TARGET));
+        }
+
+        @Override
+        public boolean canUse() {
+            UmbralStalker self = UmbralStalker.this;
+            if (self.getTarget() != null || self.random.nextInt(10) != 0 || !(self.level() instanceof ServerLevel level)
+                    || level.getNearestPlayer(SENSES, self) != null) {
+                return false;
+            }
+            Enderman prey = self.nearestEnderman();
+            if (prey != null) {
+                self.setTarget(prey);
+            }
+            return false;
+        }
+    }
+
+    public @Nullable Enderman nearestEnderman() {
+        Enderman best = null;
+        for (Enderman e : this.level().getEntitiesOfClass(Enderman.class, this.getBoundingBox().inflate(24.0), Entity::isAlive)) {
+            if (best == null || e.distanceToSqr(this) < best.distanceToSqr(this)) {
+                best = e;
+            }
+        }
+        return best;
+    }
+
+    // Light it can't abide close by (a Pollinator, a woken Shardback): it backs off into the dark.
+    private class ShunGoal extends Goal {
+        ShunGoal() {
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+        }
+
+        @Override
+        public boolean canUse() {
+            UmbralStalker self = UmbralStalker.this;
+            if (self.random.nextInt(3) != 0) {
+                return false;
+            }
+            LivingEntity light = self.shunned();
+            if (light == null) {
+                return false;
+            }
+            Vec3 away = DefaultRandomPos.getPosAway(self, 12, 4, light.position());
+            if (away == null) {
+                return false;
+            }
+            self.getNavigation().moveTo(away.x, away.y, away.z, 1.2);
+            return true;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return !UmbralStalker.this.getNavigation().isDone();
         }
     }
 

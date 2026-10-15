@@ -45,6 +45,10 @@ import org.jspecify.annotations.Nullable;
 // few seconds; a pollinated plant spreads to a free spot next to it. Every few minutes it leaves
 // Glowing Spores behind, the way a chicken lays eggs, so there's no reason to kill it (killing it
 // drops nothing). Starblooms tempt it and make it breed.
+//
+// When a Drift Whale pod passes low overhead, Pollinators rise and drift along in its wake for a
+// while, glowing behind its tail, then sink back home to their plants. Whale calves chase them in
+// play (DriftWhale); a Pollinator only scatters a little.
 public class EndPollinator extends Animal {
     public static final TagKey<Block> FLORA = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(AstralEnd.MODID, "pollinator_flora"));
     private static final int MIN_SPORE_TIME = 6000;   // 5 minutes
@@ -52,6 +56,7 @@ public class EndPollinator extends Animal {
 
     private int sporeTime;
     private int pollinateCooldown;
+    private int wakeCooldown = 200;
 
     public EndPollinator(EntityType<? extends EndPollinator> type, Level level) {
         super(type, level);
@@ -80,6 +85,7 @@ public class EndPollinator extends Animal {
         this.goalSelector.addGoal(1, new BreedGoal(this, 1.0));
         this.goalSelector.addGoal(2, new TemptGoal(this, 1.1, this::isFood, false));
         this.goalSelector.addGoal(3, new FollowParentGoal(this, 1.1));
+        this.goalSelector.addGoal(4, new RideTheWakeGoal());
         this.goalSelector.addGoal(4, new PollinateGoal());
         this.goalSelector.addGoal(5, new HoverNearGroundGoal(this, 1.0, 8, 1, 4));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
@@ -116,6 +122,9 @@ public class EndPollinator extends Animal {
         }
         if (this.pollinateCooldown > 0) {
             this.pollinateCooldown--;
+        }
+        if (this.wakeCooldown > 0) {
+            this.wakeCooldown--;
         }
         if (this.isAlive() && !this.isBaby() && --this.sporeTime <= 0) {
             this.spawnAtLocation((ServerLevel) this.level(), new ItemStack(ModItems.GLOWING_SPORES.get()));
@@ -185,6 +194,88 @@ public class EndPollinator extends Animal {
                 level.sendParticles(ParticleTypes.HAPPY_VILLAGER, pos.getX() + 0.5, pos.getY() + 0.4, pos.getZ() + 0.5, 6, 0.3, 0.3, 0.3, 0.0);
                 return;
             }
+        }
+    }
+
+    // The nearest Drift Whale within 24 blocks, if any.
+    public @Nullable DriftWhale passingWhale() {
+        DriftWhale best = null;
+        for (DriftWhale w : this.level().getEntitiesOfClass(DriftWhale.class, this.getBoundingBox().inflate(24.0), DriftWhale::isAlive)) {
+            if (best == null || w.distanceToSqr(this) < best.distanceToSqr(this)) {
+                best = w;
+            }
+        }
+        return best;
+    }
+
+    // Where it drifts in a whale's wake: a little behind and below its tail, each its own place.
+    public Vec3 wakeSpot(DriftWhale whale) {
+        Vec3 back = whale.getLookAngle().multiply(1.0, 0.0, 1.0);
+        back = back.lengthSqr() > 1.0E-4 ? back.normalize().scale(-(whale.getBbWidth() * 1.2 + 3.0)) : Vec3.ZERO;
+        double t = this.getId() * 1.7;
+        return whale.position().add(back).add(Math.cos(t) * 2.5, -1.0 + Math.sin(t * 0.7), Math.sin(t) * 2.5);
+    }
+
+    // Up into a passing whale's wake, and along with it - no further than 32 blocks from where it
+    // rose, and for no more than half a minute; then back down to its plants.
+    private class RideTheWakeGoal extends Goal {
+        private @Nullable DriftWhale whale;
+        private @Nullable Vec3 home;
+        private int ticks;
+
+        RideTheWakeGoal() {
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+        }
+
+        @Override
+        public boolean canUse() {
+            EndPollinator self = EndPollinator.this;
+            if (self.wakeCooldown > 0 || self.isInLove() || self.random.nextInt(10) != 0) {
+                return false;
+            }
+            this.whale = self.passingWhale();
+            return this.whale != null;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return this.whale != null && this.whale.isAlive() && this.ticks < 600 && this.home != null
+                && this.whale.position().distanceToSqr(this.home) < 32.0 * 32.0;
+        }
+
+        @Override
+        public void start() {
+            this.ticks = 0;
+            this.home = EndPollinator.this.position();
+        }
+
+        @Override
+        public boolean requiresUpdateEveryTick() {
+            return true;
+        }
+
+        @Override
+        public void tick() {
+            EndPollinator self = EndPollinator.this;
+            this.ticks++;
+            if (this.whale == null) {
+                return;
+            }
+            Vec3 spot = self.wakeSpot(this.whale);
+            self.getMoveControl().setWantedPosition(spot.x, spot.y, spot.z, 1.4);
+            if (this.ticks % 8 == 0 && self.level() instanceof ServerLevel level) {
+                level.sendParticles(ParticleTypes.GLOW, self.getX(), self.getY(), self.getZ(), 1, 0.2, 0.2, 0.2, 0.0);
+            }
+        }
+
+        @Override
+        public void stop() {
+            EndPollinator self = EndPollinator.this;
+            self.wakeCooldown = 1200 + self.random.nextInt(1200);
+            if (this.home != null) {
+                self.getNavigation().moveTo(this.home.x, this.home.y, this.home.z, 1.0);
+            }
+            this.whale = null;
         }
     }
 

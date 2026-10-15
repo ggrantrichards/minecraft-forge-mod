@@ -942,7 +942,7 @@ MOB_SPAWNS = {
                 "monster": [("minecraft:endermite", 3, 2)]},
     # The Ashen Barrens (since the golden-meadow rework): the Mirror Wretch, alone in the dead country -
     # and the Endermen standing at its edges are listening to it.
-    "ashen_barrens": {"monster": [("mirror_wretch", 3, 1)]},
+    "ashen_barrens": {"monster": [("mirror_wretch", 3, 1), ("minecraft:endermite", 2, 1)]},   # mites for the Wretch to eat
     # The caves: the Crystal Vaults' hunters.
     "crystal_vaults": {"monster": [("shardback", 6, 1)]},
 }

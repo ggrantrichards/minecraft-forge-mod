@@ -352,6 +352,179 @@ final class MechanicsSurvey {
         return from.offset(0, 0, 400);
     }
 
+    // The web of life: every thread between the End's creatures, each made to happen and checked.
+    // (The Sunstorm's are in WorldgenSurvey.testEclipse, the Leviathan circle in testLeviathan.)
+    static void checkWebOfLife(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
+        BlockPos at = standOn.offset(90, 0, 0);
+        for (int dx = -18; dx <= 18; dx++) {
+            for (int dz = -18; dz <= 18; dz++) {
+                end.setBlock(at.offset(dx, -1, dz), Blocks.END_STONE.defaultBlockState(), 3);
+                for (int up = 0; up <= 6; up++) {
+                    end.setBlock(at.offset(dx, up, dz), Blocks.AIR.defaultBlockState(), 3);
+                }
+            }
+        }
+        java.util.List<net.minecraft.world.entity.Entity> made = new java.util.ArrayList<>();
+        java.util.function.BiFunction<net.minecraft.world.entity.EntityType<?>, Vec3, net.minecraft.world.entity.Entity> put = (type, pos) -> {
+            var e = type.create(end, EntitySpawnReason.COMMAND);
+            e.snapTo(pos.x, pos.y, pos.z, 0.0F, 0.0F);
+            end.addFreshEntity(e);
+            made.add(e);
+            return e;
+        };
+        Vec3 o = Vec3.atBottomCenterOf(at);
+        java.util.function.BiConsumer<String, Boolean> check = (what, ok) -> {
+            log.accept("web of life: " + what + ": " + ok);
+            if (!ok) {
+                failures.add("web of life: " + what);
+            }
+        };
+        try {
+            // Hushbacks: a lookout sees an endermite and chimes; the herd shies away.
+            var lookout = (com.ggrantrichards.astralend.entity.Hushback) put.apply(ModEntities.HUSHBACK.get(), o);
+            var mate = (com.ggrantrichards.astralend.entity.Hushback) put.apply(ModEntities.HUSHBACK.get(), o.add(2, 0, 0));
+            var mite = put.apply(net.minecraft.world.entity.EntityTypes.ENDERMITE, o.add(0, 0, 6));
+            lookout.standLookout(200);
+            var threat = lookout.threatNear(end);
+            if (threat != null) {
+                lookout.raiseAlarm(end, threat.position());
+            }
+            check.accept("a Hushback lookout spots an endermite and the herd shies away", lookout.isLookout() == false && threat == mite && mate.isAlarmed());
+            // Hydragrip: goes for the endermite pestering the herd, and lounges on a Hushback's back.
+            var grip = (com.ggrantrichards.astralend.entity.Hydragrip) put.apply(ModEntities.HYDRAGRIP.get(), o.add(-8, 0, 0));
+            boolean guards = grip.pesteringMite() == mite;
+            for (int i = 0; i < 100 && grip.getTarget() == null; i++) {
+                grip.tick();
+            }
+            check.accept("a Hydragrip goes for the endermite pestering the herd", guards && grip.getTarget() == mite);
+            mite.discard();
+            grip.setTarget(null);
+            grip.snapTo(mate.getX(), mate.getY(), mate.getZ() + 1.0, 0.0F, 0.0F);
+            grip.lounge(mate);
+            check.accept("a Hydragrip lounges on a Hushback's back", grip.isPassenger() && grip.getVehicle() == mate);
+            grip.stopRiding();
+            // Hydragrip broods play tag; an axolotl joins in.
+            var kidA = (com.ggrantrichards.astralend.entity.Hydragrip) put.apply(ModEntities.HYDRAGRIP.get(), o.add(-4, 0, 6));
+            var kidB = (com.ggrantrichards.astralend.entity.Hydragrip) put.apply(ModEntities.HYDRAGRIP.get(), o.add(-2, 0, 6));
+            kidA.setAge(-24000);
+            kidB.setAge(-24000);
+            kidA.startPlay(kidB, true);
+            boolean paired = kidB.isPlaying() && kidB.playMate() == kidA && !kidB.isIt();
+            kidA.tag();
+            check.accept("Hydragrip young play tag (caught, the other is it)", paired && !kidA.isIt() && kidB.isIt());
+            var axolotl = (net.minecraft.world.entity.LivingEntity) put.apply(net.minecraft.world.entity.EntityTypes.AXOLOTL, o.add(-6, 0, 8));
+            grip.startPlay(axolotl, false);
+            for (int i = 0; i < 20; i++) {
+                grip.tick();
+            }
+            check.accept("a Hydragrip plays with an axolotl", grip.isPlaying() && grip.playMate() == axolotl);
+            // Hollowback: someone holding Breathcomb makes it falter.
+            var player = standIn(end);
+            player.snapTo(o.x + 4, o.y, o.z - 8, 0.0F, 0.0F);
+            player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(ModBlocks.BREATHCOMB.get()));
+            var hollow = (com.ggrantrichards.astralend.entity.Hollowback) put.apply(ModEntities.HOLLOWBACK.get(), o.add(4, 0, -12));
+            hollow.setTarget(player);
+            for (int i = 0; i < 6 && !hollow.isHesitating(); i++) {
+                hollow.tick();
+            }
+            check.accept("a Hollowback falters before someone holding Breathcomb", hollow.isHesitating());
+            hollow.discard();
+            // Umbral Stalker: hunts an Enderman when no player is about; keeps clear of Pollinators and a woken Shardback.
+            var stalker = (com.ggrantrichards.astralend.entity.UmbralStalker) put.apply(ModEntities.UMBRAL_STALKER.get(), o.add(10, 0, 10));
+            var enderman = put.apply(net.minecraft.world.entity.EntityTypes.ENDERMAN, o.add(10, 0, 2));
+            for (int i = 0; i < 100 && stalker.getTarget() == null; i++) {
+                stalker.tick();
+            }
+            check.accept("an Umbral Stalker hunts an Enderman", stalker.getTarget() == enderman);
+            stalker.setTarget(null);
+            var shard = (com.ggrantrichards.astralend.entity.Shardback) put.apply(ModEntities.SHARDBACK.get(), o.add(13, 0, 13));
+            boolean ignoresHidden = stalker.shunned() == null;
+            shard.hurtServer(end, end.damageSources().generic(), 1.0F);     // woken
+            check.accept("an Umbral Stalker keeps clear of a woken Shardback (not a hidden one)", ignoresHidden && stalker.shunned() == shard);
+            shard.discard();
+            var glow = put.apply(ModEntities.POLLINATOR.get(), o.add(12, 1, 11));
+            check.accept("an Umbral Stalker keeps clear of a Pollinator's light", stalker.shunned() == glow);
+            glow.discard();
+            stalker.discard();
+            // A wolf gives a hidden Stalker away (a fresh one, out of reach of the Enderman).
+            var lurker = (com.ggrantrichards.astralend.entity.UmbralStalker) put.apply(ModEntities.UMBRAL_STALKER.get(), o.add(-14, 0, 14));
+            lurker.tick();
+            boolean hidden = !lurker.isRevealed();
+            var wolf = (net.minecraft.world.entity.Mob) put.apply(net.minecraft.world.entity.EntityTypes.WOLF, o.add(-14, 0, 6));
+            var sensed = com.ggrantrichards.astralend.world.WebOfLife.wolfSenses(end, wolf, true);
+            lurker.tick();
+            check.accept("a wolf growls at a hidden Umbral Stalker and gives it away", hidden && sensed == lurker && lurker.isRevealed());
+            lurker.discard();
+            wolf.discard();
+            // Shardback: an Enderman within six blocks of its geode sets it off.
+            enderman.snapTo(o.x + 10, o.y, o.z + 2, 0.0F, 0.0F);       // (if the Stalker's blow sent it blinking off)
+            var ambusher = (com.ggrantrichards.astralend.entity.Shardback) put.apply(ModEntities.SHARDBACK.get(), o.add(10, 0, -2));
+            for (int i = 0; i < 100 && ambusher.getTarget() == null; i++) {
+                ambusher.tick();
+            }
+            check.accept("a Shardback ambushes an Enderman that comes close", ambusher.getTarget() == enderman && !ambusher.isHidden());
+            ambusher.discard();
+            // Endermen won't meet the Watcher's eye.
+            var watcher = put.apply(ModEntities.WATCHER.get(), o.add(10, 3, -14));
+            enderman.snapTo(o.x + 10, o.y, o.z - 4, 180.0F, 0.0F);
+            boolean turned = com.ggrantrichards.astralend.world.WebOfLife.shunWatcher(end, (net.minecraft.world.entity.monster.Enderman) enderman);
+            Vec3 facing = enderman.getLookAngle();
+            check.accept("an Enderman turns its back on the Watcher", turned && facing.z > 0.5);
+            watcher.discard();
+            // Mirror Wretch: eats endermites; hums at whales, which answer and then keep away, silent.
+            var wretch = (com.ggrantrichards.astralend.entity.MirrorWretch) put.apply(ModEntities.MIRROR_WRETCH.get(), o.add(-12, 0, -12));
+            var meal = put.apply(net.minecraft.world.entity.EntityTypes.ENDERMITE, o.add(-10, 0, -12));
+            for (int i = 0; i < 150 && wretch.getTarget() == null; i++) {
+                wretch.tick();
+            }
+            check.accept("a Mirror Wretch goes for an endermite", wretch.getTarget() == meal);
+            meal.discard();
+            var whale = (com.ggrantrichards.astralend.entity.DriftWhale) put.apply(ModEntities.DRIFT_WHALE.get(), o.add(-12, 20, 20));
+            boolean heard = wretch.mimicWhales(end);
+            for (int i = 0; i < 60 && !whale.isWary(); i++) {
+                whale.tick();
+            }
+            check.accept("whales answer a Mirror Wretch's false hum, then fall silent and keep away", heard && whale.isWary());
+            wretch.discard();
+            whale.discard();
+            // Pollinators drift in a passing whale's wake.
+            var lead = (com.ggrantrichards.astralend.entity.DriftWhale) put.apply(ModEntities.DRIFT_WHALE.get(), o.add(0, 12, 0));
+            var drifter = (com.ggrantrichards.astralend.entity.EndPollinator) put.apply(ModEntities.POLLINATOR.get(), o.add(4, 2, 4));
+            Vec3 wake = drifter.wakeSpot(lead);
+            check.accept("a Pollinator drifts behind a passing whale's tail", drifter.passingWhale() == lead
+                && wake.subtract(lead.position()).dot(lead.getLookAngle()) < 0.0);
+            // A pod: a calf strays after the Pollinator; its mother calls, comes and nudges it back.
+            var calf = (com.ggrantrichards.astralend.entity.DriftWhale) put.apply(ModEntities.DRIFT_WHALE.get(), o.add(4, 12, 4));
+            calf.setSize(0.6F);
+            calf.follow(lead, new Vec3(6, 0, 0));
+            calf.startStray(end);
+            boolean chases = calf.isStraying() && calf.strayingAfter() == drifter;
+            calf.snapTo(o.x + 30, o.y + 12, o.z + 4, 0.0F, 0.0F);
+            var fetched = lead.checkCalves(end);
+            lead.nudgeBack(end, calf);
+            check.accept("a whale calf chases a Pollinator, and its mother fetches it back", chases && fetched == calf && !calf.isStraying());
+            // The flock turns as the leader turned, a beat late.
+            for (int i = 0; i < 25; i++) {
+                lead.setYRot(0.0F);
+                lead.tick();
+            }
+            float before = 0.0F;
+            lead.setYRot(90.0F);
+            lead.tick();
+            float late = calf.flockHeading(lead);
+            check.accept("a pod turns as its leader turned, a beat late", Math.abs(net.minecraft.util.Mth.wrapDegrees(late - before)) < 30.0F
+                && Math.abs(net.minecraft.util.Mth.wrapDegrees(lead.pastYaw(0) - (before + 90.0F))) < 30.0F);
+            // The pod sleeps, hanging nose-up.
+            lead.sleepPod(end, 400);
+            for (int i = 0; i < 40; i++) {
+                calf.tick();
+            }
+            check.accept("a pod sleeps together, hanging nose-up", lead.isAsleep() && calf.isAsleep() && calf.getXRot() < -20.0F);
+        } finally {
+            made.forEach(net.minecraft.world.entity.Entity::discard);
+        }
+    }
+
     // The distillation's new mobs, doing what they're for (not only appearing): the Hushback is shorn and
     // its herd scatters when one is hurt; the Hydragrip eats an endermite and coughs up a pearl, and
     // leaves players alone; the Mirror Wretch knows when you're at an edge and throws you outward; the

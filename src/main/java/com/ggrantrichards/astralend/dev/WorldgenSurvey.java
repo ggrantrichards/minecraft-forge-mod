@@ -310,6 +310,7 @@ public final class WorldgenSurvey {
             MechanicsSurvey.checkContent(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkSystems(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkNewMobs(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
+            MechanicsSurvey.checkWebOfLife(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkSpawnEggs(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkHandBuiltPortal(end, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkWyrmFight(end, failures, WorldgenSurvey::log);
@@ -543,8 +544,64 @@ public final class WorldgenSurvey {
         if (right < total) {
             failures.add("the Eclipse should be one biome across its disc: " + (total - right) + " of " + total + " test points aren't");
         }
+        testSunstormLife(end, e, wx, wz, failures);
         EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "eclipse_overview %.1f %d %.1f %.1f 50.0", e.x() - 190, 190, e.z() - 190, -45.0));
         EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "eclipse_wellspring %.1f %d %.1f %.1f 25.0", wx - 26, 72, wz - 26, -45.0));
+    }
+
+    // The web of life in a Sunstorm, in the Gilded Reach itself: Hushbacks find cover, Hydragrips find
+    // the water, pods swim out of the Reach; and endermites creep after the herd.
+    private static void testSunstormLife(ServerLevel end, EclipseLayout.Eclipse e, double wx, double wz, List<String> failures) {
+        var storms = com.ggrantrichards.astralend.flare.Sunstorms.get(end);
+        var was = storms.phase();
+        double r = EclipseLayout.WELLSPRING_RADIUS * EclipseLayout.RADIUS + 8.0;
+        int mx = (int) Math.floor(wx + r), mz = (int) Math.floor(wz);
+        BlockPos meadow = new BlockPos(mx, end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, mx, mz), mz);
+        List<net.minecraft.world.entity.Entity> made = new ArrayList<>();
+        List<BlockPos> roof = new ArrayList<>();
+        try {
+            storms.setPhase(end, com.ggrantrichards.astralend.flare.FlarePhase.FLARE, end.getRandom());
+            boolean stormy = com.ggrantrichards.astralend.entity.EndMobs.stormy(end, meadow);
+            // A roof four blocks off: cover the herd can find.
+            BlockPos shelter = meadow.offset(0, 0, 5);
+            shelter = new BlockPos(shelter.getX(), end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, shelter.getX(), shelter.getZ()), shelter.getZ());
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    BlockPos b = shelter.offset(dx, 3, dz);
+                    if (end.getBlockState(b).isAir()) {
+                        end.setBlock(b, Blocks.END_STONE.defaultBlockState(), 3);
+                        roof.add(b);
+                    }
+                }
+            }
+            BlockPos cover = com.ggrantrichards.astralend.entity.EndMobs.coverNear(end, meadow, 12, end.getRandom());
+            BlockPos water = com.ggrantrichards.astralend.entity.EndMobs.waterNear(end, meadow, 16);
+            var whale = ModEntities.DRIFT_WHALE.get().create(end, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+            whale.snapTo(meadow.getX() + 0.5, meadow.getY() + 30, meadow.getZ() + 0.5, 0.0F, 0.0F);
+            end.addFreshEntity(whale);
+            made.add(whale);
+            var out = whale.outOfTheStorm(end);
+            boolean outward = out != null && out.x * (whale.getX() - e.x()) + out.z * (whale.getZ() - e.z()) > 0.0;
+            var herd = ModEntities.HUSHBACK.get().create(end, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+            herd.snapTo(meadow.getX() + 0.5, meadow.getY(), meadow.getZ() + 0.5, 0.0F, 0.0F);
+            end.addFreshEntity(herd);
+            made.add(herd);
+            var mite = net.minecraft.world.entity.EntityTypes.ENDERMITE.create(end, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+            mite.snapTo(meadow.getX() + 3.5, meadow.getY(), meadow.getZ() + 0.5, 0.0F, 0.0F);
+            end.addFreshEntity(mite);
+            made.add(mite);
+            boolean pesters = com.ggrantrichards.astralend.world.WebOfLife.pesterHerd(end, mite);
+            log(String.format("web of life in a Sunstorm (at %s): stormy %s; Hushbacks find cover %s; Hydragrips find the water %s; "
+                + "pods swim out of the Reach %s; endermites pester the herd %s", meadow.toShortString(), stormy, cover, water, outward, pesters));
+            if (!stormy || cover == null || water == null || !outward || !pesters) {
+                failures.add("web of life: in a Sunstorm Hushbacks should find cover, Hydragrips water and pods the way out of the Reach; "
+                    + "endermites should pester the herd (" + stormy + ", " + cover + ", " + water + ", " + outward + ", " + pesters + ")");
+            }
+        } finally {
+            made.forEach(net.minecraft.world.entity.Entity::discard);
+            roof.forEach(b -> end.setBlock(b, Blocks.AIR.defaultBlockState(), 3));
+            storms.setPhase(end, was, end.getRandom());
+        }
     }
 
     // The Leviathan: found the way /locate finds it; its skull built, with the reliquary's pedestal, the
@@ -588,6 +645,16 @@ public final class WorldgenSurvey {
             }
         }
         BlockPos pedestal = body.pedestal(), arena = body.arena(), heart = body.heart(), throat = head.throat();
+        // A Drift Whale passing through: once round the skeleton, humming low.
+        var passing = ModEntities.DRIFT_WHALE.get().create(end, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        passing.snapTo(heart.getX() + 0.5, heart.getY() + 2.0, heart.getZ() + 0.5, 0.0F, 0.0F);
+        end.addFreshEntity(passing);
+        boolean circles = passing.noticeLeviathan(end) && passing.isCircling();
+        passing.discard();
+        log("web of life: a Drift Whale passing a Leviathan circles it once: " + circles);
+        if (!circles) {
+            failures.add("web of life: a Drift Whale passing a Leviathan should circle it once");
+        }
         // The reliquary in the cathedral: the pedestal, four pylons with their chimes, the lungs over it.
         int chimes = 0, breathcomb = 0;
         for (BlockPos p : BlockPos.betweenClosed(arena.offset(-28, -4, -28), arena.offset(28, 24, 28))) {
@@ -613,8 +680,8 @@ public final class WorldgenSurvey {
         log(String.format("leviathan: start %s; pedestal %s (%s); %d End Chimes, %d Breathcomb in the lungs; heart: %d Leviathan Heart in %d "
             + "muscle; %d Curator(s)%s", start.toShortString(), pedestal.toShortString(), hasPedestal ? "built" : "MISSING", chimes, breathcomb,
             heartBlocks, muscle, curators.size(), curators.isEmpty() ? "" : curators.get(0).isDormant() ? ", dormant" : ", AWAKE"));
-        if (!hasPedestal || chimes != 4 || breathcomb < 150 || heartBlocks < 40 || muscle < 40) {
-            failures.add(String.format("leviathan: expected the pedestal, 4 End Chimes, a lung's Breathcomb (150+) and a heart (40+ each); got %s, %d, %d, %d, %d",
+        if (!hasPedestal || chimes != 8 || breathcomb < 150 || heartBlocks < 40 || muscle < 40) {
+            failures.add(String.format("leviathan: expected the pedestal, 8 End Chimes (4 pylons on the floor, 4 hanging from the ceiling), a lung's Breathcomb (150+) and a heart (40+ each); got %s, %d, %d, %d, %d",
                 hasPedestal, chimes, breathcomb, heartBlocks, muscle));
         }
         if (curators.size() != 1) {

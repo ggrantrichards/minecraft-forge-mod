@@ -1,5 +1,7 @@
 package com.ggrantrichards.astralend.entity;
 
+import com.ggrantrichards.astralend.flare.FlarePhase;
+import com.ggrantrichards.astralend.flare.Sunstorms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -38,6 +40,56 @@ public final class EndMobs {
             }
         }
         return true;
+    }
+
+    // A Sunstorm coming or breaking over this spot (the warning counts: time to find cover).
+    public static boolean stormy(net.minecraft.world.level.Level level, BlockPos pos) {
+        FlarePhase phase = Sunstorms.phaseIn(level);
+        return (phase == FlarePhase.WARNING || phase == FlarePhase.FLARE) && Sunstorms.inSunstorms(level, pos);
+    }
+
+    // The nearest spot to stand within `range` blocks that has cover overhead (a Lumineshroom's cap,
+    // a ledge, a roof): null if 96 tries find none.
+    public static @Nullable BlockPos coverNear(ServerLevel level, BlockPos from, int range, RandomSource random) {
+        BlockPos best = null;
+        double bestDistance = Double.MAX_VALUE;
+        BlockPos.MutableBlockPos feet = new BlockPos.MutableBlockPos();
+        for (int attempt = 0; attempt < 96; attempt++) {
+            int x = from.getX() + random.nextInt(2 * range + 1) - range;
+            int z = from.getZ() + random.nextInt(2 * range + 1) - range;
+            for (int dy = 4; dy >= -6; dy--) {
+                feet.set(x, from.getY() + dy, z);
+                if (level.getBlockState(feet.below()).isSolidRender() && level.getBlockState(feet).isAir()
+                        && level.getBlockState(feet.above()).isAir()) {
+                    if (!Sunstorms.underOpenSky(level, feet)) {
+                        double d = feet.distSqr(from);
+                        if (d < bestDistance) {
+                            bestDistance = d;
+                            best = feet.immutable();
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        return best;
+    }
+
+    // The nearest water source with air over it within `range` blocks (a Hydragrip's pond), or null.
+    public static @Nullable BlockPos waterNear(ServerLevel level, BlockPos from, int range) {
+        BlockPos best = null;
+        double bestDistance = Double.MAX_VALUE;
+        for (BlockPos p : BlockPos.betweenClosed(from.offset(-range, -6, -range), from.offset(range, 3, range))) {
+            if (level.getFluidState(p).isSource() && level.getFluidState(p).is(net.minecraft.tags.FluidTags.WATER)
+                    && level.getBlockState(p.above()).isAir()) {
+                double d = p.distSqr(from);
+                if (d < bestDistance) {
+                    bestDistance = d;
+                    best = p.immutable();
+                }
+            }
+        }
+        return best;
     }
 
     private EndMobs() {}

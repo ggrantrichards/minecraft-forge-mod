@@ -62,6 +62,7 @@ public final class AstralEnd {
         com.ggrantrichards.astralend.maw.MawNetwork.register();
         com.ggrantrichards.astralend.maze.MazeScoping.register();
         com.ggrantrichards.astralend.world.EclipseLife.register();   // Endermen panic in the Eclipse
+        com.ggrantrichards.astralend.world.WebOfLife.register();     // wolves and Stalkers, Endermen and the Watcher, mites and the herds
         com.ggrantrichards.astralend.world.WhaleSong.register();     // singing to Drift Whales
         com.ggrantrichards.astralend.world.LodestarBindings.register();   // respawning at a Lodestar in the End
         com.ggrantrichards.astralend.starforge.Starforge.register();          // upgrade tooltips
