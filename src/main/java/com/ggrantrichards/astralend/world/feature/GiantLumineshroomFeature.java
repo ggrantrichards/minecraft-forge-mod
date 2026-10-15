@@ -62,10 +62,7 @@ public record GiantLumineshroomFeature() implements Feature {
                 BlockPos pos = top.offset(dx, lift, dz);
                 Build.put(level, pos, cap);
                 if (d > radius - 1.2) {
-                    Build.put(level, pos.below(), cap);  // the drooping rim
-                    if (random.nextInt(3) == 0) {
-                        hangTendril(level, random, pos.below(2), 1 + random.nextInt(4));
-                    }
+                    Build.put(level, pos.below(), cap);  // the drooping rim (no tendrils: their magenta was off the Gilded Reach's palette)
                 }
             }
         }

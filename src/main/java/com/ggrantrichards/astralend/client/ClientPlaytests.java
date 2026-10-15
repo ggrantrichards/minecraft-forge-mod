@@ -224,7 +224,7 @@ public final class ClientPlaytests {
                     put(player, end, new Vec3(s.x(), s.y() - 1.6, s.z()), s.yaw(), 0);
                 }
                 case "meadow_drop" -> {
-                    ClientScreenshots.Shot s = shot("eclipse");
+                    ClientScreenshots.Shot s = shot("gilded_reach");
                     Vec3 at = s != null ? new Vec3(s.x() + 26, 140, s.z() + 26) : new Vec3(-2750, 140, -1000);
                     put(player, end, at, 0, 20);
                     player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 600, 0, false, false));

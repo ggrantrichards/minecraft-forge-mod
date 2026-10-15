@@ -4,7 +4,7 @@ repeated - as vanilla breaks up its stone bricks with mossy and cracked ones:
 
     python3 tools/textures/leviathan_bone_variants.py
 
-- Weathered Leviathan Bone: the same bone, greyer, cracked through and pitted;
+- Weathered Leviathan Bone: the same bone, darker and browner (so its patches read from afar), cracked and pitted;
 - Lichened Leviathan Bone: End lichen grown over it - pale violet crusts with teal-green flecks - thickest
   on top and creeping down its sides from the top edge, as moss creeps down a mossy cobblestone.
 Drawn over the Leviathan Bone's own textures, so the grain matches.
@@ -31,8 +31,9 @@ def weathered(src, seed):
         for x in range(16):
             r, g, b, a = px[x, y]
             grey = (r + g + b) / 3
-            # greyer and a little darker: the ivory gone dull
-            px[x, y] = (int(grey * 0.55 + r * 0.33), int(grey * 0.55 + g * 0.33), int(grey * 0.55 + b * 0.36), a)
+            # greyer, darker and a little brown: old bone, so the patches read from a distance
+            k = 0.7 + 0.08 * rnd.random()
+            px[x, y] = (int((grey * 0.45 + r * 0.45) * k), int((grey * 0.45 + g * 0.42) * k), int((grey * 0.45 + b * 0.36) * k), a)
     # two cracks wandering across it
     for _ in range(2):
         x, y = rnd.randrange(16), rnd.randrange(16)
@@ -68,13 +69,13 @@ def lichened(src, seed, side):
     rnd = random.Random(seed)
     img = src.copy()
     px = img.load()
-    grid = lichen_patch(seed, 5) if not side else [[False] * 16 for _ in range(16)]
+    grid = lichen_patch(seed, 9) if not side else [[False] * 16 for _ in range(16)]
     if side:
         # creeping down from the top edge, ragged, a crust or two lower down
         for x in range(16):
-            for y in range(rnd.choice((1, 2, 2, 3, 4, 5))):
+            for y in range(rnd.choice((3, 4, 5, 6, 7, 8))):
                 grid[y][x] = True
-        for _ in range(2):
+        for _ in range(4):
             cx, cy = rnd.randrange(16), rnd.randrange(7, 15)
             for y in range(cy - 1, cy + 2):
                 for x in range(cx - 1, cx + 2):

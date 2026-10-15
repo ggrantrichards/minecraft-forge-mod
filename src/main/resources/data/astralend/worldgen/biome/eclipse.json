@@ -64,7 +64,8 @@
   "carvers": [],
   "downfall": 0.5,
   "effects": {
-    "water_color": "#34c8bc"
+    "water_color": "#34c8bc",
+    "grass_color": "#d2b04c"
   },
   "features": [
     [],
@@ -85,7 +86,9 @@
       "astralend:eclipse_lumineshrooms",
       "astralend:eclipse_starblooms",
       "astralend:eclipse_flareblooms",
-      "astralend:eclipse_sunscale_lichen"
+      "astralend:eclipse_sunscale_lichen",
+      "astralend:gilded_reach_short_grass",
+      "astralend:gilded_reach_tall_grass"
     ]
   ],
   "has_precipitation": false,

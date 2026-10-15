@@ -68,12 +68,15 @@ class Leviathan:
         above = self.raw(u, v + 1, w)
         if above in (None, "air") and self.patches(u, v, w, 31) > 0.58:
             return "lichened"
-        if self.patches(u, v, w, 17) > (0.48 if w < -60 else 0.6):
+        # weathered bone in broad patches with ragged, speckled edges (more of it toward the old tail, and
+        # less on top, where the lichen is)
+        weather = 0.7 * self.patches(u, v, w, 17, 8.0) + 0.3 * self.hash(u, v, w + 7919)
+        if weather > (0.5 if w < -60 else 0.56):
             return "weathered"
         return m
 
-    def patches(self, u, v, w, salt):
-        x, y, z = u / 5.0, v / 5.0, w / 5.0
+    def patches(self, u, v, w, salt, scale=5.0):
+        x, y, z = u / scale, v / scale, w / scale
         x0, y0, z0 = math.floor(x), math.floor(y), math.floor(z)
         fx, fy, fz = x - x0, y - y0, z - z0
         fx, fy, fz = fx * fx * (3 - 2 * fx), fy * fy * (3 - 2 * fy), fz * fz * (3 - 2 * fz)
@@ -102,32 +105,40 @@ class Leviathan:
         # the citadel on its back
         for t in self.towers + [self.maze_tower]:
             rho = max(abs(u), abs(w - t))                 # square, as the End City's towers are
-            height = 24 if t == self.maze_tower else 16 + int(self.r(200 + t) * 6)
-            if rho <= 4 and sv + 4 <= v <= sv + height + 1:
-                return self.tower(u, v - sv, w - t, rho, height, t == self.maze_tower)
-        if self.hall_from <= w <= self.SKULL_W + 1 and abs(u) <= 4 and sv + 4 <= v < sv + 11:
-            return self.hall(u, v - sv, w)
+            maze = t == self.maze_tower
+            height = 24 if maze else 16 + int(self.r(200 + t) * 6)
+            top = height + 1 if maze else height + 3
+            wide = 4 if maze or v < sv + height - 5 else 5
+            if rho <= wide and sv + 4 <= v <= sv + top:
+                return self.tower(u, v - sv, w - t, rho, height, maze)
+        if self.hall_from <= w <= self.SKULL_W + 1 and abs(u) <= 5 and sv + 4 <= v < sv + 13:
+            r = self.hall(u, v - sv, w)
+            if r is not None:
+                return r
         # the spine
         if w > self.tail_break - 3 and w < self.tail_break:
             return None                                   # where the tail snapped off
         du, dv = u - su, v - svv
         k = w - 6 * round(w / 6.0)
         rc = 2 if w > -60 else 1
+        # each vertebra a block of bone five long, a thinner neck of bone between them
         if w > -90:
-            if abs(du) <= 1 and abs(dv) <= 1:
+            if abs(k) <= 2 and abs(du) <= 1 and abs(dv) <= 1 or round(du) == 0 and round(dv) == 0:
                 return "bone"
         elif round(du) == 0 and round(dv) == 0:
             return "bone"
         if abs(k) <= 1 and abs(du) <= rc and abs(dv) <= rc:
             return "bone"
         under_hall = self.hall_from <= w <= self.SKULL_W
-        top = 3 if under_hall else (4 if w > -60 else 2)
-        if abs(k) < 0.5 and abs(du) < 0.5 and rc < dv <= rc + top:
-            return "bone"                                 # the spinous process
+        top = 3 if under_hall else (7 if w > -60 else 3)
+        if rc < dv <= rc + top and abs(du) < 0.5:
+            lean = math.floor((dv - rc) * 0.45)       # the spines lean back toward the tail
+            if k == -lean or (k == -lean + 1 and dv <= rc + 2):
+                return "bone"                             # the spinous process
         if abs(k) < 0.5 and abs(dv) < 0.5 and rc < abs(du) <= rc + 3 and w > -90:
             return "bone"                                 # the side processes
         # the ribs, and the reliquary they hold
-        if -58 <= w <= 9:
+        if -64 <= w <= 9:
             r = self.rib(u, v, w, sv)
             if r is not None:
                 return r
@@ -148,11 +159,14 @@ class Leviathan:
 
     def rib(self, u, v, w, sv):
         for (rw, side, reach) in self.ribs:
-            if abs(w - rw) > 1 or reach == 0 or u * side < 0:
+            if reach == 0 or u * side <= 0:
+                continue
+            drop = max(0.0, sv + 1.5 - v)                  # how far down the rib, from the spine
+            if abs(w - (rw - 0.24 * drop)) > 0.9:          # swept back toward the tail as they go down
                 continue
             a, bb, cv = self.rib_half(rw), 11.5, sv - 10
             e = math.hypot(u / a, (v - cv) / bb)
-            if abs(e - 1) <= 1.3 / a:
+            if abs(e - 1) <= (1.5 if drop < 9 else 1.0) / a:  # thick at the spine, thinner to the tips
                 ang = math.degrees(math.atan2(abs(u) / a, (v - cv) / bb))
                 if ang <= reach:
                     return "bone"
@@ -204,20 +218,54 @@ class Leviathan:
         return dx * dx + dy * dy + dz * dz <= r * r
 
     def hall(self, u, h, w):
-        """The End City hall: purpur floor, End Stone brick walls with purple glass, a purpur roof."""
+        """The End City hall: purpur floor, End Stone brick walls with purple glass between purpur pillars, a
+        pitched purpur roof with a ridge - fallen in along one stretch."""
         fallen = self.collapse <= w <= self.collapse + 5
+        bay = (w - self.hall_from) % 6 == 0                 # a pillar every six blocks, standing proud of the wall
+        if abs(u) == 5:
+            return "purpur_pillar" if bay and 5 <= h < 10 else None
         if h < 5:
-            return "purpur"
+            return "purpur" if abs(u) <= 4 else None
         if fallen and h >= 7:
+            if h >= 10:
+                return None
             return "air" if abs(u) < 4 or self.hash(u, int(h), w) < 0.6 else "endbrick"
+        if h >= 12:
+            return "purpur_slab" if abs(u) <= 1 else None     # the ridge
+        if h >= 11:
+            return "purpur" if abs(u) <= 2 else "purpur_slab" if abs(u) <= 3 else None
         if h >= 10:
-            return "purpur_slab" if abs(u) <= 4 else None
+            return "purpur" if abs(u) <= 4 else None
         if abs(u) >= 4:
-            window = w % 6 in (2, 3) and 7 <= h < 9
+            if bay:
+                return "purpur_pillar"
+            window = (w - self.hall_from) % 6 in (2, 3, 4) and 7 <= h < 9
             return "glass" if window else "endbrick"
         return "air"
 
     def tower(self, u, h, dw, rho, height, maze):
+        if not maze:
+            # the End City's crown: the top floor overhangs a block all round on slab brackets, battlements
+            # round the roof, and a little cap in the middle for the beacon (an End Rod)
+            if h >= height + 1:
+                if rho <= 1:
+                    return "purpur" if h < height + 2 else "purpur_slab" if h < height + 3 else "air"
+                if rho == 5 and h < height + 2 and (u + dw) % 2 == 0:
+                    return "purpur"
+                return "air"
+            if h >= height:
+                return "purpur" if rho >= 4 else "purpur_slab"
+            if h >= height - 5:
+                if rho == 5:
+                    if h < height - 4:
+                        return "purpur_slab"
+                    corner = abs(u) == 5 and abs(dw) == 5
+                    window = int(h) == height - 2 and (u == 0 or dw == 0)
+                    return "purpur_pillar" if corner else "glass" if window else "purpur"
+                if h >= height - 4:
+                    if h < height - 3 and rho < 5:
+                        return "purpur" if not (u == 2 and dw == 2) else "air"
+                    return "air"
         if h >= height:
             if h < height + 1:
                 return "purpur" if maze or max(abs(u), abs(dw)) == 4 else "purpur_slab"
@@ -227,7 +275,8 @@ class Leviathan:
                 return "air"                                    # its doors, onto the hall
             corner = abs(u) == 4 and abs(dw) == 4
             window = (int(h) % 6 == 3) and (u == 0 or dw == 0)
-            return "purpur_pillar" if corner else "glass" if window else "purpur"
+            band = int(h) % 6 == 5                              # a band of End Stone brick at every floor
+            return "purpur_pillar" if corner else "glass" if window else "endbrick" if band else "purpur"
         if h < 5 or (int(h) % 6 == 4 and h > 8 and not (u == 2 and dw == 2)):
             return "purpur"
         return "air"
@@ -269,6 +318,11 @@ class Leviathan:
                     res = "bone"
                 elif lip < v < tv - 2:
                     res = "air"
+            # the forehead: the cranium's roof sloping down onto the snout, so the head is one shape
+            if s <= 38:
+                slope = cv + 11 - (s - 20) * (6 + 6 * (s - 20) / 18.0) / 18.0 * 1.0
+                if abs(u) <= hw - 1 and tv < v <= slope and s >= 20:
+                    res = "bone"
             # the nostrils
             if 49 <= s <= 51 and 2 <= abs(u) <= 3 and tv - 2 <= v <= tv:
                 res = "obsidian" if v == tv - 2 else "air"
@@ -288,7 +342,7 @@ class Leviathan:
         if 1 <= s <= 58:
             jv = b + 1 - 0.32 * (s - 1)
             hwj = 11 - 4 * (s - 1) / 57.0
-            if jv - 3 <= v <= jv and (hwj - 3 <= abs(u) <= hwj or (s >= 55 and abs(u) <= hwj)):
+            if jv - 4 <= v <= jv and (hwj - 3 <= abs(u) <= hwj or (s >= 54 and abs(u) <= hwj)):
                 res = "bone"
             if abs(u) >= hwj - 1.5 and abs(u) <= hwj and (s - 8) % 3 == 0 and s < 54:
                 length = 2 + int(self.hash(int(u > 0), 2, s) * 3)

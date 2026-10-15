@@ -60,12 +60,13 @@ and the distillation renamed or removed some of them.
     through like old bone; the tall withered stalks of long-dead giant Lumineshrooms, caps drooping;
     and a thick, pale mist of ash lying over the shelves - the only pale air in the End.
   - **Shattered Crags:** starlight falling between the shards and on into the void.
-- **The Eclipse is one golden meadow.** Its hell half (the Corona), the Seam and the fallen Remnant
+- **The Eclipse is one golden meadow: the Gilded Reach.** Its hell half (the Corona), the Seam and the fallen Remnant
   are gone - the Ashen Barrens are dark enough for one End. What's left, from the James Webb pictures
   (golden dust, blue haze, one bright spiked star):
-  - **Gold ground:** Living Turf is a gold meadow grass now, moss runs green round the water, and bare
-    End Stone breaks through in outcrops. Warm amber fog and gold dust hang in the air.
-  - **Teal water:** the Wellspring in the middle, and half a dozen small ponds across the meadow.
+  - **Gold ground:** Living Turf is a gold meadow grass now, with vanilla's short and tall grass tinted gold
+    on it; moss runs green round the water, and bare End Stone breaks through in low rocky knolls. Warm
+    amber fog and gold dust hang in the air.
+  - **Teal water:** the Wellspring in the middle, and half a dozen ponds across the meadow.
   - **Accents, in moderation:** a few clumps of **Flareblooms** on the turf (orange-red, opening in a
     Sunstorm), **Sunscale Lichen** on the outcrops, the Starblooms' gold, and the giant
     **Lumineshrooms** - cream-gold caps lit with teal spots, the meadow's shelter.
@@ -78,6 +79,13 @@ and the distillation renamed or removed some of them.
   the pale stone, and **scorch fissures** with charred lips and raw Solarite glowing at the bottom.
 
 - **The Leviathan, rebuilt to feel like Minecraft:**
+  - **Reads as a skeleton from far off:** vertebrae in separate blocks with tall spines leaning back, ribs
+    that sweep back toward the tail as they go down (as a whale's do), and a forehead that slopes onto the
+    snout so the head is one shape. Weathered bone is darker and browner and lies in broad, ragged
+    patches, so the variety shows at a distance; the lichen covers more of each block.
+  - **End City towers with crowns:** banded walls, an overhanging top floor on slab brackets with
+    windows, battlements and a cap with an End Rod; the hall along its spine has purpur pillars and a
+    pitched roof with a ridge.
   - **200 blocks**, not 370, and lying square to the compass so its lines stay crisp.
   - **No two alike:** the seed decides how its tail curls and where it snapped off, which ribs are whole,
     broken short or gone, which lung rotted away, how many End City towers stand on its back and where,

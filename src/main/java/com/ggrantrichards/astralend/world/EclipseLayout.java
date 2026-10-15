@@ -30,8 +30,8 @@ public final class EclipseLayout {
     // the meadow fill round it ({u, v, radius in blocks}).
     public static final double[] WELLSPRING = {0.0, 0.0};
     public static final double WELLSPRING_RADIUS = 0.15;
-    public static final double[][] PONDS = {{-0.48, 0.32, 5.5}, {0.42, 0.46, 4.5}, {0.55, -0.38, 6.0}, {-0.3, -0.58, 4.5}, {-0.7, -0.12, 4.0},
-        {0.12, 0.72, 4.0}};
+    public static final double[][] PONDS = {{-0.48, 0.32, 10.0}, {0.42, 0.46, 8.0}, {0.55, -0.38, 11.0}, {-0.3, -0.58, 8.5}, {-0.7, -0.12, 7.0},
+        {0.12, 0.72, 7.0}};
 
     public enum Part { NONE, HEAVEN }
 

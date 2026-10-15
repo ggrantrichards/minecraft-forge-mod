@@ -984,7 +984,7 @@ FOGS = {}   # each End biome's fog colour, for the client's fog blending (client
 
 
 def end_biome(name, english, fog, water, features_step4=(), features_step7=(), features_step9=(),
-              particle=None, particle_chance=0.0, features_step1=()):
+              particle=None, particle_chance=0.0, features_step1=(), grass=None):
     FOGS[rid(name)] = fog
     attributes = {
         "minecraft:gameplay/natural_mob_spawns": mob_spawns(name),
@@ -1006,7 +1006,8 @@ def end_biome(name, english, fog, water, features_step4=(), features_step7=(), f
     steps[7] = list(features_step7)   # underground ores
     steps[9] = list(features_step9)   # vegetation
     write(WG / "biome" / f"{name}.json", {
-        "attributes": attributes, "carvers": [], "downfall": 0.5, "effects": {"water_color": water},
+        "attributes": attributes, "carvers": [], "downfall": 0.5,
+        "effects": {"water_color": water, **({"grass_color": grass} if grass else {})},
         "features": steps, "has_precipitation": False, "temperature": 0.5,
     })
     tag("worldgen/biome", "minecraft:is_end", rid(name))
@@ -1158,10 +1159,20 @@ def worldgen_phase3():
     ]})
     # (Gold, with teal for an accent - its water, its Lumineshrooms' spots: warm amber fog, gold dust in the
     # air (client/BiomeMist), gold and blue gas in its sky. Teal or blue fog turned End Stone green.)
-    end_biome("eclipse", "The Eclipse", fog="#4a3920", water="#34c8bc",
+    # Grass on the turf: vanilla's own short and tall grass, tinted gold by the biome (Living Turf counts as dirt).
+    for plant, count in (("short_grass", 28), ("tall_grass", 3)):
+        feature(f"gilded_{plant}", {"type": "minecraft:simple_block", "to_place": {"id": f"minecraft:{plant}"}})
+        placed(f"gilded_reach_{plant}", {"feature": rid(f"gilded_{plant}"), "placement": [
+            {"type": "minecraft:count", "count": count}, {"type": "minecraft:in_square"},
+            {"type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING"}, {"type": "minecraft:biome"},
+            {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
+                {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
+                {"type": "minecraft:matching_blocks", "blocks": [rid("living_turf")], "offset": [0, -1, 0]}]}}]})
+    end_biome("eclipse", "The Gilded Reach", fog="#4a3920", water="#34c8bc", grass="#d2b04c",
               features_step4=[rid("eclipse_landmarks")],
               features_step9=[rid("eclipse_giant_lumineshrooms"), rid("eclipse_breathcomb"), rid("eclipse_lumineshrooms"),
-                              rid("eclipse_starblooms"), rid("eclipse_flareblooms"), rid("eclipse_sunscale_lichen")],
+                              rid("eclipse_starblooms"), rid("eclipse_flareblooms"), rid("eclipse_sunscale_lichen"),
+                              rid("gilded_reach_short_grass"), rid("gilded_reach_tall_grass")],
               particle="minecraft:end_rod", particle_chance=0.002)
 
     # ---- Glimmering Crags (Phase 10): the petrified trunks of colossal Nullwood that died long ago,
@@ -1701,7 +1712,7 @@ def starforging_phase8():
     lang.update({
         f"container.{NS}.astral_forge": "Astral Forge",
         f"container.{NS}.astral_forge.error": "This upgrade can't go on that item (or it already has it), or its "
-                                              "constellation hasn't been sighted from the Eclipse",
+                                              "constellation hasn't been sighted from the Gilded Reach",
         f"container.{NS}.astral_forge.slot.0": "Add a Starforge Template",
         f"container.{NS}.astral_forge.slot.1": "Add diamond or netherite armor, weapon or tool, or a bow, crossbow, trident or mace",
         f"container.{NS}.astral_forge.slot.2": "Add Starforge Alloy",
@@ -1809,7 +1820,7 @@ def advancements_phase9():
     advancement("something_looks_back", "minecraft:spyglass", "Something Looks Back",
                 "Catch a glimpse of the Watcher through a spyglass", parent=rid("end/hold_still"), hidden=True)
     # The Eclipse's Sunstorms
-    advancement("weather_the_storm", rid("sunshade"), "Weather the Storm", "Be in the Eclipse when a Sunstorm dies down",
+    advancement("weather_the_storm", rid("sunshade"), "Weather the Storm", "Be in the Gilded Reach when a Sunstorm dies down",
                 parent=root)
     advancement("harvest_moon", "minecraft:shears", "Harvest Moon", "Shear the film from a Void Ray's wings",
                 parent=rid("end/weather_the_storm"))
@@ -2108,7 +2119,7 @@ def distillation_blocks():
     for name, english in (("leviathan", "the Leviathan"), ("maw", "the Maw"), ("watcher", "the Watcher"), ("remnant", "the Dead Star"),
                           ("whale", "the Whale")):
         advancement(f"sighted_{name}", "minecraft:spyglass", f"Sighted: {english[4:]}",
-                    f"From the Eclipse, find {english} through a spyglass")
+                    f"From the Gilded Reach, find {english} through a spyglass")
     # Where the Watcher leads you: the remains of leviathans (the Leviathan itself, from phase 5).
     tag("worldgen/structure", f"{NS}:leviathan_remains", rid("leviathan"))
 
@@ -2141,7 +2152,7 @@ def distillation_blocks():
                 "Set the dragon egg on the pedestal in a Leviathan's skull", parent=f"{NS}:end/curator", frame="challenge")
     advancement("led_by_the_watcher", rid("watcher_spawn_egg"), "Led", "Follow a Watcher to the remains of a leviathan",
                 parent=f"{NS}:end/something_looks_back")
-    advancement("wellspring", "minecraft:water_bucket", "Wellspring", "Swim in the waters of an Eclipse",
+    advancement("wellspring", "minecraft:water_bucket", "Wellspring", "Swim in the waters of the Gilded Reach",
                 criteria={"swam": {"trigger": "minecraft:location", "conditions": {"player": {
                     "type": "minecraft:entity_properties", "entity": "this",
                     "predicate": {"minecraft:location": {"biomes": rid("eclipse"), "fluid": {"fluids": "#minecraft:water"}}}}}}})

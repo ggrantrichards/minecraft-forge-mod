@@ -123,19 +123,20 @@ public final class LeviathanShape {
         }
         boolean spine = m == Material.SPINE;
         Material above = this.raw(u, v + 1, w);
-        if ((above == null || above == Material.AIR) && this.patches(u, v, w, 31) > 0.58) {
+        if ((above == null || above == Material.AIR) && this.patches(u, v, w, 31, 5.0) > 0.58) {
             return spine ? Material.LICHENED_SPINE : Material.LICHENED;
         }
-        double weather = w < -60 ? 0.48 : 0.6;
-        if (this.patches(u, v, w, 17) > weather) {
+        // Weathered bone in broad patches with ragged, speckled edges (more of it toward the old tail).
+        double weather = 0.7 * this.patches(u, v, w, 17, 8.0) + 0.3 * this.hash(u, v, w + 7919);
+        if (weather > (w < -60 ? 0.5 : 0.56)) {
             return spine ? Material.WEATHERED_SPINE : Material.WEATHERED;
         }
         return m;
     }
 
-    // Smooth noise in [0, 1), in patches some five blocks across.
-    double patches(int u, int v, int w, int salt) {
-        double x = u / 5.0, y = v / 5.0, z = w / 5.0;
+    // Smooth noise in [0, 1), in patches about `scale` blocks across.
+    double patches(int u, int v, int w, int salt, double scale) {
+        double x = u / scale, y = v / scale, z = w / scale;
         int x0 = Mth.floor(x), y0 = Mth.floor(y), z0 = Mth.floor(z);
         double fx = x - x0, fy = y - y0, fz = z - z0;
         fx = fx * fx * (3 - 2 * fx);
@@ -165,17 +166,23 @@ public final class LeviathanShape {
             return null;
         }
         double sv = sv(w);
-        // the citadel on its back: square towers, and the hall along the spine
+        // the citadel on its back: square towers (crowned, but the maze's), and the hall along the spine
         for (int i = -1; i < this.towers.length; i++) {
             int t = i < 0 ? this.mazeTower : this.towers[i];
+            boolean maze = t == this.mazeTower;
             int rho = Math.max(Math.abs(u), Math.abs(w - t));
             int height = this.towerHeight(t);
-            if (rho <= 4 && v >= sv + 4 && v <= sv + height + 1) {
-                return this.tower(u, v - sv, w - t, rho, height, t == this.mazeTower);
+            int top = maze ? height + 1 : height + 3;
+            int wide = maze || v < sv + height - 5 ? 4 : 5;
+            if (rho <= wide && v >= sv + 4 && v <= sv + top) {
+                return this.tower(u, v - sv, w - t, rho, height, maze);
             }
         }
-        if (w >= this.hallFrom && w <= SKULL_W + 1 && Math.abs(u) <= 4 && v >= sv + 4 && v < sv + 11) {
-            return this.hall(u, v - sv, w);
+        if (w >= this.hallFrom && w <= SKULL_W + 1 && Math.abs(u) <= 5 && v >= sv + 4 && v < sv + 13) {
+            Material hall = this.hall(u, v - sv, w);
+            if (hall != null) {
+                return hall;
+            }
         }
         // the spine; the tail curls and droops past w = -60
         if (w > this.tailBreak - 3 && w < this.tailBreak) {
@@ -190,8 +197,9 @@ public final class LeviathanShape {
         double du = u - su, dv = v - svv;
         int k = w - 6 * Math.round(w / 6.0F);
         int rc = w > -60 ? 2 : 1;
+        // each vertebra a block of bone five long, a thinner neck of bone between them
         if (w > -90) {
-            if (Math.abs(du) <= 1 && Math.abs(dv) <= 1) {
+            if (Math.abs(k) <= 2 && Math.abs(du) <= 1 && Math.abs(dv) <= 1 || Math.round(du) == 0 && Math.round(dv) == 0) {
                 return Material.SPINE;
             }
         } else if (Math.round(du) == 0 && Math.round(dv) == 0) {
@@ -201,15 +209,18 @@ public final class LeviathanShape {
             return Material.SPINE;
         }
         boolean underHall = w >= this.hallFrom && w <= SKULL_W;
-        int top = underHall ? 3 : w > -60 ? 4 : 2;
-        if (k == 0 && Math.abs(du) < 0.5 && dv > rc && dv <= rc + top) {
-            return Material.BONE;                           // the spinous process
+        int top = underHall ? 3 : w > -60 ? 7 : 3;
+        if (dv > rc && dv <= rc + top && Math.abs(du) < 0.5) {
+            int lean = Mth.floor((dv - rc) * 0.45);         // the spines lean back toward the tail
+            if (k == -lean || k == -lean + 1 && dv <= rc + 2) {
+                return Material.BONE;                       // the spinous process
+            }
         }
         if (k == 0 && Math.abs(dv) < 0.5 && Math.abs(du) > rc && Math.abs(du) <= rc + 3 && w > -90) {
             return Material.BONE;                           // the side processes
         }
         // the ribs, and the reliquary they hold
-        if (w >= -58 && w <= 9) {
+        if (w >= -64 && w <= 9) {
             if (this.rib(u, v, w, sv)) {
                 return Material.BONE;
             }
@@ -235,10 +246,13 @@ public final class LeviathanShape {
         return 9 + 4 * Math.cos((w + 24) / 40.0 * Math.PI / 2);     // widest round the middle
     }
 
+    // Each rib an arc down from the spine, swept back toward the tail as it goes down, as a whale's are -
+    // thick at the spine, thinner to the tip.
     private boolean rib(int u, int v, int w, double sv) {
+        double drop = Math.max(0.0, sv + 1.5 - v);
         for (int i = 0; i < 10; i++) {
             int rw = -56 + 7 * i;
-            if (Math.abs(w - rw) > 1) {
+            if (Math.abs(w - (rw - 0.24 * drop)) > 0.9) {
                 continue;
             }
             int side = u < 0 ? 0 : 1;
@@ -248,7 +262,7 @@ public final class LeviathanShape {
             }
             double a = ribHalf(rw), bb = 11.5, cv = sv - 10;
             double e = Math.hypot(u / a, (v - cv) / bb);
-            if (Math.abs(e - 1) <= 1.3 / a) {
+            if (Math.abs(e - 1) <= (drop < 9 ? 1.5 : 1.0) / a) {
                 double ang = Math.toDegrees(Math.atan2(Math.abs(u) / a, (v - cv) / bb));
                 if (ang <= reach) {
                     return true;
@@ -321,29 +335,73 @@ public final class LeviathanShape {
         return dx * dx + dy * dy + dz * dz <= r * r;
     }
 
-    // The End City hall along the spine: a purpur floor, End Stone brick walls with purple glass, a purpur
-    // roof - fallen in along one stretch.
+    // The End City hall along the spine: a purpur floor, End Stone brick walls with purple glass between purpur
+    // pillars standing proud every six blocks, a pitched purpur roof with a ridge - fallen in along one stretch.
+    // (null outside its walls: |u| = 5 is only its pillars.)
     private Material hall(int u, double h, int w) {
         boolean fallen = w >= this.collapse && w <= this.collapse + 5;
+        boolean bay = Math.floorMod(w - this.hallFrom, 6) == 0;
+        if (Math.abs(u) == 5) {
+            return bay && h >= 5 && h < 10 ? Material.PURPUR_PILLAR : null;
+        }
         if (h < 5) {
             return Material.PURPUR;
         }
         if (fallen && h >= 7) {
+            if (h >= 10) {
+                return null;
+            }
             return Math.abs(u) < 4 || this.hash(u, Mth.floor(h), w) < 0.6 ? Material.AIR : Material.END_BRICK;
         }
+        if (h >= 12) {
+            return Math.abs(u) <= 1 ? Material.PURPUR_SLAB : null;     // the ridge
+        }
+        if (h >= 11) {
+            return Math.abs(u) <= 2 ? Material.PURPUR : Math.abs(u) <= 3 ? Material.PURPUR_SLAB : null;
+        }
         if (h >= 10) {
-            return Material.PURPUR_SLAB;
+            return Material.PURPUR;
         }
         if (Math.abs(u) >= 4) {
-            boolean window = (Math.floorMod(w, 6) == 2 || Math.floorMod(w, 6) == 3) && h >= 7 && h < 9;
+            if (bay) {
+                return Material.PURPUR_PILLAR;
+            }
+            int m = Math.floorMod(w - this.hallFrom, 6);
+            boolean window = m >= 2 && m <= 4 && h >= 7 && h < 9;
             return window ? Material.GLASS : Material.END_BRICK;
         }
         return Material.AIR;
     }
 
-    // An End City tower: purpur walls with pillars at the corners, purple glass windows, a floor every six
-    // blocks, a door each way onto the hall, a roof.
+    // An End City tower: purpur walls with pillars at the corners, a band of End Stone brick at every floor,
+    // purple glass windows, a floor every six blocks, a door each way onto the hall. And (but the maze's,
+    // whose flat roof the maze starts from) the End City's crown: the top floor overhangs a block all round
+    // on slab brackets, with windows; battlements round the roof; a little cap in the middle for its beacon.
     private Material tower(int u, double h, int dw, int rho, int height, boolean maze) {
+        if (!maze) {
+            if (h >= height + 1) {
+                if (rho <= 1) {
+                    return h < height + 2 ? Material.PURPUR : h < height + 3 ? Material.PURPUR_SLAB : Material.AIR;
+                }
+                return rho == 5 && h < height + 2 && Math.floorMod(u + dw, 2) == 0 ? Material.PURPUR : Material.AIR;
+            }
+            if (h >= height) {
+                return rho >= 4 ? Material.PURPUR : Material.PURPUR_SLAB;
+            }
+            if (h >= height - 5) {
+                if (rho == 5) {
+                    if (h < height - 4) {
+                        return Material.PURPUR_SLAB;
+                    }
+                    boolean corner = Math.abs(u) == 5 && Math.abs(dw) == 5;
+                    boolean window = Mth.floor(h) == height - 2 && (u == 0 || dw == 0);
+                    return corner ? Material.PURPUR_PILLAR : window ? Material.GLASS : Material.PURPUR;
+                }
+                if (h >= height - 4) {
+                    return h < height - 3 && !(u == 2 && dw == 2) ? Material.PURPUR : Material.AIR;
+                }
+            }
+        }
         if (h >= height) {
             if (h < height + 1) {
                 return maze || rho == 4 ? Material.PURPUR : Material.PURPUR_SLAB;
@@ -356,7 +414,8 @@ public final class LeviathanShape {
             }
             boolean corner = Math.abs(u) == 4 && Math.abs(dw) == 4;
             boolean window = Mth.floor(h) % 6 == 3 && (u == 0 || dw == 0);
-            return corner ? Material.PURPUR_PILLAR : window ? Material.GLASS : Material.PURPUR;
+            boolean band = Mth.floor(h) % 6 == 5;
+            return corner ? Material.PURPUR_PILLAR : window ? Material.GLASS : band ? Material.END_BRICK : Material.PURPUR;
         }
         if (h < 5 || Mth.floor(h) % 6 == 4 && h > 8 && !(u == 2 && dw == 2)) {
             return Material.PURPUR;
@@ -411,6 +470,13 @@ public final class LeviathanShape {
                     res = Material.AIR;
                 }
             }
+            // the forehead: the cranium's roof sloping down onto the snout, so the head is one shape
+            if (s <= 38) {
+                double slope = cv + 11 - (s - 20) * (6 + 6 * (s - 20) / 18.0) / 18.0;
+                if (Math.abs(u) <= hw - 1 && v > tv && v <= slope) {
+                    res = Material.BONE;
+                }
+            }
             // the nostrils
             if (s >= 49 && s <= 51 && Math.abs(u) >= 2 && Math.abs(u) <= 3 && v >= tv - 2 && v <= tv) {
                 res = v == tv - 2 ? Material.OBSIDIAN : Material.AIR;
@@ -436,7 +502,7 @@ public final class LeviathanShape {
         if (s >= 1 && s <= 58) {
             double jv = b + 1 - 0.32 * (s - 1);
             double hwj = 11 - 4 * (s - 1) / 57.0;
-            if (v >= jv - 3 && v <= jv && (Math.abs(u) >= hwj - 3 && Math.abs(u) <= hwj || s >= 55 && Math.abs(u) <= hwj)) {
+            if (v >= jv - 4 && v <= jv && (Math.abs(u) >= hwj - 3 && Math.abs(u) <= hwj || s >= 54 && Math.abs(u) <= hwj)) {
                 res = Material.BONE;
             }
             if (Math.abs(u) >= hwj - 1.5 && Math.abs(u) <= hwj && Math.floorMod(s - 8, 3) == 0 && s < 54) {

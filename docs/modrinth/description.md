@@ -7,7 +7,7 @@ dangerous as the void beneath them.
 > **Beta, without world compatibility.** Each beta can rework or remove blocks and items; start a new
 > world for each. Keep backups of worlds you care about.
 
-{{The Eclipse}}
+{{The Gilded Reach}}
 
 ## Built on six ideas
 
@@ -34,9 +34,9 @@ your face: the End tells you things with sound and light.
 
 {{Ashen Barrens}}
 
-## The Eclipse
+## The Gilded Reach
 
-Rare, far out, and unlike anything else in the End: one great disc of **golden meadow**. Gold turf under
+Rare, far out, and unlike anything else in the End: one great disc of **golden meadow**, the Gilded Reach. Gold turf and gold grass under
 amber fog, gold dust in the air, teal water in the **Wellspring** at its heart and in ponds ringed with
 green moss, outcrops of bare End Stone with Sunscale Lichen, a few clumps of orange-red Flareblooms, and
 giant Lumineshrooms, cream-gold with teal spots. Overhead, clouds of gold and blue, and a white star with

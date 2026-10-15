@@ -213,11 +213,11 @@ public class LeviathanPiece extends StructurePiece {
                 this.put(level, chunk, this.at(0, above(w, 10) - 1, w), down);
             }
         }
-        // The towers: a chest inside each, an End Rod and two shulkers on each roof (but the maze's).
+        // The towers: a chest inside each, an End Rod on each crown's cap and two shulkers on each roof (but the maze's).
         for (int t : this.shape.towers()) {
             this.chest(level, chunk, rnd, this.at(-2, above(t, 5), t + 2), LOOT);
             int roof = above(t, this.shape.towerHeight(t)) - 1;
-            this.put(level, chunk, this.at(0, roof + 1, t), Blocks.END_ROD.defaultBlockState());
+            this.put(level, chunk, this.at(0, roof + 3, t), Blocks.END_ROD.defaultBlockState());
             // (A shulker can't hold on to the top of a slab - it teleports off - so each sits on a purpur block.)
             for (int side = -1; side <= 1; side += 2) {
                 this.put(level, chunk, this.at(2 * side, roof, t + 2), Blocks.PURPUR_BLOCK.defaultBlockState());

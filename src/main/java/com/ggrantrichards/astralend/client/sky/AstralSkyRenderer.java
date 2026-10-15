@@ -368,10 +368,10 @@ public class AstralSkyRenderer extends SkyRenderer {
     // The Sunstorms come from it: it brightens before one and blazes through it.
     private void eclipseStar(Quads quads, float strength, float intensity) {
         float twinkle = 0.92F + 0.08F * Mth.sin((float) this.time * 0.07F) * Mth.sin((float) this.time * 0.031F);
-        float size = (6.0F + 6.0F * intensity) * twinkle;
+        float size = (15.0F + 9.0F * intensity) * twinkle;
         quads.group(ECLIPSE_STAR);
         quads.sprite(direction((float) Math.toRadians(215.0), (float) Math.toRadians(62.0)), size, size, 0.0F, 0, 0, 1, 1,
-            argb(strength * Math.min(1.0F, (0.75F + 0.5F * intensity) * twinkle), 1.0F, 0.97F - 0.12F * intensity, 0.9F - 0.3F * intensity));
+            argb(strength * Math.min(1.0F, (0.95F + 0.5F * intensity) * twinkle), 1.0F, 0.97F - 0.12F * intensity, 0.9F - 0.3F * intensity));
     }
 
     // Sheets of flare light rolling across the Eclipse's sky with the wind.

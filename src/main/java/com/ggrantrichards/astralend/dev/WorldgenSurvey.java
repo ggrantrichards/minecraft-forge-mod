@@ -66,7 +66,7 @@ public final class WorldgenSurvey {
         new BiomeInfo(ModBiomes.ASHEN_BARRENS, 'A', "Ashen Barrens", 3, 25, 3),
         new BiomeInfo(ModBiomes.DEEP_HOLLOWS, 'D', "Deep Hollows", 2, 25, 3),
         // The Eclipse: rare, and small (360 blocks across) - one golden meadow.
-        new BiomeInfo(ModBiomes.ECLIPSE, 'E', "The Eclipse", 0.04, 4, 3),
+        new BiomeInfo(ModBiomes.ECLIPSE, 'E', "The Gilded Reach", 0.04, 4, 3),
         // The Crags' variant: patches inside their territory.
         new BiomeInfo(ModBiomes.SHATTERED_CRAGS, 'X', "Shattered Crags", 0.1, 8, 3));
 
@@ -195,7 +195,7 @@ public final class WorldgenSurvey {
         log("Biome map of the End, " + (2 * MAP_RADIUS) + " x " + (2 * MAP_RADIUS) + " blocks, north up, one character = "
             + MAP_STEP + " blocks:");
         log("  O central island   N Nebula Fields   A Ashen Barrens   D Deep Hollows   "
-            + "E The Eclipse   "
+            + "E The Gilded Reach   "
             + "G Glimmering Crags   X Shattered Crags   "
             + "H/M/B/s vanilla Highlands/Midlands/Barrens/Small Islands");
         Map<Character, Integer> outerCounts = new HashMap<>();
@@ -472,19 +472,19 @@ public final class WorldgenSurvey {
         }
         atLeast(area, Blocks.END_STONE, 400, failures);
         int turf = area.tops(ModBlocks.LIVING_TURF.get()), moss = area.tops(Blocks.MOSS_BLOCK), stone = area.tops(Blocks.END_STONE);
-        log(String.format("The Eclipse: of %d land columns, %d topped with Living Turf, %d with moss, %d with End Stone",
+        log(String.format("The Gilded Reach: of %d land columns, %d topped with Living Turf, %d with moss, %d with End Stone",
             area.landColumnsIn, turf, moss, stone));
         if (turf < area.landColumnsIn * 0.45) {
-            failures.add("The Eclipse should be a meadow: only " + turf + " of " + area.landColumnsIn + " land columns are Living Turf");
+            failures.add("The Gilded Reach should be a meadow: only " + turf + " of " + area.landColumnsIn + " land columns are Living Turf");
         }
         atLeast(area, ModBlocks.BREATHCOMB.get(), 1, failures);
         atLeast(area, ModBlocks.LUMINE_CAP.get(), 5, failures);
         atLeast(area, ModBlocks.FLAREBLOOM.get(), 0.3, failures);
         atLeast(area, ModBlocks.SUNSCALE_LICHEN.get(), 1, failures);
         int hell = area.in(ModBlocks.SUNSCORCHED_STONE.get()) + area.in(ModBlocks.CHARRED_END_STONE.get()) + area.in(Blocks.OBSIDIAN);
-        log("The Eclipse: " + hell + " blocks of the old hell half (Sunscorched Stone, Charred End Stone, Obsidian)");
+        log("The Gilded Reach: " + hell + " blocks of the old hell half (Sunscorched Stone, Charred End Stone, Obsidian)");
         if (hell > 40) {
-            failures.add("The Eclipse: " + hell + " blocks of Sunscorched Stone, Charred End Stone or Obsidian (the hell half is gone)");
+            failures.add("The Gilded Reach: " + hell + " blocks of Sunscorched Stone, Charred End Stone or Obsidian (the hell half is gone)");
         }
     }
 

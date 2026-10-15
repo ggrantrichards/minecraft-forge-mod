@@ -286,11 +286,15 @@ def living_turf_top():
 
 
 def living_turf_side():
-    """End Stone with the moss's edge over its top: a ragged lip one to three pixels deep, not grass."""
+    """End Stone with the turf's edge over its top, as a grass block's side: a ragged lip three to six
+    pixels deep with a few longer drips (since the golden-meadow rework: a thin lip left the Gilded Reach's
+    one-block steps showing as grey contour lines)."""
     img = vanilla("end_stone").copy()
     top = living_turf_top()
     for x in range(16):
-        depth = 1 + (x * 7 + 3) % 5 // 2      # 1..3, uneven
+        depth = 3 + (x * 7 + 3) % 7 // 2     # 3..6, uneven
+        if x in (2, 9, 13):
+            depth += 2                        # a drip
         for y in range(depth):
             img.putpixel((x, y), top.getpixel((x, (y + 5) % 16)))
     return img
