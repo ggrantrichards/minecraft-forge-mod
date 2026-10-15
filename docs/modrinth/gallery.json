@@ -1,68 +1,88 @@
 [
   {
-    "file": "docs/images/distilled/eclipse.png",
+    "file": "docs/images/distilled/gilded_reach_aerial.png",
     "title": "The Gilded Reach",
-    "description": "The golden meadow: gold turf, teal water, giant Lumineshrooms, and the Eclipse's star overhead.",
+    "description": "The golden meadow: gold turf and grass, teal water, giant Lumineshrooms, and the star the Sunstorms break from.",
     "featured": true
   },
   {
-    "file": "docs/images/distilled/nebula_fields.png",
+    "file": "docs/images/distilled/nebula_fields_aerial.png",
     "title": "Nebula Fields",
-    "description": "Violet Chorus Moss plains, and low gravity."
+    "description": "An emission nebula on the ground: rose moss, magenta reeds with cold-blue tips, Drift Bladders, low gravity."
   },
   {
     "file": "docs/images/distilled/ashen_barrens.png",
     "title": "Ashen Barrens",
-    "description": "The leviathan graveyard: pale stone and old bones."
+    "description": "The Leviathans' graveyard: pale stone, bone spires and ribcages under falling ash."
   },
   {
-    "file": "docs/images/distilled/hollow_isles.png",
-    "title": "Hollow Isles",
-    "description": "The End's only forest: dim Nullwood on ring-shaped islands."
+    "file": "docs/images/distilled/deep_hollows.png",
+    "title": "Deep Hollows",
+    "description": "The End's only forest: dark Nullwood on ring islands, Hollow Vines and Null Lanterns."
   },
   {
-    "file": "docs/images/distilled/structure_leviathan.png",
+    "file": "docs/images/distilled/glimmering_crags.png",
+    "title": "Glimmering Crags",
+    "description": "Dark Nightstone peaks grown through with cold, glowing Glimmer Crystal."
+  },
+  {
+    "file": "docs/images/distilled/structure_leviathan_skull.png",
     "title": "The Leviathan",
-    "description": "A Star Leviathan's skeleton, some 370 blocks long, adrift over the void, with a purpur citadel along its spine."
-  },
-  {
-    "file": "docs/images/distilled/structure_leviathan_heart.png",
-    "title": "Its heart",
-    "description": "In the Leviathan's ribcage, its crimson heart still beats."
+    "description": "A Star Leviathan's skeleton adrift over the void, with an End City citadel built along its spine."
   },
   {
     "file": "docs/images/distilled/structure_leviathan_reliquary.png",
     "title": "The Reliquary",
-    "description": "The ribcage cathedral, its End Chimes pylons and a floor open to the void."
+    "description": "The ribcage cathedral where the Curator waits - and its ceiling, where the second phase is fought."
   },
   {
-    "file": "docs/images/distilled/mob_curator.png",
+    "file": "docs/images/distilled/structure_leviathan_heart.png",
+    "title": "Its heart",
+    "description": "In the Leviathan's ribcage, its heart still beats."
+  },
+  {
+    "file": "docs/images/distilled/mob_curator_awake.png",
     "title": "The Curator",
-    "description": "The keeper of the reliquary."
+    "description": "The keeper of the reliquary: a war-construct with a cannon arm. Defeat it for the only Starforge Templates."
+  },
+  {
+    "file": "docs/images/distilled/mob_curator_exposed.png",
+    "title": "The Curator, turned over",
+    "description": "At half health its case shatters and the fight turns upside down."
   },
   {
     "file": "docs/images/distilled/mob_drift_whale_side.png",
     "title": "Drift Whale",
-    "description": "A Drift Whale over the Ashen Barrens. Sing one a song and it's yours to ride."
+    "description": "A Drift Whale over the Ashen Barrens. Pods fly as a flock; sing one a song and it's yours to ride."
   },
   {
     "file": "docs/images/distilled/mob_hushback.png",
     "title": "Hushback",
-    "description": "A clear-hided grazer of the Eclipse; hurt one and the herd blinks away."
+    "description": "A clear-hided grazer of the Gilded Reach. The herd keeps a lookout - sneak up on it."
   },
   {
     "file": "docs/images/distilled/mob_hydragrip_angled.png",
     "title": "Hydragrip",
-    "description": "A dark newt lit with cyan; it hunts endermites by the water and coughs up their pearls."
+    "description": "A dark newt lit with cyan; it keeps the herds clean of endermites and coughs up their pearls."
   },
   {
     "file": "docs/images/distilled/mob_mirror_wretch_angled.png",
     "title": "Mirror Wretch",
-    "description": "A worm with a round toothed mouth that slithers low, rears up to strike, and throws familiar sounds from the void's edge to lure you over."
+    "description": "It calls you in voices you know from the void's edge - and hums at whales in their own."
   },
   {
     "file": "docs/images/distilled/mob_watcher.png",
     "title": "The Watcher",
-    "description": "Only ever seen from the corner of your eye. Look straight at it and it teleports away, to turn up further on toward the Leviathan."
+    "description": "Seen only from the corner of your eye; it leads you to the Leviathan."
+  },
+  {
+    "file": "docs/images/distilled/mob_shardback_angled.png",
+    "title": "Shardback",
+    "description": "Folded down in its geode, it looks like one more crystal cluster - until you come close."
+  },
+  {
+    "file": "docs/images/distilled/structure_solar_array.png",
+    "title": "Solar Array",
+    "description": "Cracked Solarite mirrors round a reflecting pool in the Gilded Reach, still focusing the Sunstorms."
   }
 ]
