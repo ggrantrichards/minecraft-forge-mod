@@ -96,32 +96,6 @@
         "result_state": "astralend:nightstone"
       }
     },
-    {
-      "type": "minecraft:condition",
-      "if_true": {
-        "type": "minecraft:biome",
-        "biome_is": [
-          "astralend:corona"
-        ]
-      },
-      "then_run": {
-        "type": "minecraft:sequence",
-        "sequence": [
-          {
-            "type": "minecraft:condition",
-            "if_true": "minecraft:under_floor",
-            "then_run": {
-              "type": "minecraft:block",
-              "result_state": "astralend:sunscorched_stone"
-            }
-          },
-          {
-            "type": "minecraft:block",
-            "result_state": "astralend:charred_end_stone"
-          }
-        ]
-      }
-    },
     "minecraft:end"
   ]
 }

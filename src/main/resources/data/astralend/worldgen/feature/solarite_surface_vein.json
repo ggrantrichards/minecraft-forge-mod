@@ -1,13 +1,13 @@
 {
   "type": "minecraft:ore",
   "discard_chance_on_air_exposure": 0.0,
-  "size": 8,
+  "size": 6,
   "targets": [
     {
       "state": "astralend:solarite_ore",
       "target": {
         "predicate_type": "minecraft:block_match",
-        "block": "astralend:sunscorched_stone"
+        "block": "astralend:pale_end_stone"
       }
     }
   ]

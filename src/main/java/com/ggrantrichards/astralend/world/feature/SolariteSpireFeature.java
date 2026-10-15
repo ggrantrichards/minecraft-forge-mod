@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 
+// (Not generated since the golden-meadow rework, which cut the Corona; kept for datapacks.)
 // A spire of the Corona: a leaning fang of Sunscorched Stone the flares have glazed - Solarite
 // showing through its sides, its tip fused to raw Solarite that still glows - with a scatter of
 // fallen shards round its foot. (Within 7 blocks of its origin.)

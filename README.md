@@ -36,7 +36,7 @@ and the distillation renamed or removed some of them.
   in their own right: dark Nullwood forest on ring islands, Hollow Vines hanging to the ground, Mimic
   Plants, Voidgel and Stardust, Upwells beneath, and the Hollow Roots caves under it all.
 - That leaves five biomes - the **Nebula Fields**, the **Deep Hollows**, the **Glimmering Crags**,
-  the **Ashen Barrens** and **the Eclipse** (its two halves, and the Seam between them) - plus the
+  the **Ashen Barrens** and **the Eclipse** (one golden meadow now) - plus the
   Shattered Crags (a variant) and two caves. Each is getting its own colour, creatures and polish.
 - **The Nebula Fields are an emission nebula** now, the colours of glowing gas: rose **Nebula Moss**
   (it was Chorus Moss), reed groves of magenta Astral Vines whose tips glow cold pale blue, rose fog,
@@ -60,27 +60,22 @@ and the distillation renamed or removed some of them.
     through like old bone; the tall withered stalks of long-dead giant Lumineshrooms, caps drooping;
     and a thick, pale mist of ash lying over the shelves - the only pale air in the End.
   - **Shattered Crags:** starlight falling between the shards and on into the void.
-- **The Eclipse: gold, crimson, and the Seam between** (from the James Webb pictures - golden dust, blue
-  haze, crimson filaments, one bright spiked star):
-  - **The heaven half is gold**, teal only for an accent (its water, its Lumineshrooms, the turf round
-    the Wellspring): amber fog that turns the End Stone to old gold, gold dust hanging in the air with
-    now and then a teal glint, and in its sky great soft clouds of gold dust and blue haze instead of
-    the teal aurora.
-  - **The hell half keeps its crimson**, and its sky gains long crimson filaments.
-  - **The Seam** is a new biome where the halves meet, a band some 18 blocks wide all along the S: the
-    scar the Remnant tore when it fell. A shallow gouge of Obsidian fraying into either half's ground,
-    a broken line of embers (Solarite ore) down its middle, shards of black glass standing out of it, and
-    a curtain of gold, crimson and white sparks rising off it. It hears both halves at once. High over
-    the whole Eclipse hangs a white star with six long spikes, brightest from the Seam. The **Mirror
-    Wretch** lives here now, and only here.
-- **The Remnant has fallen.** It was a ball of Nether rock hanging in the sky with debris circling it;
-  now it lies half buried in a crater at the heart of the hell half, built like a geode and only of the
-  End's own blocks: a crust of Obsidian and Charred End Stone with veins of raw Solarite glowing through
-  its cracks, a mantle of Sunscorched Stone, a lining of raw Solarite round a hollow, and in the hollow
-  the star's last ember and its chest. A cleft splits it open on one side; the crater's floor is glazed
-  black, its rim thrown up with lumps of ejecta round it, and a furrow runs out of it to the Seam - the
-  way it came down. Where it hung, a faint ember still glows in the sky, and the Sunstorms still break
-  from there.
+- **The Eclipse is one golden meadow.** Its hell half (the Corona), the Seam and the fallen Remnant
+  are gone - the Ashen Barrens are dark enough for one End. What's left, from the James Webb pictures
+  (golden dust, blue haze, one bright spiked star):
+  - **Gold ground:** Living Turf is a gold meadow grass now, moss runs green round the water, and bare
+    End Stone breaks through in outcrops. Warm amber fog and gold dust hang in the air.
+  - **Teal water:** the Wellspring in the middle, and half a dozen small ponds across the meadow.
+  - **Accents, in moderation:** a few clumps of **Flareblooms** on the turf (orange-red, opening in a
+    Sunstorm), **Sunscale Lichen** on the outcrops, the Starblooms' gold, and the giant
+    **Lumineshrooms** - cream-gold caps lit with teal spots, the meadow's shelter.
+  - **The Sunstorms are the meadow's now.** They break from the Eclipse's star - white, with six long
+    spikes, high in the south-west of its sky - which brightens before one. Get under a Lumineshroom.
+  - **The Solar Array** stands in the meadow: its cracked Solarite mirrors on a low terrace of End Stone
+    bricks, round a reflecting pool, still focusing the flares on its field.
+- **New homes:** the **Mirror Wretch** lives in the **Ashen Barrens** now, alone in the dead country -
+  and the Endermen standing at its edges are listening to it. **Solarite** is found there too: veins in
+  the pale stone, and **scorch fissures** with charred lips and raw Solarite glowing at the bottom.
 
 - **The Leviathan, rebuilt to feel like Minecraft:**
   - **200 blocks**, not 370, and lying square to the compass so its lines stay crisp.

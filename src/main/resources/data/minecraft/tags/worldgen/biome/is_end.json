@@ -2,14 +2,12 @@
   "replace": false,
   "values": [
     "astralend:ashen_barrens",
-    "astralend:corona",
     "astralend:crystal_vaults",
     "astralend:deep_hollows",
     "astralend:eclipse",
     "astralend:glimmering_crags",
     "astralend:hollow_roots",
     "astralend:nebula_fields",
-    "astralend:seam",
     "astralend:shattered_crags"
   ]
 }

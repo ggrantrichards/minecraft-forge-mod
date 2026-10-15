@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 
+// (Not generated since the golden-meadow rework, which cut the Corona; kept for datapacks.)
 // A petrified stalk: the stone-hard trunk of a giant Astral Vine that grew in the Corona before
 // the flares killed it. It leans a little, the tallest flare out at the base, and a few crooked
 // dead branches still reach upward.

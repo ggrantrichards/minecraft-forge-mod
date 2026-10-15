@@ -44,20 +44,6 @@
         }
       }
     },
-    "corona": {
-      "trigger": "minecraft:location",
-      "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "biomes": "astralend:corona"
-            }
-          }
-        }
-      }
-    },
     "glimmering_crags": {
       "trigger": "minecraft:location",
       "conditions": {
@@ -114,20 +100,6 @@
         }
       }
     },
-    "seam": {
-      "trigger": "minecraft:location",
-      "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "biomes": "astralend:seam"
-            }
-          }
-        }
-      }
-    },
     "hollow_roots": {
       "trigger": "minecraft:location",
       "conditions": {
@@ -165,9 +137,6 @@
       "ashen_barrens"
     ],
     [
-      "corona"
-    ],
-    [
       "glimmering_crags"
     ],
     [
@@ -178,9 +147,6 @@
     ],
     [
       "eclipse"
-    ],
-    [
-      "seam"
     ],
     [
       "hollow_roots"

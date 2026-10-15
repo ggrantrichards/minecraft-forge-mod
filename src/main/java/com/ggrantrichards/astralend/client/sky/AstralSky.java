@@ -23,10 +23,10 @@ import org.slf4j.Logger;
 
 // The client side of Phase 5:
 //   - swaps the game's sky renderer for AstralSkyRenderer, which draws the vanilla End sky and then the
-//     mod's sky on top (stars, auroras, the Remnant, flares, comets, distant shapes). LevelRenderer makes a
+//     mod's sky on top (stars, the Eclipse's star and clouds, flares, comets, distant shapes). LevelRenderer makes a
 //     new SkyRenderer after resource reloads, so this checks every tick and swaps it again if needed;
 //   - keeps the flare countdown running between server updates (ClientFlares);
-//   - in the Corona during a flare: charged particles stream past on the solar wind, and the wind
+//   - in the Eclipse during a flare: charged particles stream past on the solar wind, and the wind
 //     pushes you along while you glide with an elytra.
 public final class AstralSky {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -47,7 +47,7 @@ public final class AstralSky {
         ClientFlares.tick();
         installSkyRenderer(minecraft);
         LocalPlayer player = minecraft.player;
-        if (player != null && ClientFlares.phase() == FlarePhase.FLARE && level.getBiome(player.blockPosition()).is(ModBiomes.CORONA)) {
+        if (player != null && ClientFlares.phase() == FlarePhase.FLARE && com.ggrantrichards.astralend.flare.Sunstorms.inSunstorms(level, player.blockPosition())) {
             solarWind(level, player);
         }
     }

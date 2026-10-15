@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.phys.BlockHitResult;
 
-// Flarebloom: a tall Corona flower that stays shut tight - until a Sunstorm. Then it opens and
+// Flarebloom: a tall flower of the Eclipse's meadow that stays shut tight - until a Sunstorm. Then it opens and
 // glows (Sunstorms opens the ones near players), and an open bloom can be picked for Flare Pollen
 // (use it, or break it). After the flare it closes again on its own.
 public class FlarebloomBlock extends EndTallPlantBlock {

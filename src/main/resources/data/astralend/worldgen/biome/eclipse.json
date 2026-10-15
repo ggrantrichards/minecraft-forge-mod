@@ -27,7 +27,7 @@
       },
       "modifier": "overlay"
     },
-    "minecraft:visual/fog_color": "#36291a",
+    "minecraft:visual/fog_color": "#4a3920",
     "minecraft:audio/background_music": {
       "default": {
         "sound": "astralend:music.eclipse",
@@ -83,7 +83,9 @@
       "astralend:eclipse_giant_lumineshrooms",
       "astralend:eclipse_breathcomb",
       "astralend:eclipse_lumineshrooms",
-      "astralend:eclipse_starblooms"
+      "astralend:eclipse_starblooms",
+      "astralend:eclipse_flareblooms",
+      "astralend:eclipse_sunscale_lichen"
     ]
   ],
   "has_precipitation": false,

@@ -74,7 +74,7 @@ public final class AstralEnd {
             com.ggrantrichards.astralend.client.ClientTrailer.register();   // nor this, without -Dastralend.trailer=true
             com.ggrantrichards.astralend.client.ClientPlaytests.register(); // nor this, without -Dastralend.playtests=true
             com.ggrantrichards.astralend.client.VoidHum.register();   // the drone near an island's edge
-            AstralSky.register();            // the End's sky: stars, auroras, the Remnant, flares
+            AstralSky.register();            // the End's sky: stars, the Eclipse's star, flares
             com.ggrantrichards.astralend.client.UpsideDown.register();      // Upwelling: the view, controls and bodies turned over
             com.ggrantrichards.astralend.client.FogBlend.register();        // fog eased between biomes over ~50 blocks
             com.ggrantrichards.astralend.client.BiomeMist.register();       // drifting gas, ash mist and falling starlight

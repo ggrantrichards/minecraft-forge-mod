@@ -9,7 +9,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 // Sunshade: a square of Ray Film on a bronze frame, hung at the top of a block space. It needs
-// nothing to hold it up, so in the Corona you can put one over your head and keep mining through a
+// nothing to hold it up, so in the Eclipse you can put one over your head and keep mining through a
 // flare: it counts as cover against Sunburn. You can see the sky through it.
 public class SunshadeBlock extends Block {
     private static final VoxelShape SHAPE = Block.box(0.0, 14.0, 0.0, 16.0, 16.0, 16.0);

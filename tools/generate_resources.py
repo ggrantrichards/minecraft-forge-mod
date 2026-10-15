@@ -693,7 +693,6 @@ def terrain():
         "ashen_barrens": mul(cold, ramp(belt, REGION_COLD_BELT)),
         "deep_hollows": mul(middle, ramp(belt, REGION_MID_BELT)),
     }
-    # (The Corona's territory is gone: it's the hell half of the rare Eclipse now, below.)
     vanilla_share = sub(sub(not_nebula, raw["ashen_barrens"]), raw["deep_hollows"])
     crags = mul(vanilla_share, ramp(ruin, REGION_CRAGS))
     raw["glimmering_crags"] = mul(crags, sub(1.0, ramp(variant, REGION_VARIANT)))
@@ -807,11 +806,7 @@ def worldgen():
         # The caves under them: the same stone (the islands' lower parts are in the cave biomes).
         in_biome("hollow_roots", block("nightstone")),
         in_biome("crystal_vaults", block("nightstone")),
-        # (The Eclipse's heaven half is End Stone: no rule. Its moss, round the water, is placed by its features.)
-        # The Corona (the Eclipse's hell half): a crimson crust of Sunscorched Stone over Charred End Stone.
-        in_biome("corona", {"type": "minecraft:sequence", "sequence": [
-            {"type": "minecraft:condition", "if_true": "minecraft:under_floor", "then_run": block("sunscorched_stone")},
-            block("charred_end_stone")]}),
+        # (The Eclipse is End Stone: no rule. Its turf, moss and outcrops are laid by EclipseTerrainFeature.)
         "minecraft:end",
     ]})
     terrain()
@@ -872,10 +867,9 @@ def worldgen():
     # empty list in a datapack.
     tag("worldgen/biome", f"{NS}:low_gravity", rid("nebula_fields"))
     # Phase 9: data-pack switches for the two events (empty a tag to turn its event off).
-    tag("worldgen/biome", f"{NS}:sunstorms", rid("corona"))
-    # The Eclipse (both halves): where the astral sky shows.
-    for half in ("eclipse", "corona", "seam"):
-        tag("worldgen/biome", f"{NS}:eclipse", rid(half))
+    tag("worldgen/biome", f"{NS}:sunstorms", rid("eclipse"))
+    # The Eclipse: where the astral sky shows.
+    tag("worldgen/biome", f"{NS}:eclipse", rid("eclipse"))
     # Biomes where Upwell Cores flip gravity. Empty this tag in a datapack to turn it off.
     tag("worldgen/biome", f"{NS}:upwells", rid("deep_hollows"))
     # Chorus grows in the living astral biomes too: on Chorus Moss and Nightstone as on End Stone.
@@ -937,7 +931,7 @@ def java_feature(name):
 
 # Mobs by biome and spawn category (on top of the End's Endermen). The Drift Whale and the Watcher
 # aren't here: MobSpawning.java places them one at a time. (The distillation: Pollinators live only
-# where the Eclipse will be - the Corona for now - Void Rays circle the Shattered Crags' gaps, and the
+# in the Nebula Fields - Void Rays circle the Shattered Crags' gaps, and the
 # Umbral Stalker lives in the Glimmering Crags' caves.)
 MOB_SPAWNS = {
     "nebula_fields": {"creature": [("pollinator", 10, 3), ("void_wanderer", 3, 1)]},
@@ -946,18 +940,19 @@ MOB_SPAWNS = {
     # The Umbral Stalker hunts only in the Crags' root caves (its spawn rule wants a roof of rock overhead).
     "glimmering_crags": {"monster": [("umbral_stalker", 6, 1)]},
     "shattered_crags": {"creature": [("void_ray", 8, 3)]},
-    # The Eclipse: its heaven half's life, endermites for the Hydragrips to hunt, and in the Seam
-    # between the halves, the Mirror Wretch (after beta.4 the Seam is its own biome, and the Wretch's).
+    # The Eclipse, the golden meadow: its grazers, and endermites for the Hydragrips to hunt.
     "eclipse": {"creature": [("hushback", 10, 4), ("hydragrip", 5, 2)],
                 "monster": [("minecraft:endermite", 3, 2)]},
-    "seam": {"monster": [("mirror_wretch", 10, 1)]},
+    # The Ashen Barrens (since the golden-meadow rework): the Mirror Wretch, alone in the dead country -
+    # and the Endermen standing at its edges are listening to it.
+    "ashen_barrens": {"monster": [("mirror_wretch", 3, 1)]},
     # The caves: the Crystal Vaults' hunters.
     "crystal_vaults": {"monster": [("shardback", 6, 1)], "creature": [("void_ray", 4, 2)]},
 }
 
 
-# Endermen live where the End is alive; the dead Ashen Barrens and the sun-scorched Corona have none.
-NO_ENDERMEN = ("corona", "eclipse", "seam", "hollow_roots", "crystal_vaults")   # (in the Ashen Barrens they stand at the edges: EclipseLife)
+# Endermen live where the End is alive, but not in the Eclipse (its own creatures) or the caves.
+NO_ENDERMEN = ("eclipse", "hollow_roots", "crystal_vaults")   # (in the Ashen Barrens they stand at the edges: EclipseLife)
 
 
 def mob_spawns(biome):
@@ -974,7 +969,7 @@ def mob_spawns(biome):
 BIOME_MUSIC = {"nebula_fields": "music.nebula_fields", "ashen_barrens": "music.outer_end", "eclipse": "music.eclipse",
                "glimmering_crags": "music.glimmering_crags", "shattered_crags": "music.glimmering_crags",
                "deep_hollows": "music.outer_end",
-               "corona": "music.outer_end", "seam": "music.eclipse", "hollow_roots": "music.outer_end", "crystal_vaults": "music.glimmering_crags"}
+               "hollow_roots": "music.outer_end", "crystal_vaults": "music.glimmering_crags"}
 
 
 def background_music(biome):
@@ -1054,10 +1049,19 @@ def worldgen_phase3():
     # Memory Moss: pale patches that remember what stood there.
     java_feature("memory_moss")
     surface_feature("ashen_barrens_memory_moss", "memory_moss", rarity=3)
+    # Solarite (since the golden-meadow rework): sun-metal in the dead country, as if a star once burned
+    # here - veins near the surface and a few deep, and scorch fissures, cracks with charred lips and raw
+    # Solarite glowing at the bottom.
+    ore("solarite_surface_vein", "solarite_ore", rid("pale_end_stone"), size=6)
+    surface_feature("ashen_barrens_solarite_surface", "solarite_surface_vein", rarity=2, y_offset=-3)
+    ore("solarite_deep_vein", "solarite_ore", rid("pale_end_stone"), size=3)
+    placed_ore("ashen_barrens_solarite_deep", "solarite_deep_vein", count=2, min_y=10, max_y=70)
+    big_feature("ashen_barrens_scorch_fissures", "scorch_fissure", rarity=4, heightmap="WORLD_SURFACE_WG")
     end_biome("ashen_barrens", "Ashen Barrens", fog="#26252a", water="#6e6c6a",
-              features_step4=[rid("aurora_ribcages"), rid("ashen_barrens_spires"), rid("ashen_barrens_bones"),
+              features_step7=[rid("ashen_barrens_solarite_deep")],
+              features_step4=[rid("ashen_barrens_solarite_surface"), rid("aurora_ribcages"), rid("ashen_barrens_spires"), rid("ashen_barrens_bones"),
                               rid("ashen_barrens_withered_stalks"), rid("aurora_standing_stones")],
-              features_step9=[rid("ashen_barrens_memory_moss"), rid("aurora_shimmer_reeds"), rid("aurora_shimmer_grass"),
+              features_step9=[rid("ashen_barrens_scorch_fissures"), rid("ashen_barrens_memory_moss"), rid("aurora_shimmer_reeds"), rid("aurora_shimmer_grass"),
                               rid("ashen_barrens_withered_lumineshrooms")],
               particle="minecraft:white_ash", particle_chance=0.035)
 
@@ -1115,9 +1119,7 @@ def worldgen_phase3():
                               rid("deep_hollows_glowcaps"), rid("deep_hollows_voidgel"), rid("deep_hollows_stardust_underhangs")],
               particle="minecraft:reverse_portal", particle_chance=0.004)
 
-    # ---- The Corona: Sunscorched Stone over Charred End Stone; Solarite; adapted and dead life
-    # (the Eclipse's hell half since the distillation; its landmarks run in both halves)
-    # The Eclipse's island, built before anything else in every End biome (a Forge biome modifier adds it;
+    # ---- Shared world-gen. The Eclipse's island, built before anything else in every End biome (a Forge biome modifier adds it;
     # it does nothing outside an Eclipse).
     # Biome borders blended: near a border, the neighbour's ground mixes into this one's in soft blots
     # (BorderBlendFeature), in every End chunk, before anything grows.
@@ -1131,35 +1133,19 @@ def worldgen_phase3():
         "type": "forge:add_features", "biomes": "#minecraft:is_end", "features": rid("eclipse_terrain"), "step": "raw_generation"})
     java_feature("eclipse_landmarks")
     placed("eclipse_landmarks", {"feature": rid("eclipse_landmarks"), "placement": []})
-    ore("solarite_surface_vein", "solarite_ore", rid("sunscorched_stone"), size=8)
-    surface_feature("corona_solarite_surface", "solarite_surface_vein", count=5, y_offset=-3)
-    ore("solarite_deep_vein", "solarite_ore", rid("charred_end_stone"), size=3)
-    placed_ore("corona_solarite_deep", "solarite_deep_vein", count=2, min_y=10, max_y=70)
-    plant_patch("corona_flareblooms", "flarebloom", rarity=1, count=40, spread=7)
-    ground_cover("corona_sunscale_lichen", "sunscale_lichen", 70)
-    big_feature("corona_petrified_stalks", "petrified_stalk", rarity=2)
-    plant_patch("corona_ashen_lumineshrooms", "ashen_lumineshroom", rarity=2, count=10, spread=5)
-    plant_patch("corona_petrified_vines", "petrified_astral_vine", rarity=3, count=6, spread=5)
-    plant_patch("corona_pollinator_husks", "pollinator_husk", rarity=12, count=2, spread=3, vertical=1,
-                on=[rid("sunscorched_stone"), rid("charred_end_stone")])
-    # Phase 11: the Corona's ground has shape - glazed spires and cracks glowing with raw Solarite.
-    big_feature("corona_solarite_spires", "solarite_spire", rarity=2, heightmap="WORLD_SURFACE_WG")
-    big_feature("corona_scorch_fissures", "scorch_fissure", rarity=2, heightmap="WORLD_SURFACE_WG")
-    end_biome("corona", "The Corona", fog="#3c0a18", water="#b8183e",   # crimson, after the Horsehead Nebula
-              features_step7=[rid("corona_solarite_deep")],
-              features_step4=[rid("corona_solarite_surface"), rid("eclipse_landmarks")],
-              features_step9=[rid("corona_scorch_fissures"), rid("corona_solarite_spires"), rid("corona_petrified_stalks"), rid("corona_sunscale_lichen"), rid("corona_flareblooms"), rid("corona_ashen_lumineshrooms"),
-                              rid("corona_petrified_vines"), rid("corona_pollinator_husks")],
-              particle="minecraft:white_ash", particle_chance=0.03)
-
-
-    # ---- The Eclipse's heaven half (the hell half is the Corona, above): living turf, giant
-    # Lumineshrooms (their only home), Breathcomb, the Wellspring and its seeds (EclipseLandmarksFeature).
-    # Sparse, as vanilla's End is: a giant Lumineshroom in one chunk of ten, small plants in patches.
+    # ---- The Eclipse, the golden meadow (since the golden-meadow rework there are no halves): gold Living
+    # Turf, moss round the teal water of the Wellspring and the ponds, End Stone outcrops
+    # (EclipseTerrainFeature, EclipseLandmarksFeature); giant Lumineshrooms (their only home) to shelter
+    # under when a Sunstorm comes. Accents in moderation: a few clumps of Flareblooms on the turf, Sunscale
+    # Lichen on the outcrops. Sparse, as vanilla's End is: a giant Lumineshroom in one chunk of ten.
     big_feature("eclipse_giant_lumineshrooms", "giant_lumineshroom", rarity=10)
     plant_patch("eclipse_lumineshrooms", "lumineshroom", rarity=2, count=10, spread=6, on=["minecraft:end_stone", rid("living_turf")])
     # (After beta.4 the Starblooms are the heaven half's gold on the ground: drifts of them in most chunks.)
-    plant_patch("eclipse_starblooms", "starbloom", rarity=1, count=16, spread=7, on=["minecraft:end_stone", rid("living_turf")])
+    plant_patch("eclipse_starblooms", "starbloom", rarity=1, count=12, spread=7, on=["minecraft:end_stone", rid("living_turf")])
+    # The Sunstorms' flowers (they open in a flare): small clumps on the turf, in one chunk of three.
+    plant_patch("eclipse_flareblooms", "flarebloom", rarity=3, count=6, spread=3, on=[rid("living_turf")])
+    # Sunscale Lichen, charged gold by a Sunstorm, grows on the bare outcrops only.
+    ground_cover("eclipse_sunscale_lichen", "sunscale_lichen", 40, on=["minecraft:end_stone"])
     feature("breathcomb", {"type": "minecraft:simple_block", "to_place": {"id": rid("breathcomb")}})
     placed("eclipse_breathcomb", {"feature": rid("breathcomb"), "placement": [
         {"type": "minecraft:rarity_filter", "chance": 2}, {"type": "minecraft:in_square"},
@@ -1170,30 +1156,13 @@ def worldgen_phase3():
             {"type": "minecraft:matching_block_tag", "tag": "minecraft:air"},
             {"type": "minecraft:matching_blocks", "blocks": ["minecraft:end_stone", rid("living_turf"), rid("breathcomb")], "offset": [0, -1, 0]}]}},
     ]})
-    # (After beta.4 the heaven half is gold, with teal for an accent - its water, its Lumineshrooms, the
-    # turf round the Wellspring: amber fog, gold dust in the air (client/BiomeMist), gold and blue gas in
-    # its sky. Teal or blue fog turned End Stone green; amber turns it to old gold.)
-    end_biome("eclipse", "The Eclipse", fog="#36291a", water="#34c8bc",
+    # (Gold, with teal for an accent - its water, its Lumineshrooms' spots: warm amber fog, gold dust in the
+    # air (client/BiomeMist), gold and blue gas in its sky. Teal or blue fog turned End Stone green.)
+    end_biome("eclipse", "The Eclipse", fog="#4a3920", water="#34c8bc",
               features_step4=[rid("eclipse_landmarks")],
               features_step9=[rid("eclipse_giant_lumineshrooms"), rid("eclipse_breathcomb"), rid("eclipse_lumineshrooms"),
-                              rid("eclipse_starblooms")],
+                              rid("eclipse_starblooms"), rid("eclipse_flareblooms"), rid("eclipse_sunscale_lichen")],
               particle="minecraft:end_rod", particle_chance=0.002)
-
-    # ---- The Seam (after beta.4): where the Eclipse's halves meet, the scar the Remnant tore when it fell -
-    # a gouge of Obsidian down the S-shaped border with a line of embers in it (EclipseTerrainFeature), shards
-    # of black glass standing out of it, sparks of gold and crimson drifting up (client/BiomeMist), and under
-    # the Eclipse's star the Mirror Wretches, which belong to neither half.
-    feature("seam_shard", {"type": "minecraft:block_column", "allowed_placement": air, "direction": "up",
-                           "layers": [{"height": {"type": "minecraft:biased_to_bottom", "min_inclusive": 1, "max_inclusive": 4},
-                                       "provider": {"id": "minecraft:obsidian"}}],
-                           "prioritize_tip": True})
-    surface_feature("seam_shards", "seam_shard", rarity=1, count=3,
-                    extra=[{"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:all_of", "predicates": [
-                        air, {"type": "minecraft:matching_blocks", "blocks": ["minecraft:obsidian"], "offset": [0, -1, 0]}]}}])
-    end_biome("seam", "The Seam", fog="#3a1c18", water="#c89048",
-              features_step4=[rid("eclipse_landmarks")],
-              features_step9=[rid("seam_shards")],
-              particle="minecraft:end_rod", particle_chance=0.004)
 
     # ---- Glimmering Crags (Phase 10): the petrified trunks of colossal Nullwood that died long ago,
     # grown through with Glimmer Crystal - cold white-lavender since beta.4, and lit, so the spires stand
@@ -1441,7 +1410,6 @@ def flares_phase5():
     lang[f"death.attack.{NS}.sunburn"] = "%1$s was burned by a Sunstorm"
     lang[f"death.attack.{NS}.sunburn.player"] = "%1$s was burned by a Sunstorm while fighting %2$s"
 
-    # What the Corona's players are told
 
 
 def chest_loot(name, pools):
@@ -1481,8 +1449,7 @@ def structures_phase6():
     lang[f"item.{NS}.star_chart.marks_structure"] = "Marks a site: %s"
     for name, english in (("comet_crater", "Comet Crater"), ("wanderer_relay", "Wanderer Relay"),
                           ("shattered_observatory", "Shattered Observatory"), ("solar_array", "Solar Array Ruins"),
-                          ("leviathan", "Leviathan"), ("constellation_maze", "Constellation Maze"),
-                          ("remnant", "The Remnant")):
+                          ("leviathan", "Leviathan"), ("constellation_maze", "Constellation Maze")):
         lang[f"structure.{NS}.{name}"] = english
         tag("worldgen/structure", rid(name), rid(name))      # a Star Chart looks each one up by its own tag
 
@@ -1540,15 +1507,6 @@ def structures_phase6():
             entry("glowing_spores", 3, (2, 5)), entry("void_crystal", 2, (1, 3)),
             entry("minecraft:nautilus_shell", 1, (1, 1))]},
         chance("temporal_crystal", 0.15),
-    ])
-    # The chamber at the heart of the Remnant: the star's own metal, and what it burned into.
-    chest_loot("remnant", [
-        {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 5}, "entries": [
-            entry("raw_solarite", 5, (2, 6)), entry("solarite_ingot", 3, (1, 3)), entry("void_crystal", 3, (2, 4)),
-            entry("charged_void_crystal", 2, (1, 1)), entry("minecraft:blaze_powder", 2, (2, 5)),
-            entry("minecraft:magma_cream", 2, (1, 4)), entry("raw_solarite_block", 2, (1, 2))]},
-        {"rolls": 1, "entries": [entry("temporal_crystal")]},
-        chance("starforge_template", 0.5),
     ])
     # The camp in the Leviathan's skull, the Maw: what the first explorers left - and the crystals that
     # light its eyes.
@@ -1801,8 +1759,8 @@ def round_out_phase9():
 
 
 
-ASTRAL_BIOMES = ("nebula_fields", "ashen_barrens", "corona", "glimmering_crags",
-                "deep_hollows", "shattered_crags", "eclipse", "seam", "hollow_roots", "crystal_vaults")
+ASTRAL_BIOMES = ("nebula_fields", "ashen_barrens", "glimmering_crags",
+                "deep_hollows", "shattered_crags", "eclipse", "hollow_roots", "crystal_vaults")
 
 
 def has_item(item):
@@ -1850,8 +1808,8 @@ def advancements_phase9():
     advancement("say_ahh", rid("portal_lens"), "Say Ahh", "Wake a Leviathan's Maw", parent=rid("end/hold_still"), frame="goal")
     advancement("something_looks_back", "minecraft:spyglass", "Something Looks Back",
                 "Catch a glimpse of the Watcher through a spyglass", parent=rid("end/hold_still"), hidden=True)
-    # The Corona
-    advancement("weather_the_storm", rid("sunshade"), "Weather the Storm", "Be in the Corona when a Sunstorm dies down",
+    # The Eclipse's Sunstorms
+    advancement("weather_the_storm", rid("sunshade"), "Weather the Storm", "Be in the Eclipse when a Sunstorm dies down",
                 parent=root)
     advancement("harvest_moon", "minecraft:shears", "Harvest Moon", "Shear the film from a Void Ray's wings",
                 parent=rid("end/weather_the_storm"))
@@ -2037,15 +1995,12 @@ def content_phase10():
     sounds = {event: {"sounds": [{"name": rid(path), "stream": True}]} for event, path in tracks.items()}
     # (The caves borrow their parents' recordings: the Roots the Deep Hollows', the Vaults the Shattered Crags'.)
     for biome, folder in (("nebula_fields", "nebula_fields"), ("ashen_barrens", "ashen_barrens"),
-                          ("corona", "corona"), ("glimmering_crags", "glimmering_crags"),
+                          ("glimmering_crags", "glimmering_crags"),
                           ("deep_hollows", "deep_hollows"), ("shattered_crags", "shattered_crags"), ("eclipse", "eclipse"),
                           ("hollow_roots", "deep_hollows"), ("crystal_vaults", "shattered_crags")):
         sounds[f"ambient.{biome}.loop"] = {"sounds": [{"name": rid(f"ambient/{folder}/loop"), "stream": True, "volume": 0.6}]}
         sounds[f"ambient.{biome}.additions"] = {"sounds": [{"name": rid(f"ambient/{folder}/additions{i}"), "volume": 0.5}
                                                           for i in range(1, 4)]}
-    # The Seam hears both halves at once: the heaven half's loop under the Corona's sounds.
-    sounds["ambient.seam.loop"] = {"sounds": [{"name": rid("ambient/eclipse/loop"), "stream": True, "volume": 0.5}]}
-    sounds["ambient.seam.additions"] = {"sounds": [{"name": rid(f"ambient/corona/additions{i}"), "volume": 0.5} for i in range(1, 4)]}
     # The void hum, near island edges (client/VoidHum.java).
     sounds["ambient.void_hum"] = {"sounds": [{"name": rid("ambient/void_hum"), "stream": True}]}
     # The Spire Wyrm's voice (tools/sounds/wyrm_sounds.py): each sound and how many variants it has.
@@ -2150,7 +2105,7 @@ def distillation_blocks():
     advancement("anchored", rid("lodestar"), "Anchored", "Bind yourself to a Lodestar in the End")
     advancement("sung_home", "minecraft:note_block", "Sung Home", "Tame a Drift Whale by song: Remembering, a note block, and Chorus Fruit",
                 parent=f"{NS}:end/whale_song", frame="goal")
-    for name, english in (("leviathan", "the Leviathan"), ("maw", "the Maw"), ("watcher", "the Watcher"), ("remnant", "the Remnant"),
+    for name, english in (("leviathan", "the Leviathan"), ("maw", "the Maw"), ("watcher", "the Watcher"), ("remnant", "the Dead Star"),
                           ("whale", "the Whale")):
         advancement(f"sighted_{name}", "minecraft:spyglass", f"Sighted: {english[4:]}",
                     f"From the Eclipse, find {english} through a spyglass")
@@ -2521,9 +2476,9 @@ def main():
     for name in solid:
         tag("block", "minecraft:blocks_motion_no_leaves", rid(name))
 
-    # What the End's plants grow on.
+    # What the End's plants grow on (vanilla's moss too: the Eclipse's moss round its water).
     for name in ("minecraft:end_stone", rid("chorus_moss"), rid("nightstone"), rid("pale_end_stone"),
-                 rid("charred_end_stone"), rid("sunscorched_stone")):
+                 rid("charred_end_stone"), rid("sunscorched_stone"), "minecraft:moss_block"):
         tag("block", f"{NS}:astral_soil", name)
     tag("block", "minecraft:mineable/shovel", rid("stardust_block"))
     tag("block", "minecraft:mineable/hoe", rid("chorus_moss"))

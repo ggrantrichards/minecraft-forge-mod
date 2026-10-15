@@ -32,11 +32,13 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.fml.LogicalSide;
 
-// Sunstorms: the Remnant (the dying ember of the collapsed star) flares every 15-25 minutes.
-// Only the Corona feels it - everywhere else a flare is just a glow on the horizon.
+// Sunstorms: the Eclipse's star - the white star with six long spikes over it - flares every 15-25
+// minutes. Only the Eclipse feels it (after beta.4: the golden meadow; it was the Corona, the hell half
+// that's gone): the one living, lit place in the End, and its light can turn on you. Everywhere else a
+// flare is just a glow in the sky. The giant Lumineshrooms' caps are the meadow's shelter.
 //
-//   WARNING   ~1 min    the Remnant brightens and a hum rises; there's always time to get under cover
-//   FLARE     1-2 min   open sky in the Corona burns (Sunburn); Flareblooms open; Void Rays take off;
+//   WARNING   ~1 min    the star brightens and a hum rises; there's always time to get under cover
+//   FLARE     1-2 min   open sky in the Eclipse burns (Sunburn); Flareblooms open; Void Rays take off;
 //                       Void Crystal and Flare Bottles on Collector Pedestals charge
 //   AFTERGLOW ~2 min    Sunscale Lichen glows bright, Void Ray wings refill
 //
@@ -66,10 +68,8 @@ public class Sunstorms extends SavedData {
     private int phaseLength;
     private float windYaw;
 
-    // Per player, not saved: how long they've been exposed this flare, and where their Remnant hung.
+    // Per player, not saved: how long they've been exposed this flare.
     private final Map<UUID, Integer> exposure = new HashMap<>();
-    private final Map<UUID, BlockPos> remnants = new HashMap<>();
-    private final Map<UUID, BlockPos> remnantSearchedFrom = new HashMap<>();
 
     public Sunstorms() {
         this(FlarePhase.CALM.ordinal(), 6000, 6000, 0.0F);   // a new world's first flare comes after 5 minutes
@@ -101,12 +101,12 @@ public class Sunstorms extends SavedData {
         return ClientFlares.phase();
     }
 
-    // Where Sunstorms are felt: biomes tagged #astralend:sunstorms (the Corona). An empty tag
+    // Where Sunstorms are felt: biomes tagged #astralend:sunstorms (the Eclipse). An empty tag
     // in a data pack turns flares off.
     public static final net.minecraft.tags.TagKey<net.minecraft.world.level.biome.Biome> FLARE_BIOMES = net.minecraft.tags.TagKey.create(
         Registries.BIOME, net.minecraft.resources.Identifier.fromNamespaceAndPath(AstralEnd.MODID, "sunstorms"));
 
-    public static boolean isCorona(Level level, BlockPos pos) {
+    public static boolean inSunstorms(Level level, BlockPos pos) {
         return level.dimension() == Level.END && level.getBiome(pos).is(FLARE_BIOMES);
     }
 
@@ -155,7 +155,7 @@ public class Sunstorms extends SavedData {
             this.burn(level);
         }
         if (this.phase == FlarePhase.FLARE || this.phase == FlarePhase.AFTERGLOW) {
-            this.wakeTheCorona(level);
+            this.wakeTheMeadow(level);
         }
     }
 
@@ -190,10 +190,10 @@ public class Sunstorms extends SavedData {
         this.syncAll(level, true);
     }
 
-    // Sounds only (no words), for players in the Corona; everyone else just sees the sky.
+    // Sounds only (no words), for players in the Eclipse; everyone else just sees the sky.
     private void announce(ServerLevel level, FlarePhase next) {
         for (ServerPlayer player : level.players()) {
-            if (!isCorona(level, player.blockPosition())) {
+            if (!inSunstorms(level, player.blockPosition())) {
                 continue;
             }
             switch (next) {
@@ -215,9 +215,7 @@ public class Sunstorms extends SavedData {
 
     private void syncAll(ServerLevel level, boolean force) {
         for (ServerPlayer player : level.players()) {
-            BlockPos remnant = this.remnantFor(level, player, force);
-            FlareNetwork.send(player, new FlareState(this.phase, this.ticksLeft, this.phaseLength, this.windYaw,
-                remnant != null, remnant != null ? remnant.getX() : 0, remnant != null ? remnant.getY() : 0, remnant != null ? remnant.getZ() : 0));
+            FlareNetwork.send(player, new FlareState(this.phase, this.ticksLeft, this.phaseLength, this.windYaw));
         }
     }
 
@@ -227,14 +225,14 @@ public class Sunstorms extends SavedData {
     public static final ResourceKey<net.minecraft.world.level.levelgen.structure.Structure> SOLAR_ARRAY = ResourceKey.create(
         Registries.STRUCTURE, net.minecraft.resources.Identifier.fromNamespaceAndPath(AstralEnd.MODID, "solar_array"));
 
-    // Once a second during a flare: everyone in the Corona under open sky burns - half a heart every
+    // Once a second during a flare: everyone in the Eclipse under open sky burns - half a heart every
     // 3 seconds at first, a full heart after 30 seconds of exposure, and twice that on a Solar Array's
     // field. Cover, a Sunshade or Sun Ward stops it.
     private void burn(ServerLevel level) {
         DamageSource source = new DamageSource(level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(SUNBURN));
         for (ServerPlayer player : level.players()) {
             UUID id = player.getUUID();
-            if (player.isSpectator() || player.isCreative() || !isCorona(level, player.blockPosition())
+            if (player.isSpectator() || player.isCreative() || !inSunstorms(level, player.blockPosition())
                 || player.hasEffect(ModEffects.SUN_WARD.getHolder().orElseThrow())
                 || com.ggrantrichards.astralend.starforge.StarforgeEffects.flareProof(player)
                 || !underOpenSky(level, BlockPos.containing(player.getEyePosition()))) {
@@ -252,15 +250,15 @@ public class Sunstorms extends SavedData {
         }
     }
 
-    // ------------------------------------------------------------------ the Corona responds
+    // ------------------------------------------------------------------ the meadow responds
 
-    // Opens Flareblooms and charges Sunscale Lichen around players in the Corona: a few dozen random
+    // Opens Flareblooms and charges Sunscale Lichen around players in the Eclipse: a few dozen random
     // spots per tick, so a whole area wakes up within seconds. (They close and fade again on their own
     // random ticks once the flare is over.)
-    private void wakeTheCorona(ServerLevel level) {
+    private void wakeTheMeadow(ServerLevel level) {
         RandomSource random = level.getRandom();
         for (ServerPlayer player : level.players()) {
-            if (!isCorona(level, player.blockPosition())) {
+            if (!inSunstorms(level, player.blockPosition())) {
                 continue;
             }
             for (int i = 0; i < 48; i++) {
@@ -278,47 +276,5 @@ public class Sunstorms extends SavedData {
                 }
             }
         }
-    }
-
-    // ------------------------------------------------------------------ where the Remnant hung
-
-    // The Remnant hung over the nearest Corona: the nearest Corona is found from the biome layout
-    // itself (no chunks are generated), searching outward in rings, then the Remnant structure nearest
-    // to it - a real place, so the sky's ember is right over its crater. Looked up again only when the
-    // player has moved far.
-    private BlockPos remnantFor(ServerLevel level, ServerPlayer player, boolean force) {
-        UUID id = player.getUUID();
-        BlockPos here = player.blockPosition();
-        BlockPos from = this.remnantSearchedFrom.get(id);
-        if (!force && from != null && from.distSqr(here) < 256.0 * 256.0) {
-            return this.remnants.get(id);
-        }
-        BlockPos found = nearestRemnant(level, here);
-        this.remnantSearchedFrom.put(id, here);
-        if (found != null) {
-            this.remnants.put(id, found);
-        } else {
-            this.remnants.remove(id);
-        }
-        return found;
-    }
-
-    public static final net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> REMNANT =
-        net.minecraft.tags.TagKey.create(Registries.STRUCTURE, net.minecraft.resources.Identifier.fromNamespaceAndPath(AstralEnd.MODID, "remnant"));
-
-    // Where the Remnant nearest `from` hung before it fell (high over its crater, in the hell half of
-    // every Eclipse): the Sunstorms still break from there.
-    public static BlockPos nearestRemnant(ServerLevel level, BlockPos from) {
-        BlockPos anchor = com.ggrantrichards.astralend.world.structure.RemnantStructure.anchor(
-            com.ggrantrichards.astralend.world.EclipseLayout.sampler(level.getChunkSource().randomState()), from.getX(), from.getZ(), 3);
-        return anchor == null ? null : new BlockPos(anchor.getX(), level.getMinY() + anchor.getY() + 5, anchor.getZ());
-    }
-
-    // The middle of the hell half (the Corona) of the Eclipse nearest `from`, at ground level. Also used
-    // by the worldgen survey, to aim its screenshot of the Remnant.
-    public static BlockPos nearestCorona(ServerLevel level, BlockPos from) {
-        BlockPos anchor = com.ggrantrichards.astralend.world.structure.RemnantStructure.anchor(
-            com.ggrantrichards.astralend.world.EclipseLayout.sampler(level.getChunkSource().randomState()), from.getX(), from.getZ(), 3);
-        return anchor == null ? null : new BlockPos(anchor.getX(), 64, anchor.getZ());
     }
 }

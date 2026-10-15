@@ -56,7 +56,7 @@ mob_watcher 80 fwd=2.5 | The Watcher
 vo 0.3 | Someone built here. No one is left to say why.
 card 3.2 | No one is left to say why.
 structure_constellation_maze 110 orbit=20 focus=hit bridges@30 | Constellation Mazes
-structure_remnant 110 orbit=20 focus=hit | The Remnant
+structure_solar_array 110 orbit=20 focus=hit | The Solar Array
 vo 0.5 | The greatest of them... a whole leviathan, made a citadel.
 structure_leviathan 160 fwd=12 | The Leviathan
 structure_leviathan_maw 110 fwd=4 wake@30 | The Maw

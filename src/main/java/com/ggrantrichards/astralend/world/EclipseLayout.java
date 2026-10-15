@@ -7,9 +7,8 @@ import net.minecraft.world.level.biome.Climate;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.densityfunction.SamplerContext;
 
-// Where the Eclipses are, and the shape of each. Shared by the biome source (which half of an Eclipse a
-// spot is in), the terrain (EclipseTerrainFeature: the Eclipse's island), the Remnant (which hangs over each
-// Eclipse's hell half), the Eclipse's features and the Sunstorms.
+// Where the Eclipses are, and the shape of each. Shared by the biome source, the terrain
+// (EclipseTerrainFeature: the Eclipse's island), its landmarks and the Sunstorms.
 //
 // The outer End is cut into cells CELL blocks square; three cells in four hold one Eclipse, a disc
 // RADIUS blocks across the middle, at a spot and turn of its own. What decides is the "nebula" region
@@ -17,30 +16,24 @@ import net.minecraft.world.level.levelgen.densityfunction.SamplerContext;
 // the world, so every world has its own Eclipses, and everything that asks - which all read the
 // same noise through the same Climate.Sampler - always agrees.
 //
-// Each Eclipse is a yin-yang, in its own frame (u, v), a unit disc:
-//   - the heaven half: u > 0, plus the disc of radius 1/2 round (0, 1/2), minus that round (0, -1/2);
-//   - the hell half: the rest - its S-shaped border runs through the middle;
-//   - and each holds a seed of the other: a small disc of hell round (0, 1/2) and of heaven round (0, -1/2).
-// Where the halves meet, the Seam (after beta.4): a band SEAM_HALF blocks either side of the S-shaped
-// border, its own biome - the scar the Remnant left when it fell, black glass with a line of embers.
+// (After beta.4 an Eclipse is one golden meadow: the yin-yang's hell half, the Seam between the halves
+// and the fallen Remnant are gone. Its own frame (u, v) is still used to place things in it: the
+// Wellspring in the middle, the ponds round it.)
 public final class EclipseLayout {
     public static final int CELL = 4096;
     public static final double RADIUS = 180.0;
-    public static final double SEED = 0.13;                 // the seeds' radius, in units of RADIUS
     private static final double MARGIN = RADIUS + 320.0;    // keeps an Eclipse well inside its cell
     private static final double CHANCE = 0.75;
     private static final double MIN_DISTANCE = 1700.0;      // from the centre of the End
 
-    // Anchors, in the Eclipse's frame (u, v).
-    public static final double[] WELLSPRING = {0.6, -0.1};  // the heart of the heaven half
+    // In the Eclipse's frame (u, v): the Wellspring at its heart, and the little ponds the springs under
+    // the meadow fill round it ({u, v, radius in blocks}).
+    public static final double[] WELLSPRING = {0.0, 0.0};
     public static final double WELLSPRING_RADIUS = 0.15;
-    public static final double[] REMNANT = {-0.6, 0.1};     // the heart of the hell half, where it fell
-    public static final double[] HELL_SEED = {0.0, 0.5};    // in heaven: one burnt spire
-    public static final double[] HEAVEN_SEED = {0.0, -0.5}; // in hell: one small living pool
+    public static final double[][] PONDS = {{-0.48, 0.32, 5.5}, {0.42, 0.46, 4.5}, {0.55, -0.38, 6.0}, {-0.3, -0.58, 4.5}, {-0.7, -0.12, 4.0},
+        {0.12, 0.72, 4.0}};
 
-    public static final double SEAM_HALF = 9.0;              // the Seam's half-width, in blocks
-
-    public enum Part { NONE, HEAVEN, HELL }
+    public enum Part { NONE, HEAVEN }
 
     private static final Map<RandomState, Climate.Sampler> SAMPLERS = Collections.synchronizedMap(new WeakHashMap<>());
 
@@ -75,44 +68,11 @@ public final class EclipseLayout {
         public Part part(double wx, double wz) {
             return EclipseLayout.part(this.u(wx, wz), this.v(wx, wz));
         }
-
-        // How far a spot is from the S-shaped border between the halves, in blocks.
-        public double seam(double wx, double wz) {
-            return EclipseLayout.seam(this.u(wx, wz), this.v(wx, wz)) * RADIUS;
-        }
-
-        public boolean inSeam(double wx, double wz) {
-            return this.part(wx, wz) != Part.NONE && this.seam(wx, wz) < SEAM_HALF;
-        }
     }
 
-    // The yin-yang, in the unit disc.
+    // Inside the disc, or not.
     public static Part part(double u, double v) {
-        double r2 = u * u + v * v;
-        if (r2 > 1.0) {
-            return Part.NONE;
-        }
-        double top = u * u + (v - 0.5) * (v - 0.5);
-        double bottom = u * u + (v + 0.5) * (v + 0.5);
-        if (top < SEED * SEED) return Part.HELL;
-        if (bottom < SEED * SEED) return Part.HEAVEN;
-        if (top < 0.25) return Part.HEAVEN;
-        if (bottom < 0.25) return Part.HELL;
-        return u > 0 ? Part.HEAVEN : Part.HELL;
-    }
-
-    // The distance (in the unit disc) from (u, v) to the S-shaped border: the left half of the circle of
-    // radius 1/2 round (0, 1/2), and the right half of the one round (0, -1/2). (The seeds' rims don't count.)
-    public static double seam(double u, double v) {
-        return Math.min(halfCircle(u, v - 0.5, -1.0), halfCircle(u, v + 0.5, 1.0));
-    }
-
-    // From (x, y) to the half (side -1: x <= 0; side 1: x >= 0) of the circle of radius 1/2 round the origin.
-    private static double halfCircle(double x, double y, double side) {
-        if (x * side >= 0.0) {
-            return Math.abs(Math.sqrt(x * x + y * y) - 0.5);
-        }
-        return Math.min(Math.hypot(x, y - 0.5), Math.hypot(x, y + 0.5));   // nearest is an end of the arc
+        return u * u + v * v > 1.0 ? Part.NONE : Part.HEAVEN;
     }
 
     // The Eclipse of the cell holding this spot, or null if that cell has none.

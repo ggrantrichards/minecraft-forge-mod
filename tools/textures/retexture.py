@@ -183,8 +183,19 @@ def chorus_bloom():
 
 
 def lumine_cap():
-    """Pale purpur, within the End's own range: few tones, low saturation, little contrast."""
-    return gradient(vanilla("shroomlight"), "8c6e8e", "a084a2", "b49ab6", "c6b0c8")
+    """After beta.4 the giant Lumineshrooms are the golden meadow's shelter: a cream-gold cap, with
+    shroomlight's brightest pixels lit teal like the small Lumineshrooms (the meadow's one cool note)."""
+    src = vanilla("shroomlight")
+    img = gradient(src, "9a7a40", "bc9a56", "d8bc78", "f0dca0")
+
+    def lum(p):
+        return 0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2]
+    ls = sorted(lum(src.getpixel((x, y))) for y in range(16) for x in range(16))
+    for y in range(16):
+        for x in range(16):
+            if lum(src.getpixel((x, y))) >= ls[int(len(ls) * 0.95)]:
+                img.putpixel((x, y), hexc("7fe0d2"))
+    return img
 
 
 # Glimmer Crystal: amethyst gone smoky - a dull grey violet, so it reads as part of the End's restricted
@@ -267,7 +278,7 @@ def hollow_vines(name):
 
 # The Eclipse's heaven half: a muted teal moss, only round the water of its oases (the rest is bare End
 # Stone), and its breathing light.
-TURF = ("34524e", "426660", "507870", "5c887e")
+TURF = ("75602a", "a48a3a", "c9aa48", "e6ca68")   # the golden meadow (after beta.4; was teal)
 
 
 def living_turf_top():
@@ -331,7 +342,8 @@ def meteoric_iron_ore():
 
 
 def solarite_ore():
-    return ore(sunscorched_stone(), "gold_ore", "6e2e04", "e0820f", "fff2b0")
+    """In Pale End Stone since the golden-meadow rework: Solarite is found in the Ashen Barrens."""
+    return ore(pale_end_stone(), "gold_ore", "6e2e04", "e0820f", "fff2b0")
 
 
 def void_crystal_ore():

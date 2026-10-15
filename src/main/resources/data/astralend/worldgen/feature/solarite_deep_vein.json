@@ -7,7 +7,7 @@
       "state": "astralend:solarite_ore",
       "target": {
         "predicate_type": "minecraft:block_match",
-        "block": "astralend:charred_end_stone"
+        "block": "astralend:pale_end_stone"
       }
     }
   ]

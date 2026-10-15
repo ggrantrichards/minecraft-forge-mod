@@ -1,6 +1,5 @@
 package com.ggrantrichards.astralend.entity;
 
-import com.ggrantrichards.astralend.ModBlocks;
 import com.ggrantrichards.astralend.ModItems;
 import com.ggrantrichards.astralend.flare.FlarePhase;
 import com.ggrantrichards.astralend.flare.Sunstorms;
@@ -70,8 +69,10 @@ public class VoidRay extends Animal implements Shearable {
 
     public static boolean checkVoidRaySpawnRules(EntityType<VoidRay> type, ServerLevelAccessor level, EntitySpawnReason reason,
                                                  BlockPos pos, RandomSource random) {
+        // On any solid ground of its homes (the Shattered Crags' shards, the Crystal Vaults' floors): it was
+        // Sunscorched and Charred End Stone only, and neither is generated since the golden-meadow rework.
         BlockState below = level.getBlockState(pos.below());
-        return below.is(ModBlocks.SUNSCORCHED_STONE.get()) || below.is(ModBlocks.CHARRED_END_STONE.get());
+        return below.isFaceSturdy(level, pos.below(), net.minecraft.core.Direction.UP) && below.getFluidState().isEmpty();
     }
 
     @Override

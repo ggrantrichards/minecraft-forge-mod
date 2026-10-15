@@ -10,8 +10,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 
-// A scorch fissure of the Corona: a crack wandering across the ground, a few blocks deep, its lips
-// charred black and raw Solarite glowing at the bottom - where a flare split the stone. (Within 7 blocks.)
+// A scorch fissure of the Ashen Barrens (since the golden-meadow rework): a crack wandering across the
+// ground, a few blocks deep, its lips charred black and raw Solarite glowing at the bottom - where a star's
+// flare split the stone long ago. (Within 7 blocks.)
 public record ScorchFissureFeature() implements Feature {
     public static final MapCodec<ScorchFissureFeature> CODEC = MapCodec.unit(ScorchFissureFeature::new);
 
@@ -23,7 +24,7 @@ public record ScorchFissureFeature() implements Feature {
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
         BlockPos start = Build.surface(level, origin.getX(), origin.getZ());
-        if (start == null || !level.getBlockState(start).is(ModBlocks.SUNSCORCHED_STONE.get())) {
+        if (start == null || !scorchable(level.getBlockState(start))) {
             return false;
         }
         BlockState hot = ModBlocks.RAW_SOLARITE_BLOCK.get().defaultBlockState();   // raw sun-metal, still hot
@@ -52,12 +53,16 @@ public record ScorchFissureFeature() implements Feature {
                 // The lips, charred.
                 for (int s = -1; s <= 1; s += 2) {
                     BlockPos lip = col.offset((int) Math.round(-Math.sin(angle) * s * (width + 1)), 0, (int) Math.round(Math.cos(angle) * s * (width + 1)));
-                    if (level.getBlockState(lip).is(ModBlocks.SUNSCORCHED_STONE.get()) && random.nextInt(3) != 0) {
+                    if (scorchable(level.getBlockState(lip)) && random.nextInt(3) != 0) {
                         Build.force(level, lip, charred);
                     }
                 }
             }
         }
         return true;
+    }
+
+    private static boolean scorchable(BlockState state) {
+        return state.is(ModBlocks.PALE_END_STONE.get()) || state.is(ModBlocks.SUNSCORCHED_STONE.get());
     }
 }

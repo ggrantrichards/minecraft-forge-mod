@@ -54,11 +54,10 @@ For each picture: does it read as finished vanilla content at a glance? Look for
 | Scene | What a player does | What must hold |
 |---|---|---|
 | `whale_ride` | mount a Drift Whale, fly forward, turn, climb, third person | seated on its back, clear view, smooth turning, no jitter |
-| `corona_drop` | teleport high over the Corona and fall | land on real ground; the Remnant is a place in the sky, not a colour |
+| `meadow_drop` | teleport high over the Eclipse's golden meadow and fall | land on real ground; gold turf, teal water, the star overhead |
 | `upwelling` | drink Upwelling under a ledge, walk, turn, jump | flip upside down, stand on the underside, controls follow the screen, drop off cleanly |
 | `biome_border` | fly out across a biome's edge | sky and fog shift over 10-15 blocks; ground and plants interlock |
 | `maw_hall` | stand in a Rift Maw's hall, look round | huge, lit, things to see; the way in and the eyes reachable |
-| `remnant_flight` | fly in toward the Remnant | the sky picture of it hands over to the real structure without a jump |
 
 To add: the Constellation Maze with a spyglass; a Sunstorm caught in the open and under a Sunshade;
 the Whalefall village; mining Solarite; brewing Upwelling; a Starforge upgrade used in a fight.

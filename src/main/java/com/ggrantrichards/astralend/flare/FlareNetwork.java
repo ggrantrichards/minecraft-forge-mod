@@ -8,8 +8,8 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.SimpleChannel;
 
-// One small packet: the server tells each player in the End where the flare cycle is and where the
-// Remnant hung (the ember in the sky). Clients use it for the sky, solar wind and flare particles (ClientFlares).
+// One small packet: the server tells each player in the End where the flare cycle is and which way its
+// wind blows. Clients use it for the sky, solar wind and flare particles (ClientFlares).
 public final class FlareNetwork {
     public static final SimpleChannel CHANNEL = ChannelBuilder.named(Identifier.fromNamespaceAndPath(AstralEnd.MODID, "flares"))
         .networkProtocolVersion(1)

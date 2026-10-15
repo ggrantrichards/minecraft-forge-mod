@@ -12,10 +12,9 @@ import net.minecraft.world.level.biome.Biome;
 public final class ModBiomes {
     public static final ResourceKey<Biome> NEBULA_FIELDS = key("nebula_fields");
     public static final ResourceKey<Biome> ASHEN_BARRENS = key("ashen_barrens");
-    // The Eclipse: its heaven half ("eclipse") and its hell half, the old Corona ("corona").
+    // The Eclipse: the golden meadow, the one living, lit place in the End (after beta.4; its hell half,
+    // the Corona, and the Seam between them are gone).
     public static final ResourceKey<Biome> ECLIPSE = key("eclipse");
-    public static final ResourceKey<Biome> CORONA = key("corona");
-    public static final ResourceKey<Biome> SEAM = key("seam");   // where the Eclipse's halves meet
     public static final ResourceKey<Biome> GLIMMERING_CRAGS = key("glimmering_crags");
     // The Deep Hollows: the dark Nullwood forests on ring islands (after beta.4 they took in the Hollow
     // Isles, which they had been a variant of).

@@ -31,8 +31,8 @@ public final class ModSounds {
     // Phase 11: each biome's ambience (tools/sounds/ambience.py): a background loop and the odd sound
     // dropped in, named in the biome's "minecraft:audio/ambient_sounds".
     static {
-        for (String biome : new String[] {"nebula_fields", "ashen_barrens", "corona",
-                                          "glimmering_crags", "deep_hollows", "shattered_crags", "eclipse", "seam", "hollow_roots", "crystal_vaults"}) {
+        for (String biome : new String[] {"nebula_fields", "ashen_barrens",
+                                          "glimmering_crags", "deep_hollows", "shattered_crags", "eclipse", "hollow_roots", "crystal_vaults"}) {
             music("ambient." + biome + ".loop");
             music("ambient." + biome + ".additions");
         }

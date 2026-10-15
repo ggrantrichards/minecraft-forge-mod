@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 
 // For the CI screenshots only: a little display of the Phase 5 blocks on a flattened patch of the
-// Corona, laid out across the camera's view (the camera looks south-east, so "across" is +x/-z):
+// Eclipse, laid out across the camera's view (the camera looks south-east, so "across" is +x/-z):
 // open Flareblooms and a shut one, two Collector Pedestals (one with Charged Void Crystal, one with a
 // Flare Bottle) under a Sunshade, and charged Sunscale Lichen on the ground.
 final class FlareDisplay {

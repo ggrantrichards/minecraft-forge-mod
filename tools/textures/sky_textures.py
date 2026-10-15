@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """The sky's textures for Phase 5, written to assets/astralend/textures/environment/:
 
-  remnant_flare.png   the ember where the Remnant hung before it fell, which swells during a Sunstorm
   star.png            one soft star (tinted per star by the sky renderer)
-  aurora.png          a curtain of aurora: bright lower hem, streaks fading upward
-  flare_sheet.png     a sheet of flare light that rolls across the Corona's sky
+  flare_sheet.png     a sheet of flare light that rolls across the Eclipse's sky in a Sunstorm
   comet.png           a far-off comet: a bright head and a long fading tail
   silhouette_whale.png, silhouette_ring.png   huge shapes passing across the far sky
 
@@ -12,7 +10,6 @@ Pixelated like vanilla's sun and moon (which are 32x32 pixel art), not smooth gr
 Run:  python3 tools/textures/sky_textures.py
 """
 import math
-import random
 from pathlib import Path
 
 from PIL import Image
@@ -28,24 +25,6 @@ def hexc(h, a=255):
 
 def lerp(a, b, t):
     return tuple(int(round(a[i] + (b[i] - a[i]) * t)) for i in range(len(a)))
-
-
-def remnant_flare():
-    """64x64: the swollen glow round the Remnant during a flare - a soft radial glow with faint rays.
-    Glows are smooth (like vanilla's sunrise colours), not stepped: drawn huge, steps would show."""
-    size = 64
-    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    for y in range(size):
-        for x in range(size):
-            dx, dy = x + 0.5 - size / 2, y + 0.5 - size / 2
-            d = math.hypot(dx, dy) / (size / 2)
-            if d >= 1.0:
-                continue
-            ray = 0.5 + 0.5 * math.cos(math.atan2(dy, dx) * 6)
-            a = (1.0 - d) ** 2.2 * (0.8 + 0.2 * ray)
-            colour = lerp(hexc("ff7a24"), hexc("fff2c4"), max(0.0, 1.0 - d * 1.6))
-            img.putpixel((x, y), colour[:3] + (int(a * 255),))
-    return img
 
 
 def star():
@@ -66,27 +45,6 @@ def star():
         for x, ch in enumerate(row):
             if ch != ".":
                 img.putpixel((x, y), pal[ch])
-    return img
-
-
-def aurora():
-    """32x128, white (tinted in the sky): a bright hem at the bottom and soft vertical streaks of
-    different heights fading upward, like a curtain of light."""
-    w, h = 32, 128
-    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    rnd = random.Random(3)
-    heights = [rnd.uniform(0.4, 1.0) for _ in range(w)]
-    # neighbouring columns blend, so streaks have soft edges
-    heights = [(heights[i - 1] + 2 * heights[i] + heights[(i + 1) % w]) / 4 for i in range(w)]
-    for x in range(w):
-        for y in range(h):
-            t = 1.0 - y / (h - 1)                                 # 0 at the bottom, 1 at the top
-            if t > heights[x]:
-                continue
-            a = (1.0 - t / heights[x]) ** 1.6
-            hem = max(0.0, 1.0 - t / 0.06)                        # the bright lower hem
-            a = min(1.0, a * (0.75 + 0.25 * math.sin(x * 0.9)) + hem * 0.6)
-            img.putpixel((x, y), (255, 255, 255, int(a * 220)))
     return img
 
 
@@ -178,7 +136,7 @@ def silhouette_ring():
 
 
 TEXTURES = {
-    "remnant_flare.png": remnant_flare, "star.png": star, "aurora.png": aurora,
+    "star.png": star,
     "flare_sheet.png": flare_sheet, "comet.png": comet, "silhouette_whale.png": silhouette_whale,
     "silhouette_ring.png": silhouette_ring,
 }

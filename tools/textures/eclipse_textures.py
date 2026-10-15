@@ -3,7 +3,7 @@
 
     python3 tools/textures/eclipse_textures.py
 
-- environment/seam_star.png: the star over the Seam - white (tinted when drawn), a small hot core in a
+- environment/eclipse_star.png: the Eclipse's star (the Sunstorms come from it) - white (tinted when drawn), a small hot core in a
   soft glow, with the six long diffraction spikes of a star seen through a big telescope's mirror, and
   two shorter, fainter ones across.
 """
@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 ENV = ROOT / "src/main/resources/assets/astralend/textures/environment"
 
 
-def seam_star(size=64):
+def eclipse_star(size=64):
     img = Image.new("RGBA", (size, size), (255, 255, 255, 0))
     c = (size - 1) / 2.0
     for y in range(size):
@@ -43,8 +43,8 @@ def seam_star(size=64):
 
 
 def main():
-    seam_star().save(ENV / "seam_star.png")
-    print("Drew seam_star.png")
+    eclipse_star().save(ENV / "eclipse_star.png")
+    print("Drew eclipse_star.png")
 
 
 if __name__ == "__main__":

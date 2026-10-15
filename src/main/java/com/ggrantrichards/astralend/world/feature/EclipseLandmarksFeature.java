@@ -9,16 +9,14 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
 
-// The Eclipse's landmarks, each built by whichever chunk it falls in (placed once in every chunk):
-//   - the Wellspring, the heart of the heaven half: a round lake whose floor is Astral Glass over the
-//     open hole the terrain leaves (EclipseTerrainFeature) - swim in it and look down past your feet into the
-//     void. Its rim is built up to hold the water; reeds of Lumineshroom and Breathcomb ring it;
-//   - the seeds: one burnt Solarite spire standing in the heaven half's dot of hell, and one small
-//     living pool in the hell half's dot of heaven;
-//   - three springs on the heaven half's rim, spilling off the edge into the void.
+// The Eclipse's water, each piece built by whichever chunk it falls in (placed once in every chunk):
+//   - the Wellspring, the heart of the meadow: a round lake on a bed of End Stone and Pale End Stone,
+//     its rim built up to hold the water, mossy, with Lumineshrooms and Breathcomb round it;
+//   - the ponds round it (EclipseLayout.PONDS), little basins of the same water, each level with the
+//     ground at its middle;
+//   - three springs on the rim, spilling off the edge into the void.
 public record EclipseLandmarksFeature() implements Feature {
     public static final MapCodec<EclipseLandmarksFeature> CODEC = MapCodec.unit(EclipseLandmarksFeature::new);
     private static final int WATER_TOP = (int) EclipseTerrainFeature.TOP - 1;   // the Wellspring's surface
@@ -36,19 +34,24 @@ public record EclipseLandmarksFeature() implements Feature {
         if (e == null || e.distance(x0 + 8, z0 + 8) > EclipseLayout.RADIUS + 24) {
             return false;
         }
-        boolean any = this.wellspring(level, e, x0, z0, random);
-        any |= this.seeds(level, e, x0, z0, random);
+        double r = EclipseLayout.RADIUS;
+        boolean any = this.basin(level, e, x0, z0, random, e.worldX(EclipseLayout.WELLSPRING[0], EclipseLayout.WELLSPRING[1]),
+            e.worldZ(EclipseLayout.WELLSPRING[0], EclipseLayout.WELLSPRING[1]), EclipseLayout.WELLSPRING_RADIUS * r, WATER_TOP, 6.0);
+        for (double[] pond : EclipseLayout.PONDS) {
+            double px = e.worldX(pond[0], pond[1]), pz = e.worldZ(pond[0], pond[1]);
+            int top = EclipseTerrainFeature.groundTop(e, (int) Math.floor(px), (int) Math.floor(pz)) - 1;
+            any |= this.basin(level, e, x0, z0, random, px, pz, pond[2], top, 2.5);
+        }
         any |= this.springs(level, e, x0, z0);
         return any;
     }
 
-    // The Wellspring: a basin dug into the heaven half, like the lakes of BetterEnd - deepest in the middle,
-    // a bed of End Stone and Pale End Stone, water to the brim; the ring just outside is built up to the water's
-    // height (moss on top) so nothing spills.
-    private boolean wellspring(WorldGenLevel level, EclipseLayout.Eclipse e, int x0, int z0, RandomSource random) {
-        double wx = e.worldX(EclipseLayout.WELLSPRING[0], EclipseLayout.WELLSPRING[1]);
-        double wz = e.worldZ(EclipseLayout.WELLSPRING[0], EclipseLayout.WELLSPRING[1]);
-        double radius = EclipseLayout.WELLSPRING_RADIUS * EclipseLayout.RADIUS;
+    // A basin of water dug into the meadow, like the lakes of BetterEnd: deepest in the middle, a bed of End
+    // Stone and Pale End Stone, water to `waterTop`; the ring just outside is built up to the water's height
+    // (moss on top) so nothing spills.
+    private boolean basin(WorldGenLevel level, EclipseLayout.Eclipse e, int x0, int z0, RandomSource random, double wx, double wz,
+                          double radius, int waterTop,
+                          double depth) {
         boolean placed = false;
         BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
         BlockState water = Blocks.WATER.defaultBlockState();
@@ -57,34 +60,36 @@ public record EclipseLandmarksFeature() implements Feature {
                 double d = Math.sqrt((x + 0.5 - wx) * (x + 0.5 - wx) + (z + 0.5 - wz) * (z + 0.5 - wz));
                 if (d < radius) {
                     double t = d / radius;
-                    int floor = WATER_TOP - 1 - (int) Math.round(6.0 * Math.sqrt(Math.max(0.0, 1.0 - t * t)) + 0.6 * random.nextDouble());
-                    // its bed: End Stone, with patches of Pale End Stone; solid under it, whatever was there
+                    int floor = waterTop - 1 - (int) Math.round(depth * Math.sqrt(Math.max(0.0, 1.0 - t * t)) + 0.6 * random.nextDouble());
                     for (int y = floor - 3; y < floor; y++) {
                         level.setBlock(p.set(x, y, z), Blocks.END_STONE.defaultBlockState(), 2);
                     }
                     level.setBlock(p.set(x, floor, z), random.nextInt(3) == 0 ? ModBlocks.PALE_END_STONE.get().defaultBlockState()
                         : Blocks.END_STONE.defaultBlockState(), 2);
-                    for (int y = floor + 1; y <= WATER_TOP; y++) {
+                    for (int y = floor + 1; y <= waterTop; y++) {
                         level.setBlock(p.set(x, y, z), water, 2);
                     }
-                    for (int y = WATER_TOP + 1; y < WATER_TOP + 8; y++) {
+                    for (int y = waterTop + 1; y < waterTop + 8; y++) {
                         if (!level.getBlockState(p.set(x, y, z)).isAir()) {
                             level.setBlock(p, Blocks.AIR.defaultBlockState(), 2);
                         }
                     }
                     placed = true;
                 } else if (d < radius + 3.0) {
-                    // The rim: solid up to the water's surface, turf on top.
-                    int top = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z) - 1;
-                    for (int y = Math.min(top, WATER_TOP - 8); y <= WATER_TOP; y++) {
+                    // The rim: solid up to the water's surface, moss on top.
+                    // (the ground from the terrain's own shape: the world-gen heightmaps don't know it)
+                    int top = EclipseTerrainFeature.groundTop(e, x, z);
+                    if (top == Integer.MIN_VALUE) {
+                        continue;
+                    }
+                    for (int y = Math.min(top, waterTop - 8); y <= waterTop; y++) {
                         BlockState here = level.getBlockState(p.set(x, y, z));
                         if (here.isAir() || here.canBeReplaced()) {
-                            level.setBlock(p, y == WATER_TOP ? ModBlocks.LIVING_TURF.get().defaultBlockState()
-                                : Blocks.END_STONE.defaultBlockState(), 2);
+                            level.setBlock(p, y == waterTop ? Blocks.MOSS_BLOCK.defaultBlockState() : Blocks.END_STONE.defaultBlockState(), 2);
                         }
                     }
                     if (random.nextInt(5) == 0) {
-                        Build.put(level, new BlockPos(x, Math.max(top, WATER_TOP) + 1, z), random.nextBoolean()
+                        Build.put(level, new BlockPos(x, Math.max(top, waterTop) + 1, z), random.nextBoolean()
                             ? ModBlocks.LUMINESHROOM.get().defaultBlockState() : ModBlocks.BREATHCOMB.get().defaultBlockState());
                     }
                     placed = true;
@@ -98,67 +103,7 @@ public record EclipseLandmarksFeature() implements Feature {
         return x >= x0 && x < x0 + 16 && z >= z0 && z < z0 + 16;
     }
 
-    // The two seeds, each built by the chunk its middle falls in (they reach at most 7 blocks out).
-    private boolean seeds(WorldGenLevel level, EclipseLayout.Eclipse e, int x0, int z0, RandomSource random) {
-        boolean placed = false;
-        double hx = e.worldX(EclipseLayout.HELL_SEED[0], EclipseLayout.HELL_SEED[1]);
-        double hz = e.worldZ(EclipseLayout.HELL_SEED[0], EclipseLayout.HELL_SEED[1]);
-        if (inChunk(hx, hz, x0, z0)) {
-            BlockPos ground = Build.surface(level, (int) Math.floor(hx), (int) Math.floor(hz));
-            if (ground != null) {
-                // A burnt patch of Sunscorched Stone for the spire to stand on.
-                for (int dx = -4; dx <= 4; dx++) {
-                    for (int dz = -4; dz <= 4; dz++) {
-                        if (dx * dx + dz * dz <= 16) {
-                            BlockPos g = Build.surface(level, ground.getX() + dx, ground.getZ() + dz);
-                            if (g != null) {
-                                Build.force(level, g, ModBlocks.SUNSCORCHED_STONE.get().defaultBlockState());
-                            }
-                        }
-                    }
-                }
-                Build.force(level, ground, ModBlocks.SUNSCORCHED_STONE.get().defaultBlockState());
-                new SolariteSpireFeature().place(level, null, random, ground.above());
-                placed = true;
-            }
-        }
-        double px = e.worldX(EclipseLayout.HEAVEN_SEED[0], EclipseLayout.HEAVEN_SEED[1]);
-        double pz = e.worldZ(EclipseLayout.HEAVEN_SEED[0], EclipseLayout.HEAVEN_SEED[1]);
-        if (inChunk(px, pz, x0, z0)) {
-            BlockPos ground = Build.surface(level, (int) Math.floor(px), (int) Math.floor(pz));
-            if (ground != null) {
-                int y = ground.getY();
-                BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
-                for (int dx = -6; dx <= 6; dx++) {
-                    for (int dz = -6; dz <= 6; dz++) {
-                        double d = Math.sqrt(dx * dx + dz * dz);
-                        if (d > 6.0) {
-                            continue;
-                        }
-                        int x = ground.getX() + dx, z = ground.getZ() + dz;
-                        for (int up = 1; up < 6; up++) {
-                            Build.force(level, p.set(x, y + up, z), Blocks.AIR.defaultBlockState());
-                        }
-                        if (d < 4.0) {
-                            Build.force(level, p.set(x, y - 2, z), Blocks.END_STONE.defaultBlockState());
-                            Build.force(level, p.set(x, y - 1, z), Blocks.WATER.defaultBlockState());
-                            Build.force(level, p.set(x, y, z), Blocks.WATER.defaultBlockState());
-                        } else {
-                            Build.force(level, p.set(x, y - 1, z), Blocks.END_STONE.defaultBlockState());
-                            Build.force(level, p.set(x, y, z), ModBlocks.LIVING_TURF.get().defaultBlockState());
-                            if (random.nextInt(3) == 0) {
-                                Build.put(level, p.set(x, y + 1, z), ModBlocks.LUMINESHROOM.get().defaultBlockState());
-                            }
-                        }
-                    }
-                }
-                placed = true;
-            }
-        }
-        return placed;
-    }
-
-    // Three springs on the heaven half's rim, each a source block at the very edge of the land: the
+    // Three springs on the rim, each a source block at the very edge of the land: the
     // water runs off and falls into the void.
     private boolean springs(WorldGenLevel level, EclipseLayout.Eclipse e, int x0, int z0) {
         boolean placed = false;
@@ -178,9 +123,10 @@ public record EclipseLandmarksFeature() implements Feature {
                 for (int dx = -2; dx <= 2; dx++) {
                     for (int dz = -2; dz <= 2; dz++) {
                         BlockPos g = ground.offset(dx, 0, dz);
-                        if ((dx != 0 || dz != 0) && dx * dx + dz * dz <= 5 && level.getBlockState(g).is(Blocks.END_STONE)
+                        if ((dx != 0 || dz != 0) && dx * dx + dz * dz <= 5
+                            && (level.getBlockState(g).is(Blocks.END_STONE) || level.getBlockState(g).is(ModBlocks.LIVING_TURF.get()))
                             && level.getBlockState(g.above()).isAir()) {
-                            level.setBlock(g, ModBlocks.LIVING_TURF.get().defaultBlockState(), 2);
+                            level.setBlock(g, Blocks.MOSS_BLOCK.defaultBlockState(), 2);
                         }
                     }
                 }

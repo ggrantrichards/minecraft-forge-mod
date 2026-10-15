@@ -9,6 +9,11 @@
               "type": "minecraft:enderman",
               "count": 4,
               "weight": 10
+            },
+            {
+              "type": "astralend:mirror_wretch",
+              "count": 1,
+              "weight": 3
             }
           ]
         }
@@ -61,6 +66,7 @@
     [],
     [
       "minecraft:end_gateway_return",
+      "astralend:ashen_barrens_solarite_surface",
       "astralend:aurora_ribcages",
       "astralend:ashen_barrens_spires",
       "astralend:ashen_barrens_bones",
@@ -69,9 +75,12 @@
     ],
     [],
     [],
-    [],
+    [
+      "astralend:ashen_barrens_solarite_deep"
+    ],
     [],
     [
+      "astralend:ashen_barrens_scorch_fissures",
       "astralend:ashen_barrens_memory_moss",
       "astralend:aurora_shimmer_reeds",
       "astralend:aurora_shimmer_grass",

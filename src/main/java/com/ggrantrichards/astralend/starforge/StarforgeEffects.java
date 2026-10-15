@@ -178,7 +178,7 @@ public final class StarforgeEffects {
             s.soak = 0;
             return;
         }
-        boolean flare = Sunstorms.phaseIn(level) == FlarePhase.FLARE && Sunstorms.isCorona(level, player.blockPosition());
+        boolean flare = Sunstorms.phaseIn(level) == FlarePhase.FLARE && Sunstorms.inSunstorms(level, player.blockPosition());
         boolean bright = flare || level.getMaxLocalRawBrightness(BlockPos.containing(player.getEyePosition())) >= 13;
         if (!bright) {
             return;

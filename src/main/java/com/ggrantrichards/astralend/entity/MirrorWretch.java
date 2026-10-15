@@ -221,9 +221,10 @@ public class MirrorWretch extends Monster {
         return SoundEvents.GLASS_BREAK;
     }
 
-    // Spawns only in the Seam, the scar between the Eclipse's two halves (its own biome since beta.4).
+    // Spawns only in the Ashen Barrens (since beta.4), where the Endermen stand at the islands' edges facing
+    // the void: they're listening to it.
     public static boolean checkWretchSpawnRules(EntityType<? extends Monster> type, ServerLevelAccessor level,
                                                 EntitySpawnReason reason, BlockPos pos, RandomSource random) {
-        return Monster.checkMonsterSpawnRules(type, level, reason, pos, random) && level.getBiome(pos).is(ModBiomes.SEAM);
+        return Monster.checkMonsterSpawnRules(type, level, reason, pos, random) && level.getBiome(pos).is(ModBiomes.ASHEN_BARRENS);
     }
 }

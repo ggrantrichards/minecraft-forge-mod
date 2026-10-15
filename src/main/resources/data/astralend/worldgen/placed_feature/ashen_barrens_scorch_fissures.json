@@ -1,9 +1,9 @@
 {
-  "feature": "astralend:solarite_spire",
+  "feature": "astralend:scorch_fissure",
   "placement": [
     {
       "type": "minecraft:rarity_filter",
-      "chance": 2
+      "chance": 4
     },
     {
       "type": "minecraft:in_square"

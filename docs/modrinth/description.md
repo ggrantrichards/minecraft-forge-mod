@@ -36,16 +36,13 @@ your face: the End tells you things with sound and light.
 
 ## The Eclipse
 
-Rare, far out, and unlike anything else in the End: one great disc of land, a yin-yang of **heaven and
-hell**. On one side, End Stone turned old gold under amber fog, gold dust in the air and clouds of gold
-and blue in the sky, with teal moss only round its water and the **Wellspring**, a basin of water sunk
-into the stone. On the other, crimson stone under crimson filaments, where Sunstorms rage and the
-**Remnant**, a dead star's cinder, lies half buried in the crater it made when it fell. Between them runs
-**the Seam**, the black-glass scar it tore coming down, sparks rising off it all along its length and the
-Mirror Wretches prowling it, under a white star with six long spikes. Only here do the stars show without
-a spyglass, and only from here can you sight the constellations the Starforge needs.
-
-{{The Eclipse's hell half}}
+Rare, far out, and unlike anything else in the End: one great disc of **golden meadow**. Gold turf under
+amber fog, gold dust in the air, teal water in the **Wellspring** at its heart and in ponds ringed with
+green moss, outcrops of bare End Stone with Sunscale Lichen, a few clumps of orange-red Flareblooms, and
+giant Lumineshrooms, cream-gold with teal spots. Overhead, clouds of gold and blue, and a white star with
+six long spikes - the star the **Sunstorms** break from. When it brightens, get under a Lumineshroom.
+Only here do the stars show without a spyglass, and only from here can you sight the constellations the
+Starforge needs.
 
 ## The creatures
 
@@ -53,9 +50,9 @@ a spyglass, and only from here can you sight the constellations the Starforge ne
   mothers, curious ones and shy ones - answering each other's hums, rolling and breaching at play. Sing
   one a song (Memory Moss, a note block, Chorus Fruit) and it's yours to ride.
 - **Hushbacks**, clear-hided grazers whose herd blinks away when one is hurt; **Hydragrips**, dark
-  newts lit with cyan, which hunt endermites by the water; and the **Mirror Wretch**, a slithering worm with a
-  round toothed mouth and a vocal sac for every voice it has stolen, calling you in voices you know from
-  the void's edge.
+  newts lit with cyan, which hunt endermites by the water; and, in the Ashen Barrens, the **Mirror Wretch**, a
+  slithering worm with a round toothed mouth and a vocal sac for every voice it has stolen, calling you in
+  voices you know from the void's edge - the Endermen at the edges stand listening.
 - **The Watcher** is only ever seen from the corner of your eye. Look straight at it and it teleports
   away - and turns up further along, leading you to the Leviathan.
 - The **Umbral Stalker** in the Crags' caves, the **Void Wanderer**, the **Void Ray**, and Pollinators.
@@ -83,7 +80,7 @@ every other Leviathan you've woken.
 ## Ruins and Starforging
 
 The Leviathans' **Maws**, which wake into a travel network; **Constellation Mazes** whose bridges
-show only through a spyglass; the burning heart of the fallen Remnant. Bring back what they guard to
+show only through a spyglass; the Solar Array's mirrors in the meadow. Bring back what they guard to
 an **Astral Forge**: five sidegrades for diamond and netherite gear - Void Recall, Echo Strike, Lensing,
 Radiant, Rift Walker - each needing its constellation sighted from the Eclipse, and a rare material from
 somewhere else.

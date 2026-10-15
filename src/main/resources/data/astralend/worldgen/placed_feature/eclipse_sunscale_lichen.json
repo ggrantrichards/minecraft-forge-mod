@@ -3,7 +3,7 @@
   "placement": [
     {
       "type": "minecraft:count",
-      "count": 70
+      "count": 40
     },
     {
       "type": "minecraft:in_square"
@@ -27,6 +27,17 @@
           {
             "type": "minecraft:would_survive",
             "state": "astralend:sunscale_lichen"
+          },
+          {
+            "type": "minecraft:matching_blocks",
+            "blocks": [
+              "minecraft:end_stone"
+            ],
+            "offset": [
+              0,
+              -1,
+              0
+            ]
           }
         ]
       }

@@ -113,13 +113,13 @@ One shot per biome; one line each. Don't explain mechanics yet, just show variet
 
 > **ON SCREEN:** From high above, the Eclipse: one great disc, half teal, half crimson. Slow descent.
 >
-> **VO:** "Then, far out, rare enough you might never see it: the Eclipse. Heaven and hell, turning
-> round each other."
+> **VO:** "Then, far out, rare enough you might never see it: the Eclipse. A golden meadow, in the
+> End."
 >
-> **ON SCREEN:** The heaven half - bare End Stone, the Wellspring, the teal sky. Then cross the line
-> into the hell half - crimson stone, a Sunstorm, the Remnant half buried in its crater.
+> **ON SCREEN:** Gold turf, teal water, the Wellspring, the giant Lumineshrooms; the star with six
+> spikes brightening; then a Sunstorm - the sky gone gold, and the camera ducks under a Lumineshroom.
 >
-> **VO:** "One half still and quiet. The other burning, under what's left of a dead star."
+> **VO:** "Still and quiet. Until its star flares."
 >
 > **ON SCREEN:** Night in the Eclipse; the stars visible without a spyglass.
 >
@@ -229,8 +229,8 @@ chunks). Record game audio and your voice on separate tracks.
 | --- | --- |
 | A Leviathan | `/locate structure astralend:leviathan` |
 | A Constellation Maze | `/locate structure astralend:constellation_maze` |
-| The Remnant | `/locate structure astralend:remnant` |
-| A biome | `/locate biome astralend:eclipse` (also `nebula_fields`, `hollow_isles`, `hollow_roots`, `glimmering_crags`, `shattered_crags`, `crystal_vaults`, `ashen_barrens`, `chorus_thicket`, `corona`) |
+| The Solar Array | `/locate structure astralend:solar_array` |
+| A biome | `/locate biome astralend:eclipse` (also `nebula_fields`, `hollow_isles`, `hollow_roots`, `glimmering_crags`, `shattered_crags`, `crystal_vaults`, `ashen_barrens`, `chorus_thicket`) |
 | A creature, for close-ups | its spawn egg (a summoned Watcher stays put) |
 
 **Two ways to get smooth camera moves:**

@@ -383,7 +383,7 @@ def mirror(t, x, ground, z, facing_angle, state, rnd):
     """One Cartographer mirror: a post, and a 3x3 dish of Solarite leaning back so it faces up and
     toward the array's centre (turned to the nearest compass direction, so the panel stays clean).
     state is "whole", "cracked" (a corner broken off), "fallen" (the dish lying by its post) or "stump"."""
-    post = a("sunscorched_stone_brick_wall")
+    post = "minecraft:end_stone_brick_wall"
     height = 3 if state != "stump" else rnd.randint(1, 2)
     for y in range(ground + 1, ground + 1 + height):
         t.set(x, y, z, post)
@@ -401,7 +401,7 @@ def mirror(t, x, ground, z, facing_angle, state, rnd):
                 if rnd.random() < 0.8:
                     t.set(x + wx * w - fx * back, ground + 1, z + wz * w - fz * back, panel)
         return
-    t.set(x, top, z, a("polished_sunscorched_stone"))                       # the mount
+    t.set(x, top, z, "minecraft:purpur_pillar")                             # the mount
     for row in range(3):
         lean = 1 - row                                   # bottom row toward the centre, top row back
         for w in (-1, 0, 1):
@@ -411,27 +411,28 @@ def mirror(t, x, ground, z, facing_angle, state, rnd):
 
 
 def solar_array(seed):
-    """The Solar Array: a field of mirrors that once gathered flare light, most of them cracked or
-    fallen, raised high on a stepped crimson mesa toward the sun, round a plaza ringed with lava and
-    braziers, over a chamber where a Bottled Flare still sits in its pedestal. The mirrors still focus
-    the flares: Sunburn is doubled on the open field."""
+    """The Solar Array: a field of mirrors that once gathered the Eclipse's star's light, most of them
+    cracked or fallen, on a low terrace of End Stone Bricks in the golden meadow, round a plaza ringed by
+    a reflecting pool of the meadow's teal water and four braziers, over a chamber dug into the island
+    where a Bottled Flare still sits in its pedestal. The mirrors still focus the flares: Sunburn is
+    doubled on the open field. (Since the golden-meadow rework; it stood on a crimson mesa in the Corona.)"""
     S = 49
     t = Template(S, 30, S, seed)
     rnd = t.rnd
-    c, ground, base = S // 2, 20, 8
+    c, ground, base = S // 2, 11, 8
     o = ground - 8               # (the chamber's heights, below, were drawn for a ground of 8)
-    # The mesa: solid Sunscorched Stone Bricks from the island up to the plaza, stepped in every four
-    # blocks toward the top, a stairway cut into its south-east face.
+    # The terrace: End Stone Bricks from the island up to the plaza, three blocks, a stairway cut into its
+    # south-east face.
     for y in range(base, ground):
         r = 22 + (ground - 1 - y) // 4
         for x in range(S):
             for z in range(S):
                 if math.hypot(x - c, z - c) <= r + 0.5:
-                    t.set(x, y, z, a("sunscorched_stone_bricks"))
+                    t.set(x, y, z, "minecraft:end_stone_bricks")
     for i in range(ground - base):
         y, x = ground - 1 - i, c + 3 + i
         for z in (c + 20, c + 21):
-            t.set(x, y, z, a("polished_sunscorched_stone_stairs") + "[facing=west,half=bottom,shape=straight]")
+            t.set(x, y, z, "minecraft:end_stone_brick_stairs" + "[facing=west,half=bottom,shape=straight]")
             for above in range(y + 1, ground + 3):
                 t.set(x, above, z, "minecraft:air")
     # Paving: a cracked plaza around the room and four causeways out to the edge.
@@ -440,7 +441,7 @@ def solar_array(seed):
             d = math.hypot(x - c, z - c)
             on_path = (abs(x - c) <= 1 or abs(z - c) <= 1) and d < S / 2
             if (d < 8.5 or on_path) and rnd.random() < 0.86:
-                t.set(x, ground, z, a("polished_sunscorched_stone") if d < 8.5 else a("sunscorched_stone_bricks"))
+                t.set(x, ground, z, a("pale_end_stone_tiles") if d < 8.5 else "minecraft:end_stone_bricks")
     # The mirrors, on two rings around the centre, all turned to face it.
     for ring, count in ((14, 10), (21, 16)):
         for i in range(count):
@@ -452,31 +453,31 @@ def solar_array(seed):
             state = "whole" if roll < 0.3 else "cracked" if roll < 0.6 else "fallen" if roll < 0.82 else "stump"
             for dx in (-1, 0, 1):
                 for dz in (-1, 0, 1):
-                    t.set(x + dx, ground, z + dz, a("sunscorched_stone_bricks"))
+                    t.set(x + dx, ground, z + dz, "minecraft:end_stone_bricks")
             mirror(t, x, ground, z, ang + math.pi, state, rnd)
     # The sunken chamber, 11 x 11, its roof level with the plaza and a glass skylight in it.
     lo, hi = c - 5, c + 5
-    t.fill(lo, o, lo, hi, ground, hi, a("sunscorched_stone_bricks"))
-    t.fill(lo + 1, o + 1, lo + 1, hi - 1, o + 1, hi - 1, a("polished_sunscorched_stone"))
+    t.fill(lo, o, lo, hi, ground, hi, "minecraft:end_stone_bricks")
+    t.fill(lo + 1, o + 1, lo + 1, hi - 1, o + 1, hi - 1, a("pale_end_stone_tiles"))
     t.fill(lo + 1, o + 2, lo + 1, hi - 1, ground - 1, hi - 1, "minecraft:air")
-    t.fill(lo, ground, lo, hi, ground, hi, a("polished_sunscorched_stone"))
+    t.fill(lo, ground, lo, hi, ground, hi, a("pale_end_stone_tiles"))
     t.fill(c - 1, ground, c - 1, c + 1, ground, c + 1, a("astral_glass"))
     for x, z in ((lo + 1, lo + 1), (lo + 1, hi - 1), (hi - 1, lo + 1), (hi - 1, hi - 1)):
         for y in range(o + 2, ground):
-            t.set(x, y, z, a("sunscorched_stone_brick_wall"))
+            t.set(x, y, z, "minecraft:end_stone_brick_wall")
         t.set(x, ground - 1, z, a("null_lantern"))
     # A stairway down from the south causeway.
     for step in range(6):
         z = hi + 1 + (5 - step)
         y = ground - step
         for x in (c - 1, c, c + 1):
-            t.set(x, y, z, a("polished_sunscorched_stone_stairs") + "[facing=north,half=bottom,shape=straight]")
+            t.set(x, y, z, "minecraft:end_stone_brick_stairs" + "[facing=north,half=bottom,shape=straight]")
             for above in range(y + 1, ground + 4):
                 t.set(x, above, z, "minecraft:air")
-            t.set(x, y - 1, z, a("sunscorched_stone_bricks"))
+            t.set(x, y - 1, z, "minecraft:end_stone_bricks")
         for x in (c - 2, c + 2):
             for yy in range(y - 1, ground + 1):
-                t.set(x, yy, z, a("sunscorched_stone_bricks"))
+                t.set(x, yy, z, "minecraft:end_stone_bricks")
     for x in (c - 1, c, c + 1):
         for y in range(o + 2, o + 5):
             t.set(x, y, hi, "minecraft:air")                         # the doorway
@@ -487,24 +488,26 @@ def solar_array(seed):
         t.set(c + dx, o + 2, c + dz, a("collector_pedestal") + "[holding=none]")
     chest(t, lo + 2, o + 2, lo + 1, "solar_array", facing="south")
     chest(t, hi - 2, o + 2, lo + 1, "solar_array", facing="south")
-    # A ring of lava round the plaza (bridged by the causeways, walled in), and four braziers burning
+    # A reflecting pool round the plaza (bridged by the causeways, walled in), and four braziers burning
     # between the mirror rings.
     for x in range(S):
         for z in range(S):
             d = math.hypot(x - c, z - c)
             on_path = abs(x - c) <= 1 or abs(z - c) <= 1
             if 8.5 <= d < 9.5:
-                t.set(x, ground, z, a("polished_sunscorched_stone"))
+                t.set(x, ground, z, a("pale_end_stone_tiles"))
             elif 9.5 <= d < 11.0:
-                t.set(x, ground, z, a("sunscorched_stone_bricks") if on_path else "minecraft:lava")
-                t.set(x, ground - 1, z, a("sunscorched_stone_bricks"))
+                t.set(x, ground, z, "minecraft:end_stone_bricks" if on_path else "minecraft:water")
+                t.set(x, ground - 1, z, "minecraft:end_stone_bricks")
             elif 11.0 <= d < 12.0 and not on_path:
-                t.set(x, ground, z, a("sunscorched_stone_bricks"))
-                t.set(x, ground + 1, z, a("sunscorched_stone_brick_wall"))
+                t.set(x, ground, z, "minecraft:end_stone_bricks")
+                t.set(x, ground + 1, z, "minecraft:end_stone_brick_wall")
     for ang in (math.pi / 4, 3 * math.pi / 4, 5 * math.pi / 4, 7 * math.pi / 4):
         x, z = round(c + math.cos(ang) * 17.5), round(c + math.sin(ang) * 17.5)
         t.set(x, ground, z, a("raw_solarite_block"))     # a brazier: fire that never goes out (#infiniburn_end)
         t.set(x, ground + 1, z, "minecraft:fire")
+        for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            t.set(x + dx, ground + 1, z + dz, "minecraft:end_stone_brick_wall")
     return t
 
 
@@ -796,7 +799,7 @@ STRUCTURES = [
          biomes=["minecraft:end_highlands", a("nebula_fields")], spread=(40, 16, 33094871), height={"absolute": -2},
          heightmap="WORLD_SURFACE_WG", spawns=None, adaptation="beard_thin", ground=(16, 4096, 18)),
     dict(name="solar_array", variants=[lambda: solar_array(51)],
-         biomes=[a("corona")], spread=(8, 4, 92814473), height={"absolute": -8},
+         biomes=[a("eclipse")], spread=(8, 4, 92814473), height={"absolute": -8},
          heightmap="WORLD_SURFACE_WG", spawns=None, adaptation="beard_thin", ground=(16, 4096, 18)),
     # Mazes float out over open void, among the small islands. (The Rift Maw is built in Java now: see
     # write_data.)
@@ -865,16 +868,6 @@ def write_data():
             "structures": [{"structure": a(name), "weight": 1}],
         })
         write_json(DATA / "tags/worldgen/biome/has_structure" / f"{name}.json", {"values": st["biomes"]})
-    # The Remnant hangs high over the hell half (the Corona) of every Eclipse (RemnantStructure /
-    # RemnantPiece). Every chunk is a candidate; RemnantStructure only starts in the one under the
-    # Eclipse's anchor (EclipseLayout.REMNANT).
-    write_json(DATA / "worldgen/structure/remnant.json", {
-        "type": a("remnant"), "biomes": f"#{NS}:has_structure/remnant", "step": "surface_structures",
-        "spawn_overrides": {}, "terrain_adaptation": "none"})
-    write_json(DATA / "worldgen/structure_set/remnant.json", {
-        "placement": {"type": "minecraft:random_spread", "salt": 31337117, "separation": 0, "spacing": 1},
-        "structures": [{"structure": a("remnant"), "weight": 1}]})
-    write_json(DATA / "tags/worldgen/biome/has_structure/remnant.json", {"values": [a("corona")]})
     # The Leviathan (LeviathanStructure: LeviathanPiece and LeviathanHeadPiece), a whole skeleton with a
     # citadel on it and the Maw for a skull, high over the void. One region in 56 chunks square: rare, but
     # near enough to each other for the Maws' wormhole road to be worth waking.

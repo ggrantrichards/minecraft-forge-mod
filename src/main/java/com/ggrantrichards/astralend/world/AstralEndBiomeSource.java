@@ -29,14 +29,12 @@ public class AstralEndBiomeSource extends BiomeSource {
                 RegistryOps.retrieveElement(Biomes.END_BARRENS),
                 RegistryOps.retrieveElement(ModBiomes.NEBULA_FIELDS),
                 RegistryOps.retrieveElement(ModBiomes.ASHEN_BARRENS),
-                RegistryOps.retrieveElement(ModBiomes.CORONA),
                 RegistryOps.retrieveElement(ModBiomes.GLIMMERING_CRAGS),
                 RegistryOps.retrieveElement(ModBiomes.DEEP_HOLLOWS),
                 RegistryOps.retrieveElement(ModBiomes.SHATTERED_CRAGS),
                 RegistryOps.retrieveElement(ModBiomes.ECLIPSE),
                 RegistryOps.retrieveElement(ModBiomes.HOLLOW_ROOTS),
-                RegistryOps.retrieveElement(ModBiomes.CRYSTAL_VAULTS),
-                RegistryOps.retrieveElement(ModBiomes.SEAM)
+                RegistryOps.retrieveElement(ModBiomes.CRYSTAL_VAULTS)
             )
             .apply(i, i.stable(AstralEndBiomeSource::new))
     );
@@ -51,24 +49,21 @@ public class AstralEndBiomeSource extends BiomeSource {
     private final Holder<Biome> barrens;
     private final Holder<Biome> nebulaFields;
     private final Holder<Biome> ashenBarrens;
-    private final Holder<Biome> corona;
     private final Holder<Biome> glimmeringCrags;
     private final Holder<Biome> deepHollows;
     private final Holder<Biome> shatteredCrags;
     private final Holder<Biome> eclipse;
     private final Holder<Biome> hollowRoots;
     private final Holder<Biome> crystalVaults;
-    private final Holder<Biome> seam;
     // The caves: under the Deep Hollows below this height, the Hollow Roots; under the Shattered Crags
     // below this one, the Crystal Vaults.
     public static final int ROOTS_BELOW = 46, VAULTS_BELOW = 38;
 
     private AstralEndBiomeSource(Holder<Biome> end, Holder<Biome> highlands, Holder<Biome> midlands,
                                  Holder<Biome> islands, Holder<Biome> barrens, Holder<Biome> nebulaFields,
-                                 Holder<Biome> ashenBarrens,
-                                 Holder<Biome> corona, Holder<Biome> glimmeringCrags,
+                                 Holder<Biome> ashenBarrens, Holder<Biome> glimmeringCrags,
                                  Holder<Biome> deepHollows, Holder<Biome> shatteredCrags, Holder<Biome> eclipse,
-                                 Holder<Biome> hollowRoots, Holder<Biome> crystalVaults, Holder<Biome> seam) {
+                                 Holder<Biome> hollowRoots, Holder<Biome> crystalVaults) {
         this.end = end;
         this.highlands = highlands;
         this.midlands = midlands;
@@ -76,21 +71,19 @@ public class AstralEndBiomeSource extends BiomeSource {
         this.barrens = barrens;
         this.nebulaFields = nebulaFields;
         this.ashenBarrens = ashenBarrens;
-        this.corona = corona;
         this.glimmeringCrags = glimmeringCrags;
         this.deepHollows = deepHollows;
         this.shatteredCrags = shatteredCrags;
         this.eclipse = eclipse;
         this.hollowRoots = hollowRoots;
         this.crystalVaults = crystalVaults;
-        this.seam = seam;
     }
 
     @Override
     protected Stream<Holder<Biome>> collectPossibleBiomes() {
         return Stream.of(this.end, this.highlands, this.midlands, this.islands, this.barrens, this.nebulaFields,
-            this.ashenBarrens, this.corona,
-            this.glimmeringCrags, this.deepHollows, this.shatteredCrags, this.eclipse, this.hollowRoots, this.crystalVaults, this.seam);
+            this.ashenBarrens,
+            this.glimmeringCrags, this.deepHollows, this.shatteredCrags, this.eclipse, this.hollowRoots, this.crystalVaults);
     }
 
     @Override
@@ -118,17 +111,10 @@ public class AstralEndBiomeSource extends BiomeSource {
         // (And their grounds mix on top of that: BorderBlendFeature.)
         int warpedX = blockX + (int) Math.round(warp(blockX, blockZ, 0x51ED));
         int warpedZ = blockZ + (int) Math.round(warp(blockX, blockZ, 0x7A3B));
-        // The rare Eclipse comes first: the Seam where its halves meet, its heaven half, or its hell half (the Corona).
+        // The rare Eclipse comes first.
         EclipseLayout.Eclipse e = EclipseLayout.at(warpedX, warpedZ, sampler);
-        if (e != null) {
-            if (e.inSeam(warpedX, warpedZ)) {
-                return this.seam;
-            }
-            switch (e.part(warpedX, warpedZ)) {
-                case HEAVEN: return this.eclipse;
-                case HELL: return this.corona;
-                case NONE: break;
-            }
+        if (e != null && e.part(warpedX, warpedZ) == EclipseLayout.Part.HEAVEN) {
+            return this.eclipse;
         }
         switch (region(sampler, warpedX, warpedZ)) {
             case NEBULA_FIELDS: return this.nebulaFields;

@@ -201,7 +201,7 @@ public final class ModBlocks {
     public static final RegistryObject<Block> SUNSCORCHED_STONE_BRICK_STAIRS = stairs("sunscorched_stone_brick_stairs", SUNSCORCHED_STONE_BRICKS);
     public static final RegistryObject<Block> SUNSCORCHED_STONE_BRICK_SLAB = slab("sunscorched_stone_brick_slab", SUNSCORCHED_STONE_BRICKS);
     public static final RegistryObject<Block> SUNSCORCHED_STONE_BRICK_WALL = wall("sunscorched_stone_brick_wall", SUNSCORCHED_STONE_BRICKS);
-    // Solarite: only in the Corona. Diamond pickaxe; XP comes from smelting, like Meteoric Iron.
+    // Solarite: only in the Ashen Barrens (it was the Corona's). Diamond pickaxe; XP comes from smelting, like Meteoric Iron.
     public static final RegistryObject<Block> SOLARITE_ORE = register("solarite_ore",
         p -> new DropExperienceBlock(ConstantInt.of(0), p),
         () -> endStone(MapColor.SAND).strength(4.5F, 9.0F).lightLevel(state -> 3));

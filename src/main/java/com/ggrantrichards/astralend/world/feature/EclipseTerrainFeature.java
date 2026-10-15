@@ -1,7 +1,6 @@
 package com.ggrantrichards.astralend.world.feature;
 
 import com.ggrantrichards.astralend.ModBlocks;
-import com.ggrantrichards.astralend.world.AstralEndBiomeSource;
 import com.ggrantrichards.astralend.world.EclipseLayout;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
@@ -17,14 +16,10 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 // placed (it's added to every End biome, at the first generation step, by a Forge biome modifier:
 // data/astralend/forge/biome_modifier/eclipse_terrain.json). Whatever terrain was there is cleared,
 // and in its place: one great disc of land RADIUS blocks across, gently rolling, thick in the middle
-// and thin at the rim, in a ring of empty void. (The Wellspring, a basin dug into it, is
-// EclipseLandmarksFeature's.) Its ground follows the yin-yang - bare End Stone in the
-// heaven half (moss, Living Turf, only round the Wellspring's water, as vanilla's End has no ground
-// cover), a crimson crust of Sunscorched Stone over Charred End Stone in the hell half -
-// read with the same warp as the biome source, so the ground and the biomes agree.
-// Where the halves meet, the Seam (after beta.4): the scar the Remnant tore when it fell - a shallow
-// gouge of Obsidian, fused black glass, fraying into either half's ground at its edges, with a broken
-// line of embers (Solarite ore, still warm) down its middle.
+// and thin at the rim, in a ring of empty void. (The Wellspring and the ponds, basins dug into it, are
+// EclipseLandmarksFeature's.) Its ground (after beta.4, when it became one golden meadow): gold Living
+// Turf over End Stone everywhere, but for a few bare outcrops of End Stone where Sunscale Lichen grows,
+// and green moss on the wet ground round the water.
 public record EclipseTerrainFeature() implements Feature {
     public static final MapCodec<EclipseTerrainFeature> CODEC = MapCodec.unit(EclipseTerrainFeature::new);
     public static final double TOP = 62.0;          // the Eclipse's ground level
@@ -66,34 +61,22 @@ public record EclipseTerrainFeature() implements Feature {
                     top = Mth.floor(TOP + 2.5 * h - 6.0 * t * t * t * t);
                     bottom = top - Mth.floor(10.0 + 34.0 * Math.sqrt(Math.max(0.0, 1.0 - t * t)) + 6.0 * h);
                 }
-                int wxp = x + (int) Math.round(AstralEndBiomeSource.warp(x, z, 0x51ED));
-                int wzp = z + (int) Math.round(AstralEndBiomeSource.warp(x, z, 0x7A3B));
-                boolean hell = e.part(wxp, wzp) == EclipseLayout.Part.HELL;
-                // The Seam: 0 at its middle line, 1 at its edges, more outside.
-                double seam = e.seam(wxp, wzp) / EclipseLayout.SEAM_HALF;
-                boolean scar = land && seam < 1.0;
-                if (scar) {
-                    top -= (int) Math.round(2.0 * (1.0 - seam) * (1.0 - seam));   // gouged out, deepest down the middle
+                // Green moss on the wet ground: a ragged ring a few blocks wide round the Wellspring and each pond.
+                double ragged = 2.0 * hills(x * 3, z * 3);
+                boolean wet = Math.hypot(x + 0.5 - wx, z + 0.5 - wz) < well + 4.0 + ragged;
+                for (double[] pond : EclipseLayout.PONDS) {
+                    wet |= Math.hypot(x + 0.5 - e.worldX(pond[0], pond[1]), z + 0.5 - e.worldZ(pond[0], pond[1])) < pond[2] + 2.5 + ragged * 0.6;
                 }
-                double grain = (lattice(x, z, 0x5EA) + 1.0) * 0.5;
-                boolean glass = scar && (seam < 0.45 || grain > (seam - 0.45) / 0.55);
-                boolean ember = scar && seam < 0.14 && valueNoise(x / 5.0, z / 5.0, 0xE3B) > -0.15;
-                // Moss only round the water: a ragged ring a few blocks wide about the Wellspring.
-                boolean oasis = Math.hypot(x + 0.5 - wx, z + 0.5 - wz) < well + 6.0 + 2.5 * hills(x * 3, z * 3);
+                // Bare outcrops of End Stone here and there, a tenth of the meadow or so.
+                boolean outcrop = !wet && valueNoise(x / 9.0, z / 9.0, 0x0C7) > 0.55;
+                BlockState ground = wet ? Blocks.MOSS_BLOCK.defaultBlockState()
+                    : outcrop ? Blocks.END_STONE.defaultBlockState() : ModBlocks.LIVING_TURF.get().defaultBlockState();
                 for (int y = minY; y < maxY; y++) {
                     BlockState want;
                     if (!land || y > top || y < bottom) {
                         want = air;
-                    } else if (ember && y == top) {
-                        want = ModBlocks.SOLARITE_ORE.get().defaultBlockState();   // (ore, not raw blocks: the scar is long)
-                    } else if (glass && y > top - (seam < 0.45 ? 3 : 1)) {
-                        want = Blocks.OBSIDIAN.defaultBlockState();
                     } else if (y == top) {
-                        want = hell ? ModBlocks.SUNSCORCHED_STONE.get().defaultBlockState()
-                            : oasis ? ModBlocks.LIVING_TURF.get().defaultBlockState() : Blocks.END_STONE.defaultBlockState();
-                    } else if (hell) {
-                        want = y > top - 3 ? ModBlocks.SUNSCORCHED_STONE.get().defaultBlockState()
-                            : ModBlocks.CHARRED_END_STONE.get().defaultBlockState();
+                        want = ground;
                     } else {
                         want = Blocks.END_STONE.defaultBlockState();
                     }
@@ -116,14 +99,7 @@ public record EclipseTerrainFeature() implements Feature {
             return Integer.MIN_VALUE;
         }
         double t = d / EclipseLayout.RADIUS;
-        int top = Mth.floor(TOP + 2.5 * hills(x, z) - 6.0 * t * t * t * t);
-        int wxp = x + (int) Math.round(AstralEndBiomeSource.warp(x, z, 0x51ED));
-        int wzp = z + (int) Math.round(AstralEndBiomeSource.warp(x, z, 0x7A3B));
-        double seam = e.seam(wxp, wzp) / EclipseLayout.SEAM_HALF;
-        if (seam < 1.0) {
-            top -= (int) Math.round(2.0 * (1.0 - seam) * (1.0 - seam));
-        }
-        return top;
+        return Mth.floor(TOP + 2.5 * hills(x, z) - 6.0 * t * t * t * t);
     }
 
     // Gentle rolls across the island: two octaves of smooth value noise, about -1..1.

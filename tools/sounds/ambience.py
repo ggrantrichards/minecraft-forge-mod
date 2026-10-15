@@ -117,17 +117,6 @@ def loop_hollow(rnd):
     return hum * slow(rnd, n, 0.05, 0.4) + void
 
 
-def loop_corona(rnd):
-    n = (LOOP_SECONDS + 2) * RATE
-    roar = low(np.cumsum(rnd.normal(0, 1, n)) * 0.02, 400)
-    roar -= low(roar, 20)
-    crackle = np.zeros(n)
-    for _ in range(int(LOOP_SECONDS * 40)):
-        at = rnd.integers(0, n - 400)
-        crackle[at:at + 300] += rnd.normal(0, 1, 300) * np.exp(-np.arange(300) / 40) * rnd.uniform(0.2, 1.0)
-    return roar * 3.0 * slow(rnd, n, 0.15, 0.4) + band(crackle, 1500, 9000) * 0.25
-
-
 def loop_crags(rnd):
     n = (LOOP_SECONDS + 2) * RATE
     out = band(rnd.normal(0, 1, n), 200, 1500) * slow(rnd, n, 0.2, 0.7) * 0.2
@@ -201,15 +190,9 @@ def moan(rnd):
     return low(x, 600) * np.hanning(n)
 
 
-def fizz(rnd):
-    n = int(0.9 * RATE)
-    return band(rnd.normal(0, 1, n), 1200, 8000) * np.exp(-np.arange(n) / (0.2 * RATE)) * (1 + rnd.normal(0, 1, n) * 0.3)
-
-
 BIOMES = {
     "nebula_fields": (loop_nebula, chime),
     "ashen_barrens": (loop_ashen, ash),
-    "corona": (loop_corona, fizz),
     "glimmering_crags": (loop_crags, chime),
     "deep_hollows": (loop_deep_hollows, creak),
     "shattered_crags": (loop_shattered, chime),

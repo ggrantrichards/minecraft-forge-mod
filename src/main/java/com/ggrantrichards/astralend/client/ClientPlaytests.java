@@ -37,13 +37,11 @@ import org.slf4j.Logger;
 //
 //   whale_ride     mount a Drift Whale with a Chorus Flower on a Stick and steer it: forward, a turn,
 //                  a climb (first person, then from behind)
-//   corona_drop    teleport into the Corona from high up, as with /tp, and look round as you land
+//   meadow_drop    teleport into the Eclipse's golden meadow from high up, as with /tp, and look round as you land
 //   upwelling      drink Upwelling under a ledge: fall up onto its underside, walk on it, turn, jump off
 //   biome_border   fly east out of the Nebula Fields across its border: does the sky shift gently,
 //                  do the biomes interlock?
 //   maw_hall       stand in the hall inside a Leviathan's skull and look all round it
-//   remnant_flight fly in toward the Remnant from far off across the Corona: the ember where it hung,
-//                  then its crater and the cinder half buried in it
 public final class ClientPlaytests {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String TAG = "[AstralEnd playtest] ";
@@ -52,11 +50,10 @@ public final class ClientPlaytests {
 
     private static final List<Test> TESTS = List.of(
         new Test("whale_ride", 300, 10),
-        new Test("corona_drop", 260, 13),
+        new Test("meadow_drop", 260, 13),
         new Test("upwelling", 320, 10),
         new Test("biome_border", 360, 12),
-        new Test("maw_hall", 240, 12),
-        new Test("remnant_flight", 400, 16));
+        new Test("maw_hall", 240, 12));
 
     private static int index = -1;
     private static int ticks;
@@ -207,15 +204,13 @@ public final class ClientPlaytests {
                     player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.alchemy.PotionContents
                         .createItemStack(Items.POTION, com.ggrantrichards.astralend.ModEffects.UPWELLING_POTION.getHolder().orElseThrow()));
                 }
-                case "biome_border", "remnant_flight" -> {
-                    ClientScreenshots.Shot s = shot(test.name().equals("biome_border") ? "pt_border" : "structure_remnant");
+                case "biome_border" -> {
+                    ClientScreenshots.Shot s = shot("pt_border");
                     if (s == null) {
                         LOGGER.error(TAG + "nowhere to start {} in astralend-shots.txt", test.name());
                         return;
                     }
-                    double back = test.name().equals("remnant_flight") ? 260 : 0;     // from about 300 blocks out
-                    double yaw = Math.toRadians(s.yaw());
-                    put(player, end, new Vec3(s.x() + Math.sin(yaw) * back, s.y() + 10, s.z() - Math.cos(yaw) * back), s.yaw(), 5);
+                    put(player, end, new Vec3(s.x(), s.y() + 10, s.z()), s.yaw(), 5);
                     player.setGameMode(GameType.CREATIVE);
                     player.getAbilities().flying = true;
                     player.onUpdateAbilities();
@@ -228,8 +223,8 @@ public final class ClientPlaytests {
                     }
                     put(player, end, new Vec3(s.x(), s.y() - 1.6, s.z()), s.yaw(), 0);
                 }
-                case "corona_drop" -> {
-                    ClientScreenshots.Shot s = shot("corona");
+                case "meadow_drop" -> {
+                    ClientScreenshots.Shot s = shot("eclipse");
                     Vec3 at = s != null ? new Vec3(s.x() + 26, 140, s.z() + 26) : new Vec3(-2750, 140, -1000);
                     put(player, end, at, 0, 20);
                     player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 600, 0, false, false));
@@ -339,9 +334,9 @@ public final class ClientPlaytests {
                         UpsideDown.isFlipped(player));
                 }
             }
-            case "biome_border", "remnant_flight" -> {
+            case "biome_border" -> {
                 keys.keyUp.setDown(true);
-                keys.keySprint.setDown(test.name().equals("biome_border"));
+                keys.keySprint.setDown(true);
                 if (t % 30 == 0) {
                     LOGGER.info(TAG + "{} t={} at {} biome {}", test.name(), t, player.blockPosition().toShortString(),
                         minecraft.level.getBiome(player.blockPosition()).unwrapKey().map(k -> k.identifier().toString()).orElse("?"));
@@ -351,11 +346,11 @@ public final class ClientPlaytests {
                 player.setYRot(player.getYRot() + 1.5F);
                 player.setXRot(10.0F * Mth.sin(t * 0.05F));
             }
-            case "corona_drop" -> {
+            case "meadow_drop" -> {
                 player.setYRot(player.getYRot() + 2.0F);              // look all the way round as you fall
                 player.setXRot(t < 120 ? 25.0F : 5.0F);
                 if (t % 26 == 0) {
-                    LOGGER.info(TAG + "corona_drop t={} at {} on ground {} biome {}", t, player.position(), player.onGround(),
+                    LOGGER.info(TAG + "meadow_drop t={} at {} on ground {} biome {}", t, player.position(), player.onGround(),
                         minecraft.level.getBiome(player.blockPosition()).unwrapKey().map(k -> k.identifier().toString()).orElse("?"));
                 }
             }
