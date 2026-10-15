@@ -107,6 +107,11 @@ public class LeviathanPiece extends StructurePiece {
         return turn % 2 == 0 ? Direction.Axis.X : Direction.Axis.Z;
     }
 
+    // Vanilla's purple stained glass, looked up by name (26.3 doesn't name the dyed blocks in Blocks).
+    private static final java.util.function.Supplier<BlockState> PURPLE_GLASS = com.google.common.base.Suppliers.memoize(() ->
+        net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(Identifier.fromNamespaceAndPath("minecraft", "purple_stained_glass"))
+            .map(net.minecraft.world.level.block.Block::defaultBlockState).orElse(ModBlocks.ASTRAL_GLASS.get().defaultBlockState()));
+
     static BlockState state(LeviathanShape.Material m, int turn) {
         BlockState bone = ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState();
         return switch (m) {
@@ -121,7 +126,7 @@ public class LeviathanPiece extends StructurePiece {
             case PURPUR_PILLAR -> Blocks.PURPUR_PILLAR.defaultBlockState();
             case END_BRICK -> Blocks.END_STONE_BRICKS.defaultBlockState();
             case END_BRICK_WALL -> Blocks.END_STONE_BRICK_WALL.defaultBlockState();
-            case GLASS -> Blocks.PURPLE_STAINED_GLASS.defaultBlockState();
+            case GLASS -> PURPLE_GLASS.get();
             case OBSIDIAN -> Blocks.OBSIDIAN.defaultBlockState();
             case THROAT -> ModBlocks.MAW_THROAT.get().defaultBlockState();
             case FLESH -> ModBlocks.LEVIATHAN_FLESH.get().defaultBlockState();
