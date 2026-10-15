@@ -425,9 +425,7 @@ public class Curator extends Monster {
                 for (Player p : level.getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(0.6))) {
                     if (!p.isSpectator() && !p.isCreative()) {
                         p.hurtServer(level, level.damageSources().mobAttack(this), 12.0F);
-                        p.knockback(2.2, -this.aim.x, -this.aim.z);
-                        p.push(0.0, 0.45, 0.0);
-                        p.hurtMarked = true;
+                        p.push(this.aim.x * 1.6, 0.45, this.aim.z * 1.6);   // thrown back along the charge
                         this.endCharge(level, false);
                         return;
                     }
@@ -493,7 +491,7 @@ public class Curator extends Monster {
             double along = Mth.clamp(c.subtract(from).dot(dir), 0.0, length);
             if (c.distanceTo(from.add(dir.scale(along))) <= 1.2 && !(e instanceof Player p && (p.isCreative() || p.isSpectator()))) {
                 e.hurtServer(level, level.damageSources().mobAttack(this), 10.0F);
-                e.knockback(1.6, -dir.x, -dir.z);
+                e.push(dir.x * 1.2, 0.2, dir.z * 1.2);
             }
         }
     }

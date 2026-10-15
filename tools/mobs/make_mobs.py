@@ -1569,20 +1569,22 @@ def c_torso_glow(face, px, py, fw, fh, rnd):
 
 def c_head(face, px, py, fw, fh, rnd):
     if face == "north":
+        mid = fw // 2
         if py == 2 and 1 <= px <= fw - 2:
             return hexc("2a1250")                               # the visor slit (its light is the glow layer)
-        if py == 3:
-            return OBSIDIAN[0]
+        if py in (1, 3) and 1 <= px <= fw - 2:
+            return OBSIDIAN[0]                                  # the slit sits in a recess
         if py >= 4:
-            return GUNMETAL[3] if px % 2 == 0 else OBSIDIAN[0]  # the grille over where a mouth would be
-        if px == fw // 2 or px == fw // 2 - 1:
-            return GUNMETAL[2]                                  # a ridge down the brow
+            if px in (mid - 1, mid):
+                return OBSIDIAN[3]                              # a faint ridge down the faceplate
+            return OBSIDIAN[2]
     return c_plate(face, px, py, fw, fh, rnd)
 
 
 def c_head_glow(face, px, py, fw, fh, rnd):
     if face == "north" and py == 2 and 1 <= px <= fw - 2:
-        return C_HOT if fw // 2 - 1 <= px <= fw // 2 else C_GLOW
+        mid = fw // 2
+        return C_GLOW if px in (mid - 1, mid) else C_DIM        # the optic, brightest at its middle
     return None
 
 
@@ -1686,7 +1688,7 @@ CURATOR = Mob("curator", (128, 128), [
         B(-4.5, -5, 2, 2, 6, 2, c_stack, c_stack_glow, key="stack", mirror=True),
     ], [
         Part("head", (0, -2, -1), [B(-3, -6, -3.5, 6, 6, 7, c_head, c_head_glow),
-                                   B(-3.5, -6.5, -4, 7, 2, 2, c_gun)]),     # the brow, hooded over the visor
+                                   B(-3.5, -5, -4.5, 7, 1, 1, c_gun)]),     # the brow, a slim plate over the visor
         Part("case", (0, 0, 0), [B(-3, 2, -6, 6, 6, 1, c_case, c_case_glow)]),
     ]),
     Part("right_arm", (-9, -9, 0), [
