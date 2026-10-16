@@ -39,19 +39,20 @@ minecraft {
         client {        // ./gradlew runClient  -> launches the game with the mod
             if (System.getProperty('os.name').toLowerCase().contains('mac'))
                 jvmArgs '-XstartOnFirstThread'
+            // (1.21.1: the world is opened from the title screen - client/SkipExperimentalWarning - not by
+            // --quickPlaySingleplayer, which loads it before Forge's events run and leaves loot modifiers unset.)
             // -PastralendScreenshots: opens the survey's world, photographs every astral biome and quits (CI).
             if (project.hasProperty('astralendScreenshots')) {
-                args '--quickPlaySingleplayer', 'survey-world'
                 property 'astralend.screenshots', 'true'
             }
             // -PastralendPlaytests: plays the scripted playtests in the survey's world (CI).
             if (project.hasProperty('astralendPlaytests')) {
-                args '--quickPlaySingleplayer', 'survey-world', '--width', '1280', '--height', '720'
+                args '--width', '1280', '--height', '720'
                 property 'astralend.playtests', 'true'
             }
             // -PastralendTrailer: films the trailer in the survey's world, frame by frame, in 720p.
             if (project.hasProperty('astralendTrailer')) {
-                args '--quickPlaySingleplayer', 'survey-world', '--width', '1280', '--height', '720'
+                args '--width', '1280', '--height', '720'
                 property 'astralend.trailer', 'true'
             }
         }
