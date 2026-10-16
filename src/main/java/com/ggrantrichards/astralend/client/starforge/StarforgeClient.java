@@ -16,9 +16,9 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-// Client side of Starforging: the Astral Forge's screen, and the upgrade accents on worn armour.
+// Client side of Starforging: the Astral Forge's screen, and the glow on worn armour.
 public final class StarforgeClient {
-    // The accents' armour models: a hair larger than the armour's (0.5 and 1.0), so they sit over it.
+    // The glow's armour models: a hair larger than the armour's (0.5 and 1.0), so they sit over it.
     private static final ModelLayerLocation INNER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "starforge_accent"), "inner");
     private static final ModelLayerLocation OUTER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "starforge_accent"), "outer");
 

@@ -25,9 +25,10 @@ sourceSets.each {
 }
 
 // The version the game shows on its Mods screen is this build's (mods.toml says ${mod_version}).
+def modVersion = project.version.toString()
 tasks.named('processResources', ProcessResources) {
-    inputs.property 'mod_version', project.version
-    filesMatching('META-INF/mods.toml') { expand(mod_version: project.version) }
+    inputs.property 'mod_version', modVersion
+    filesMatching('META-INF/mods.toml') { expand(mod_version: modVersion) }
 }
 
 minecraft {

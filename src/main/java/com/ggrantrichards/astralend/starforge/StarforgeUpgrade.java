@@ -17,8 +17,8 @@ import net.minecraft.world.item.ItemStack;
 // The Starforge's five upgrades (the distillation; docs/DISTILLATION.md, "Starforging"). One per
 // item, all sidegrades: none is simply better, none a new tier. Each answers to a constellation, which
 // you must first sight through a spyglass from the Eclipse, and needs one rare material from
-// somewhere else - so every upgrade is a journey. Each leaves a colour accent on the item (see
-// tools/textures/starforge_textures.py, which uses the same colours).
+// somewhere else - so every upgrade is a journey. Each leaves a colour accent on the item icon (see
+// tools/textures/starforge_textures.py, which uses the same colours), and worn armour glows in it.
 public enum StarforgeUpgrade implements StringRepresentable {
     VOID_RECALL("void_recall", 0xA98CFF, "leviathan", () -> List.of(ModItems.CURATORS_CORE.get())),
     ECHO_STRIKE("echo_strike", 0xEEA650, "maw", () -> List.of(ModItems.RIFT_PEARL.get())),

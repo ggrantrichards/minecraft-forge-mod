@@ -4,8 +4,7 @@ Each Starforge upgrade leaves a colour accent on the item, the way an armour tri
 shaded pixels in the upgrade's colour, placed where trims don't go (the guard of a sword, the
 binding of a tool head, the grip of a bow, a gem on the brow of a helmet...). An accent is drawn as
 a *mask* of shade levels 1-4 and painted with each upgrade's palette, so all six share one shape.
-The same goes for armour you wear: a mask on the 64x32 armour layout, drawn over the armour like a
-trim.
+Armour you wear has no accent: it glows in the upgrade's colour instead (StarforgeArmorLayer).
 """
 from PIL import Image
 
@@ -274,51 +273,10 @@ def item_accent(kind, upgrade):
     return paint_mask(ITEM_ACCENTS[kind], UPGRADES[upgrade])
 
 
-# ------------------------------------------------------------------ worn armour accents (64x32)
-# Pixel runs on the vanilla humanoid armour layout: (x, y, shade). Head front is x 8-15, y 8-15;
-# body front x 20-27, y 20-31; right arm front x 44-47, y 20-31; legs front x 4-7, y 20-31.
-def _runs(points):
-    return [(x, y, s) for x, y, s in points]
-
-
-def _band(y, x0, x1, shades=(1, 2, 3, 2)):
-    return [(x, y, shades[(x - x0) % len(shades)]) for x in range(x0, x1 + 1)]
-
-
-WORN = {
-    # Helmet: a gem on the brow with studs at the temples. Chestplate: a clasp at the collar and a
-    # sash down the front, bands round the shoulders. Boots: a band round the ankle.
-    "humanoid": _runs([
-        (11, 9, 3), (12, 9, 4), (10, 10, 2), (11, 10, 4), (12, 10, 4), (13, 10, 2), (11, 11, 1), (12, 11, 2),
-        (3, 10, 2), (4, 10, 3), (19, 10, 3), (20, 10, 2),
-        (23, 20, 3), (24, 20, 4), (22, 21, 2), (23, 21, 4), (24, 21, 4), (25, 21, 2), (23, 22, 1), (24, 22, 2),
-        (23, 24, 2), (24, 25, 3), (23, 26, 2), (24, 27, 3), (23, 28, 1),
-    ] + _band(22, 40, 55) + _band(28, 0, 15)),
-    # Leggings: the belt buckle, and knee guards.
-    "humanoid_leggings": _runs([
-        (22, 21, 2), (23, 21, 3), (24, 21, 4), (25, 21, 2), (23, 22, 2), (24, 22, 1),
-        (4, 25, 2), (5, 25, 3), (6, 25, 4), (7, 25, 2), (5, 26, 1), (6, 26, 2),
-    ] + _band(24, 0, 3) + _band(24, 8, 15)),
-}
-
-
-def worn_accent(layer, upgrade):
-    img = Image.new("RGBA", (64, 32), (0, 0, 0, 0))
-    pal = [hexc(c) for c in UPGRADES[upgrade]]
-    for x, y, s in WORN[layer]:
-        img.putpixel((x, y), pal[s])
-    return img
-
-
 TEXTURES = []
 for _kind in ITEM_ACCENTS:
     for _up in UPGRADES:
         TEXTURES.append((f"item/starforge/{_kind}_{_up}.png", (lambda k=_kind, u=_up: item_accent(k, u))))
-
-
-for _layer in WORN:
-    for _up in UPGRADES:
-        TEXTURES.append((f"entity/equipment/starforge/{_layer}_{_up}.png", (lambda l=_layer, u=_up: worn_accent(l, u))))
 
 
 # ------------------------------------------------------------------ items
