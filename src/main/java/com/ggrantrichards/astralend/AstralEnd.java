@@ -75,7 +75,8 @@ public final class AstralEnd {
             ModModelLayers.register();       // mob models and renderers
             SpectatorOverlayFix.register();  // client-only code; the server never loads it
             ClientScreenshots.register();    // does nothing unless started with -Dastralend.screenshots=true
-            com.ggrantrichards.astralend.client.SkipExperimentalWarning.register();   // (1.21.1) for those automated runs
+            com.ggrantrichards.astralend.client.AutomatedWorldOpen.register();   // (1.21.1) for those automated runs
+            com.ggrantrichards.astralend.client.ExperimentalWarning.register();   // (1.21.1) no "experimental settings" question
             com.ggrantrichards.astralend.client.ClientTrailer.register();   // nor this, without -Dastralend.trailer=true
             com.ggrantrichards.astralend.client.ClientPlaytests.register(); // nor this, without -Dastralend.playtests=true
             com.ggrantrichards.astralend.client.VoidHum.register();   // the drone near an island's edge

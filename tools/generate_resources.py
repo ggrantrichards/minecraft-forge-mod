@@ -1565,6 +1565,7 @@ def structures_phase6():
     chest_loot("constellation_maze", [
         {"rolls": 1, "entries": [entry("temporal_crystal")]},
         {"rolls": 1, "entries": [entry("starforge_alloy")]},   # (Starforge Templates: only from the Curator)
+        {"rolls": 1, "entries": [entry("music_disc_observing_the_star")]},   # the star-watcher's own song
         {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("star_chart"), "functions": [
             {"function": "minecraft:set_components", "components": {"minecraft:custom_data": {"Structure": "leviathan"}}}]}]},
         {"rolls": {"type": "minecraft:uniform", "min": 2, "max": 4}, "entries": [
@@ -1579,6 +1580,7 @@ def structures_phase6():
                                  entry("star_chart", 2), entry("void_crystal_block", 1)]},
         chance("starforge_alloy", 0.5),
         chance("rift_pearl", 0.05),
+        chance("spire_banner_pattern", 0.3),
         {"rolls": {"type": "minecraft:uniform", "min": 1, "max": 3}, "entries": [
             entry("void_crystal", 4, (2, 5)), entry("meteoric_iron_ingot", 3, (1, 3)), entry("chart_fragment", 2, (1, 2)),
             entry("minecraft:spyglass", 2), entry("minecraft:ender_pearl", 3, (1, 3)), entry("star_inlay_observatory_quartz", 2, (2, 6))]},
@@ -1600,6 +1602,7 @@ def structures_phase6():
         chance("temporal_crystal", 0.4),
         chance("bottled_flare", 0.25),
         chance("starforge_alloy", 0.35),
+        chance("eclipse_armor_trim_smithing_template", 0.5),   # the Gilded Reach's trim
     ])
 
 
@@ -2015,7 +2018,7 @@ def content_phase10():
             lang[f"block.{NS}.banner.{pattern}.{c}"] = f"{c.replace('_', ' ').title()} {english}"
     write(DATA / "trim_pattern" / "eclipse.json", {"asset_id": rid("eclipse"),
                                                     "description": {"translate": f"trim_pattern.{NS}.eclipse"}, "decal": False})
-    lang[f"trim_pattern.{NS}.eclipse"] = "Eclipse Armor Trim"
+    lang[f"trim_pattern.{NS}.eclipse"] = "Gilded Armor Trim"   # (the Gilded Reach's; its id is from its old name)
     template = "eclipse_armor_trim_smithing_template"
     item_model(template, {"parent": "minecraft:item/generated", "textures": {"layer0": rid(f"item/{template}")}})
     item_def(template, rid(f"item/{template}"))
@@ -2079,7 +2082,11 @@ def distillation_blocks():
     entity_loot("mirror_wretch", [player_kill_drop("memory_moss", 1)])
     # The Leviathan's keepers. The Curator always gives up its Core (the Starforge's Void Recall needs one).
     entity_loot("hollowback", [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": "minecraft:bone", "functions": [
-        {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 0, "max": 2}}]}]}])
+        {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 0, "max": 2}}]}]},
+                               {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("hushfleece"), "functions": [
+        {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 0, "max": 1}},
+        {"function": "minecraft:enchanted_count_increase", "count": {"type": "minecraft:uniform", "min": 0.0, "max": 1.0},
+         "enchantment": "minecraft:looting"}]}]}])
     # The Curator: its Core, and the only Starforge Templates in the End (two: one to use, one to copy).
     entity_loot("shardback", [player_kill_drop("void_crystal", 1),
                               {"rolls": 1, "entries": [{"type": "minecraft:item", "name": rid("glimmer_cluster"), "functions": [
@@ -2174,6 +2181,7 @@ def distillation_blocks():
         chance("starforge_alloy", 0.35),
         chance("temporal_crystal", 0.2),
         chance("rift_pearl", 0.04),
+        chance("wyrm_banner_pattern", 0.2),
     ])
     advancement("leviathan", "minecraft:bone_block", "The Leviathan", "Set foot on the skeleton of a Leviathan",
                 criteria={"found": {"trigger": "minecraft:location", "conditions": {"player": {

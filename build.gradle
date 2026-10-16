@@ -8,7 +8,7 @@ plugins {
     id 'net.minecraftforge.gradle' version '[6.0.24,6.2)'
 }
 
-version = '1.0.0-beta.5-mc1.21.1'
+version = '1.0.0-mc1.21.1'
 group = 'com.ggrantrichards.astralend'
 base { archivesName = 'astralend' }
 
@@ -22,6 +22,12 @@ sourceSets.each {
     def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
     it.output.resourcesDir = dir
     it.java.destinationDirectory = dir
+}
+
+// The version the game shows on its Mods screen is this build's (mods.toml says ${mod_version}).
+tasks.named('processResources', ProcessResources) {
+    inputs.property 'mod_version', project.version
+    filesMatching('META-INF/mods.toml') { expand(mod_version: project.version) }
 }
 
 minecraft {
@@ -39,7 +45,7 @@ minecraft {
         client {        // ./gradlew runClient  -> launches the game with the mod
             if (System.getProperty('os.name').toLowerCase().contains('mac'))
                 jvmArgs '-XstartOnFirstThread'
-            // (1.21.1: the world is opened from the title screen - client/SkipExperimentalWarning - not by
+            // (1.21.1: the world is opened from the title screen - client/AutomatedWorldOpen - not by
             // --quickPlaySingleplayer, which loads it before Forge's events run and leaves loot modifiers unset.)
             // -PastralendScreenshots: opens the survey's world, photographs every astral biome and quits (CI).
             if (project.hasProperty('astralendScreenshots')) {

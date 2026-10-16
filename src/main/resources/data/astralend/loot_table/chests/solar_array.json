@@ -174,6 +174,22 @@
           "condition": "minecraft:random_chance"
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "astralend:eclipse_armor_trim_smithing_template",
+          "weight": 1
+        }
+      ],
+      "conditions": [
+        {
+          "chance": 0.5,
+          "condition": "minecraft:random_chance"
+        }
+      ]
     }
   ],
   "random_sequence": "astralend:chests/solar_array"

@@ -4,8 +4,11 @@
 becomes a sparse sky of drifting islands: quiet, alien, full of ruins no one is left to explain, and as
 dangerous as the void beneath them.
 
-> **Beta, without world compatibility.** Each beta can rework or remove blocks and items; start a new
-> world for each. Keep backups of worlds you care about.
+> **Start a new world**, or explore beyond 1,000 blocks of an old End that hasn't been generated yet:
+> worlds from the betas don't carry over. Keep backups of worlds you care about.
+
+**For Minecraft 26.3 (Forge 66) and Minecraft 1.21.1 (Forge 52.1 or newer):** the same mod for both;
+pick the file for your version.
 
 **For Minecraft 26.3 (Forge 66) and Minecraft 1.21.1 (Forge 52.1 or newer):** the same mod for both;
 pick the file for your version.
@@ -116,3 +119,10 @@ from the Gilded Reach, and a rare material from somewhere else.
 
 A **Lodestar** to respawn by in the End. A low void hum near island edges. Four music tracks, a music
 disc and ambience for every biome. Advancements for all of it.
+
+## Credits
+
+Music from OpenGameArt.org: "Out There" by yd, "Ambient Relaxing Loop" and "Heavenly Loop" by isaiah658,
+"Observing the Star" by madeso (all CC0), and "Space Music" by HitCtrl
+([CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/)). The commonest blocks' textures start from
+vanilla's own, recoloured and reworked.
