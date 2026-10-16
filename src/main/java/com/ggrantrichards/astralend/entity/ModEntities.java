@@ -122,7 +122,9 @@ public final class ModEntities {
     // The Umbral Stalker: only under a roof of rock, in the dark (the Glimmering Crags' root caves).
     private static boolean inCave(EntityType<? extends Monster> type, ServerLevelAccessor level, MobSpawnType reason,
                                   BlockPos pos, RandomSource random) {
-        return !level.canSeeSky(pos) && Monster.checkMonsterSpawnRules(type, level, reason, pos, random);
+        // (1.21.1: canSeeSky asks for full sky light, which the End never has; so: is there anything overhead?)
+        return pos.getY() < level.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ())
+            && Monster.checkMonsterSpawnRules(type, level, reason, pos, random);
     }
 
     private ModEntities() {}
