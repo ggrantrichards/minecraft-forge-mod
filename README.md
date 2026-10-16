@@ -13,9 +13,10 @@ Mojang End update would ship - see [Phase 10](#phase-10-the-rework) below, which
 
 ## Get it
 
-The current build, **1.0.0-beta.4**, is published to Modrinth as
+The current build, **1.0.0-beta.5**, is published to Modrinth as
 [**The Astral End**](https://modrinth.com/mod/the-astral-end) (a beta: blocks and items may still be
-renamed or removed before 1.0, so back up worlds you care about). It needs **Minecraft 26.3** and
+renamed or removed before 1.0, so back up worlds you care about). The field guide - every biome and structure cut out of the world,
+every creature and the web of life - is at **[ggrantrichards.github.io/the-astral-end](https://ggrantrichards.github.io/the-astral-end/)**. It needs **Minecraft 26.3** and
 **Forge 66** or newer, on both the client and the server. MIT licensed (see [LICENSE](LICENSE)).
 
 Releases go out with the **Release to Modrinth** workflow (Actions > Release to Modrinth > Run
@@ -28,7 +29,7 @@ changelog for each version.
 The sections below run newest first. Older ones describe things as they were at the time; Phase 10
 and the distillation renamed or removed some of them.
 
-### After beta.4: fewer, fuller biomes
+### Beta.5: fewer, fuller biomes
 
 - **The Chorus Tangle is cut.** It was vanilla chorus on purple ground and nothing else; the Nebula
   Fields take its place.

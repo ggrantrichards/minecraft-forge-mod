@@ -1535,13 +1535,16 @@ HOLLOWBACK = Mob("hollowback", (128, 64), [
             # the upper fangs, folded inside the closed jaw (a pixel in from every face, so nothing
             # shows): long canines at the front, teeth behind
             B(-2, 0, -5, 1, 2, 1, fang, key="canine"), B(1, 0, -5, 1, 2, 1, fang, key="canine", mirror=True),
+            B(-1, 0, -5, 1, 1, 1, fang, key="tooth"), B(0, 0, -5, 1, 1, 1, fang, key="tooth", mirror=True),
             B(-2, 0, -3, 1, 1, 1, fang, key="tooth"), B(1, 0, -3, 1, 1, 1, fang, key="tooth", mirror=True),
+            B(-2, 0, -1, 1, 1, 1, fang, key="tooth"), B(1, 0, -1, 1, 1, 1, fang, key="tooth", mirror=True),
         ], [
             Part("jaw", (0, 0, 1), [
                 B(-3, 0, -7, 6, 2, 7, hollow_jaw, jaw_glow, key="jaw"),
                 # the lower fangs, pointing up between the upper ones, folded into the top half when shut
                 B(-1, -2, -6, 1, 2, 1, fang, key="lfang"), B(0, -2, -6, 1, 2, 1, fang, key="lfang", mirror=True),
                 B(-2, -1, -5, 1, 1, 1, fang, key="ltooth"), B(1, -1, -5, 1, 1, 1, fang, key="ltooth", mirror=True),
+                B(-2, -1, -3, 1, 1, 1, fang, key="ltooth"), B(1, -1, -3, 1, 1, 1, fang, key="ltooth", mirror=True),
             ]),
         ]),
     ]),

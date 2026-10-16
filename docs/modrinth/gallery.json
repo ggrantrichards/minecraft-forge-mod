@@ -26,6 +26,11 @@
     "description": "Dark Nightstone peaks grown through with cold, glowing Glimmer Crystal."
   },
   {
+    "file": "docs/images/distilled/diorama_leviathan.png",
+    "title": "The Leviathan, cut out",
+    "description": "A whole Leviathan, cut out of a generated world: 200 blocks of bone built over by the End's builders."
+  },
+  {
     "file": "docs/images/distilled/structure_leviathan_skull.png",
     "title": "The Leviathan",
     "description": "A Star Leviathan's skeleton adrift over the void, with an End City citadel built along its spine."
@@ -51,6 +56,11 @@
     "description": "At half health its case shatters and the fight turns upside down."
   },
   {
+    "file": "docs/images/distilled/mob_hollowback.png",
+    "title": "Hollowback",
+    "description": "A Hollowback looks like one of the herd, until it's on you."
+  },
+  {
     "file": "docs/images/distilled/mob_drift_whale_side.png",
     "title": "Drift Whale",
     "description": "A Drift Whale over the Ashen Barrens. Pods fly as a flock; sing one a song and it's yours to ride."
@@ -58,7 +68,7 @@
   {
     "file": "docs/images/distilled/mob_hushback.png",
     "title": "Hushback",
-    "description": "A clear-hided grazer of the Gilded Reach. The herd keeps a lookout - sneak up on it."
+    "description": "A Hushback of the Gilded Reach: a dark, clear hide with its bones faint inside."
   },
   {
     "file": "docs/images/distilled/mob_hydragrip_angled.png",

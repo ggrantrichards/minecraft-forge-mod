@@ -7,6 +7,9 @@ dangerous as the void beneath them.
 > **Beta, without world compatibility.** Each beta can rework or remove blocks and items; start a new
 > world for each. Keep backups of worlds you care about.
 
+**[The field guide](https://ggrantrichards.github.io/the-astral-end/)**: every biome and structure cut out of
+the world, every creature, and the web of life between them.
+
 {{The Gilded Reach}}
 
 ## Built on six ideas
@@ -87,9 +90,14 @@ dragon egg on the pedestal under the heart and the skull's eyes light - and the 
 **Maw**: teeth like trees, a hall where its brain was, and a throat that wakes into a wormhole to
 every other Leviathan you've woken.
 
+In its lower ribs roam **Hollowbacks**: they look like Hushbacks, calm and slow, until one is on you -
+then its head splits open into a jaw full of fangs.
+
 {{The Leviathan}}
 
 {{The Curator}}
+
+{{Hollowback}}
 
 ## Ruins and Starforging
 

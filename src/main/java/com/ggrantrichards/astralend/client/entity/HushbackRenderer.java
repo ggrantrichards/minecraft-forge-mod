@@ -98,8 +98,8 @@ public class HushbackRenderer extends MobRenderer<Hushback, HushbackRenderer.Sta
                 // splits open wide on its fangs, trembling, and each bite snaps it shut and open again.
                 if (state.snarl) {
                     float snap = Mth.sin(Math.min(1.0F, state.bite) * Mth.PI) * 0.75F;
-                    this.head.xRot += 0.12F;
-                    this.jaw.xRot = 0.95F + Mth.sin(state.ageInTicks * 1.3F) * 0.05F - snap;
+                    this.head.xRot -= 0.55F;     // the top of the head tips back, as a dog's does to bite
+                    this.jaw.xRot = 1.15F + Mth.sin(state.ageInTicks * 1.3F) * 0.05F - snap;
                 } else {
                     this.jaw.xRot = 0.0F;
                 }

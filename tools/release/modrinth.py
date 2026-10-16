@@ -21,8 +21,9 @@ API = os.environ.get("MODRINTH_API", "https://api.modrinth.com/v2")   # overrida
 ROOT = Path(__file__).resolve().parents[2]
 SLUG = "the-astral-end"
 TITLE = "The Astral End"
-SUMMARY = ("The End was never empty: drifting islands, the rare Eclipse of heaven and hell, a leviathan "
-           "citadel and its Curator, silent creatures and ruins without explanation.")
+SUMMARY = ("The End was never empty: drifting islands, the rare golden Gilded Reach, a Leviathan's skeleton "
+           "and its Curator, creatures that live with each other, and ruins without explanation.")
+SITE = "https://ggrantrichards.github.io/the-astral-end/"   # the field guide (a public repo of its own)
 GAME_VERSIONS = ["26.3"]
 LOADERS = ["forge"]
 USER_AGENT = "ggrantrichards/minecraft-forge-mod (release workflow)"
@@ -163,7 +164,7 @@ def main():
         title = m.group(1)
         return f"![{title}]({urls[title]})" if title in urls else ""
     body = re.sub(r"\{\{(.+?)\}\}", picture, body_text)
-    status, err = request("PATCH", f"/project/{pid}", token, json.dumps({"body": body, "description": SUMMARY}).encode(),
+    status, err = request("PATCH", f"/project/{pid}", token, json.dumps({"body": body, "description": SUMMARY, "wiki_url": SITE}).encode(),
                           "application/json")
     if status not in (200, 204):
         die(f"Couldn't update the description ({status}): {err}")
