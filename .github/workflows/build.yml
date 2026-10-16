@@ -64,7 +64,7 @@ jobs:
         timeout-minutes: 15
         run: |
           echo "eula=true" > run/eula.txt
-          printf "level-seed=astralend-ci\nlevel-name=survey-world\nonline-mode=false\n" > run/server.properties
+          printf "level-seed=astralend-ci\nlevel-name=survey-world\nonline-mode=false\nmax-tick-time=-1\n" > run/server.properties   # the survey runs in one long tick
           timeout 800 ./gradlew runServer -PastralendSurvey > survey-console.log 2>&1 || true
           cp run/logs/latest.log survey.log
           echo "--- server warnings and errors during the survey:"
@@ -173,6 +173,7 @@ jobs:
           { grep -nE "/(WARN|ERROR)\]|Exception|Caused by" survey.log | grep -v "Cache miss" | head -80; echo "---"; \
             grep "AstralEnd survey" survey.log | sed 's/.*\[AstralEnd survey\] //'; echo "---"; tail -60 survey-console.log; } > /tmp/logs/survey.txt 2>/dev/null || true
           grep -E "ERROR|Exception|Missing|astralend" client.log 2>/dev/null | head -120 > /tmp/logs/client.txt || true
+          for c in run/crash-reports/*.txt; do [ -f "$c" ] && { echo "=== $c"; head -120 "$c"; }; done > /tmp/logs/crash.txt 2>/dev/null || true
           # (1.21 port) The real signatures of the classes in tools/port/javap.txt.
           JARS=$(find ~/.gradle/caches build .gradle -name '*.jar' 2>/dev/null | grep -iE 'forge|minecraft|client|server' | grep -v -e sources -e mcp_config | sort -r)
           CP=$(echo "$JARS" | tr '\n' ':')
