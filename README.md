@@ -1,8 +1,7 @@
 # The Astral End
 
-**The End was never empty. It was waiting.** A Minecraft mod that turns the outer End - everything
-beyond 1,000 blocks from the dragon's island - into a sparse sky of drifting islands: quiet, alien, full
-of ruins no one is left to explain, and as dangerous as the void beneath them.
+**The End is alive.** A Minecraft mod that adds new biomes, creatures and structures to the outer
+End, the islands more than 1,000 blocks from the dragon's island.
 
 [![Fifteen seconds of the trailer, filmed in the game. Click for the full trailer on YouTube.](docs/modrinth/teaser.webp)](https://youtu.be/ZUQVTpnqRTQ)
 
@@ -20,41 +19,37 @@ of ruins no one is left to explain, and as dangerous as the void beneath them.
 Install it on the client, and on the server too for multiplayer. Start a new world, or explore past
 1,000 blocks from the centre of an old one's End: the mod changes only the outer End, and only where it
 hasn't been generated yet. (Minecraft 1.21.1 asks about "experimental settings" for any mod that adds
-world generation; the mod answers that question for you.)
+world generation. The mod answers it for you.)
 
 ## What's in it
 
 ![The Leviathan, cut out of the world](docs/images/distilled/diorama_leviathan.png)
 
 - **Six new biomes on the outer islands, and two caves.**
-  - *Nebula Fields*: glowing gas, rose moss and low gravity.
-  - *Deep Hollows*: the End's only forest, with the *Hollow Roots* beneath.
-  - *Glimmering Crags* and *Shattered Crags*: crystal peaks, with the *Crystal Vaults* below.
-  - *Ashen Barrens*: the leviathans' graveyard.
-  - *The Gilded Reach*: a rare disc of golden meadow under the star the Sunstorms break from.
-- **The Leviathan.** A 370-block skeleton with a purpur citadel on its back: a beating heart, a
-  reliquary kept by the Curator (a boss fight that turns upside down halfway), Hollowbacks in its ribs, a
-  Constellation Maze on its last tower, and a skull that wakes into a wormhole network.
-- **Creatures that live with each other.** Drift Whale pods you can sing to and ride, Hushback herds,
-  Hydragrips, the Mirror Wretch, the Watcher, the Umbral Stalker, the Shardback and Pollinators, each
-  with its threads to the others.
-- **Starforging.** Five sidegrades for diamond and netherite gear at the Astral Forge, each needing a
-  template from the Curator, a constellation sighted from the Gilded Reach and a rare material.
-- **And:** the Solar Array, the Shattered Observatory and the Comet Craters; Sunstorms; a Lodestar to
-  respawn by; new building blocks and a wood set; four music tracks and a disc; ambience for every
-  biome; advancements for all of it.
+  - *Nebula Fields*: pink moss, glowing gas clouds and low gravity.
+  - *Deep Hollows*: a dark forest, with the *Hollow Roots* caves underneath.
+  - *Glimmering Crags* and *Shattered Crags*: crystal peaks, with the *Crystal Vaults* caves below.
+  - *Ashen Barrens*: ash and old Leviathan bones.
+  - *The Gilded Reach*: a rare golden grassland. Its star causes Sunstorms.
+- **The Leviathan.** A skeleton about 370 blocks long with End City towers on it. Inside are the
+  Curator (a mini-boss), Hollowbacks, a Constellation Maze, and a skull that works as a portal.
+- **Ten new mobs.** Drift Whales you can tame and ride, Hushbacks, Hydragrips, the Mirror Wretch, the
+  Watcher, the Umbral Stalker, the Shardback, Pollinators, Hollowbacks and the Curator. They react to
+  each other.
+- **Starforging.** Five upgrades for diamond and netherite gear, made at the Astral Forge.
+- **Also:** three smaller structures, Sunstorms, a Lodestar respawn point, new building blocks and a
+  wood set, four music tracks and a disc, ambient sounds and advancements.
 
-The mod keeps to the End's own palette and tells you things with sound and light: no new armour tiers,
-no friendly villagers, no text in your face. [docs/DISTILLATION.md](docs/DISTILLATION.md) has the
-design ideas.
+The mod sticks to the End's colours and doesn't add new armour tiers, friendly villagers or on-screen
+text. The design notes are in [docs/DISTILLATION.md](docs/DISTILLATION.md).
 
 ## Credits
 
 - **Music** from OpenGameArt.org: "Out There" by yd, "Ambient Relaxing Loop" and "Heavenly Loop" by
   isaiah658, "Observing the Star" by madeso (all CC0), and "Space Music" by HitCtrl (CC-BY 3.0). Full
   list and links in [sounds/credits.txt](src/main/resources/assets/astralend/sounds/credits.txt).
-- **Textures** of the commonest blocks start from vanilla's own, recoloured and reworked so they sit
-  beside them in the game. Those stay Mojang's and aren't covered by this mod's licence.
+- **Textures:** some block textures are based on vanilla textures. Those belong to Mojang and aren't
+  covered by this mod's licence.
 
 ## Licence
 
