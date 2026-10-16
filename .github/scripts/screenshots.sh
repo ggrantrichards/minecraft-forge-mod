@@ -5,6 +5,7 @@ set -u
 LOG=run/logs/latest.log
 rm -f "$LOG" screenshots-console.log run/screenshots/astralend-*.png
 mkdir -p run/saves && rm -rf run/saves/survey-world && cp -r run/survey-world run/saves/survey-world
+python3 .github/scripts/confirm-world.py run/saves/survey-world   # (1.21.1: no experimental-settings question)
 # Render distance 10 chunks, no chat noise.
 printf 'renderDistance:10\nsimulationDistance:6\nchatVisibility:2\nnarrator:0\nonboardAccessibility:false\ntutorialStep:none\n' > run/options.txt
 

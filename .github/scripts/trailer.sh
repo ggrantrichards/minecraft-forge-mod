@@ -10,6 +10,7 @@ sudo apt-get install -y -qq ffmpeg > /dev/null
 python3 -m pip install -q --break-system-packages numpy pillow
 python3 tools/trailer/narrate.py trailer || { echo "::error::the narration recordings could not be prepared"; exit 1; }
 mkdir -p run/saves && rm -rf run/saves/survey-world && cp -r run/survey-world run/saves/survey-world
+python3 .github/scripts/confirm-world.py run/saves/survey-world   # (1.21.1: no experimental-settings question)
 cp tools/trailer/scenes.txt run/astralend-trailer.txt
 # A longer view than the screenshots, no chat, no tutorial hints.
 printf 'renderDistance:12\nsimulationDistance:8\nchatVisibility:2\nnarrator:0\nonboardAccessibility:false\ntutorialStep:none\nbobView:false\n' > run/options.txt

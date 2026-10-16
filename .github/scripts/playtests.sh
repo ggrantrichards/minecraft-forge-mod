@@ -5,6 +5,7 @@ set -u
 LOG=run/logs/latest.log
 rm -rf "$LOG" playtests-console.log run/screenshots/playtest
 mkdir -p run/saves && rm -rf run/saves/survey-world && cp -r run/survey-world run/saves/survey-world
+python3 .github/scripts/confirm-world.py run/saves/survey-world   # (1.21.1: no experimental-settings question)
 printf 'renderDistance:10\nsimulationDistance:8\nchatVisibility:2\nnarrator:0\nonboardAccessibility:false\ntutorialStep:none\n' > run/options.txt
 
 export LIBGL_ALWAYS_SOFTWARE=1 SDL_VIDEODRIVER=x11 SDL_VIDEO_FORCE_EGL=1
