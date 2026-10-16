@@ -18,7 +18,7 @@ What changed between the two, and what this does about it:
   render types       26.3 picks a block's layer from its textures; 1.21.1 reads "render_type" from the model
   armour trims       texture paths, the trims atlas, the template item
   tags               vanilla entries made optional (some of 26.3's blocks and items aren't in 1.21.1)
-  structures         DataVersion of 1.21.1
+  structures         DataVersion of 1.21.1; palette entries {Name, Properties}
   pack.mcmeta        pack_format instead of 26.3's format range
 """
 import json, gzip, math, shutil, struct, sys
@@ -491,18 +491,74 @@ def tag(t):
 
 # ---- structures --------------------------------------------------------------------------------
 
+class Nbt:
+    """Just enough NBT to rewrite a structure template: values are kept as (type, value) pairs."""
+
+    @staticmethod
+    def read(b, i, t):
+        if t in (1, 2, 3, 4, 5, 6):
+            fmt, n = {1: (">b", 1), 2: (">h", 2), 3: (">i", 4), 4: (">q", 8), 5: (">f", 4), 6: (">d", 8)}[t]
+            return struct.unpack(fmt, b[i:i + n])[0], i + n
+        if t == 8:
+            n = struct.unpack(">H", b[i:i + 2])[0]
+            return b[i + 2:i + 2 + n].decode("utf-8"), i + 2 + n
+        if t == 9:
+            et, n = b[i], struct.unpack(">i", b[i + 1:i + 5])[0]
+            i += 5
+            out = []
+            for _ in range(n):
+                v, i = Nbt.read(b, i, et)
+                out.append(v)
+            return (et, out), i
+        if t == 10:
+            d = {}
+            while b[i] != 0:
+                tt, n = b[i], struct.unpack(">H", b[i + 1:i + 3])[0]
+                name = b[i + 3:i + 3 + n].decode("utf-8")
+                v, i = Nbt.read(b, i + 3 + n, tt)
+                d[name] = (tt, v)
+            return d, i + 1
+        if t in (7, 11, 12):
+            n, size = struct.unpack(">i", b[i:i + 4])[0], {7: 1, 11: 4, 12: 8}[t]
+            return b[i + 4:i + 4 + n * size], i + 4 + n * size
+        raise ValueError(f"NBT tag type {t}")
+
+    @staticmethod
+    def write(t, v):
+        if t in (1, 2, 3, 4, 5, 6):
+            return struct.pack({1: ">b", 2: ">h", 3: ">i", 4: ">q", 5: ">f", 6: ">d"}[t], v)
+        if t == 8:
+            e = v.encode("utf-8")
+            return struct.pack(">H", len(e)) + e
+        if t == 9:
+            et, items = v
+            return bytes([et]) + struct.pack(">i", len(items)) + b"".join(Nbt.write(et, x) for x in items)
+        if t == 10:
+            return b"".join(bytes([tt]) + Nbt.write(8, k) + Nbt.write(tt, x) for k, (tt, x) in v.items()) + b"\x00"
+        if t in (7, 11, 12):
+            return struct.pack(">i", len(v) // {7: 1, 11: 4, 12: 8}[t]) + v
+        raise ValueError(f"NBT tag type {t}")
+
+
 def structure_nbt(p):
+    """1.21.1's DataVersion, and palette entries as {Name, Properties} (26.3 writes {id, properties})."""
     raw = gzip.decompress(p.read_bytes())
-    key = b"\x03\x00\x0bDataVersion"
-    i = raw.find(key)
-    if i < 0:
-        return
-    j = i + len(key)
-    if struct.unpack(">i", raw[j:j + 4])[0] == DATA_VERSION:
-        return
-    raw = raw[:j] + struct.pack(">i", DATA_VERSION) + raw[j + 4:]
-    p.write_bytes(gzip.compress(raw, mtime=0))
-    changed.append(p)
+    n = struct.unpack(">H", raw[1:3])[0]
+    name = raw[3:3 + n].decode("utf-8")
+    root, _ = Nbt.read(raw, 3 + n, 10)
+    before = Nbt.write(10, root)
+    root["DataVersion"] = (3, DATA_VERSION)
+    for key in ("palette",):
+        if key in root:
+            for entry in root[key][1][1]:
+                if "id" in entry:
+                    entry["Name"] = entry.pop("id")
+                if "properties" in entry:
+                    entry["Properties"] = entry.pop("properties")
+    after = Nbt.write(10, root)
+    if after != before:
+        p.write_bytes(gzip.compress(bytes([10]) + Nbt.write(8, name) + after, mtime=0))
+        changed.append(p)
 
 
 # ---- all of it ---------------------------------------------------------------------------------

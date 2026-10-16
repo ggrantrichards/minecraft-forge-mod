@@ -263,6 +263,14 @@ public final class WorldgenSurvey {
             }
         }
 
+        // (1.21.1 port) The vanilla noises the regions are drawn from, to compare with 26.3's.
+        var noises = end.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.NOISE);
+        for (String name : new String[] {"temperature", "vegetation", "ridge", "continentalness", "erosion"}) {
+            var params = noises.get(net.minecraft.resources.ResourceLocation.withDefaultNamespace(name));
+            if (params != null) {
+                log("noise minecraft:" + name + ": first octave " + params.firstOctave() + ", amplitudes " + params.amplitudes());
+            }
+        }
         // ---- Generate an area of each astral biome and count what's there ----
         // The Eclipse is surveyed at a known spot of the nearest one, between the Wellspring and the rim.
         EclipseLayout.Eclipse eclipse = EclipseLayout.nearest(0, 0, EclipseLayout.sampler(randomState), 3);

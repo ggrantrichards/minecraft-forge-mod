@@ -721,7 +721,7 @@ final class MechanicsSurvey {
         curator.hurt(end.damageSources().playerAttack(player), 1.0F);
         boolean woke = !curator.isDormant();
         var potion = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(
-            net.minecraft.resources.ResourceLocation.withDefaultNamespace("splash_potion")).map(t -> t.create(end)).orElse(null);
+            net.minecraft.resources.ResourceLocation.withDefaultNamespace("potion")).map(t -> t.create(end)).orElse(null);   // (1.21.1: a thrown splash potion is "potion")
         boolean staggered = false;
         if (potion != null) {
             potion.moveTo(curator.getX(), curator.getY() + 3.0, curator.getZ(), 0.0F, 0.0F);
