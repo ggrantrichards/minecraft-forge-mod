@@ -40,8 +40,9 @@ public class IslandStructure extends Structure {
     protected Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
         int cx = context.chunkPos().getMiddleBlockX();
         int cz = context.chunkPos().getMiddleBlockZ();
-        int[][] offsets = reach == 0 ? new int[][] {{0, 0}}
-            : new int[][] {{0, 0}, {reach, 0}, {-reach, 0}, {0, reach}, {0, -reach}};
+        // (and the chunk's corner, where the jigsaw stands its start and takes the surface height from)
+        int[][] offsets = reach == 0 ? new int[][] {{0, 0}, {-8, -8}}
+            : new int[][] {{0, 0}, {-8, -8}, {reach, 0}, {-reach, 0}, {0, reach}, {0, -reach}};
         for (int[] o : offsets) {
             int y = context.chunkGenerator().getBaseHeight(cx + o[0], cz + o[1], Heightmap.Types.WORLD_SURFACE_WG,
                 context.heightAccessor(), context.randomState());

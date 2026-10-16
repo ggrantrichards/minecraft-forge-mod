@@ -567,6 +567,10 @@ final class MechanicsSurvey {
             boolean turned = com.ggrantrichards.astralend.world.WebOfLife.shunWatcher(end, (net.minecraft.world.entity.monster.EnderMan) enderman);
             Vec3 facing = enderman.getLookAngle();
             check.accept("an EnderMan turns its back on the Watcher", turned && facing.z > 0.5);
+            if (!(turned && facing.z > 0.5)) {   // (1.21.1 port: why not)
+                log.accept(String.format("  watcher alive %s removed %s at %s; enderman at %s facing %s, turned %s", watcher.isAlive(),
+                    watcher.isRemoved(), watcher.position(), enderman.position(), facing, turned));
+            }
             watcher.discard();
             // Mirror Wretch: eats endermites; hums at whales, which answer and then keep away, silent.
             var wretch = (com.ggrantrichards.astralend.entity.MirrorWretch) put.apply(ModEntities.MIRROR_WRETCH.get(), o.add(-12, 0, -12));
@@ -684,6 +688,10 @@ final class MechanicsSurvey {
         boolean edge = com.ggrantrichards.astralend.entity.MirrorWretch.atEdgeForTest(end, player);
         player.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
         boolean ground = com.ggrantrichards.astralend.entity.MirrorWretch.atEdgeForTest(end, player);
+        if (!edge) {   // (1.21.1 port: why not)
+            log.accept(String.format("  ledge %s: under it %s, east %s / below %s, player at %s in %s", ledge, end.getBlockState(ledge.below()),
+                end.getBlockState(ledge.east()), end.getBlockState(ledge.east().below()), player.blockPosition(), player.level() == end));
+        }
         end.setBlock(ledge.below(), Blocks.AIR.defaultBlockState(), 3);
         var wretch = ModEntities.MIRROR_WRETCH.get().create(end);
         wretch.moveTo(at.getX() - 1.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
