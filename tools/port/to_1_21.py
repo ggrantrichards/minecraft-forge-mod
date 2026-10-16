@@ -19,6 +19,7 @@ What changed between the two, and what this does about it:
   armour trims       texture paths, the trims atlas, the template item
   tags               vanilla entries made optional (some of 26.3's blocks and items aren't in 1.21.1)
   structures         DataVersion of 1.21.1
+  pack.mcmeta        pack_format instead of 26.3's format range
 """
 import json, gzip, math, shutil, struct, sys
 from pathlib import Path
@@ -562,6 +563,11 @@ def main():
         save(breathe, {"replace": False, "values": [f"{NS}:hydragrip"]})
     for p in sorted((DATA / NS / "structure").glob("*.nbt")):
         structure_nbt(p)
+    # The pack's formats: 26.3 gives a min/max range, 1.21.1 a pack_format (34 resources, 48 data).
+    mcmeta = ROOT / "pack.mcmeta"
+    pack = load(mcmeta)
+    if "pack_format" not in pack["pack"]:
+        save(mcmeta, {"pack": {"description": pack["pack"]["description"], "pack_format": 34, "supported_formats": [34, 48]}})
     item_models()
     render_types()
     trims()
