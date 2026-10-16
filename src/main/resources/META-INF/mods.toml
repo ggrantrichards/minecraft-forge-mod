@@ -1,12 +1,12 @@
 # Tells Forge about your mod. Docs: https://docs.minecraftforge.net/en/latest/gettingstarted/modfiles/
 
 modLoader="javafml"
-loaderVersion="[66,)"
+loaderVersion="[52,)"
 license="MIT"
 
 [[mods]]
 modId="astralend"             # must match AstralEnd.MODID; lowercase letters, numbers, underscores
-version="1.0.0-beta.2"
+version="1.0.0-beta.5-mc1.21.1"
 displayName="The Astral End"
 authors="ggrantrichards"
 displayURL="https://modrinth.com/mod/the-astral-end"
@@ -16,13 +16,13 @@ description='''The End, expanded: six new biomes on the outer islands, new mobs,
 [[dependencies.astralend]]
     modId="forge"
     mandatory=true
-    versionRange="[66,)"
+    versionRange="[52,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.astralend]]
     modId="minecraft"
     mandatory=true
-    versionRange="[26.3,26.4)"
+    versionRange="[1.21.1,1.21.2)"
     ordering="NONE"
     side="BOTH"

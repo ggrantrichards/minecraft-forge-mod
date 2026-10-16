@@ -41,7 +41,7 @@ echo "$(ls run/screenshots/trailer 2>/dev/null | wc -l) frames filmed"
 ls run/screenshots/trailer/*.png > /dev/null 2>&1 || { echo "::error::no frames were filmed"; tail -40 trailer.log; exit 1; }
 
 # Cut it together: the game's own font for the titles, numpy for the score, ffmpeg for the video.
-JAR=$(find .gradle/mavenizer/repo -name 'client-extra*.jar' | head -1)
+JAR=$(find ~/.gradle/caches/forge_gradle .gradle -name 'client-extra*.jar' 2>/dev/null | head -1)
 unzip -p "$JAR" assets/minecraft/textures/font/ascii.png > /tmp/ascii.png
 python3 tools/trailer/compose.py run/screenshots/trailer /tmp/ascii.png trailer
 # and the README's moving teaser: fifteen seconds of the Eclipse revealed

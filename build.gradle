@@ -1,88 +1,83 @@
-// Based on the official Forge MDK for Minecraft 26.3 (Forge 66.0.8).
-// More complex examples (Access Transformers, Mixin, Jar-in-Jar): https://github.com/MinecraftForge/MDKExamples
+// The Astral End for Minecraft 1.21.1 (Forge 52), on ForgeGradle 6. The 26.3 build lives on the
+// 'textures' branch; this branch is its port.
 
 plugins {
     id 'java'
     id 'idea'
     id 'eclipse'
-    id 'net.minecraftforge.gradle' version '[7.0.17,8)'
+    id 'net.minecraftforge.gradle' version '[6.0.24,6.2)'
 }
 
-version = '1.0.0-beta.5'
+version = '1.0.0-beta.5-mc1.21.1'
 group = 'com.ggrantrichards.astralend'
+base { archivesName = 'astralend' }
 
-// Minecraft 26.1+ runs on Java 25, so the mod targets Java 25 too.
-java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-// Include generated resources
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 minecraft {
+    mappings channel: 'official', version: '1.21.1'
+    copyIdeResources = true
+
     runs {
         configureEach {
-            workingDir = layout.projectDirectory.dir('run')
-
-            systemProperty 'eventbus.api.strictRuntimeChecks', 'true'
-            systemProperty 'forge.enabledGameTestNamespaces', 'astralend'
+            workingDirectory project.file('run')
+            property 'eventbus.api.strictRuntimeChecks', 'true'
+            property 'forge.enabledGameTestNamespaces', 'astralend'
+            mods { astralend { source sourceSets.main } }
         }
 
-        register('client') {        // ./gradlew runClient  -> launches the game with your mod
-            // macOS only lets an app open windows from its first thread. The normal Minecraft
-            // launcher adds this flag for Mac players; without it the game crashes with
-            // "Unable to initialize SDL: No available video device".
+        client {        // ./gradlew runClient  -> launches the game with the mod
             if (System.getProperty('os.name').toLowerCase().contains('mac'))
                 jvmArgs '-XstartOnFirstThread'
-            // ./gradlew runClient -PastralendScreenshots  -> opens the world the survey generated,
-            // photographs every astral biome and quits. Used by CI; see dev/ClientScreenshots.java.
-            if (providers.gradleProperty('astralendScreenshots').isPresent()) {
+            // -PastralendScreenshots: opens the survey's world, photographs every astral biome and quits (CI).
+            if (project.hasProperty('astralendScreenshots')) {
                 args '--quickPlaySingleplayer', 'survey-world'
-                systemProperty 'astralend.screenshots', 'true'
+                property 'astralend.screenshots', 'true'
             }
-            // ./gradlew runClient -PastralendPlaytests  -> plays the scripted playtests in the survey's world
-            // and records them (see client/ClientPlaytests.java).
-            if (providers.gradleProperty('astralendPlaytests').isPresent()) {
+            // -PastralendPlaytests: plays the scripted playtests in the survey's world (CI).
+            if (project.hasProperty('astralendPlaytests')) {
                 args '--quickPlaySingleplayer', 'survey-world', '--width', '1280', '--height', '720'
-                systemProperty 'astralend.playtests', 'true'
+                property 'astralend.playtests', 'true'
             }
-            // ./gradlew runClient -PastralendTrailer  -> films the trailer in the survey's world, frame by
-            // frame, in 720p (see client/ClientTrailer.java and tools/trailer/).
-            if (providers.gradleProperty('astralendTrailer').isPresent()) {
+            // -PastralendTrailer: films the trailer in the survey's world, frame by frame, in 720p.
+            if (project.hasProperty('astralendTrailer')) {
                 args '--quickPlaySingleplayer', 'survey-world', '--width', '1280', '--height', '720'
-                systemProperty 'astralend.trailer', 'true'
+                property 'astralend.trailer', 'true'
             }
         }
 
-        register('server') {        // ./gradlew runServer  -> launches a dedicated server
+        server {        // ./gradlew runServer  -> a dedicated server
             args '--nogui'
-            // ./gradlew runServer -PastralendSurvey  -> generates part of the End, prints a report
-            // (biome map, block counts, gravity check) and stops. Used by CI; see dev/WorldgenSurvey.java.
-            if (providers.gradleProperty('astralendSurvey').isPresent())
-                systemProperty 'astralend.survey', 'true'
+            // -PastralendSurvey: generates part of the End, checks it and stops (CI; dev/WorldgenSurvey.java).
+            if (project.hasProperty('astralendSurvey'))
+                property 'astralend.survey', 'true'
         }
 
-        register('gameTestServer')
+        gameTestServer {}
 
-        register('data') {          // ./gradlew runData    -> data generators (advanced)
-            workingDir = layout.projectDirectory.dir('run-data')
-
-            args '--mod', 'astralend', '--all', '--output', layout.projectDirectory.dir('src/generated/resources'), '--existing', layout.projectDirectory.dir('src/main/resources')
+        data {
+            workingDirectory project.file('run-data')
+            args '--mod', 'astralend', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
         }
     }
 }
 
 repositories {
-    minecraft.mavenizer(it)
-    maven fg.forgeMaven
-    maven fg.minecraftLibsMaven
     mavenCentral()
 }
 
 dependencies {
-    // Minecraft version - Forge version. Change these two together when updating.
-    implementation minecraft.dependency('net.minecraftforge:forge:26.3-66.0.8')
-    annotationProcessor 'net.minecraftforge:eventbus-validator:7.0.6'
+    // Minecraft version - Forge version. Change these together when updating.
+    minecraft 'net.minecraftforge:forge:1.21.1-52.1.0'
+    compileOnly 'org.jspecify:jspecify:1.0.0'
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+    options.compilerArgs += ['-Xmaxerrs', '10000']   // every error at once: CI is the only place this builds
 }
+
+// Forge 1.21.1 runs on SRG names in production: re-obfuscate the jar if this ForgeGradle offers it.
+tasks.named('jar') { finalizedBy tasks.matching { it.name == 'reobfJar' } }
