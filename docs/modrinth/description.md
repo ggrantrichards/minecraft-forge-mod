@@ -7,6 +7,9 @@ dangerous as the void beneath them.
 > **Beta, without world compatibility.** Each beta can rework or remove blocks and items; start a new
 > world for each. Keep backups of worlds you care about.
 
+**For Minecraft 26.3 (Forge 66) and Minecraft 1.21.1 (Forge 52.1 or newer):** the same mod for both;
+pick the file for your version.
+
 **[The field guide](https://ggrantrichards.github.io/the-astral-end/)**: every biome and structure cut out of
 the world, every creature, and the web of life between them.
 
