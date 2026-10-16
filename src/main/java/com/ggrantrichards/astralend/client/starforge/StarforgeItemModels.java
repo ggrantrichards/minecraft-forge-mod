@@ -59,8 +59,9 @@ public final class StarforgeItemModels {
     }
 
     private static ModelResourceLocation accent(String kind, StarforgeUpgrade upgrade) {
-        return ModelResourceLocation.standalone(
-            ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "item/starforge/" + kind + "_" + upgrade.getSerializedName()));
+        // (a model loaded on its own, by its file: Forge's "standalone" variant)
+        return new ModelResourceLocation(
+            ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "item/starforge/" + kind + "_" + upgrade.getSerializedName()), "standalone");
     }
 
     public static void register() {
@@ -73,6 +74,7 @@ public final class StarforgeItemModels {
         });
         com.ggrantrichards.astralend.Events.on(ModelEvent.ModifyBakingResult.class, event -> {
             Map<ModelResourceLocation, BakedModel> models = event.getModels();
+            int[] wrapped = {0};
             KIND.forEach((item, kind) -> {
                 ModelResourceLocation key = ModelResourceLocation.inventory(BuiltInRegistries.ITEM.getKey(item));
                 BakedModel base = models.get(key);
@@ -85,8 +87,10 @@ public final class StarforgeItemModels {
                 }
                 if (base != null && !accents.isEmpty()) {
                     models.put(key, new Upgradable(base, accents));
+                    wrapped[0]++;
                 }
             });
+            com.mojang.logging.LogUtils.getLogger().info("Starforge accents on {} of {} items", wrapped[0], KIND.size());
         });
         com.ggrantrichards.astralend.Events.on(FMLClientSetupEvent.class, event -> event.enqueueWork(() ->
             ItemProperties.register(ModItems.STAR_COMPASS.get(), ResourceLocation.withDefaultNamespace("angle"),

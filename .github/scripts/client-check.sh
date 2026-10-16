@@ -26,7 +26,8 @@ stop_client() {
 loaded=0
 for i in $(seq 1 90); do
     sleep 5
-    if grep -q "textures/atlas/items" "$LOG" 2>/dev/null; then
+    # (26.3 builds an items atlas last; 1.21.1 puts items on the blocks atlas, so wait for the gui one)
+    if grep -q -E "textures/atlas/(items|gui)" "$LOG" 2>/dev/null; then
         echo "Client finished loading textures after ~$((i * 5))s"
         sleep 15   # let any late warnings reach the log
         loaded=1

@@ -174,7 +174,7 @@ jobs:
             grep "AstralEnd survey" survey.log | sed 's/.*\[AstralEnd survey\] //'; echo "---"; tail -60 survey-console.log; } > /tmp/logs/survey.txt 2>/dev/null || true
           grep -E "ERROR|Exception|Missing|astralend" client.log 2>/dev/null | head -120 > /tmp/logs/client.txt || true
           # (1.21 port) The real signatures of the classes in tools/port/javap.txt.
-          JARS=$(find ~/.gradle/caches build .gradle -name '*.jar' 2>/dev/null | grep -iE 'forge|minecraft|client|server' | grep -v sources)
+          JARS=$(find ~/.gradle/caches build .gradle -name '*.jar' 2>/dev/null | grep -iE 'forge|minecraft|client|server' | grep -v -e sources -e mcp_config | sort -r)
           CP=$(echo "$JARS" | tr '\n' ':')
           { echo "$JARS" | head -60; javap -cp "$CP" -protected $(grep -v '^#' tools/port/javap.txt); } > /tmp/logs/javap.txt 2>&1 || true
           cd /tmp/logs

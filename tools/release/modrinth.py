@@ -24,7 +24,7 @@ TITLE = "The Astral End"
 SUMMARY = ("The End was never empty: drifting islands, the rare golden Gilded Reach, a Leviathan's skeleton "
            "and its Curator, creatures that live with each other, and ruins without explanation.")
 SITE = "https://ggrantrichards.github.io/the-astral-end/"   # the field guide (a public repo of its own)
-GAME_VERSIONS = ["26.3"]
+GAME_VERSIONS = ["1.21.1"]   # (port-1.21 branch; the main build is 26.3)
 LOADERS = ["forge"]
 USER_AGENT = "ggrantrichards/minecraft-forge-mod (release workflow)"
 
