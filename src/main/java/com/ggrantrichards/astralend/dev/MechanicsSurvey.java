@@ -347,6 +347,7 @@ final class MechanicsSurvey {
                 boolean clear = true;   // (and the columns round it, so a ledge there has open void on every side)
                 for (int dx = -3; dx <= 3 && clear; dx += 3) {
                     for (int dz = -3; dz <= 3 && clear; dz += 3) {
+                        end.getChunk((x + dx) >> 4, (z + dz) >> 4);   // (1.21.1: an unloaded chunk's height reads as the bottom)
                         clear = end.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, x + dx, z + dz) <= end.getMinBuildHeight() + 1;
                     }
                 }
@@ -471,7 +472,9 @@ final class MechanicsSurvey {
         java.util.function.BiFunction<net.minecraft.world.entity.EntityType<?>, Vec3, net.minecraft.world.entity.Entity> put = (type, pos) -> {
             var e = type.create(end);
             e.moveTo(pos.x, pos.y, pos.z, 0.0F, 0.0F);
-            end.addFreshEntity(e);
+            if (!end.addFreshEntity(e)) {
+                log.accept("  (the level turned away a " + net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(type) + " at " + pos + ")");
+            }
             made.add(e);
             return e;
         };
