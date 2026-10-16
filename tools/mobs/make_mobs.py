@@ -1543,6 +1543,51 @@ def implant_glow(face, px, py, fw, fh, rnd):
     return None
 
 
+MAW = [hexc("1a0610"), hexc("2c0a1a"), hexc("441226")]
+
+
+def fang(face, px, py, fw, fh, rnd):
+    """Old, yellowed bone, paler at the tip."""
+    tip = face in ("north", "south", "east", "west") and py == fh - 1
+    return hexc("f2ead6") if tip or face == "down" else (hexc("d8cca8") if n() > 0.3 else hexc("bfb08a"))
+
+
+def maw(face, px, py, fw, fh, rnd):
+    """Inside the mouth: dark red gums, darker toward the throat."""
+    return MAW[0 if py >= fh - 2 or px in (0, fw - 1) else (2 if n() > 0.7 else 1)]
+
+
+def hollow_muzzle(face, px, py, fw, fh, rnd):
+    if face == "down":
+        return maw(face, px, py, fw, fh, rnd)
+    if face == "north" and py == 0 and px in (1, fw - 2):
+        return hexc("05040a")                             # nostrils
+    if face in ("east", "west") and py == fh - 1:
+        return hexc("2c0a1a")                             # the lip, drawn back
+    return hollow_leg(face, px, py, fw, fh, rnd)
+
+
+def hollow_jaw(face, px, py, fw, fh, rnd):
+    if face == "up":
+        return maw(face, px, py, fw, fh, rnd)
+    if face in ("east", "west") and py == 0:
+        return hexc("2c0a1a")
+    return hollow_leg(face, px, py, fw, fh, rnd)
+
+
+def _throat(px, py, fw, fh):
+    return fw >= 4 and 1 <= px <= fw - 2 and py >= fh - 3
+
+
+def maw_glow(face, px, py, fw, fh, rnd):
+    """A violet light deep in the throat, the implants' light (the roof of the mouth)."""
+    return hexc("6a2ca8") if face == "down" and _throat(px, py, fw, fh) else None
+
+
+def jaw_glow(face, px, py, fw, fh, rnd):
+    return hexc("6a2ca8") if face == "up" and _throat(px, py, fw, fh) else None
+
+
 HOLLOWBACK = Mob("hollowback", (128, 64), [
     Part("body", (0, 12, 2), [
         B(-0.5, -5, -8, 1, 1, 16, hollow_bone, key="spine"),
@@ -1556,9 +1601,24 @@ HOLLOWBACK = Mob("hollowback", (128, 64), [
         B(-0.5, -6, -6, 1, 1, 13, implant, key="cable"),
     ], [
         Part("fleece", (0, 0, 0), [B(-5, -5, -9, 10, 9, 18, hollow_rags, inflate=1.0)]),
+        # A dog's head now: a long muzzle over a hinged jaw, both lined with fangs, and a violet glow
+        # down its throat. HollowbackRenderer opens the jaw when it hunts and gapes it to bite.
         Part("head", (0, -2, -9), [
-            B(-2, -3, -5, 4, 4, 5, hollow_bone),
-            B(-3, -4, -6, 6, 6, 7, hollow_eye, hollow_eye_glow),
+            B(-2, -3, -5, 4, 3, 5, hollow_bone),
+            B(-3, -4, -6, 6, 4, 7, hollow_eye, hollow_eye_glow),
+            B(-2, -3, -9, 4, 3, 3, hollow_muzzle, maw_glow, key="muzzle"),
+            # the upper fangs: two long canines at the front, smaller teeth behind
+            B(-2, 0, -9, 1, 3, 1, fang, key="canine"), B(1, 0, -9, 1, 3, 1, fang, key="canine", mirror=True),
+            B(-2, 0, -7, 1, 2, 1, fang, key="tooth"), B(1, 0, -7, 1, 2, 1, fang, key="tooth", mirror=True),
+            B(-2, 0, -5, 1, 2, 1, fang, key="tooth"), B(1, 0, -5, 1, 2, 1, fang, key="tooth", mirror=True),
+        ], [
+            Part("jaw", (0, 0, -1), [
+                B(-2, 0, -8, 4, 2, 8, hollow_jaw, jaw_glow, key="jaw"),
+                # the lower fangs, pointing up between the upper ones
+                B(-1, -2, -8, 1, 2, 1, fang, key="lfang"), B(0, -2, -8, 1, 2, 1, fang, key="lfang", mirror=True),
+                B(-2, -1, -6, 1, 1, 1, fang, key="ltooth"), B(1, -1, -6, 1, 1, 1, fang, key="ltooth", mirror=True),
+                B(-2, -1, -4, 1, 1, 1, fang, key="ltooth"), B(1, -1, -4, 1, 1, 1, fang, key="ltooth", mirror=True),
+            ]),
         ]),
     ]),
     Part("leg_fr", (-3, 16, -5), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_leg, key="leg")]),

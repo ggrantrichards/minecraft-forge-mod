@@ -46,6 +46,8 @@ public class HushbackRenderer extends MobRenderer<Hushback, HushbackRenderer.Sta
     public static class State extends LivingEntityRenderState {
         public boolean sheared;
         public boolean lookout;
+        public boolean snarl;   // (the Hollowback) hunting: head low, jaw hanging open
+        public float bite;      // (the Hollowback) its attack swing, 0 to 1
     }
 
     // Walks like a sheep, grazes with its head low (high, on watch), and breathes slowly.
@@ -53,6 +55,7 @@ public class HushbackRenderer extends MobRenderer<Hushback, HushbackRenderer.Sta
         private final ModelPart body;
         private final ModelPart head;
         private final ModelPart fleece;
+        private final ModelPart jaw;    // only the Hollowback has one
         private final ModelPart[] legs = new ModelPart[4];
 
         public Model(ModelPart root) {
@@ -60,6 +63,13 @@ public class HushbackRenderer extends MobRenderer<Hushback, HushbackRenderer.Sta
             this.body = root.getChild("body");
             this.head = this.body.getChild("head");
             this.fleece = this.body.getChild("fleece");
+            ModelPart jaw = null;
+            try {
+                jaw = this.head.getChild("jaw");
+            } catch (java.util.NoSuchElementException e) {
+                // a Hushback: no jaw to open
+            }
+            this.jaw = jaw;
             String[] names = {"leg_fr", "leg_fl", "leg_br", "leg_bl"};
             for (int i = 0; i < 4; i++) {
                 this.legs[i] = root.getChild(names[i]);
@@ -83,6 +93,17 @@ public class HushbackRenderer extends MobRenderer<Hushback, HushbackRenderer.Sta
             }
             this.body.y += Mth.sin(state.ageInTicks * 0.06F) * 0.2F;
             this.fleece.visible = !state.sheared;
+            if (this.jaw != null) {
+                // Hunting, it carries its head low like a dog about to lunge, the jaw hanging open over
+                // its fangs and trembling; each bite gapes it wide and snaps it shut.
+                float gape = Mth.sin(Math.min(1.0F, state.bite) * Mth.PI) * 0.8F;
+                if (state.snarl) {
+                    this.head.xRot += 0.18F;
+                    this.jaw.xRot = 0.32F + Mth.sin(state.ageInTicks * 0.9F) * 0.04F + gape;
+                } else {
+                    this.jaw.xRot = 0.04F + gape;
+                }
+            }
         }
     }
 }

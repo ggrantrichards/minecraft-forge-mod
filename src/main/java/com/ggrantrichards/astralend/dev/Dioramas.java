@@ -37,9 +37,10 @@ final class Dioramas {
             new BlockPos(centre.getX() + 31, top + 1, centre.getZ() + 31));
     }
 
-    // A cave, cut open a few blocks above `floor` so you look down into it.
+    // A cave, cut open just above `floor` (its tunnels are low, so a higher cut shows only rock) so you
+    // look down into it.
     static void cave(ServerLevel level, String name, BlockPos floor) {
-        dump(level, name, floor.offset(-24, -14, -24), floor.offset(23, 4, 23));
+        dump(level, name, floor.offset(-24, -14, -24), floor.offset(23, 1, 23));
     }
 
     // A structure round a block it's known by.
