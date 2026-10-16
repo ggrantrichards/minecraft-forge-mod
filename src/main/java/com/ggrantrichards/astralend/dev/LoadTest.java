@@ -10,7 +10,7 @@ import net.minecraftforge.gametest.GameTestHolder;
 // (in an empty 1x1x1 template).
 @GameTestHolder(AstralEnd.MODID)
 public final class LoadTest {
-    @GameTest   // its template: data/astralend/structure/loadtest.loads.nbt, one block of air
+    @GameTest   // its template, by Forge's naming: data/minecraft/structure/astralend.loads.nbt, one block of air
     public static void loads(GameTestHelper helper) {
         helper.succeed();
     }
