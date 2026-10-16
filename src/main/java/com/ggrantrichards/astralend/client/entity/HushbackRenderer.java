@@ -46,7 +46,7 @@ public class HushbackRenderer extends MobRenderer<Hushback, HushbackRenderer.Sta
     public static class State extends LivingEntityRenderState {
         public boolean sheared;
         public boolean lookout;
-        public boolean snarl;   // (the Hollowback) hunting: head low, jaw hanging open
+        public boolean snarl;   // (the Hollowback) its prey is close: jaw open
         public float bite;      // (the Hollowback) its attack swing, 0 to 1
     }
 
@@ -94,14 +94,14 @@ public class HushbackRenderer extends MobRenderer<Hushback, HushbackRenderer.Sta
             this.body.y += Mth.sin(state.ageInTicks * 0.06F) * 0.2F;
             this.fleece.visible = !state.sheared;
             if (this.jaw != null) {
-                // Hunting, it carries its head low like a dog about to lunge, the jaw hanging open over
-                // its fangs and trembling; each bite gapes it wide and snaps it shut.
-                float gape = Mth.sin(Math.min(1.0F, state.bite) * Mth.PI) * 0.8F;
+                // Shut, the jaw is just the bottom of a Hushback's head. With its prey close the head
+                // splits open wide on its fangs, trembling, and each bite snaps it shut and open again.
                 if (state.snarl) {
-                    this.head.xRot += 0.18F;
-                    this.jaw.xRot = 0.32F + Mth.sin(state.ageInTicks * 0.9F) * 0.04F + gape;
+                    float snap = Mth.sin(Math.min(1.0F, state.bite) * Mth.PI) * 0.75F;
+                    this.head.xRot += 0.12F;
+                    this.jaw.xRot = 0.95F + Mth.sin(state.ageInTicks * 1.3F) * 0.05F - snap;
                 } else {
-                    this.jaw.xRot = 0.04F + gape;
+                    this.jaw.xRot = 0.0F;
                 }
             }
         }

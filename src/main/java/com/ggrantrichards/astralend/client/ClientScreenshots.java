@@ -308,6 +308,9 @@ public final class ClientScreenshots {
                 if (shot.style().contains("reared")) {
                     mob.setAggressive(true);    // the Mirror Wretch rears up when it hunts
                 }
+                if (shot.style().contains("reared") && mob instanceof com.ggrantrichards.astralend.entity.Hollowback hollowback) {
+                    hollowback.showJawsOpen();  // its head split open on its fangs
+                }
             }
             end.addFreshEntity(entity);
             summoned = entity;

@@ -2,6 +2,9 @@ package com.ggrantrichards.astralend.entity;
 
 import java.util.EnumSet;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -22,8 +25,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 
-// The Hollowback: a Hushback the Leviathan's builders kept and hollowed out - its hide gone dark and
-// cracked, the light gone out of it, and the herd's flight turned to rage. It lives only in the dark
+// The Hollowback: a Hushback the Leviathan's builders kept and hollowed out - it looks like one of the
+// herd, calm and slow, until it's on you: then its head splits open into a jaw full of fangs. The
+// herd's flight is turned to rage. It lives only in the dark
 // lower ribs of a Leviathan (the structure places them). Hit it and it blinks a few blocks aside,
 // as its kin do - then comes straight back at you.
 //
@@ -31,6 +35,8 @@ import org.jspecify.annotations.Nullable;
 // you - stops, head low, and chimes once, the way the herd does - before the rage takes it again.
 public class Hollowback extends Monster {
     public static final int HESITATE_TICKS = 50;
+    private static final double JAWS_RANGE = 3.5;   // how close its target must be before it opens up
+    private static final EntityDataAccessor<Boolean> JAWS_OPEN = SynchedEntityData.defineId(Hollowback.class, EntityDataSerializers.BOOLEAN);
     private int hesitateCooldown;
     private int hesitating;
     public Hollowback(EntityType<? extends Hollowback> type, Level level) {
@@ -58,6 +64,17 @@ public class Hollowback extends Monster {
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
     }
 
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(JAWS_OPEN, false);
+    }
+
+    // Its jaw is open: its target is within a few blocks (and it isn't faltering).
+    public boolean jawsOpen() {
+        return this.entityData.get(JAWS_OPEN);
+    }
+
     public boolean isHesitating() {
         return this.hesitating > 0;
     }
@@ -81,6 +98,25 @@ public class Hollowback extends Monster {
         if (this.hesitating > 0) {
             this.hesitating--;
         }
+        if (!this.level().isClientSide() && !this.isNoAi()) {   // (a posed one, for the screenshots, keeps its jaw)
+            var target = this.getTarget();
+            boolean open = target != null && target.isAlive() && this.hesitating == 0
+                && this.distanceToSqr(target) < JAWS_RANGE * JAWS_RANGE;
+            if (open != this.jawsOpen()) {
+                this.entityData.set(JAWS_OPEN, open);
+                if (open) {
+                    // a low growl as its head opens (26.3's wolf sounds come by variant: looked up by name)
+                    net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT
+                        .getOptional(net.minecraft.resources.Identifier.withDefaultNamespace("entity.wolf.growl"))
+                        .ifPresent(sound -> this.playSound(sound, 1.0F, 0.6F));
+                }
+            }
+        }
+    }
+
+    // For the screenshots: shown with its jaw open.
+    public void showJawsOpen() {
+        this.entityData.set(JAWS_OPEN, true);
     }
 
     // It falters: stops, head low, one chime. Then it won't again for a while.

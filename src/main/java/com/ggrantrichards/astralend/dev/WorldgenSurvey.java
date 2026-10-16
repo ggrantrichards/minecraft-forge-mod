@@ -444,7 +444,7 @@ public final class WorldgenSurvey {
         mobShot(lines, areas.get('A'), end, "mirror_wretch angled", 5.0, 0.0, 1.6);
         mobShot(lines, areas.get('A'), end, "mirror_wretch reared,angled", 6.0, 0.0, 2.0);
         mobShot(lines, areas.get('A'), end, "hollowback", 3.2, 0.5, 1.4);
-        mobShot(lines, areas.get('A'), end, "hollowback reared,angled", 3.0, 0.5, 1.2);   // snarling, fangs bared
+        mobShot(lines, areas.get('A'), end, "hollowback reared,angled", 3.0, 0.5, 1.2);   // its jaw open on its fangs
         mobShot(lines, areas.get('A'), end, "curator", 8.0, 0.5, 3.2);
         mobShot(lines, areas.get('A'), end, "curator awake,angled", 7.0, 0.5, 2.8);
         mobShot(lines, areas.get('A'), end, "curator exposed,awake", 6.0, 0.5, 2.8);

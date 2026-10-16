@@ -5,9 +5,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
 
-// The Hollowback: the Hushback's own model (it was one), plated in cracked horn, stitched, with purpur
-// implants down its spine, and a dog's muzzle full of fangs that it bares when it hunts; the implants'
-// lights, its one dull eye, its purpur lens and its throat glow.
+// The Hollowback: the Hushback's own model (it was one), its head split into a hinged jaw full of fangs
+// that opens only when its prey is close; the violet glow down its throat shows only then.
 public class HollowbackRenderer extends MobRenderer<Hollowback, HushbackRenderer.State, HushbackRenderer.Model> {
     private static final Identifier TEXTURE = ModModelLayers.texture("hollowback");
 
@@ -29,7 +28,7 @@ public class HollowbackRenderer extends MobRenderer<Hollowback, HushbackRenderer
     @Override
     public void extractRenderState(Hollowback entity, HushbackRenderer.State state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
-        state.snarl = entity.isAggressive();
+        state.snarl = entity.jawsOpen();
         state.bite = entity.getSwingAnimation(partialTicks);
     }
 }

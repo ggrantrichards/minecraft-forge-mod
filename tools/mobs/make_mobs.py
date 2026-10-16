@@ -1457,99 +1457,18 @@ MIRROR_WRETCH = Mob("mirror_wretch", (128, 64), [
 
 # ---- The distillation's Leviathan mobs.
 
-# Hollowback: a Hushback the Leviathan's builders took and worked on. Its clear hide is gone, grown over
-# with plates of cracked black horn; seams are stitched shut down its flanks and across its brow; purpur
-# implants are sunk along its spine, each with a violet light burning in it; one eye is a purpur lens.
-# The same shape as the Hushback (it was one), so the herd still half knows it.
-HOLLOW_HIDE = [hexc("0e0b12", 235), hexc("17121e", 240), hexc("211a2a", 245), hexc("2c2436", 250)]
-HOLLOW_BONE = [hexc("2c2620"), hexc("3e362c"), hexc("544a3c"), hexc("6a5e4c")]
-STITCH = hexc("b8b0c4")
-IMPLANT_GLOW = hexc("c58cff")
-
-
-def hollow_leg(face, px, py, fw, fh, rnd):
-    """Cracked horn."""
-    if n() > 0.9:
-        return hexc("05040a", 250)                        # a crack
-    return clamp(1 + shade_flat(face) + (1 if n() > 0.75 else 0), HOLLOW_HIDE)
-
-
-def hollow_hide(face, px, py, fw, fh, rnd):
-    """Broad plates of horn grown over the hide: a dark seam round each, now and then a crack."""
-    if face != "down" and (px % 7 == 6 or py % 8 == 7):
-        return HOLLOW_HIDE[0]
-    return hollow_leg(face, px, py, fw, fh, rnd)
-
-
-def hollow_body(face, px, py, fw, fh, rnd):
-    """The flanks are stitched shut along the middle: a seam with pale cross-stitches."""
-    if face in ("east", "west") and py == fh // 2 and 2 <= px <= fw - 3:
-        return STITCH if px % 3 == 0 else hexc("05040a")
-    if face in ("east", "west") and py in (fh // 2 - 1, fh // 2 + 1) and px % 3 == 0 and 2 <= px <= fw - 3:
-        return mix(STITCH, HOLLOW_HIDE[1], 0.45)
-    return hollow_hide(face, px, py, fw, fh, rnd)
-
-
-def hollow_rags(face, px, py, fw, fh, rnd):
-    if face == "down":
-        return None
-    return hexc("3e3a46", 230) if (n() > 0.85 and rnd.random() < 0.5) else None
-
-
-def hollow_bone(face, px, py, fw, fh, rnd):
-    return clamp(1 + shade_flat(face) + (1 if n() > 0.75 else 0), HOLLOW_BONE)
-
-
-def hollow_rib(face, px, py, fw, fh, rnd):
-    if face in ("north", "south") and edge_dist(px, py, fw, fh) > 0:
-        return None
-    return hollow_bone(face, px, py, fw, fh, rnd)
-
-
-def hollow_eye(face, px, py, fw, fh, rnd):
-    if face == "north":
-        if py == 2 and px == 0:
-            return hexc("8a5ab4")                         # its own eye, dull
-        if 1 <= py <= 3 and fw - 3 <= px <= fw - 1:
-            return PURPUR[3] if (py, px) != (2, fw - 2) else hexc("e8d0ff")   # the purpur lens
-        if py == 0 and 1 <= px <= fw - 2:
-            return STITCH if px % 2 else hexc("05040a")   # the brow, stitched
-    return hollow_hide(face, px, py, fw, fh, rnd)
-
-
-def hollow_eye_glow(face, px, py, fw, fh, rnd):
-    if face == "north":
-        if py == 2 and px == 0:
-            return hexc("b07ae0")
-        if (py, px) == (2, fw - 2):
-            return hexc("f0e0ff")
-    return None
-
-
-def implant(face, px, py, fw, fh, rnd):
-    """A purpur implant: purpur sides with a dark rim, a violet light in its top."""
-    if face == "up" and edge_dist(px, py, fw, fh) > 0:
-        return IMPLANT_GLOW
-    if edge_dist(px, py, fw, fh) == 0:
-        return PURPUR[1]
-    return clamp(3 + shade_flat(face), PURPUR)
-
-
-def implant_glow(face, px, py, fw, fh, rnd):
-    if face == "up" and edge_dist(px, py, fw, fh) > 0:
-        return IMPLANT_GLOW
-    if face in ("north", "south", "east", "west") and py == 0 and edge_dist(px, py, fw, fh) > 0:
-        return hexc("8a5ab4")
-    return None
-
-
+# Hollowback: a Hushback the Leviathan's builders kept and hollowed out. It looks like one of the herd -
+# the same dark, clear hide and faint bones, a few grey tufts where the herd's are gold, eyes a shade
+# duller - until it's on you: then its head splits along the jaw and opens on fangs, gums and a violet
+# glow down its throat. Closed, the jaw is just the lower half of a Hushback's head, the teeth folded
+# away inside it. (HollowbackRenderer opens it when its target comes close.)
 MAW = [hexc("1a0610"), hexc("2c0a1a"), hexc("441226")]
 
 
 def fang(face, px, py, fw, fh, rnd):
     """Old, yellowed bone, paler at the tip."""
     tip = face in ("north", "south", "east", "west") and py == fh - 1
-    return hexc("f2ead6") if tip or face == "down" else (hexc("d8cca8") if n() > 0.3 else hexc("bfb08a"))
+    return hexc("f2ead6") if tip or face in ("down", "up") else (hexc("d8cca8") if n() > 0.3 else hexc("bfb08a"))
 
 
 def maw(face, px, py, fw, fh, rnd):
@@ -1557,30 +1476,43 @@ def maw(face, px, py, fw, fh, rnd):
     return MAW[0 if py >= fh - 2 or px in (0, fw - 1) else (2 if n() > 0.7 else 1)]
 
 
-def hollow_muzzle(face, px, py, fw, fh, rnd):
-    if face == "down":
-        return maw(face, px, py, fw, fh, rnd)
-    if face == "north" and py == 0 and px in (1, fw - 2):
-        return hexc("05040a")                             # nostrils
-    if face in ("east", "west") and py == fh - 1:
-        return hexc("2c0a1a")                             # the lip, drawn back
-    return hollow_leg(face, px, py, fw, fh, rnd)
-
-
-def hollow_jaw(face, px, py, fw, fh, rnd):
-    if face == "up":
-        return maw(face, px, py, fw, fh, rnd)
-    if face in ("east", "west") and py == 0:
-        return hexc("2c0a1a")
-    return hollow_leg(face, px, py, fw, fh, rnd)
-
-
 def _throat(px, py, fw, fh):
     return fw >= 4 and 1 <= px <= fw - 2 and py >= fh - 3
 
 
+def hollow_fleece(face, px, py, fw, fh, rnd):
+    """Like the herd's, but grey."""
+    if face == "down":
+        return None
+    return hexc("8a8698", 110) if (n() > 0.8 and rnd.random() < 0.45) else None
+
+
+def head_hide(face, px, py, fw, fh, rnd):
+    """The Hushback's hide, but solid: the folded fangs mustn't show through."""
+    c = hush_hide(face, px, py, fw, fh, rnd)
+    return c[:3] + (240,)
+
+
+def hollow_eye(face, px, py, fw, fh, rnd):
+    """The top half of a Hushback's head: its eyes a duller violet; the roof of the mouth beneath."""
+    if face == "down":
+        return maw(face, px, py, fw, fh, rnd)
+    if face == "north" and py == 2 and px in (0, fw - 1):
+        return hexc("b0a0d8")
+    if face == "north" and py == 3 and px in (0, fw - 1):
+        return hexc("6a5e98")
+    return head_hide(face, px, py, fw, fh, rnd)
+
+
+def hollow_jaw(face, px, py, fw, fh, rnd):
+    """The bottom half of the head: hide outside, gums and tongue inside."""
+    if face == "up":
+        return maw(face, px, py, fw, fh, rnd)
+    return head_hide(face, px, py, fw, fh, rnd)
+
+
 def maw_glow(face, px, py, fw, fh, rnd):
-    """A violet light deep in the throat, the implants' light (the roof of the mouth)."""
+    """A violet light deep in the throat (only seen with the jaw open)."""
     return hexc("6a2ca8") if face == "down" and _throat(px, py, fw, fh) else None
 
 
@@ -1590,42 +1522,34 @@ def jaw_glow(face, px, py, fw, fh, rnd):
 
 HOLLOWBACK = Mob("hollowback", (128, 64), [
     Part("body", (0, 12, 2), [
-        B(-0.5, -5, -8, 1, 1, 16, hollow_bone, key="spine"),
-        B(-4, -4, -6, 8, 7, 1, hollow_rib, key="rib"), B(-4, -4, -2, 8, 7, 1, hollow_rib, key="rib"),
-        B(-4, -4, 2, 8, 7, 1, hollow_rib, key="rib"), B(-3, -3, 6, 6, 5, 1, hollow_rib),
-        B(-5, -5, -9, 10, 9, 18, hollow_body),
-        # three implants sunk along the spine, and a cable of purpur joining them
-        B(-1.5, -7, -6, 3, 2, 3, implant, implant_glow, key="implant"),
-        B(-1.5, -7, -1, 3, 2, 3, implant, implant_glow, key="implant"),
-        B(-1.5, -7, 4, 3, 2, 3, implant, implant_glow, key="implant"),
-        B(-0.5, -6, -6, 1, 1, 13, implant, key="cable"),
+        B(-0.5, -5, -8, 1, 1, 16, bone, key="spine"),
+        B(-4, -4, -6, 8, 7, 1, rib, key="rib"), B(-4, -4, -2, 8, 7, 1, rib, key="rib"),
+        B(-4, -4, 2, 8, 7, 1, rib, key="rib"), B(-3, -3, 6, 6, 5, 1, rib),
+        B(-5, -5, -9, 10, 9, 18, hush_hide),
     ], [
-        Part("fleece", (0, 0, 0), [B(-5, -5, -9, 10, 9, 18, hollow_rags, inflate=1.0)]),
-        # A dog's head now: a long muzzle over a hinged jaw, both lined with fangs, and a violet glow
-        # down its throat. HollowbackRenderer opens the jaw when it hunts and gapes it to bite.
+        Part("fleece", (0, 0, 0), [B(-5, -5, -9, 10, 9, 18, hollow_fleece, inflate=1.0)]),
+        # The Hushback's head (6 x 6 x 7) split in two: a top half, and a hinged jaw that is its bottom half.
         Part("head", (0, -2, -9), [
-            B(-2, -3, -5, 4, 3, 5, hollow_bone),
-            B(-3, -4, -6, 6, 4, 7, hollow_eye, hollow_eye_glow),
-            B(-2, -3, -9, 4, 3, 3, hollow_muzzle, maw_glow, key="muzzle"),
-            # the upper fangs: two long canines at the front, smaller teeth behind
-            B(-2, 0, -9, 1, 3, 1, fang, key="canine"), B(1, 0, -9, 1, 3, 1, fang, key="canine", mirror=True),
-            B(-2, 0, -7, 1, 2, 1, fang, key="tooth"), B(1, 0, -7, 1, 2, 1, fang, key="tooth", mirror=True),
-            B(-2, 0, -5, 1, 2, 1, fang, key="tooth"), B(1, 0, -5, 1, 2, 1, fang, key="tooth", mirror=True),
+            B(-2, -3, -5, 4, 3, 5, bone),
+            B(-3, -4, -6, 6, 4, 7, hollow_eye, maw_glow),
+            # the upper fangs, folded inside the closed jaw (a pixel in from every face, so nothing
+            # shows): long canines at the front, teeth behind
+            B(-2, 0, -5, 1, 2, 1, fang, key="canine"), B(1, 0, -5, 1, 2, 1, fang, key="canine", mirror=True),
+            B(-2, 0, -3, 1, 1, 1, fang, key="tooth"), B(1, 0, -3, 1, 1, 1, fang, key="tooth", mirror=True),
         ], [
-            Part("jaw", (0, 0, -1), [
-                B(-2, 0, -8, 4, 2, 8, hollow_jaw, jaw_glow, key="jaw"),
-                # the lower fangs, pointing up between the upper ones
-                B(-1, -2, -8, 1, 2, 1, fang, key="lfang"), B(0, -2, -8, 1, 2, 1, fang, key="lfang", mirror=True),
-                B(-2, -1, -6, 1, 1, 1, fang, key="ltooth"), B(1, -1, -6, 1, 1, 1, fang, key="ltooth", mirror=True),
-                B(-2, -1, -4, 1, 1, 1, fang, key="ltooth"), B(1, -1, -4, 1, 1, 1, fang, key="ltooth", mirror=True),
+            Part("jaw", (0, 0, 1), [
+                B(-3, 0, -7, 6, 2, 7, hollow_jaw, jaw_glow, key="jaw"),
+                # the lower fangs, pointing up between the upper ones, folded into the top half when shut
+                B(-1, -2, -6, 1, 2, 1, fang, key="lfang"), B(0, -2, -6, 1, 2, 1, fang, key="lfang", mirror=True),
+                B(-2, -1, -5, 1, 1, 1, fang, key="ltooth"), B(1, -1, -5, 1, 1, 1, fang, key="ltooth", mirror=True),
             ]),
         ]),
     ]),
-    Part("leg_fr", (-3, 16, -5), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_leg, key="leg")]),
-    Part("leg_fl", (3, 16, -5), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_leg, key="leg")]),
-    Part("leg_br", (-3, 16, 8), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_leg, key="leg")]),
-    Part("leg_bl", (3, 16, 8), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_leg, key="leg")]),
-], egg=(HOLLOW_HIDE[2], hexc("c58cff")))
+    Part("leg_fr", (-3, 16, -5), [B(-0.5, 0, -0.5, 1, 8, 1, bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hush_hide, key="leg")]),
+    Part("leg_fl", (3, 16, -5), [B(-0.5, 0, -0.5, 1, 8, 1, bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hush_hide, key="leg")]),
+    Part("leg_br", (-3, 16, 8), [B(-0.5, 0, -0.5, 1, 8, 1, bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hush_hide, key="leg")]),
+    Part("leg_bl", (3, 16, 8), [B(-0.5, 0, -0.5, 1, 8, 1, bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hush_hide, key="leg")]),
+], egg=(HIDE_CLEAR[1], hexc("6a2ca8")))
 
 
 # The Curator: the keeper of a Leviathan's reliquary - a hulking war-construct of the End's builders (after
