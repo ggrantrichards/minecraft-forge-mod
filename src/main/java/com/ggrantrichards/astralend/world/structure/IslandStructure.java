@@ -51,7 +51,18 @@ public class IslandStructure extends Structure {
                 return Optional.empty();
             }
         }
-        return inner.findValidGenerationPoint(context);
+        // (1.21.1) The jigsaw stands its start on the surface under the start piece's centre, which can be
+        // half a template away from the chunk: lay it out, and ask the ground there too.
+        Optional<GenerationStub> stub = inner.findValidGenerationPoint(context);
+        if (stub.isPresent()) {
+            var box = stub.get().getPiecesBuilder().getBoundingBox();
+            int y = context.chunkGenerator().getBaseHeight(box.getCenter().getX(), box.getCenter().getZ(), Heightmap.Types.WORLD_SURFACE_WG,
+                context.heightAccessor(), context.randomState());
+            if (y < minSurface || y > maxSurface) {
+                return Optional.empty();
+            }
+        }
+        return stub;
     }
 
     @Override
