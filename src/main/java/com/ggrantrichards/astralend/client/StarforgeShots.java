@@ -29,7 +29,17 @@ final class StarforgeShots {
         player.setGameMode(GameType.CREATIVE);
         player.getAbilities().flying = true;
         player.onUpdateAbilities();
-        if (style.contains("armor")) {
+        if (style.contains("glow=")) {
+            // One full set of netherite with one upgrade ("glow=none": plain), to compare the glows.
+            String name = style.substring(style.indexOf("glow=") + 5).split(",")[0];
+            StarforgeUpgrade upgrade = java.util.Arrays.stream(StarforgeUpgrade.values())
+                .filter(u -> u.getSerializedName().equals(name)).findFirst().orElse(null);
+            Item[] set = {Items.NETHERITE_HELMET, Items.NETHERITE_CHESTPLATE, Items.NETHERITE_LEGGINGS, Items.NETHERITE_BOOTS};
+            EquipmentSlot[] slots = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
+            for (int i = 0; i < set.length; i++) {
+                player.setItemSlot(slots[i], upgrade == null ? new ItemStack(set[i]) : up(set[i], upgrade));
+            }
+        } else if (style.contains("armor")) {
             // Every piece a different upgrade, so all their glows show.
             player.setItemSlot(EquipmentSlot.HEAD, up(Items.NETHERITE_HELMET, StarforgeUpgrade.LENSING));
             player.setItemSlot(EquipmentSlot.CHEST, up(Items.DIAMOND_CHESTPLATE, StarforgeUpgrade.VOID_RECALL));
