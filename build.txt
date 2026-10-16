@@ -1,0 +1,41 @@
+---
+  recompile[forge][official-26.3]
+  injectData[forge][official-26.3]
+  injectData[forge][official-26.3][variants]
+Maven POM
+  pom[forge]
+Metadata
+  metadata[forge]
+  metadata[forge][variants]
+Minecraft Maven has finished, took 0:01.957
+
+> Task :processTestResources NO-SOURCE
+> Task :processResources FAILED
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1792192925480.json
+
+1 problem was found storing the configuration cache.
+- Task `:processResources` of type `org.gradle.language.jvm.tasks.ProcessResources`: invocation of 'project' references a Gradle script object from a Groovy closure at execution time, which is unsupported with the configuration cache.
+  See https://docs.gradle.org/9.7.1/userguide/configuration_cache_requirements.html#config_cache:requirements:gradle_model_types
+
+See the complete report at file:///home/runner/work/minecraft-forge-mod/minecraft-forge-mod/build/reports/configuration-cache/ag9jcegc7g4xcd690tfuidupi/dce4vpaokfg90b2nra9tdp4sz/configuration-cache-report.html
+
+[Incubating] Problems report is available at: file:///home/runner/work/minecraft-forge-mod/minecraft-forge-mod/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* Where:
+Build file '/home/runner/work/minecraft-forge-mod/minecraft-forge-mod/build.gradle' line: 23
+
+* What went wrong:
+Execution failed for task ':processResources' (registered by plugin class 'org.gradle.api.plugins.JavaBasePlugin').
+> Invocation of 'project' references a Gradle script object from a Groovy closure at execution time, which is unsupported with the configuration cache.
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 16s
+1 actionable task: 1 executed
+Configuration cache entry stored with 1 problem.
