@@ -211,6 +211,20 @@
         "chance": 0.04,
         "type": "minecraft:random_chance"
       }
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "astralend:wyrm_banner_pattern",
+          "weight": 1
+        }
+      ],
+      "condition": {
+        "chance": 0.2,
+        "type": "minecraft:random_chance"
+      }
     }
   ],
   "random_sequence": "astralend:chests/leviathan"

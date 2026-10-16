@@ -26,6 +26,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "astralend:music_disc_observing_the_star",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
           "name": "astralend:star_chart",
           "modifier": [
             {
