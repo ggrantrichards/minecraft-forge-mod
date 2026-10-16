@@ -66,7 +66,9 @@ def provider(p):
         return {"type": "minecraft:simple_state_provider", "state": state(p)}
     if isinstance(p, dict):
         p = dict(p)
-        if p.get("type") == "minecraft:randomized_int" and "source" in p:
+        if p.get("type") == "minecraft:randomized_int" and "source" in p:   # 1.21.1's name for it
+            p["type"] = "minecraft:randomized_int_state_provider"
+        if p.get("type") == "minecraft:randomized_int_state_provider":
             p["source"] = provider(p["source"])
         for k in ("default", "fallback"):
             if k in p:
