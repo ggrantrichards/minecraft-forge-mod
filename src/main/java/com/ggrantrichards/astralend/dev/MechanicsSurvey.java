@@ -344,7 +344,13 @@ final class MechanicsSurvey {
             for (int k = 0; k < 12; k++) {
                 double a = k * Math.PI / 6.0;
                 int x = from.getX() + (int) Math.round(Math.cos(a) * r), z = from.getZ() + (int) Math.round(Math.sin(a) * r);
-                if (end.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, x, z) <= end.getMinBuildHeight() + 1) {
+                boolean clear = true;   // (and the columns round it, so a ledge there has open void on every side)
+                for (int dx = -3; dx <= 3 && clear; dx += 3) {
+                    for (int dz = -3; dz <= 3 && clear; dz += 3) {
+                        clear = end.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, x + dx, z + dz) <= end.getMinBuildHeight() + 1;
+                    }
+                }
+                if (clear) {
                     return new BlockPos(x, from.getY(), z);
                 }
             }
@@ -568,8 +574,11 @@ final class MechanicsSurvey {
             Vec3 facing = enderman.getLookAngle();
             check.accept("an EnderMan turns its back on the Watcher", turned && facing.z > 0.5);
             if (!(turned && facing.z > 0.5)) {   // (1.21.1 port: why not)
-                log.accept(String.format("  watcher alive %s removed %s at %s; enderman at %s facing %s, turned %s", watcher.isAlive(),
-                    watcher.isRemoved(), watcher.position(), enderman.position(), facing, turned));
+                log.accept(String.format("  watcher alive %s removed %s at %s; enderman at %s facing %s, turned %s; in the level: %s, "
+                    + "Watchers in a 48-block box: %d, entities there: %d", watcher.isAlive(), watcher.isRemoved(), watcher.position(),
+                    enderman.position(), facing, turned, end.getEntity(watcher.getUUID()) != null,
+                    end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.Watcher.class, enderman.getBoundingBox().inflate(24.0)).size(),
+                    end.getEntities((net.minecraft.world.entity.Entity) null, enderman.getBoundingBox().inflate(24.0), e -> true).size()));
             }
             watcher.discard();
             // Mirror Wretch: eats endermites; hums at whales, which answer and then keep away, silent.
@@ -686,12 +695,12 @@ final class MechanicsSurvey {
         end.setBlock(ledge.below(), Blocks.END_STONE.defaultBlockState(), 3);
         player.moveTo(ledge.getX() + 0.5, ledge.getY(), ledge.getZ() + 0.5, 0.0F, 0.0F);
         boolean edge = com.ggrantrichards.astralend.entity.MirrorWretch.atEdgeForTest(end, player);
-        player.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
-        boolean ground = com.ggrantrichards.astralend.entity.MirrorWretch.atEdgeForTest(end, player);
         if (!edge) {   // (1.21.1 port: why not)
             log.accept(String.format("  ledge %s: under it %s, east %s / below %s, player at %s in %s", ledge, end.getBlockState(ledge.below()),
                 end.getBlockState(ledge.east()), end.getBlockState(ledge.east().below()), player.blockPosition(), player.level() == end));
         }
+        player.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
+        boolean ground = com.ggrantrichards.astralend.entity.MirrorWretch.atEdgeForTest(end, player);
         end.setBlock(ledge.below(), Blocks.AIR.defaultBlockState(), 3);
         var wretch = ModEntities.MIRROR_WRETCH.get().create(end);
         wretch.moveTo(at.getX() - 1.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
