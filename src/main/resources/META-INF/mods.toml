@@ -11,7 +11,7 @@ displayName="The Astral End"
 authors="ggrantrichards"
 displayURL="https://modrinth.com/mod/the-astral-end"
 logoFile="astralend_logo.png"
-description='''The End was never empty. Beyond the dragon's island the outer End becomes a sparse sky of drifting islands: six new biomes and two caves, a Leviathan's skeleton with a citadel on its back and its Curator, creatures that live with each other, Sunstorms from the Gilded Reach's star, the Starforge, and ruins no one is left to explain.'''
+description='''The End is alive. New biomes, creatures and structures for the outer End, including the Leviathan, the Curator and the Starforge.'''
 
 [[dependencies.astralend]]
     modId="forge"

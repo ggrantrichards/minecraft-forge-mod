@@ -21,8 +21,7 @@ API = os.environ.get("MODRINTH_API", "https://api.modrinth.com/v2")   # overrida
 ROOT = Path(__file__).resolve().parents[2]
 SLUG = "the-astral-end"
 TITLE = "The Astral End"
-SUMMARY = ("The End was never empty: drifting islands, the rare golden Gilded Reach, a Leviathan's skeleton "
-           "and its Curator, creatures that live with each other, and ruins without explanation.")
+SUMMARY = "The End is alive. New biomes, creatures and structures for the outer End."
 SITE = "https://ggrantrichards.github.io/the-astral-end/"   # the field guide (a public repo of its own)
 GAME_VERSIONS = ["1.21.1"]   # (port-1.21 branch; the main build is 26.3)
 LOADERS = ["forge"]
