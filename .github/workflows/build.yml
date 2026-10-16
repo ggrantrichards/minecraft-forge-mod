@@ -187,10 +187,13 @@ jobs:
             && git -c user.name="CI" -c user.email="ci@users.noreply.github.com" commit -qm "Logs from ${GITHUB_SHA::7}" \
             && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-logs-1.21
 
+      # (A full artifact quota is the account's, not the build's: it doesn't fail the run.)
       - uses: actions/upload-artifact@v4
         if: always()
+        continue-on-error: true
         with:
           name: astralend
+          retention-days: 3
           path: |
             build/libs/*.jar
             server.log
