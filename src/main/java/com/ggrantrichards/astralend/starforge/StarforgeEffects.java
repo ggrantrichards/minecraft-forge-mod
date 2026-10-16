@@ -87,7 +87,7 @@ public final class StarforgeEffects {
     }
 
     private static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (!(event.player() instanceof ServerPlayer player) || !(player.level() instanceof ServerLevel level) || player.isSpectator()) {
+        if (!(event.player instanceof ServerPlayer player) || !(player.level() instanceof ServerLevel level) || player.isSpectator()) {
             return;
         }
         PlayerState s = state(player);
@@ -315,8 +315,8 @@ public final class StarforgeEffects {
 
     private static void onServerTick(TickEvent.ServerTickEvent event) {
         flush(false);
-        if (event.server().getTickCount() % 1200 == 0) {
-            PLAYERS.keySet().removeIf(id -> event.server().getPlayerList().getPlayer(id) == null);
+        if (event.getServer().getTickCount() % 1200 == 0) {
+            PLAYERS.keySet().removeIf(id -> event.getServer().getPlayerList().getPlayer(id) == null);
         }
     }
 

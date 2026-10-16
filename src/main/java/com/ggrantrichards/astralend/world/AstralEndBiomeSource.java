@@ -158,7 +158,7 @@ public class AstralEndBiomeSource extends BiomeSource {
 
     // The astral region at a block position (ignoring the central 1,024 blocks); also used by the survey.
     public static AstralRegions.Region region(Climate.Sampler sampler, int blockX, int blockZ) {
-        return com.ggrantrichards.astralend.compat.Compat.sample(AstralRegions.pick(sampler.temperature(), blockX, 0, blockZ),
+        return AstralRegions.pick(com.ggrantrichards.astralend.compat.Compat.sample(sampler.temperature(), blockX, 0, blockZ),
             com.ggrantrichards.astralend.compat.Compat.sample(sampler.humidity(), blockX, 0, blockZ),
             com.ggrantrichards.astralend.compat.Compat.sample(sampler.weirdness(), blockX, 0, blockZ),
             com.ggrantrichards.astralend.compat.Compat.sample(sampler.continentalness(), blockX, 0, blockZ));

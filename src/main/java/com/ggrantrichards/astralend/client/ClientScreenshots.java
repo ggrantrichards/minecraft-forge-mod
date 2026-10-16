@@ -320,7 +320,7 @@ public final class ClientScreenshots {
     }
 
     private static void grab(Minecraft minecraft, String name) {
-        Screenshot.grab(minecraft.gameDirectory, "astralend-" + name + ".png", minecraft.gameRenderer.getMainRenderTarget(), 1,
+        Screenshot.grab(minecraft.gameDirectory, "astralend-" + name + ".png", minecraft.getMainRenderTarget(), 1,
             message -> LOGGER.info("[AstralEnd screenshots] saved {}", name));
     }
 

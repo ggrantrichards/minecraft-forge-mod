@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import net.minecraft.world.level.biome.Climate;
 import net.minecraft.world.level.levelgen.RandomState;
-import net.minecraft.world.level.levelgen.densityfunction.SamplerContext;
 
 // Where the Eclipses are, and the shape of each. Shared by the biome source, the terrain
 // (EclipseTerrainFeature: the Eclipse's island), its landmarks and the Sunstorms.
@@ -40,7 +39,7 @@ public final class EclipseLayout {
     // The world's region noises, for code that isn't handed them (features, structures, the Sunstorms):
     // an uncached sampler, the kind vanilla's own commands use, made once per world.
     public static Climate.Sampler sampler(RandomState state) {
-        return SAMPLERS.computeIfAbsent(state, s -> s.createClimateSampler(SamplerContext.EMPTY_UNCACHED));
+        return SAMPLERS.computeIfAbsent(state, RandomState::sampler);
     }
 
     public record Eclipse(double x, double z, double angle) {

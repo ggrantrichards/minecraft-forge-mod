@@ -72,7 +72,7 @@ public class SpireWyrm extends Monster {
 
     private final SpireWyrmPart[] parts = new SpireWyrmPart[SEGMENTS];
     private final ArrayDeque<Vec3> trail = new ArrayDeque<>();
-    private final ServerBossEvent bossEvent = (ServerBossEvent) new ServerBossEvent(java.util.UUID.randomUUID(), this.getDisplayName(),
+    private final ServerBossEvent bossEvent = (ServerBossEvent) new ServerBossEvent(this.getDisplayName(),
         BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.NOTCHED_10).setDarkenScreen(false);
     private @Nullable Vec3 home;
     private double angle;
@@ -712,7 +712,7 @@ public class SpireWyrm extends Monster {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag output) {
+    public void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
         if (this.home != null) {
             output.putDouble("HomeX", this.home.x);
@@ -723,7 +723,7 @@ public class SpireWyrm extends Monster {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag input) {
+    public void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
         if ((input.contains("HomeY") ? input.getDouble("HomeY") : Double.NaN) == (input.contains("HomeY") ? input.getDouble("HomeY") : 0.0)) {
             this.home = new Vec3((input.contains("HomeX") ? input.getDouble("HomeX") : 0.0), (input.contains("HomeY") ? input.getDouble("HomeY") : 0.0), (input.contains("HomeZ") ? input.getDouble("HomeZ") : 0.0));

@@ -102,7 +102,7 @@ public class CollectorPedestalBlock extends Block implements EntityBlock {
                                           InteractionHand hand, BlockHitResult hit) {
         Holding holding = Holding.of(stack);
         if (holding == Holding.NONE || state.getValue(HOLDING) != Holding.NONE) {
-            return net.minecraft.world.Itemnet.minecraft.world.ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION_TO_DEFAULT_BLOCK_INTERACTION;
+            return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof CollectorPedestalBlockEntity pedestal) {
             pedestal.setHeld(stack.consumeAndReturn(1, player));

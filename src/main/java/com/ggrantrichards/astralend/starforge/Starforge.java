@@ -95,7 +95,7 @@ public final class Starforge {
                 kept.add(entry);
             }
         }
-        ItemAttributeModifiers modifiers = new ItemAttributeModifiers(kept);
+        ItemAttributeModifiers modifiers = new ItemAttributeModifiers(kept, current.showInTooltip());
         if (result.is(ARMOUR)) {
             EquipmentSlot slot = slotOf(result);
             EquipmentSlotGroup group = EquipmentSlotGroup.bySlot(slot);

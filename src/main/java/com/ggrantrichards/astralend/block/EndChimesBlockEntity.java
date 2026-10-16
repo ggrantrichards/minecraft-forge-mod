@@ -31,7 +31,7 @@ public class EndChimesBlockEntity extends BlockEntity {
     }
 
     public static void register() {
-        com.ggrantrichards.astralend.Events.cancelling(EntityTeleportEvent.EntityRandom.class, EndChimesBlockEntity::onTeleport);
+        com.ggrantrichards.astralend.Events.cancelling(EntityTeleportEvent.EnderEntity.class, EndChimesBlockEntity::onTeleport);
         com.ggrantrichards.astralend.Events.cancelling(EntityTeleportEvent.EnderPearl.class, EndChimesBlockEntity::onTeleport);
         com.ggrantrichards.astralend.Events.cancelling(EntityTeleportEvent.ChorusFruit.class, EndChimesBlockEntity::onTeleport);
     }

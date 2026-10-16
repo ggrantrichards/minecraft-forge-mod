@@ -34,15 +34,20 @@ public class AstralForgeMenu extends ItemCombinerMenu {
     }
 
     public AstralForgeMenu(int containerId, Inventory inventory, ContainerLevelAccess access) {
-        super(ModMenus.ASTRAL_FORGE.get(), containerId, inventory, access, ItemCombinerMenuSlotDefinition.create()
+        super(ModMenus.ASTRAL_FORGE.get(), containerId, inventory, access);
+        this.addDataSlot(this.hasError).set(0);
+    }
+
+    @Override
+    protected ItemCombinerMenuSlotDefinition createInputSlotDefinitions() {
+        return ItemCombinerMenuSlotDefinition.create()
             .withSlot(TEMPLATE, 8, SLOT_Y, stack -> stack.is(ModItems.STARFORGE_TEMPLATE.get()))
             .withSlot(BASE, 26, SLOT_Y, stack -> StarforgeUpgrade.Kind.of(stack).any())
             .withSlot(ALLOY, 44, SLOT_Y, stack -> stack.is(ModItems.STARFORGE_ALLOY.get()))
             .withSlot(MATERIAL, 62, SLOT_Y, StarforgeUpgrade::isMaterial)
             .withSlot(MATERIAL_2, 80, SLOT_Y, StarforgeUpgrade::isMaterial)
             .withResultSlot(RESULT, 134, SLOT_Y)
-            .build());
-        this.addDataSlot(this.hasError).set(0);
+            .build();
     }
 
     @Override
@@ -86,7 +91,7 @@ public class AstralForgeMenu extends ItemCombinerMenu {
 
     @Override
     protected void onTake(Player player, ItemStack carried) {
-        carried.onCraftedBy(player, carried.getCount());
+        carried.onCraftedBy(player.level(), player, carried.getCount());
         for (int slot = TEMPLATE; slot <= MATERIAL_2; slot++) {
             ItemStack stack = this.inputSlots.getItem(slot);
             if (!stack.isEmpty()) {

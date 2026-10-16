@@ -358,7 +358,7 @@ public final class WorldgenSurvey {
                 failures.add(name + ": no " + home.biome() + " area to test it in");
                 continue;
             }
-            var entity = home.type().create(end, net.minecraft.world.entity.MobSpawnType.COMMAND);
+            var entity = home.type().create(end);
             if (!(entity instanceof net.minecraft.world.entity.Mob mob)) {
                 failures.add(name + ": couldn't be created");
                 continue;
@@ -588,17 +588,17 @@ public final class WorldgenSurvey {
             }
             BlockPos cover = com.ggrantrichards.astralend.entity.EndMobs.coverNear(end, meadow, 12, end.getRandom());
             BlockPos water = com.ggrantrichards.astralend.entity.EndMobs.waterNear(end, meadow, 16);
-            var whale = ModEntities.DRIFT_WHALE.get().create(end, net.minecraft.world.entity.MobSpawnType.COMMAND);
+            var whale = ModEntities.DRIFT_WHALE.get().create(end);
             whale.moveTo(meadow.getX() + 0.5, meadow.getY() + 30, meadow.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(whale);
             made.add(whale);
             var out = whale.outOfTheStorm(end);
             boolean outward = out != null && out.x * (whale.getX() - e.x()) + out.z * (whale.getZ() - e.z()) > 0.0;
-            var herd = ModEntities.HUSHBACK.get().create(end, net.minecraft.world.entity.MobSpawnType.COMMAND);
+            var herd = ModEntities.HUSHBACK.get().create(end);
             herd.moveTo(meadow.getX() + 0.5, meadow.getY(), meadow.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(herd);
             made.add(herd);
-            var mite = net.minecraft.world.entity.EntityType.ENDERMITE.create(end, net.minecraft.world.entity.MobSpawnType.COMMAND);
+            var mite = net.minecraft.world.entity.EntityType.ENDERMITE.create(end);
             mite.moveTo(meadow.getX() + 3.5, meadow.getY(), meadow.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(mite);
             made.add(mite);
@@ -628,7 +628,7 @@ public final class WorldgenSurvey {
             failures.add("leviathan: none found within 3200 blocks");
             return;
         }
-        var registry = end.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE);
+        var registry = end.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.STRUCTURE);
         com.ggrantrichards.astralend.world.structure.LeviathanPiece body = null;
         com.ggrantrichards.astralend.world.structure.LeviathanHeadPiece head = null;
         for (var entry : end.getChunk(start.getX() >> 4, start.getZ() >> 4).getAllStarts().entrySet()) {
@@ -663,7 +663,7 @@ public final class WorldgenSurvey {
             Math.max(box.maxZ(), skullBox.maxZ())));
         testMaze(end, body.mazeStart(), failures);
         // A Drift Whale passing through: once round the skeleton, humming low.
-        var passing = ModEntities.DRIFT_WHALE.get().create(end, net.minecraft.world.entity.MobSpawnType.COMMAND);
+        var passing = ModEntities.DRIFT_WHALE.get().create(end);
         passing.moveTo(heart.getX() + 0.5, heart.getY() + 2.0, heart.getZ() + 0.5, 0.0F, 0.0F);
         end.addFreshEntity(passing);
         boolean circles = passing.noticeLeviathan(end) && passing.isCircling();
@@ -1119,7 +1119,7 @@ public final class WorldgenSurvey {
                 if (marker == null) {
                     log(String.format("%s: start at %s, but nothing of it was built", w.name(), start.toShortString()));
                     // Why not: does its template load, and what did the start chunk record?
-                    var registry = end.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE);
+                    var registry = end.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.STRUCTURE);
                     for (int cx = -1; cx <= 1; cx++) {
                         for (int cz = -1; cz <= 1; cz++) {
                             var chunk = end.getChunk((start.getX() >> 4) + cx, (start.getZ() >> 4) + cz);
@@ -1409,7 +1409,7 @@ public final class WorldgenSurvey {
                                 && state.getValue(net.minecraft.world.level.block.LeavesBlock.DISTANCE) >= 7) {
                                 area.decayingLeaves++;
                             }
-                            if (top == null && state.isSolidRender()) {
+                            if (top == null && state.isSolidRender(end, pos)) {
                                 top = block;
                                 if (inside) {
                                     area.surfaceHeightsIn.merge(y, 1, Integer::sum);

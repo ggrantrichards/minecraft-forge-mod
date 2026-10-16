@@ -87,7 +87,7 @@ public final class UpsideDown {
             lastYaw = Float.NaN;
             return;
         }
-        if (event.getCamera().entity() != player) {
+        if (event.getCamera().getEntity() != player) {
             return;
         }
         if (f > 0.5F) {
@@ -98,7 +98,7 @@ public final class UpsideDown {
         event.setRoll(event.getRoll() + 180.0F * f);
         if (!event.getCamera().isDetached()) {
             Camera camera = event.getCamera();
-            Vec3 eye = camera.position().add(0.0, -DROP * f, 0.0);
+            Vec3 eye = camera.getPosition().add(0.0, -DROP * f, 0.0);
             moveCamera(camera, eye);
             if (f > 0.5F) {
                 aimFrom(minecraft, player, eye, (float) event.getPartialTick());
@@ -168,8 +168,7 @@ public final class UpsideDown {
     // Strafing follows the screen too.
     private static void onInput(MovementInputUpdateEvent event) {
         if (flip > 0.5F && event.getEntity() == Minecraft.getInstance().player) {
-            Vec2 move = event.getInput().moveVector;
-            event.getInput().moveVector = new Vec2(-move.x, move.y);
+            event.getInput().leftImpulse = -event.getInput().leftImpulse;
         }
     }
 

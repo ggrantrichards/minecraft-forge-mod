@@ -25,7 +25,7 @@ public class MawThroatBlock extends Block {
     protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                           InteractionHand hand, BlockHitResult hit) {
         if (!stack.is(ModItems.PORTAL_LENS.get())) {
-            return net.minecraft.world.Itemnet.minecraft.world.ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION_TO_DEFAULT_BLOCK_INTERACTION;
+            return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (level instanceof ServerLevel server && player instanceof ServerPlayer serverPlayer) {
             MawNetwork.wake(server, pos, serverPlayer);

@@ -185,7 +185,7 @@ public class Hushback extends Animal {
                     this.spawnAtLocation(new ItemStack(ModItems.HUSHFLEECE.get()));
                 }
                 level.playSound(null, this, SoundEvents.SHEEP_SHEAR, SoundSource.PLAYERS, 0.6F, 1.4F);
-                held.hurtAndBreak(1, player, hand);
+                held.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
                 if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
                     com.ggrantrichards.astralend.world.ModAdvancements.award(sp, "harvest_moon");
                 }
@@ -272,7 +272,7 @@ public class Hushback extends Animal {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag output) {
+    public void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
         output.putBoolean("Sheared", this.isSheared());
         output.putInt("Regrow", this.regrow);
@@ -378,7 +378,7 @@ public class Hushback extends Animal {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag input) {
+    public void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
         this.entityData.set(SHEARED, (input.contains("Sheared") ? input.getBoolean("Sheared") : false));
         this.regrow = (input.contains("Regrow") ? input.getInt("Regrow") : 0);

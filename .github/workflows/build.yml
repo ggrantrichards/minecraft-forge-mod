@@ -169,6 +169,9 @@ jobs:
           { grep -nE "/(WARN|ERROR)\]|Exception|Caused by" survey.log | grep -v "Cache miss" | head -80; echo "---"; \
             grep "AstralEnd survey" survey.log | sed 's/.*\[AstralEnd survey\] //'; echo "---"; tail -60 survey-console.log; } > /tmp/logs/survey.txt 2>/dev/null || true
           grep -E "ERROR|Exception|Missing|astralend" client.log 2>/dev/null | head -120 > /tmp/logs/client.txt || true
+          # (1.21 port) The real signatures of the classes in tools/port/javap.txt.
+          JAR=$(find ~/.gradle/caches/forge_gradle -name '*mapped_official*.jar' ! -name '*sources*' 2>/dev/null | head -1)
+          { echo "$JAR"; javap -cp "$JAR" -protected $(grep -v '^#' tools/port/javap.txt); } > /tmp/logs/javap.txt 2>&1 || true
           cd /tmp/logs
           printf "# CI logs\n\nFrom commit ${GITHUB_SHA::7} on ${GITHUB_REF_NAME}.\n" > README.md
           git init -q && git checkout -q -b ci-logs-1.21 && git add . \

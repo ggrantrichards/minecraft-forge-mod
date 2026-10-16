@@ -106,13 +106,13 @@ public class Shardback extends Monster {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag output) {
+    public void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
         output.putBoolean("Hidden", this.isHidden());
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag input) {
+    public void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
         this.setHidden((input.contains("Hidden") ? input.getBoolean("Hidden") : true));
     }

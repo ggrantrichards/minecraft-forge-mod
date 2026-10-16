@@ -17,6 +17,12 @@ public class EndPlantBlock extends BushBlock {
     private final VoxelShape shape;
     private final TagKey<Block> soil;
 
+    // (1.21.1 port) Blocks name a codec; this one is made in code, so its codec is the block itself.
+    @Override
+    protected com.mojang.serialization.MapCodec<EndPlantBlock> codec() {
+        return com.mojang.serialization.MapCodec.unit(this);
+    }
+
     public EndPlantBlock(VoxelShape shape, TagKey<Block> soil, BlockBehaviour.Properties properties) {
         super(properties);
         this.shape = shape;

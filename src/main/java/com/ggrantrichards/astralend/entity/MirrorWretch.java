@@ -218,7 +218,7 @@ public class MirrorWretch extends Monster {
     public void throwOutward(Player player) {
         Vec3 away = player.position().subtract(this.position()).multiply(1, 0, 1).normalize();
         player.push(away.x * 0.6, 0.25, away.z * 0.6);
-        player.syncVelocity = true;
+        player.hurtMarked = true;
     }
 
     @Override

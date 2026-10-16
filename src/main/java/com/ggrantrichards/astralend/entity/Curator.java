@@ -69,7 +69,7 @@ public class Curator extends Monster {
     public static final int AIM_TICKS = 32, CROUCH_TICKS = 20, CHARGE_TICKS = 14, RECOIL_TICKS = 10, PUNCH_TICKS = 8;
     private static final double BEAM_RANGE = 24.0;
     public static final double ARENA = 26.0;     // its reach from home
-    private final ServerBossEvent bossEvent = new ServerBossEvent(java.util.UUID.randomUUID(), this.getDisplayName(), BossEvent.BossBarColor.PURPLE,
+    private final ServerBossEvent bossEvent = new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE,
         BossEvent.BossBarOverlay.NOTCHED_10);
     private @Nullable BlockPos home;
     private int attackCooldown;
@@ -638,7 +638,7 @@ public class Curator extends Monster {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag output) {
+    public void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
         output.putBoolean("Dormant", this.isDormant());
         output.putBoolean("Exposed", this.isExposed());
@@ -648,7 +648,7 @@ public class Curator extends Monster {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag input) {
+    public void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
         this.entityData.set(DATA_DORMANT, (input.contains("Dormant") ? input.getBoolean("Dormant") : true));
         this.entityData.set(DATA_EXPOSED, (input.contains("Exposed") ? input.getBoolean("Exposed") : false));

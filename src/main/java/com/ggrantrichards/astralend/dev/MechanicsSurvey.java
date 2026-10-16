@@ -667,7 +667,7 @@ final class MechanicsSurvey {
         end.addFreshEntity(grip);
         end.addFreshEntity(mite);
         mite.setHealth(2.0F);           // one blow (3) to kill it: hurt cooldowns don't come into it
-        grip.doHurtTarget(end, mite);
+        grip.doHurtTarget(mite);
         boolean pearl = !end.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, grip.getBoundingBox().inflate(4.0),
             e -> e.getItem().is(net.minecraft.world.item.Items.ENDER_PEARL)).isEmpty();
         boolean leavesPlayers = !grip.canAttack(player);

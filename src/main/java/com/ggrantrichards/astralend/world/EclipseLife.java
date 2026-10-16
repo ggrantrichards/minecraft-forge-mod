@@ -23,7 +23,7 @@ public final class EclipseLife {
     }
 
     private static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (!(event.level() instanceof ServerLevel level) || level.dimension() != Level.END || level.getGameTime() % 20 != 7) {
+        if (!(event.level instanceof ServerLevel level) || level.dimension() != Level.END || level.getGameTime() % 20 != 7) {
             return;
         }
         for (EnderMan enderman : level.getEntities(EntityType.ENDERMAN, e -> e.isAlive() && e.getTarget() == null

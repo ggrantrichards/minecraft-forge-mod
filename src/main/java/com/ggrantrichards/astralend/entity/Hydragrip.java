@@ -99,11 +99,6 @@ public class Hydragrip extends Animal {
     }
 
     @Override
-    public boolean canBreatheUnderwater() {
-        return true;
-    }
-
-    @Override
     public boolean isFood(ItemStack stack) {
         return stack.is(Items.CHORUS_FRUIT);
     }
@@ -119,7 +114,7 @@ public class Hydragrip extends Animal {
         ServerLevel level = (ServerLevel) this.level();
         boolean hit = super.doHurtTarget(target);
         if (hit && target instanceof Endermite mite && !mite.isAlive()) {
-            this.playSound(SoundEvents.GENERIC_EAT.value(), 0.8F, 1.2F);
+            this.playSound(SoundEvents.GENERIC_EAT, 0.8F, 1.2F);
             level.sendParticles(ParticleTypes.PORTAL, this.getX(), this.getY() + 0.5, this.getZ(), 20, 0.3, 0.3, 0.3, 0.2);
             this.spawnAtLocation(new ItemStack(Items.ENDER_PEARL));
         }

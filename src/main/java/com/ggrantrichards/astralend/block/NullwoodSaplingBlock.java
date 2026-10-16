@@ -19,6 +19,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class NullwoodSaplingBlock extends BushBlock {
     private static final VoxelShape SHAPE = com.ggrantrichards.astralend.compat.Compat.column(12.0, 0.0, 12.0);
 
+    // (1.21.1 port) Blocks name a codec; this one is made in code, so its codec is the block itself.
+    @Override
+    protected com.mojang.serialization.MapCodec<NullwoodSaplingBlock> codec() {
+        return com.mojang.serialization.MapCodec.unit(this);
+    }
+
     public NullwoodSaplingBlock(BlockBehaviour.Properties properties) {
         super(properties);
     }

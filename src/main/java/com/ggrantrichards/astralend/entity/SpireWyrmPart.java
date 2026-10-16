@@ -28,11 +28,11 @@ public class SpireWyrmPart extends net.minecraftforge.entity.PartEntity<SpireWyr
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag input) {
+    public void readAdditionalSaveData(CompoundTag input) {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag output) {
+    public void addAdditionalSaveData(CompoundTag output) {
     }
 
     @Override
@@ -50,7 +50,7 @@ public class SpireWyrmPart extends net.minecraftforge.entity.PartEntity<SpireWyr
         if (!(this.level() instanceof ServerLevel level)) {
             return super.hurt(source, damage);
         }
-        return !this.isInvulnerableToBase(source) && this.getParent().hurtFromPart(level, this, source, damage);
+        return !this.isInvulnerableTo(source) && this.getParent().hurtFromPart(level, this, source, damage);
     }
 
     @Override

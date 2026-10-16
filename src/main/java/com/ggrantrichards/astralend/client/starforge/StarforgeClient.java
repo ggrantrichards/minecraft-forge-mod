@@ -31,7 +31,7 @@ public final class StarforgeClient {
         });
         com.ggrantrichards.astralend.Events.on(EntityRenderersEvent.AddLayers.class, event -> {
             for (PlayerSkin.Model skin : event.getSkins()) {
-                if (event.getSkin(skin) instanceof LivingEntityRenderer<?, ?> living && living.getModel() instanceof PlayerModel<?>) {
+                if (event.getSkin(skin.id()) instanceof LivingEntityRenderer<?, ?> living && living.getModel() instanceof PlayerModel<?>) {
                     @SuppressWarnings("unchecked")
                     LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer =
                         (LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>) living;

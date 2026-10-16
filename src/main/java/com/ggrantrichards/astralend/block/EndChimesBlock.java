@@ -23,6 +23,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class EndChimesBlock extends BaseEntityBlock {
     private static final VoxelShape SHAPE = com.ggrantrichards.astralend.compat.Compat.column(10.0, 2.0, 16.0);
 
+    // (1.21.1 port) Blocks name a codec; this one is made in code, so its codec is the block itself.
+    @Override
+    protected com.mojang.serialization.MapCodec<EndChimesBlock> codec() {
+        return com.mojang.serialization.MapCodec.unit(this);
+    }
+
     public EndChimesBlock(BlockBehaviour.Properties properties) {
         super(properties);
     }

@@ -68,7 +68,7 @@ final class Dioramas {
                         boolean outside = q.getX() < min.getX() || q.getX() > max.getX() || q.getY() < min.getY() || q.getY() > max.getY()
                             || q.getZ() < min.getZ() || q.getZ() > max.getZ();
                         BlockState next = level.getBlockState(q);
-                        boolean hidden = !outside && (next.isSolidRender() || (kind.equals("w") && next.is(state.getBlock())));
+                        boolean hidden = !outside && (next.isSolidRender(level, q) || (kind.equals("w") && next.is(state.getBlock())));
                         if (!hidden) {
                             faces |= 1 << f;
                         }

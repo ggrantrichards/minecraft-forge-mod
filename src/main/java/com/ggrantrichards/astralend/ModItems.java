@@ -88,7 +88,7 @@ public final class ModItems {
     public static final RegistryObject<Item> MEMORY_MOSS = ITEMS.register("memory_moss",
         () -> new BlockItem(ModBlocks.MEMORY_MOSS.get(), new Item.Properties()
             .food(new FoodProperties.Builder().nutrition(1).saturationModifier(0.1F).alwaysEdible()
-                .effect(() -> new net.minecraft.world.effect.MobEffectInstance(ModEffects.remembering(), 1800), 1.0F).build())));
+                .effect(new net.minecraft.world.effect.MobEffectInstance(ModEffects.remembering(), 1800), 1.0F).build())));
 
     // The distillation: the Hushback's fleece, and its meat.
     public static final RegistryObject<Item> HUSHFLEECE = simple("hushfleece");
@@ -101,7 +101,7 @@ public final class ModItems {
     // compass that points the way home to the End's central island (like a lodestone compass).
     public static final RegistryObject<Item> GLOWING_STEW = register("glowing_stew", Item::new, new Item.Properties().stacksTo(1)
         .food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(6).saturationModifier(0.6F)
-            .effect(() -> new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.NIGHT_VISION, 600), 1.0F)
+            .effect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.NIGHT_VISION, 600), 1.0F)
             .usingConvertsTo(net.minecraft.world.item.Items.BOWL).build()));
     public static final RegistryObject<Item> STAR_COMPASS = register("star_compass", com.ggrantrichards.astralend.item.StarCompassItem::new,
         new Item.Properties().stacksTo(1).component(net.minecraft.core.component.DataComponents.LODESTONE_TRACKER,
@@ -138,7 +138,12 @@ public final class ModItems {
     private static RegistryObject<Item> spawnEgg(String mob, RegistryObject<? extends EntityType<?>> type) {
         String name = mob + "_spawn_egg";
         // (1.21.1 port: the egg's own texture is its item model, so the tint colours don't show.)
-        return ITEMS.register(name, () -> new net.minecraftforge.common.ForgeSpawnEggItem(type, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
+        return ITEMS.register(name, () -> new net.minecraftforge.common.ForgeSpawnEggItem(mobType(type), 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static java.util.function.Supplier<EntityType<? extends net.minecraft.world.entity.Mob>> mobType(RegistryObject<? extends EntityType<?>> type) {
+        return () -> (EntityType<? extends net.minecraft.world.entity.Mob>) type.get();
     }
 
     private static RegistryObject<Item> simple(String name) {

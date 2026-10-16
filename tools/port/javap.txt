@@ -1,0 +1,11 @@
+# (1.21.1 port) Classes whose signatures CI prints to ci-logs-1.21/javap.txt when a build fails.
+net.minecraftforge.client.event.EntityRenderersEvent$AddLayers
+net.minecraftforge.client.event.RenderLevelStageEvent
+net.minecraftforge.client.event.RenderBlockScreenEffectEvent
+net.minecraftforge.event.TickEvent$ServerTickEvent
+net.minecraftforge.event.TickEvent$LevelTickEvent
+net.minecraftforge.event.entity.EntityTeleportEvent
+net.minecraft.client.player.Input
+net.minecraft.world.food.FoodProperties$Builder
+net.minecraft.world.inventory.ItemCombinerMenu
+net.minecraft.world.level.levelgen.feature.Feature

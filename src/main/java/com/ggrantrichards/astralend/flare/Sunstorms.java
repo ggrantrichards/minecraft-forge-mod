@@ -139,7 +139,7 @@ public class Sunstorms extends SavedData {
     // ------------------------------------------------------------------ the cycle
 
     private static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (event.side() != LogicalSide.SERVER || !(event.level() instanceof ServerLevel level) || level.dimension() != Level.END) {
+        if (event.side != LogicalSide.SERVER || !(event.level instanceof ServerLevel level) || level.dimension() != Level.END) {
             return;
         }
         get(level).tick(level);

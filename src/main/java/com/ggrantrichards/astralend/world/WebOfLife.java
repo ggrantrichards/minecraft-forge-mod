@@ -33,7 +33,7 @@ public final class WebOfLife {
     }
 
     private static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (!(event.level() instanceof ServerLevel level) || level.dimension() != Level.END || level.getGameTime() % 10 != 3) {
+        if (!(event.level instanceof ServerLevel level) || level.dimension() != Level.END || level.getGameTime() % 10 != 3) {
             return;
         }
         boolean growlTime = level.getGameTime() % 40 == 3;

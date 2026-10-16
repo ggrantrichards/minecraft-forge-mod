@@ -29,7 +29,7 @@ public final class FogBlend {
         if (level == null || level.dimension() != Level.END) {
             return;
         }
-        Vec3 at = event.getCamera().position();
+        Vec3 at = event.getCamera().getPosition();
         BlockPos pos = BlockPos.containing(at);
         // Worked out at most once a tick, or when the camera has moved a block.
         if (level.getGameTime() != lastTick || !pos.equals(lastPos)) {

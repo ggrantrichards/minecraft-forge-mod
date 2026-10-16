@@ -78,7 +78,7 @@ public final class AstralSky {
             }
             float partial = minecraft.getTimer().getGameTimeDeltaPartialTick(true);
             renderer.extractRenderState(minecraft.level, partial, event.getCamera());
-            renderer.render(new org.joml.Matrix4f(event.getPoseStack().last().pose()));
+            renderer.render(new org.joml.Matrix4f(event.getPoseStack()));
         } catch (RuntimeException e) {
             failed = true;   // the End keeps vanilla's sky; nothing else depends on this
             LOGGER.error("[AstralEnd] couldn't draw the End sky", e);

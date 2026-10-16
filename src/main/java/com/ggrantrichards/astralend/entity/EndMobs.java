@@ -19,7 +19,7 @@ public final class EndMobs {
             int z = from.getZ() + (int) Math.round(Math.sin(angle) * distance);
             for (int dy = 6; dy >= -6; dy--) {
                 BlockPos feet = new BlockPos(x, from.getY() + dy, z);
-                if (level.getBlockState(feet.below()).isSolidRender() && level.getBlockState(feet).isAir()
+                if (level.getBlockState(feet.below()).isSolidRender(level, feet.below()) && level.getBlockState(feet).isAir()
                         && level.getBlockState(feet.above()).isAir()) {
                     return feet;
                 }
@@ -61,7 +61,7 @@ public final class EndMobs {
                     for (int dy = 4; dy >= -6; dy--) {
                         feet.set(from.getX() + dx, from.getY() + dy, from.getZ() + dz);
                         // (grass and flowers don't count: a mob walks through them)
-                        if (level.getBlockState(feet.below()).isSolidRender() && passable(level, feet) && passable(level, feet.above())) {
+                        if (level.getBlockState(feet.below()).isSolidRender(level, feet.below()) && passable(level, feet) && passable(level, feet.above())) {
                             if (!Sunstorms.underOpenSky(level, feet)) {
                                 return feet.immutable();
                             }

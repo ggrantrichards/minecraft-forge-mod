@@ -59,7 +59,7 @@ public class EndPollinator extends Animal {
 
     public EndPollinator(EntityType<? extends EndPollinator> type, Level level) {
         super(type, level);
-        this.moveControl = new FlyingMoveControl<>(this, 20, true);
+        this.moveControl = new FlyingMoveControl(this, 20, true);
         this.sporeTime = MIN_SPORE_TIME + this.random.nextInt(MAX_SPORE_TIME - MIN_SPORE_TIME);
         this.pollinateCooldown = 100 + this.random.nextInt(200);
     }
@@ -93,7 +93,7 @@ public class EndPollinator extends Animal {
 
     @Override
     public void travel(Vec3 input) {
-        this.travelFlying(input, this.getSpeed());
+        com.ggrantrichards.astralend.compat.Compat.travelFlying(this, input, this.getSpeed(), this.getSpeed(), this.getSpeed());
     }
 
     @Override
@@ -153,13 +153,13 @@ public class EndPollinator extends Animal {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag output) {
+    public void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
         output.putInt("SporeTime", this.sporeTime);
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag input) {
+    public void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
         this.sporeTime = (input.contains("SporeTime") ? input.getInt("SporeTime") : MIN_SPORE_TIME);
     }

@@ -115,7 +115,7 @@ public final class ModBlocks {
             .isValidSpawn((state, level, pos, entityType) -> false)
             .isRedstoneConductor((state, level, pos) -> false)
             .isSuffocating((state, level, pos) -> false)
-            .isViewBlocking((state, level, pos, aabb) -> false));
+            .isViewBlocking((state, level, pos) -> false));
     // Leviathan Bone: fossil bone of the ancient Star Leviathans. A pillar block, like vanilla's bone block.
     public static final RegistryObject<Block> LEVIATHAN_BONE_BLOCK = register("leviathan_bone_block", RotatedPillarBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).instrument(NoteBlockInstrument.XYLOPHONE)
@@ -137,10 +137,10 @@ public final class ModBlocks {
     // ---- Plants ----
     // Lumineshroom: a glowing mushroom whose texture slowly "breathes". Light level is fixed, for performance.
     public static final RegistryObject<Block> LUMINESHROOM = register("lumineshroom", LumineshroomBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).noCollision().instabreak()
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).noCollission().instabreak()
             .sound(SoundType.FUNGUS).lightLevel(state -> 10).pushReaction(PushReaction.DESTROY));
     public static final RegistryObject<Block> STARBLOOM = register("starbloom", StarbloomBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollision().instabreak()
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollission().instabreak()
             .sound(SoundType.GRASS).offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.DESTROY));
     // Astral Vine: grows upward like twisting vines. The "plant" block is the vine's body and has no item.
     // Its tip glows cold pale blue (after beta.4): the reed groves light the Nebula Fields' rose moss.
@@ -155,7 +155,7 @@ public final class ModBlocks {
         com.ggrantrichards.astralend.block.HollowVinesPlantBlock::new, () -> vine());
     // Comet Cress: a crop that hangs from the underside of Stardust. Its item is ModItems.COMET_CRESS.
     public static final RegistryObject<Block> COMET_CRESS = registerNoItem("comet_cress", CometCressBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).noCollision().randomTicks().instabreak()
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).noCollission().randomTicks().instabreak()
             .sound(SoundType.CROP).pushReaction(PushReaction.DESTROY));
 
     // ================================================================ Phase 3
@@ -239,7 +239,7 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).instrument(NoteBlockInstrument.BASEDRUM)
             .strength(-1.0F, 3600000.0F).sound(SoundType.DEEPSLATE).noLootTable());
     public static final RegistryObject<Block> WORMHOLE = registerNoItem("wormhole", com.ggrantrichards.astralend.maw.WormholeBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollision().strength(-1.0F, 3600000.0F)
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollission().strength(-1.0F, 3600000.0F)
             .sound(SoundType.GLASS).lightLevel(state -> 12).noLootTable());
     public static final RegistryObject<Block> STAR_BRIDGE = registerNoItem("star_bridge", com.ggrantrichards.astralend.maze.StarBridgeBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(-1.0F, 3600000.0F).sound(SoundType.AMETHYST)
@@ -310,7 +310,7 @@ public final class ModBlocks {
     // teleports near them they ring and still the air: no more teleporting near them for a while. ----
     public static final RegistryObject<Block> END_CHIMES = register("end_chimes", com.ggrantrichards.astralend.block.EndChimesBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).strength(0.5F).sound(SoundType.AMETHYST_CLUSTER)
-            .noOcclusion().noCollision().lightLevel(state -> 10).pushReaction(PushReaction.DESTROY));
+            .noOcclusion().noCollission().lightLevel(state -> 10).pushReaction(PushReaction.DESTROY));
 
     // ================================================================ Phase 3.5: the biome worlds
 
@@ -329,7 +329,7 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(0.1F).sound(SoundType.MOSS));
     public static final RegistryObject<Block> MIMIC_PLANT = register("mimic_plant",
         p -> new com.ggrantrichards.astralend.block.MimicPlantBlock(com.ggrantrichards.astralend.compat.Compat.column(12.0, 0.0, 13.0), ASTRAL_SOIL, p),
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).noCollision().instabreak().randomTicks()
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).noCollission().instabreak().randomTicks()
             .sound(SoundType.AZALEA).offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.DESTROY));
 
     // ---- The distillation: the Eclipse's heaven half. Living Turf, its ground (the only green in the
@@ -360,7 +360,7 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.3F).sound(SoundType.HONEY_BLOCK)
             .noOcclusion().lightLevel(state -> 12).isValidSpawn((state, level, pos, type) -> false)
             .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false)
-            .isViewBlocking((state, level, pos, aabb) -> false));
+            .isViewBlocking((state, level, pos) -> false));
     // Nebula Tendrils hang from island undersides (and Drift Bladders) and glow at the tip.
     public static final RegistryObject<Block> NEBULA_TENDRIL = register("nebula_tendril", NebulaTendrilBlock::new,
         () -> tendril().randomTicks().lightLevel(state -> 9));
@@ -373,7 +373,7 @@ public final class ModBlocks {
     public static final RegistryObject<Block> NULLWOOD_LEAVES = register("nullwood_leaves", LeavesBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.2F).randomTicks().sound(SoundType.GRASS)
             .noOcclusion().isValidSpawn((state, level, pos, type) -> false).isSuffocating((state, level, pos) -> false)
-            .isViewBlocking((state, level, pos, aabb) -> false).pushReaction(PushReaction.DESTROY)
+            .isViewBlocking((state, level, pos) -> false).pushReaction(PushReaction.DESTROY)
             .isRedstoneConductor((state, level, pos) -> false));
     public static final RegistryObject<Block> NULLWOOD_SAPLING = register("nullwood_sapling", NullwoodSaplingBlock::new,
         () -> plant(MapColor.COLOR_PURPLE, SoundType.GRASS).randomTicks());
@@ -459,13 +459,13 @@ public final class ModBlocks {
             register(name + "_trapdoor", p -> new TrapDoorBlock(setType, p),
                 () -> wood.get().strength(3.0F).noOcclusion().isValidSpawn((state, level, pos, type) -> false)),
             register(name + "_button", p -> new ButtonBlock(setType, 30, p),
-                () -> BlockBehaviour.Properties.of().noCollision().strength(0.5F).pushReaction(PushReaction.DESTROY)),
+                () -> BlockBehaviour.Properties.of().noCollission().strength(0.5F).pushReaction(PushReaction.DESTROY)),
             register(name + "_pressure_plate", p -> new PressurePlateBlock(setType, p),
-                () -> wood.get().forceSolidOn().noCollision().strength(0.5F).pushReaction(PushReaction.DESTROY)));
+                () -> wood.get().forceSolidOn().noCollission().strength(0.5F).pushReaction(PushReaction.DESTROY)));
     }
 
     private static BlockBehaviour.Properties tendril() {
-        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollision().instabreak()
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollission().instabreak()
             .sound(SoundType.WEEPING_VINES).pushReaction(PushReaction.DESTROY);
     }
 
@@ -481,12 +481,12 @@ public final class ModBlocks {
     }
 
     private static BlockBehaviour.Properties plant(MapColor color, SoundType sound) {
-        return BlockBehaviour.Properties.of().mapColor(color).noCollision().instabreak().sound(sound)
+        return BlockBehaviour.Properties.of().mapColor(color).noCollission().instabreak().sound(sound)
             .pushReaction(PushReaction.DESTROY);
     }
 
     private static BlockBehaviour.Properties vine() {
-        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).randomTicks().noCollision().instabreak()
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).randomTicks().noCollission().instabreak()
             .sound(SoundType.WEEPING_VINES).pushReaction(PushReaction.DESTROY);
     }
 

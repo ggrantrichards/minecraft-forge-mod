@@ -231,7 +231,7 @@ public class MawNetwork extends SavedData {
     // ------------------------------------------------------------------ travel
 
     private static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (!(event.level() instanceof ServerLevel level) || level.dimension() != Level.END || level.getGameTime() % 2 != 0) {
+        if (!(event.level instanceof ServerLevel level) || level.dimension() != Level.END || level.getGameTime() % 2 != 0) {
             return;
         }
         MawNetwork network = null;

@@ -16,6 +16,12 @@ import net.minecraft.world.level.block.state.BlockState;
 // Below it hangs a sphere where gravity points up (see UpwellCoreBlockEntity). The sphere is
 // marked by motes drifting slowly upward, so you can see a pocket before you walk into it.
 public class UpwellCoreBlock extends BaseEntityBlock {
+    // (1.21.1 port) Blocks name a codec; this one is made in code, so its codec is the block itself.
+    @Override
+    protected com.mojang.serialization.MapCodec<UpwellCoreBlock> codec() {
+        return com.mojang.serialization.MapCodec.unit(this);
+    }
+
     public UpwellCoreBlock(BlockBehaviour.Properties properties) {
         super(properties);
     }

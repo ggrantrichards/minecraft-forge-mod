@@ -107,7 +107,7 @@ public final class ClientPlaytests {
         }
         if (ticks % test.every() == 0) {
             Screenshot.grab(minecraft.gameDirectory, String.format("playtest/%s_%04d.png", test.name(), ticks),
-                minecraft.gameRenderer.getMainRenderTarget(), 1, message -> {});
+                minecraft.getMainRenderTarget(), 1, message -> {});
         }
         if (ticks >= test.ticks()) {
             release(minecraft);

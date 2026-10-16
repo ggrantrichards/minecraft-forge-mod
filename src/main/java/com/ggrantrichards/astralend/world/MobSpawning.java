@@ -51,7 +51,7 @@ public final class MobSpawning {
     }
 
     private static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (event.side() != LogicalSide.SERVER || !(event.level() instanceof ServerLevel level) || level.dimension() != Level.END
+        if (event.side != LogicalSide.SERVER || !(event.level instanceof ServerLevel level) || level.dimension() != Level.END
             || level.getGameTime() % CHECK_EVERY != 0) {
             return;
         }

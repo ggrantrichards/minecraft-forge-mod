@@ -31,6 +31,18 @@ public final class Compat {
         return shapes;
     }
 
+    // 26.3's LivingEntity.travelFlying(input, inWater, inLava, inAir): flying movement with drag.
+    public static void travelFlying(net.minecraft.world.entity.LivingEntity entity, Vec3 input, float inWater, float inLava, float inAir) {
+        if (entity.isControlledByLocalInstance()) {
+            boolean water = entity.isInWater();
+            boolean lava = !water && entity.isInLava();
+            entity.moveRelative(water ? inWater : lava ? inLava : inAir, input);
+            entity.move(net.minecraft.world.entity.MoverType.SELF, entity.getDeltaMovement());
+            entity.setDeltaMovement(entity.getDeltaMovement().scale(water ? 0.8 : lava ? 0.5 : 0.91));
+        }
+        entity.calculateEntityAnimation(false);
+    }
+
     // 26.3's DensityFunction.sampleValue(x, y, z).
     public static double sample(net.minecraft.world.level.levelgen.DensityFunction function, int x, int y, int z) {
         return function.compute(new net.minecraft.world.level.levelgen.DensityFunction.SinglePointContext(x, y, z));

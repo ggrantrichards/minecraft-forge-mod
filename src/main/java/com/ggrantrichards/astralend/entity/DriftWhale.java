@@ -73,6 +73,8 @@ import org.jspecify.annotations.Nullable;
 public class DriftWhale extends Mob implements ItemSteerable {
     private static final EntityDataAccessor<Boolean> DATA_HUMMING = SynchedEntityData.defineId(DriftWhale.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_BOOST_TIME = SynchedEntityData.defineId(DriftWhale.class, EntityDataSerializers.INT);
+    // (1.21.1 port: the steering keeps a saddle flag; the whale needs none.)
+    private static final EntityDataAccessor<Boolean> DATA_SADDLE = SynchedEntityData.defineId(DriftWhale.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_PLAY = SynchedEntityData.defineId(DriftWhale.class, EntityDataSerializers.INT);
     public static final int PLAY_NONE = 0, PLAY_ROLL = 1, PLAY_LOOP = 2, PLAY_CHASE = 3;
     private static final double RIDDEN_SPEED = 0.025;   // about 5 blocks a second; a boost doubles it
@@ -84,7 +86,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
     private int humCooldown = 100;
     private int humTicks;
     private final Map<UUID, Integer> followers = new HashMap<>();
-    private final ItemBasedSteering steering = new ItemBasedSteering(this.entityData, DATA_BOOST_TIME);
+    private final ItemBasedSteering steering = new ItemBasedSteering(this.entityData, DATA_BOOST_TIME, DATA_SADDLE);
     private int fleeTicks;
     private @Nullable Vec3 fleeFrom;
     private @Nullable BlockPos grazing;
@@ -136,6 +138,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
         super.defineSynchedData(builder);
         builder.define(DATA_HUMMING, false);
         builder.define(DATA_BOOST_TIME, 0);
+        builder.define(DATA_SADDLE, false);
         builder.define(DATA_PLAY, PLAY_NONE);
     }
 
@@ -280,8 +283,8 @@ public class DriftWhale extends Mob implements ItemSteerable {
                 this.heal(20.0F);
                 stack.consume(1, player);
                 this.tryTame(level, player);
-                this.playSound(SoundEvents.GENERIC_EAT.value(), 1.5F, 0.5F);
-                level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, Items.CHORUS_FRUIT),
+                this.playSound(SoundEvents.GENERIC_EAT, 1.5F, 0.5F);
+                level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.CHORUS_FRUIT)),
                     this.getX(), this.getY() + 1.0, this.getZ(), 12, 0.6, 0.4, 0.6, 0.05);
                 this.humCooldown = 0;
                 this.hum(level);
@@ -334,7 +337,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
             up = upLook;
             forward = forwardLook;
         }
-        if (controller.isJumping()) {
+        if (controller.jumping) {
             up += 0.5F;
         }
         return new Vec3(strafe, up, forward);
@@ -361,7 +364,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
     public void travel(Vec3 input) {
         if (this.getControllingPassenger() instanceof Player) {
             float speed = this.getSpeed();
-            this.travelFlying(input, speed, speed, speed);
+            com.ggrantrichards.astralend.compat.Compat.travelFlying(this, input, speed, speed, speed);
         } else {
             super.travel(input);
         }
@@ -892,8 +895,8 @@ public class DriftWhale extends Mob implements ItemSteerable {
             return to.normalize().scale(CRUISE_SPEED);
         }
         if (this.tickCount % 30 == 0) {
-            this.playSound(SoundEvents.GENERIC_EAT.value(), 1.2F, 0.5F);
-            level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, Items.CHORUS_FRUIT),
+            this.playSound(SoundEvents.GENERIC_EAT, 1.2F, 0.5F);
+            level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.CHORUS_FRUIT)),
                 at.getX() + 0.5, at.getY() + 1.0, at.getZ() + 0.5, 8, 0.4, 0.3, 0.4, 0.04);
             this.heal(2.0F);
         }
@@ -983,7 +986,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
     }
 
     @Override
-    protected void addAdditionalSaveData(net.minecraft.nbt.CompoundTag output) {
+    public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag output) {
         super.addAdditionalSaveData(output);
         if (this.owner != null) {
             output.putString("Owner", this.owner.toString());
@@ -991,7 +994,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
     }
 
     @Override
-    protected void readAdditionalSaveData(net.minecraft.nbt.CompoundTag input) {
+    public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag input) {
         super.readAdditionalSaveData(input);
         String owner = (input.contains("Owner") ? input.getString("Owner") : "");
         this.owner = owner.isEmpty() ? null : UUID.fromString(owner);

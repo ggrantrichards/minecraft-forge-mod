@@ -15,15 +15,15 @@ public final class ModBlockEntities {
 
     public static final RegistryObject<BlockEntityType<UpwellCoreBlockEntity>> UPWELL_CORE =
         BLOCK_ENTITIES.register("upwell_core",
-            () -> new BlockEntityType<>(UpwellCoreBlockEntity::new, Set.of(ModBlocks.UPWELL_CORE.get())));
+            () -> BlockEntityType.Builder.of(UpwellCoreBlockEntity::new, ModBlocks.UPWELL_CORE.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<CollectorPedestalBlockEntity>> COLLECTOR_PEDESTAL =
         BLOCK_ENTITIES.register("collector_pedestal",
-            () -> new BlockEntityType<>(CollectorPedestalBlockEntity::new, Set.of(ModBlocks.COLLECTOR_PEDESTAL.get())));
+            () -> BlockEntityType.Builder.of(CollectorPedestalBlockEntity::new, ModBlocks.COLLECTOR_PEDESTAL.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<com.ggrantrichards.astralend.block.EndChimesBlockEntity>> END_CHIMES =
         BLOCK_ENTITIES.register("end_chimes",
-            () -> new BlockEntityType<>(com.ggrantrichards.astralend.block.EndChimesBlockEntity::new, Set.of(ModBlocks.END_CHIMES.get())));
+            () -> BlockEntityType.Builder.of(com.ggrantrichards.astralend.block.EndChimesBlockEntity::new, ModBlocks.END_CHIMES.get()).build(null));
 
     private ModBlockEntities() {}
 }

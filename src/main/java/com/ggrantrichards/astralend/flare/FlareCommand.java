@@ -14,7 +14,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 public final class FlareCommand {
     public static void register() {
         com.ggrantrichards.astralend.Events.on(RegisterCommandsEvent.class, event -> event.getDispatcher().register(
-            Commands.literal("astralend").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+            Commands.literal("astralend").requires(source -> source.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("flare")
                     .executes(context -> status(context.getSource()))
                     .then(Commands.argument("phase", StringArgumentType.word())

@@ -34,7 +34,7 @@ public final class LowGravity {
     }
 
     private static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (event.side() != LogicalSide.SERVER || !(event.level() instanceof ServerLevel level) || level.getGameTime() % 20 != 0) {
+        if (event.side != LogicalSide.SERVER || !(event.level instanceof ServerLevel level) || level.getGameTime() % 20 != 0) {
             return;
         }
         boolean isEnd = level.dimension() == Level.END;

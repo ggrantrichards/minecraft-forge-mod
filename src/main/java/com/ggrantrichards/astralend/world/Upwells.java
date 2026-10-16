@@ -56,13 +56,13 @@ public final class Upwells {
     }
 
     private static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (event.side() != LogicalSide.SERVER || INSIDE.isEmpty()) {
+        if (event.side != LogicalSide.SERVER || INSIDE.isEmpty()) {
             return;
         }
-        long now = event.level().getGameTime();
+        long now = event.level.getGameTime();
         INSIDE.entrySet().removeIf(entry -> {
             LivingEntity entity = entry.getKey();
-            if (entity.level() != event.level()) {
+            if (entity.level() != event.level) {
                 return false;  // another dimension's tick handles it
             }
             if (entity.isRemoved() || now - entry.getValue() > LINGER_TICKS) {
