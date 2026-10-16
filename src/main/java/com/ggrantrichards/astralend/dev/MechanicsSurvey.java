@@ -352,6 +352,103 @@ final class MechanicsSurvey {
         return from.offset(0, 0, 400);
     }
 
+    // Loot: what 26.3's own loot tables look like (printed from the game's data, to settle the format), and
+    // the mod's tables doing what they say - counts, the cooked-if-on-fire, the double slab - by killing real
+    // mobs and breaking a real block. A key the game doesn't know is ignored without a word, so only rolling
+    // the tables shows it.
+    static void checkLoot(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
+        for (String vanilla : new String[] {"loot_table/entities/sheep.json", "loot_table/chests/end_city_treasure.json",
+                                            "loot_table/blocks/stone_slab.json"}) {
+            var res = end.getServer().getResourceManager().getResource(net.minecraft.resources.Identifier.withDefaultNamespace(vanilla));
+            if (res.isPresent()) {
+                try (var reader = res.get().openAsReader()) {
+                    String text = reader.lines().map(String::trim).collect(java.util.stream.Collectors.joining(" "));
+                    log.accept("loot format: vanilla " + vanilla + ": " + text.substring(0, Math.min(1400, text.length())));
+                } catch (java.io.IOException e) {
+                    log.accept("loot format: couldn't read " + vanilla + ": " + e);
+                }
+            } else {
+                log.accept("loot format: no " + vanilla);
+            }
+        }
+        BlockPos at = standOn.offset(-90, 0, 0);
+        for (int dx = -6; dx <= 6; dx++) {
+            for (int dz = -6; dz <= 6; dz++) {
+                end.setBlock(at.offset(dx, -1, dz), Blocks.END_STONE.defaultBlockState(), 3);
+                for (int up = 0; up <= 5; up++) {
+                    end.setBlock(at.offset(dx, up, dz), Blocks.AIR.defaultBlockState(), 3);
+                }
+            }
+        }
+        net.minecraft.server.level.ServerPlayer player = standIn(end);
+        player.snapTo(at.getX() + 0.5, at.getY(), at.getZ() - 4.5, 0.0F, 0.0F);
+        // Hushback: 1-2 Raw Flanks (the count), cooked if it dies burning (a condition).
+        int flanks = 0, most = 0;
+        for (int i = 0; i < 8; i++) {
+            int n = killFor(end, ModEntities.HUSHBACK.get(), at, player, false, com.ggrantrichards.astralend.ModItems.HUSHBACK_FLANK.get());
+            flanks += n;
+            most = Math.max(most, n);
+        }
+        int cooked = killFor(end, ModEntities.HUSHBACK.get(), at, player, true, com.ggrantrichards.astralend.ModItems.COOKED_HUSHBACK_FLANK.get());
+        log.accept(String.format("loot: Hushback - %d flanks from 8 (most from one: %d); burning, cooked flanks: %d", flanks, most, cooked));
+        if (most < 2 || cooked < 1) {
+            failures.add("loot: a Hushback should drop 1-2 flanks, cooked when it dies burning (most " + most + ", cooked " + cooked + ")");
+        }
+        // Shardback: 1-2 Glimmer Clusters.
+        int clusters = 0, mostClusters = 0;
+        for (int i = 0; i < 8; i++) {
+            int n = killFor(end, ModEntities.SHARDBACK.get(), at, player, false, ModBlocks.GLIMMER_CLUSTER.get().asItem());
+            clusters += n;
+            mostClusters = Math.max(mostClusters, n);
+        }
+        log.accept(String.format("loot: Shardback - %d Glimmer Clusters from 8 (most from one: %d)", clusters, mostClusters));
+        if (mostClusters < 2 || clusters < 8) {
+            failures.add("loot: a Shardback should drop 1-2 Glimmer Clusters (most " + mostClusters + ", total " + clusters + ")");
+        }
+        // The Curator: exactly two Starforge Templates, and its Core.
+        int templates = killFor(end, ModEntities.CURATOR.get(), at, player, false, com.ggrantrichards.astralend.ModItems.STARFORGE_TEMPLATE.get());
+        log.accept("loot: Curator - Starforge Templates: " + templates);
+        if (templates != 2) {
+            failures.add("loot: the Curator should drop two Starforge Templates, dropped " + templates);
+        }
+        // A double slab drops two.
+        var slab = ModBlocks.NIGHTSTONE_SLAB.get().defaultBlockState()
+            .setValue(net.minecraft.world.level.block.SlabBlock.TYPE, net.minecraft.world.level.block.state.properties.SlabType.DOUBLE);
+        int slabs = 0;
+        for (var stack : net.minecraft.world.level.block.Block.getDrops(slab, end, at, null)) {
+            slabs += stack.getCount();
+        }
+        log.accept("loot: a double Nightstone slab drops " + slabs);
+        if (slabs != 2) {
+            failures.add("loot: a double slab should drop 2 slabs, dropped " + slabs);
+        }
+    }
+
+    // Kills a fresh mob of `type` (with the stand-in's blow, burning if asked) and counts the `item` it drops.
+    private static int killFor(ServerLevel end, net.minecraft.world.entity.EntityType<?> type, BlockPos at,
+                               net.minecraft.server.level.ServerPlayer player, boolean burning, net.minecraft.world.item.Item item) {
+        var mob = (net.minecraft.world.entity.LivingEntity) type.create(end, EntitySpawnReason.COMMAND);
+        mob.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
+        end.addFreshEntity(mob);
+        if (burning) {
+            mob.setRemainingFireTicks(200);
+        }
+        for (int hit = 0; hit < 3 && mob.isAlive(); hit++) {      // (the first may only wake a dormant Curator)
+            mob.setHealth(1.0F);
+            clearHurtCooldown(mob);
+            mob.hurtServer(end, end.damageSources().playerAttack(player), 50.0F);
+        }
+        int n = 0;
+        for (var drop : end.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, mob.getBoundingBox().inflate(6.0))) {
+            if (drop.getItem().is(item)) {
+                n += drop.getItem().getCount();
+            }
+            drop.discard();
+        }
+        mob.discard();
+        return n;
+    }
+
     // The web of life: every thread between the End's creatures, each made to happen and checked.
     // (The Sunstorm's are in WorldgenSurvey.testEclipse, the Leviathan circle in testLeviathan.)
     static void checkWebOfLife(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {

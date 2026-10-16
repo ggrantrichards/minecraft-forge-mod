@@ -9,7 +9,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "astralend:abyss_shard",
+          "name": "astralend:memory_moss",
           "modifier": [
             {
               "type": "minecraft:set_count",

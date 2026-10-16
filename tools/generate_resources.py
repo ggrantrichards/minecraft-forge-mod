@@ -92,7 +92,6 @@ ITEMS = [
     ("glowing_spores", "Glowing Spores"),
     ("chart_fragment", "Chart Fragment"),
     ("cracked_lens", "Cracked Lens"),
-    ("abyss_shard", "Abyss Shard"),
     ("umbral_membrane", "Umbral Membrane"),
     ("star_chart", "Star Chart"),
     ("upwell_mote", "Upwell Mote"),
@@ -1520,8 +1519,7 @@ def structures_phase6():
         {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
             entry("void_crystal", 4, (1, 4)), entry("chart_fragment", 3, (1, 2)), entry("leviathan_bone_block", 3, (2, 6)),
             entry("whalelight_scale", 3, (1, 4)), entry("minecraft:ender_pearl", 3, (1, 3)), entry("minecraft:spyglass", 1),
-            entry("minecraft:map", 2), entry("minecraft:soul_lantern", 2, (1, 2)), entry("glowing_spores", 2, (2, 5)),
-            entry("abyss_shard", 2, (1, 2))]},     # (until Starforging is reworked: the Hollow that dropped these is cut)
+            entry("minecraft:map", 2), entry("minecraft:soul_lantern", 2, (1, 2)), entry("glowing_spores", 2, (2, 5))]},
         chance("star_chart", 0.35),
         chance("temporal_crystal", 0.15),
     ])
@@ -1666,10 +1664,6 @@ def starforging_phase8():
     # (The distillation made it a little cheaper: one Meteoric Iron Ingot, not two.)
     shapeless("starforge_alloy", "starforge_alloy", [rid("void_crystal"), rid("meteoric_iron_ingot"),
                                                      "minecraft:dragon_breath", rid("glowing_spores")])
-    # The Mirror Wretch lures you to the void's edge; its shards are how you come back from it. Four
-    # round an Ender Pearl make a Rift Pearl (otherwise found only in the End's best chests).
-    shaped("rift_pearl", "rift_pearl", [" A ", "AEA", " A "], {"A": rid("abyss_shard"), "E": "minecraft:ender_pearl"},
-           category="misc")
     # Templates copy like smithing templates.
     shaped("starforge_template", "starforge_template", ["DTD", "DQD", "DDD"],
            {"D": "minecraft:diamond", "T": rid("starforge_template"), "Q": rid("observatory_quartz")}, count=2, category="misc")
@@ -2043,7 +2037,8 @@ def distillation_blocks():
         {"type": "minecraft:enchanted_count_increase", "count": {"type": "minecraft:uniform", "min": 0.0, "max": 1.0},
          "enchantment": "minecraft:looting"}]}]}])
     entity_loot("hydragrip", [])
-    entity_loot("mirror_wretch", [player_kill_drop("abyss_shard", 1)])
+    # The Mirror Wretch: a tuft of the Memory Moss it craves (it eats endermites too, but they carry nothing).
+    entity_loot("mirror_wretch", [player_kill_drop("memory_moss", 1)])
     # The Leviathan's keepers. The Curator always gives up its Core (the Starforge's Void Recall needs one).
     entity_loot("hollowback", [{"rolls": 1, "entries": [{"type": "minecraft:item", "name": "minecraft:bone", "functions": [
         {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 0, "max": 2}}]}]}])

@@ -35,7 +35,6 @@ public final class ModItems {
     public static final RegistryObject<Item> GLOWING_SPORES = register("glowing_spores", GlowingSporesItem::new, new Item.Properties());
     public static final RegistryObject<Item> CHART_FRAGMENT = simple("chart_fragment");
     public static final RegistryObject<Item> CRACKED_LENS = simple("cracked_lens");
-    public static final RegistryObject<Item> ABYSS_SHARD = simple("abyss_shard");
     public static final RegistryObject<Item> UMBRAL_MEMBRANE = simple("umbral_membrane");
     // Phase 5: Sunstorms
     public static final RegistryObject<Item> FLARE_POLLEN = simple("flare_pollen");

@@ -112,9 +112,10 @@ and the distillation renamed or removed some of them.
   - **Sunscorched Stone generates again:** a halo of the pale stone baked amber round each scorch
     fissure's charred lips in the Ashen Barrens (and Pale End Stone still smelts into it), so its family
     and the Collector Pedestal have a home.
-  - **Every drop has a use:** four Abyss Shards (the Mirror Wretch's) round an Ender Pearl make a **Rift
-    Pearl**; an Umbral Membrane brews an Awkward Potion straight into **Invisibility**. (The Resonant Key
-    went with the Spire Wyrm, out of the creative tab.)
+  - **Every drop has a use:** an Umbral Membrane brews an Awkward Potion straight into **Invisibility**;
+    the Mirror Wretch drops the **Memory Moss** it craves, and the useless Abyss Shard is cut (Rift
+    Pearls still come only from bosses and the best chests). The Resonant Key went with the Spire Wyrm,
+    out of the creative tab.
   - **A faint aurora** hangs low round the Gilded Reach's sky again: two gold curtains and one teal.
   - **Cracked Lenses and Chart Fragments** come from the builders' chests now (Lenses from the
     observatories). "Hold Still" is replaced by **Through the Lens**: make a Portal Lens. The **Rider**

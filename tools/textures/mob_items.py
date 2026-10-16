@@ -154,7 +154,6 @@ ITEM_MAPS = {
     "glowing_spores": (GLOWING_SPORES, GLOWING_SPORES_PAL),
     "chart_fragment": (CHART_FRAGMENT, CHART_FRAGMENT_PAL),
     "cracked_lens": (CRACKED_LENS, CRACKED_LENS_PAL),
-    "abyss_shard": (ABYSS_SHARD, ABYSS_SHARD_PAL),
     "umbral_membrane": (UMBRAL_MEMBRANE, UMBRAL_MEMBRANE_PAL),
 }
 

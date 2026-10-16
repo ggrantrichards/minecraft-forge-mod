@@ -311,6 +311,7 @@ public final class WorldgenSurvey {
             MechanicsSurvey.checkSystems(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkNewMobs(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkWebOfLife(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
+            MechanicsSurvey.checkLoot(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkSpawnEggs(end, areas.get('N').standOn, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkHandBuiltPortal(end, failures, WorldgenSurvey::log);
             MechanicsSurvey.checkWyrmFight(end, failures, WorldgenSurvey::log);
