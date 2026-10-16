@@ -431,7 +431,7 @@ public final class ClientTrailer {
 
     private static void grab(Minecraft minecraft, Scene scene, int f) {
         String name = String.format("trailer/%02d_%s_%04d.png", scene.index(), scene.shot(), f);
-        Screenshot.grab(minecraft.gameDirectory, name, minecraft.getMainRenderTarget(), 1, message -> {});
+        Screenshot.grab(minecraft.gameDirectory, name, minecraft.getMainRenderTarget(), message -> {});
     }
 
     private static void hideHud(Minecraft minecraft) {

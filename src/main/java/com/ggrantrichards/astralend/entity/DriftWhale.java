@@ -337,7 +337,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
             up = upLook;
             forward = forwardLook;
         }
-        if (controller.jumping) {
+        if (com.ggrantrichards.astralend.compat.Compat.isJumping(controller)) {
             up += 0.5F;
         }
         return new Vec3(strafe, up, forward);

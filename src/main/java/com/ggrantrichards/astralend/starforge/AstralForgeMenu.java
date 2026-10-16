@@ -89,6 +89,12 @@ public class AstralForgeMenu extends ItemCombinerMenu {
         return this.hasError.get() > 0;
     }
 
+    // (1.21.1 port) The result slot holds something only when createResult found it forgeable.
+    @Override
+    protected boolean mayPickup(Player player, boolean hasStack) {
+        return hasStack;
+    }
+
     @Override
     protected void onTake(Player player, ItemStack carried) {
         carried.onCraftedBy(player.level(), player, carried.getCount());

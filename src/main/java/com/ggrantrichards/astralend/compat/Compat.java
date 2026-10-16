@@ -43,6 +43,28 @@ public final class Compat {
         entity.calculateEntityAnimation(false);
     }
 
+    // 26.3's LivingEntity.isJumping(): 1.21.1 keeps it in a protected field ("jumping", f_20899_ before
+    // official names at runtime).
+    private static java.lang.reflect.Field jumping;
+
+    public static boolean isJumping(net.minecraft.world.entity.LivingEntity entity) {
+        try {
+            if (jumping == null) {
+                for (String name : new String[] {"jumping", "f_20899_"}) {
+                    try {
+                        jumping = net.minecraft.world.entity.LivingEntity.class.getDeclaredField(name);
+                        jumping.setAccessible(true);
+                        break;
+                    } catch (NoSuchFieldException ignored) {
+                    }
+                }
+            }
+            return jumping != null && jumping.getBoolean(entity);
+        } catch (IllegalAccessException e) {
+            return false;
+        }
+    }
+
     // 26.3's DensityFunction.sampleValue(x, y, z).
     public static double sample(net.minecraft.world.level.levelgen.DensityFunction function, int x, int y, int z) {
         return function.compute(new net.minecraft.world.level.levelgen.DensityFunction.SinglePointContext(x, y, z));
