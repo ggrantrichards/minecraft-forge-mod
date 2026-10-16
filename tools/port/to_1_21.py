@@ -9,7 +9,8 @@ What changed between the two, and what this does about it:
   configured features worldgen/feature, config inline -> worldgen/configured_feature, under "config"
   block states       "astralend:x" / {"id", "properties"} -> {"Name", "Properties"} and state providers
   placements         offset(x, y, z) -> random_offset; trapezoid ints -> clamped normal
-  density functions  left/right/input -> argument1/argument2/argument; sub, lerp, gradient spelled out
+  density functions  left/right/input -> argument1/argument2/argument; sub, lerp, gradient spelled out;
+                     the mod's own temperature/vegetation noises (1.21.1 swaps vanilla's in legacy worlds)
   surface rules      worldgen/material_rule refs inlined into the noise settings' surface_rule
   loot tables        modifier/condition -> functions/conditions; named tool predicates spelled out
   recipes            "id" / "#tag" ingredients -> {"item"} / {"tag"}; brewing goes to Java (ModBrewing)
@@ -218,6 +219,8 @@ def density(d):
         return {"type": t, "argument": density(d.get("input", d.get("argument")))}
     if name == "clamp":
         return {"type": t, "input": density(d["input"]), "min": d["min"], "max": d["max"]}
+    if name in ("noise", "shifted_noise") and d.get("noise") in OWN_NOISES:
+        d = {**d, "noise": OWN_NOISES[d["noise"]]}
     if name in ("noise", "shifted_noise", "beardifier", "end_islands", "constant", "y_clamped_gradient", "old_blended_noise",
                 "weird_scaled_sampler", "range_choice", "spline", "shift", "shift_a", "shift_b"):
         return {k: density(v) if k in ("input", "argument", "when_in_range", "when_out_of_range", "shift_x", "shift_z") else v
@@ -225,6 +228,13 @@ def density(d):
     print("  density function of type", t, "left as it is - check it")
     return d
 
+
+# With legacy_random_source (the End's), 1.21.1 swaps minecraft:temperature and minecraft:vegetation for
+# the old Nether biome noise (first octave -7: up to eight times finer); 26.3 doesn't. The regions are
+# drawn from them, so the mod brings its own copies of the two, which 1.21.1 leaves alone.
+OWN_NOISES = {"minecraft:temperature": f"{NS}:temperature", "minecraft:vegetation": f"{NS}:vegetation"}
+NOISE_PARAMETERS = {"temperature": {"firstOctave": -10, "amplitudes": [1.5, 0.0, 1.0, 0.0, 0.0, 0.0]},
+                    "vegetation": {"firstOctave": -8, "amplitudes": [1.0, 1.0, 0.0, 0.0, 0.0, 0.0]}}
 
 ROUTER = ["barrier", "fluid_level_floodedness", "fluid_level_spread", "lava", "temperature", "vegetation", "continents",
           "erosion", "depth", "ridges", "initial_density_without_jaggedness", "final_density", "vein_toggle", "vein_ridged", "vein_gap"]
@@ -585,6 +595,9 @@ def main():
         e = density(d)
         if e != d:
             save(p, e)
+    for name, params in NOISE_PARAMETERS.items():
+        if not (wg / "noise" / f"{name}.json").exists():
+            save(wg / "noise" / f"{name}.json", params)
     rules = wg / "material_rule"
     for p in sorted((wg / "noise_settings").glob("*.json")):
         s = noise_settings(load(p), rules)

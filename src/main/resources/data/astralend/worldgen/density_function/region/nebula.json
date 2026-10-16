@@ -1,6 +1,6 @@
 {
   "type": "minecraft:noise",
-  "noise": "minecraft:vegetation",
+  "noise": "astralend:vegetation",
   "xz_scale": 0.08,
   "y_scale": 0.0
 }
