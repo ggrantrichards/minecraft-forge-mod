@@ -19,8 +19,8 @@ of ruins no one is left to explain, and as dangerous as the void beneath them.
 
 Install it on the client, and on the server too for multiplayer. Start a new world, or explore past
 1,000 blocks from the centre of an old one's End: the mod changes only the outer End, and only where it
-hasn't been generated yet. On 1.21.1 the game warns that the world "uses experimental settings" (it
-does that for any mod that adds world generation); choose *I know what I'm doing!* to play.
+hasn't been generated yet. (Minecraft 1.21.1 asks about "experimental settings" for any mod that adds
+world generation; the mod answers that question for you.)
 
 ## What's in it
 
