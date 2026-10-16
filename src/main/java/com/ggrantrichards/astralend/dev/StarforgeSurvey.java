@@ -132,12 +132,19 @@ final class StarforgeSurvey {
         BlockPos forge = new BlockPos(fx, end.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, fx, fz), fz);
         end.setBlock(forge, ModBlocks.ASTRAL_FORGE.get().defaultBlockState(), 3);
         String cam = String.format(java.util.Locale.ROOT, "%.1f %.1f %.1f", forge.getX() + 0.5 - 2.0, forge.getY() + 0.4, forge.getZ() + 0.5 - 2.0);
-        return List.of(
+        List<String> shots = new java.util.ArrayList<>();
+        // The glows side by side: the same view of a full netherite set, plain and with each upgrade.
+        for (String glow : new String[] {"none", "void_recall", "echo_strike", "lensing", "radiant", "rift_walker"}) {
+            shots.add(String.format(java.util.Locale.ROOT, "starforge_glow_%s %.1f %d %.1f 135 8.0 armor,glow=%s", glow,
+                standOn.getX() + 0.5, standOn.getY(), standOn.getZ() + 0.5, glow));
+        }
+        shots.addAll(List.of(
             "starforge_astral_forge " + cam + " -45 32.0",
             "starforge_forge_screen " + cam + " -45 32.0 forge",
             String.format(java.util.Locale.ROOT, "starforge_armor %.1f %d %.1f 135 8.0 armor", standOn.getX() + 0.5, standOn.getY(), standOn.getZ() + 0.5),
             String.format(java.util.Locale.ROOT, "starforge_rift_walker %.1f %d %.1f 135 18.0 armor,rift", standOn.getX() + 0.5, standOn.getY() + 30,
-                standOn.getZ() + 0.5));
+                standOn.getZ() + 0.5)));
+        return shots;
     }
 
     private static void settle(net.minecraft.world.entity.LivingEntity entity) {
