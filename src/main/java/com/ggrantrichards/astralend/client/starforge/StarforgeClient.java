@@ -13,7 +13,7 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-// Client side of Starforging: the Astral Forge's screen, and the upgrade accents on worn armour.
+// Client side of Starforging: the Astral Forge's screen, and the glow on worn armour.
 public final class StarforgeClient {
     public static void register(BusGroup modBusGroup) {
         FMLClientSetupEvent.getBus(modBusGroup).addListener(event ->

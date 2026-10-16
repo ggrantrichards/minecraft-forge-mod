@@ -30,7 +30,7 @@ final class StarforgeShots {
         player.getAbilities().flying = true;
         player.onUpdateAbilities();
         if (style.contains("armor")) {
-            // Every piece a different upgrade, so all their accents show.
+            // Every piece a different upgrade, so all their glows show.
             player.setItemSlot(EquipmentSlot.HEAD, up(Items.NETHERITE_HELMET, StarforgeUpgrade.LENSING));
             player.setItemSlot(EquipmentSlot.CHEST, up(Items.DIAMOND_CHESTPLATE, StarforgeUpgrade.VOID_RECALL));
             player.setItemSlot(EquipmentSlot.LEGS, up(Items.NETHERITE_LEGGINGS, StarforgeUpgrade.RADIANT));

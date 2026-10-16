@@ -79,7 +79,7 @@ public final class AstralEnd {
             com.ggrantrichards.astralend.client.UpsideDown.register();      // Upwelling: the view, controls and bodies turned over
             com.ggrantrichards.astralend.client.FogBlend.register();        // fog eased between biomes over ~50 blocks
             com.ggrantrichards.astralend.client.BiomeMist.register();       // drifting gas, ash mist and falling starlight
-            com.ggrantrichards.astralend.client.starforge.StarforgeClient.register(modBusGroup);  // the Forge's screen, armour accents
+            com.ggrantrichards.astralend.client.starforge.StarforgeClient.register(modBusGroup);  // the Forge's screen, the glow on worn armour
         }
         WorldgenSurvey.register(); // does nothing unless started with -Dastralend.survey=true
 
