@@ -182,7 +182,10 @@ public class Curator extends Monster {
     // ---- being hurt
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
+        if (!(this.level() instanceof ServerLevel level)) {
+            return super.hurt(source, amount);
+        }
         if (this.isDormant()) {
             if (source.getEntity() instanceof Player) {
                 this.wake(level);
@@ -201,7 +204,7 @@ public class Curator extends Monster {
             return false;
         }
         float scaled = amount * (this.stagger > 0 ? 1.5F : 1.0F) * (this.isExposed() ? 1.25F : 1.0F);
-        boolean hurt = super.hurtServer(level, source, scaled);
+        boolean hurt = super.hurt(source, scaled);
         if (hurt && !this.isExposed() && this.isAlive() && this.getHealth() <= this.getMaxHealth() * 0.5F) {
             this.expose(level);
         }
@@ -307,8 +310,9 @@ public class Curator extends Monster {
     // ---- the fight
 
     @Override
-    protected void customServerAiStep(ServerLevel level) {
-        super.customServerAiStep(level);
+    protected void customServerAiStep() {
+        ServerLevel level = (ServerLevel) this.level();
+        super.customServerAiStep();
         if (this.tickCount % 10 == 0) {
             this.updateBossBar(level);
         }
@@ -390,7 +394,7 @@ public class Curator extends Monster {
             for (Player p : level.getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(7.0, 3.0, 7.0))) {
                 if (!p.isSpectator() && !p.isCreative()) {
                     p.addEffect(new MobEffectInstance(MobEffects.LEVITATION, 40), this);
-                    p.hurtServer(level, level.damageSources().mobAttack(this), 4.0F);
+                    p.hurt(level.damageSources().mobAttack(this), 4.0F);
                 }
             }
         }
@@ -420,7 +424,7 @@ public class Curator extends Monster {
                         this.attackCooldown = (int) (30 * pace);
                         this.leftNext = !this.leftNext;
                         this.act(this.leftNext ? ACT_PUNCH_LEFT : ACT_PUNCH_RIGHT, PUNCH_TICKS);
-                        this.doHurtTarget(level, target);
+                        this.doHurtTarget(target);
                     }
                 }
             }
@@ -469,7 +473,7 @@ public class Curator extends Monster {
                 level.sendParticles(ParticleTypes.REVERSE_PORTAL, this.getX(), this.getY() + 0.3, this.getZ(), 8, 0.4, 0.2, 0.4, 0.05);
                 for (Player p : level.getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(0.6))) {
                     if (!p.isSpectator() && !p.isCreative()) {
-                        p.hurtServer(level, level.damageSources().mobAttack(this), 12.0F);
+                        p.hurt(level.damageSources().mobAttack(this), 12.0F);
                         p.push(this.aim.x * 1.6, 0.45, this.aim.z * 1.6);   // thrown back along the charge
                         this.endCharge(level, false);
                         return;
@@ -535,7 +539,7 @@ public class Curator extends Monster {
             Vec3 c = e.position().add(0.0, e.getBbHeight() / 2.0, 0.0);
             double along = Mth.clamp(c.subtract(from).dot(dir), 0.0, length);
             if (c.distanceTo(from.add(dir.scale(along))) <= 1.2 && !(e instanceof Player p && (p.isCreative() || p.isSpectator()))) {
-                e.hurtServer(level, level.damageSources().mobAttack(this), 10.0F);
+                e.hurt(level.damageSources().mobAttack(this), 10.0F);
                 e.push(dir.x * 1.2, 0.2, dir.z * 1.2);
             }
         }

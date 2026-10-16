@@ -8,17 +8,11 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // Stardust that drifted up under an island and stuck there, with Comet Cress hanging from it.
 // (Stardust "falls" upward, so an island's underside is where it gathers.)
-public record StardustUnderhangFeature() implements Feature {
-    public static final MapCodec<StardustUnderhangFeature> CODEC = MapCodec.unit(StardustUnderhangFeature::new);
+public class StardustUnderhangFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<StardustUnderhangFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

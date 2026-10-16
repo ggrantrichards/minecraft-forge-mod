@@ -56,7 +56,7 @@ public class HollowThornItem extends Item {
             }
             server.setBlock(pos, carved, Block.UPDATE_ALL);
             server.playSound(null, pos, SoundEvents.PUMPKIN_CARVE, SoundSource.BLOCKS, 1.0F, 0.7F);
-            server.sendParticles(new DustParticleOptions(0x9A6AE8, 1.0F), pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5,
+            server.sendParticles(com.ggrantrichards.astralend.compat.Compat.dust(0x9A6AE8, 1.0F), pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5,
                 12, 0.4, 0.3, 0.4, 0.0);
             if (player != null) {
                 context.getItemInHand().hurtAndBreak(1, player, context.getHand() == net.minecraft.world.InteractionHand.MAIN_HAND

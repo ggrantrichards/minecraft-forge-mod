@@ -5,7 +5,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 
 // The Star Compass: a compass set among Starblooms, which always turn toward the End's centre. In the
 // End it points to the central island (it carries a lodestone target there, so it needs no lodestone);
@@ -16,8 +15,7 @@ public class StarCompassItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, java.util.function.Consumer<Component> builder,
-                                TooltipFlag flag) {
-        builder.accept(Component.translatable("item.astralend.star_compass.points").withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, java.util.List<Component> builder, TooltipFlag flag) {
+        builder.add(Component.translatable("item.astralend.star_compass.points").withStyle(ChatFormatting.GRAY));
     }
 }

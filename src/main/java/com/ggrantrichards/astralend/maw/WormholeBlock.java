@@ -24,15 +24,15 @@ public class WormholeBlock extends Block {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                           InteractionHand hand, BlockHitResult hit) {
         if (!stack.is(ModItems.PORTAL_LENS.get())) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return net.minecraft.world.Itemnet.minecraft.world.ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (level instanceof ServerLevel server && player instanceof ServerPlayer serverPlayer) {
             MawNetwork.attune(server, pos, serverPlayer);
         }
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.ItemInteractionResult.SUCCESS;
     }
 
     @Override

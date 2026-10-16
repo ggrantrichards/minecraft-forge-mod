@@ -377,11 +377,11 @@ public class LeviathanPiece extends StructurePiece {
         if (!chunk.isInside(p)) {
             return;
         }
-        var entity = type.create(level.getLevel(), MobSpawnType.STRUCTURE);
+        var entity = type.create(level.getLevel());
         if (entity == null) {
             return;
         }
-        entity.snapTo(p.getX() + 0.5, p.getY(), p.getZ() + 0.5, (float) (this.turn * 90 - 90), 0.0F);
+        entity.moveTo(p.getX() + 0.5, p.getY(), p.getZ() + 0.5, (float) (this.turn * 90 - 90), 0.0F);
         if (entity instanceof Mob mob) {
             mob.setPersistenceRequired();
             mob.finalizeSpawn(level, level.getCurrentDifficultyAt(p), MobSpawnType.STRUCTURE, null);

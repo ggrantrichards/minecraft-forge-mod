@@ -14,7 +14,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 // A glowing mushroom that grows on Chorus Moss, End Stone and Nightstone.
 public class LumineshroomBlock extends BushBlock {
-    private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 10.0);
+    private static final VoxelShape SHAPE = com.ggrantrichards.astralend.compat.Compat.column(6.0, 0.0, 10.0);
 
     public LumineshroomBlock(BlockBehaviour.Properties properties) {
         super(properties);

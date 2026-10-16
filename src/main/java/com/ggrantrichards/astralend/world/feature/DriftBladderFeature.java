@@ -9,19 +9,13 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // A Drift Bladder over the Nebula Fields: a sac of glowing gas floating six to fourteen blocks above
 // the moss - one block, a lump of a few, or a rounder cluster - tethered to the ground below by a
 // Nebula Tendril hanging from its underside almost to the moss. In the low gravity even the plants
 // float.
-public record DriftBladderFeature() implements Feature {
-    public static final MapCodec<DriftBladderFeature> CODEC = MapCodec.unit(DriftBladderFeature::new);
+public class DriftBladderFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<DriftBladderFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

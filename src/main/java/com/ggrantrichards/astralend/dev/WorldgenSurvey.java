@@ -26,7 +26,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.BiomeResolver;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -188,7 +187,7 @@ public final class WorldgenSurvey {
         ServerLevel end = server.getLevel(Level.END);
         RandomState randomState = end.getChunkSource().randomState();
         ChunkGenerator generator = end.getChunkSource().getGenerator();
-        BiomeResolver biomes = generator.getBiomeSource().createUncachedResolver(randomState);
+        com.ggrantrichards.astralend.compat.Compat.Resolver biomes = com.ggrantrichards.astralend.compat.Compat.resolver(generator.getBiomeSource(), randomState.sampler());
 
         // ---- Biome map ----
         log("Biome map of the End, " + (2 * MAP_RADIUS) + " x " + (2 * MAP_RADIUS) + " blocks, north up, one character = "
@@ -364,7 +363,7 @@ public final class WorldgenSurvey {
                 failures.add(name + ": couldn't be created");
                 continue;
             }
-            mob.snapTo(area.standOn.getX() + 0.5, area.standOn.getY() + 1.0, area.standOn.getZ() + 0.5, 0.0F, 0.0F);
+            mob.moveTo(area.standOn.getX() + 0.5, area.standOn.getY() + 1.0, area.standOn.getZ() + 0.5, 0.0F, 0.0F);
             if (!end.addFreshEntity(mob)) {
                 failures.add(name + ": couldn't be added to the End");
                 continue;
@@ -538,7 +537,7 @@ public final class WorldgenSurvey {
                 + bed + " bed, " + glass + " glass)");
         }
         // The whole disc is the Eclipse (the biome map is warped near its rim, so test well inside).
-        var resolver = end.getChunkSource().getGenerator().getBiomeSource().createUncachedResolver(end.getChunkSource().randomState());
+        var resolver = com.ggrantrichards.astralend.compat.Compat.resolver(end.getChunkSource().getGenerator().getBiomeSource(), end.getChunkSource().randomState().sampler());
         int right = 0, total = 0;
         for (double u = -0.7; u <= 0.71; u += 0.35) {
             for (double v = -0.7; v <= 0.71; v += 0.35) {
@@ -590,17 +589,17 @@ public final class WorldgenSurvey {
             BlockPos cover = com.ggrantrichards.astralend.entity.EndMobs.coverNear(end, meadow, 12, end.getRandom());
             BlockPos water = com.ggrantrichards.astralend.entity.EndMobs.waterNear(end, meadow, 16);
             var whale = ModEntities.DRIFT_WHALE.get().create(end, net.minecraft.world.entity.MobSpawnType.COMMAND);
-            whale.snapTo(meadow.getX() + 0.5, meadow.getY() + 30, meadow.getZ() + 0.5, 0.0F, 0.0F);
+            whale.moveTo(meadow.getX() + 0.5, meadow.getY() + 30, meadow.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(whale);
             made.add(whale);
             var out = whale.outOfTheStorm(end);
             boolean outward = out != null && out.x * (whale.getX() - e.x()) + out.z * (whale.getZ() - e.z()) > 0.0;
             var herd = ModEntities.HUSHBACK.get().create(end, net.minecraft.world.entity.MobSpawnType.COMMAND);
-            herd.snapTo(meadow.getX() + 0.5, meadow.getY(), meadow.getZ() + 0.5, 0.0F, 0.0F);
+            herd.moveTo(meadow.getX() + 0.5, meadow.getY(), meadow.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(herd);
             made.add(herd);
             var mite = net.minecraft.world.entity.EntityType.ENDERMITE.create(end, net.minecraft.world.entity.MobSpawnType.COMMAND);
-            mite.snapTo(meadow.getX() + 3.5, meadow.getY(), meadow.getZ() + 0.5, 0.0F, 0.0F);
+            mite.moveTo(meadow.getX() + 3.5, meadow.getY(), meadow.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(mite);
             made.add(mite);
             boolean pesters = com.ggrantrichards.astralend.world.WebOfLife.pesterHerd(end, mite);
@@ -665,7 +664,7 @@ public final class WorldgenSurvey {
         testMaze(end, body.mazeStart(), failures);
         // A Drift Whale passing through: once round the skeleton, humming low.
         var passing = ModEntities.DRIFT_WHALE.get().create(end, net.minecraft.world.entity.MobSpawnType.COMMAND);
-        passing.snapTo(heart.getX() + 0.5, heart.getY() + 2.0, heart.getZ() + 0.5, 0.0F, 0.0F);
+        passing.moveTo(heart.getX() + 0.5, heart.getY() + 2.0, heart.getZ() + 0.5, 0.0F, 0.0F);
         end.addFreshEntity(passing);
         boolean circles = passing.noticeLeviathan(end) && passing.isCircling();
         passing.discard();
@@ -706,7 +705,7 @@ public final class WorldgenSurvey {
             failures.add("leviathan: expected one Curator in the reliquary, found " + curators.size());
         } else {
             var curator = curators.get(0);
-            boolean hurt = curator.hurtServer(end, end.damageSources().generic(), 10.0F);
+            boolean hurt = curator.hurt(end.damageSources().generic(), 10.0F);
             if (!curator.isDormant() || hurt || curator.home() == null) {
                 failures.add("leviathan: the Curator should be dormant, unhurt by anything but a player, and know its home");
             }

@@ -250,7 +250,7 @@ public class Sunstorms extends SavedData {
                 if (level.structureManager().getStructureWithPieceAt(player.blockPosition(), holder -> holder.is(SOLAR_ARRAY)).isValid()) {
                     damage *= 2.0F;
                 }
-                player.hurtServer(level, source, damage);
+                player.hurt(source, damage);
             }
         }
     }

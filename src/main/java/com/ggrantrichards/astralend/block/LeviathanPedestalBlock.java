@@ -45,10 +45,10 @@ public class LeviathanPedestalBlock extends Block {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                           InteractionHand hand, BlockHitResult hit) {
         if (state.getValue(LIT) || !stack.is(Items.DRAGON_EGG) || !level.getBlockState(pos.above()).isAir()) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return net.minecraft.world.Itemnet.minecraft.world.ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (level instanceof ServerLevel server) {
             stack.consume(1, player);
@@ -58,7 +58,7 @@ public class LeviathanPedestalBlock extends Block {
                 ModAdvancements.award(serverPlayer, "keeper_of_the_egg");
             }
         }
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.ItemInteractionResult.SUCCESS;
     }
 
     // The egg is home: light the pedestal and the four eyes of the skull (the Maw: wake it now
@@ -92,9 +92,9 @@ public class LeviathanPedestalBlock extends Block {
         for (int i = 0; i < 2; i++) {
             double a = random.nextDouble() * Math.PI * 2.0;
             BlockPos at = pos.offset((int) Math.round(Math.cos(a) * 8), 1, (int) Math.round(Math.sin(a) * 8));
-            var watcher = ModEntities.WATCHER.get().create(level, MobSpawnType.EVENT);
+            var watcher = ModEntities.WATCHER.get().create(level);
             if (watcher != null) {
-                watcher.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, (float) Math.toDegrees(a) + 90.0F, 0.0F);
+                watcher.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, (float) Math.toDegrees(a) + 90.0F, 0.0F);
                 watcher.linger(600);
                 level.addFreshEntity(watcher);
             }

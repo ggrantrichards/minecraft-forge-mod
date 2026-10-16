@@ -8,20 +8,14 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // An oasis of the Nebula Fields: a pond of still water sunk into the Nebula Moss - an irregular
 // shape a few blocks across, shallow at the edges and deeper in the middle - with glowing Astral Vine
 // buds crowding its banks and Lumineshrooms and tufts behind them. Only on flat ground: a pond needs a
 // level rim all the way round. Sea pickles glow on the bed and lily pads float on top.
 // (Within 7 blocks of its origin, inside the chunks a feature may touch.)
-public record OasisFeature() implements Feature {
-    public static final MapCodec<OasisFeature> CODEC = MapCodec.unit(OasisFeature::new);
+public class OasisFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<OasisFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

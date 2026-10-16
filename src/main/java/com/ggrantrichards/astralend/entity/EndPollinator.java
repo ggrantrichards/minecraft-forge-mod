@@ -65,7 +65,7 @@ public class EndPollinator extends Animal {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Animal.createAnimalAttributes()
+        return Animal.createMobAttributes()
             .add(Attributes.MAX_HEALTH, 6.0)
             .add(Attributes.FLYING_SPEED, 0.3)
             .add(Attributes.MOVEMENT_SPEED, 0.15);
@@ -107,7 +107,7 @@ public class EndPollinator extends Animal {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return ModEntities.POLLINATOR.get().create(level, MobSpawnType.BREEDING);
+        return ModEntities.POLLINATOR.get().create(level);
     }
 
     @Override
@@ -126,7 +126,7 @@ public class EndPollinator extends Animal {
             this.wakeCooldown--;
         }
         if (this.isAlive() && !this.isBaby() && --this.sporeTime <= 0) {
-            this.spawnAtLocation((ServerLevel) this.level(), new ItemStack(ModItems.GLOWING_SPORES.get()));
+            this.spawnAtLocation(new ItemStack(ModItems.GLOWING_SPORES.get()));
             this.playSound(SoundEvents.AMETHYST_BLOCK_CHIME, 0.8F, 1.6F);
             this.sporeTime = MIN_SPORE_TIME + this.random.nextInt(MAX_SPORE_TIME - MIN_SPORE_TIME);
         }

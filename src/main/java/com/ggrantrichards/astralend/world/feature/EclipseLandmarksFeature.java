@@ -9,7 +9,6 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // The Eclipse's water, each piece built by whichever chunk it falls in (placed once in every chunk):
 //   - the Wellspring, the heart of the meadow: a round lake on a bed of End Stone and Pale End Stone,
@@ -17,14 +16,9 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 //   - the ponds round it (EclipseLayout.PONDS), little basins of the same water, each level with the
 //     ground at its middle;
 //   - three springs on the rim, spilling off the edge into the void.
-public record EclipseLandmarksFeature() implements Feature {
-    public static final MapCodec<EclipseLandmarksFeature> CODEC = MapCodec.unit(EclipseLandmarksFeature::new);
+public class EclipseLandmarksFeature extends SimpleFeature {
     private static final int WATER_TOP = (int) EclipseTerrainFeature.TOP - 1;   // the Wellspring's surface
 
-    @Override
-    public MapCodec<EclipseLandmarksFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

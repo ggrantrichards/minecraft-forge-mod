@@ -75,8 +75,9 @@ public class Shardback extends Monster {
     }
 
     @Override
-    protected void customServerAiStep(ServerLevel level) {
-        super.customServerAiStep(level);
+    protected void customServerAiStep() {
+        ServerLevel level = (ServerLevel) this.level();
+        super.customServerAiStep();
         LivingEntity target = this.getTarget();
         if (this.isHidden() && target != null && target.distanceToSqr(this) > 36.0 && target != this.getLastHurtByMob()) {
             this.setTarget(null);      // hidden, it lets you pass - unless you come within six blocks
@@ -94,11 +95,14 @@ public class Shardback extends Monster {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
+        if (!(this.level() instanceof ServerLevel level)) {
+            return super.hurt(source, amount);
+        }
         if (this.isHidden()) {
             this.setHidden(false);
         }
-        return super.hurtServer(level, source, amount);
+        return super.hurt(source, amount);
     }
 
     @Override

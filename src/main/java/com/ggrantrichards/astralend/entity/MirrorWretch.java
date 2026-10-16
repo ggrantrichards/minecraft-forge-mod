@@ -62,8 +62,7 @@ public class MirrorWretch extends Monster {
             .add(Attributes.MOVEMENT_SPEED, 0.28)
             .add(Attributes.ATTACK_DAMAGE, 4.0)
             .add(Attributes.ATTACK_KNOCKBACK, 1.6)
-            .add(Attributes.FOLLOW_RANGE, 28.0)
-            .add(Attributes.TEMPT_RANGE, 16.0);     // Memory Moss draws it from this far
+            .add(Attributes.FOLLOW_RANGE, 28.0);
     }
 
     @Override
@@ -207,8 +206,9 @@ public class MirrorWretch extends Monster {
 
     // Its blow throws a player outward, away from it - toward the void, if that's where they stand.
     @Override
-    public boolean doHurtTarget(ServerLevel level, Entity target) {
-        boolean hit = super.doHurtTarget(level, target);
+    public boolean doHurtTarget(Entity target) {
+        ServerLevel level = (ServerLevel) this.level();
+        boolean hit = super.doHurtTarget(target);
         if (hit && target instanceof Player player) {
             this.throwOutward(player);
         }

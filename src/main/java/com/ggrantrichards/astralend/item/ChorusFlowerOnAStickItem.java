@@ -22,18 +22,18 @@ public class ChorusFlowerOnAStickItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public net.minecraft.world.InteractionResultHolder<net.minecraft.world.item.ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide()) {
-            return InteractionResult.PASS;
+            return net.minecraft.world.InteractionResultHolder.pass(player.getItemInHand(hand));
         }
         Entity vehicle = player.getControlledVehicle();
         if (vehicle instanceof DriftWhale whale && whale.boost()) {
-            ItemStack result = stack.hurtAndConvertOnBreak(BOOST_COST, Items.FISHING_ROD, player, hand.asEquipmentSlot());
-            return InteractionResult.SUCCESS_SERVER.heldItemTransformedTo(result);
+            ItemStack result = stack.hurtAndConvertOnBreak(BOOST_COST, Items.FISHING_ROD, player, net.minecraft.world.entity.LivingEntity.getSlotForHand(hand));
+            return net.minecraft.world.InteractionResultHolder.success(result);
         }
         player.awardStat(Stats.ITEM_USED.get(this));
-        return InteractionResult.PASS;
+        return net.minecraft.world.InteractionResultHolder.pass(player.getItemInHand(hand));
     }
 
     public static boolean holding(Player player) {

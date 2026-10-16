@@ -9,18 +9,12 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // A withered stalk of the Ashen Barrens (after beta.4): a giant Lumineshroom long dead - a pale,
 // bone-like stem seven to fourteen blocks tall, leaning as it rises, with a small cap at the top
 // drooping round its edges. No light, no tendrils: nothing in it is alive.
-public record WitheredStalkFeature() implements Feature {
-    public static final MapCodec<WitheredStalkFeature> CODEC = MapCodec.unit(WitheredStalkFeature::new);
+public class WitheredStalkFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<WitheredStalkFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

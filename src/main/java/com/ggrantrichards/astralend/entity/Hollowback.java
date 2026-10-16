@@ -164,8 +164,11 @@ public class Hollowback extends Monster {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
-        boolean hurt = super.hurtServer(level, source, amount);
+    public boolean hurt(DamageSource source, float amount) {
+        if (!(this.level() instanceof ServerLevel level)) {
+            return super.hurt(source, amount);
+        }
+        boolean hurt = super.hurt(source, amount);
         if (hurt && this.isAlive() && this.random.nextInt(3) == 0) {
             var to = EndMobs.safeSpotNear(level, this.blockPosition(), 3, 6, this.random);
             if (to != null) {

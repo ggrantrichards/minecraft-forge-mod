@@ -9,18 +9,12 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // A giant Lumineshroom: a pale stem under a glowing cap of Lumine Cap, with Nebula Tendrils
 // dripping from its rim. Three sizes: small ones with a round cap, medium ones with a wide dome,
 // and rare towering ones with a thick 2x2 stem and a broad, flat-topped cap.
-public record GiantLumineshroomFeature() implements Feature {
-    public static final MapCodec<GiantLumineshroomFeature> CODEC = MapCodec.unit(GiantLumineshroomFeature::new);
+public class GiantLumineshroomFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<GiantLumineshroomFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

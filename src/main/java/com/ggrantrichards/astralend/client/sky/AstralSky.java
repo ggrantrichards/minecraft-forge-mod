@@ -4,15 +4,9 @@ import com.ggrantrichards.astralend.flare.ClientFlares;
 import com.ggrantrichards.astralend.flare.FlarePhase;
 import com.ggrantrichards.astralend.world.ModBiomes;
 import com.mojang.logging.LogUtils;
-import java.lang.reflect.Field;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.SkyRenderer;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.model.sprite.AtlasManager;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -22,19 +16,19 @@ import net.minecraftforge.event.TickEvent;
 import org.slf4j.Logger;
 
 // The client side of Phase 5:
-//   - swaps the game's sky renderer for AstralSkyRenderer, which draws the vanilla End sky and then the
-//     mod's sky on top (stars, the Eclipse's star and clouds, flares, comets, distant shapes). LevelRenderer makes a
-//     new SkyRenderer after resource reloads, so this checks every tick and swaps it again if needed;
+//   - draws the mod's sky (AstralSkyRenderer) over vanilla's End sky each frame: stars, the Eclipse's
+//     star and clouds, flares, comets, distant shapes;
 //   - keeps the flare countdown running between server updates (ClientFlares);
 //   - in the Eclipse during a flare: charged particles stream past on the solar wind, and the wind
 //     pushes you along while you glide with an elytra.
 public final class AstralSky {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static Field skyField;
+    private static AstralSkyRenderer renderer;
     private static boolean failed;
 
     public static void register() {
         com.ggrantrichards.astralend.Events.post(TickEvent.ClientTickEvent.class, event -> onTick());
+        com.ggrantrichards.astralend.Events.on(net.minecraftforge.client.event.RenderLevelStageEvent.class, AstralSky::onRenderStage);
     }
 
     private static void onTick() {
@@ -45,7 +39,6 @@ public final class AstralSky {
             return;
         }
         ClientFlares.tick();
-        installSkyRenderer(minecraft);
         LocalPlayer player = minecraft.player;
         if (player != null && ClientFlares.phase() == FlarePhase.FLARE && com.ggrantrichards.astralend.flare.Sunstorms.inSunstorms(level, player.blockPosition())) {
             solarWind(level, player);
@@ -70,37 +63,26 @@ public final class AstralSky {
         }
     }
 
-    private static void installSkyRenderer(Minecraft minecraft) {
-        if (failed) {
+    // Drawn just after vanilla's End sky each frame (1.21.1 has no swappable sky renderer).
+    private static void onRenderStage(net.minecraftforge.client.event.RenderLevelStageEvent event) {
+        if (event.getStage() != net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_SKY || failed) {
+            return;
+        }
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.level == null || minecraft.level.dimension() != Level.END) {
             return;
         }
         try {
-            LevelRenderer levelRenderer = minecraft.levelRenderer;
-            if (skyField == null) {
-                skyField = LevelRenderer.class.getDeclaredField("skyRenderer");
-                skyField.setAccessible(true);
+            if (renderer == null) {
+                renderer = new AstralSkyRenderer();
             }
-            Object current = skyField.get(levelRenderer);
-            if (current instanceof AstralSkyRenderer) {
-                return;
-            }
-            TextureManager textures = (TextureManager) field(levelRenderer, "textureManager");
-            AtlasManager atlases = (AtlasManager) field(levelRenderer, "atlasManager");
-            GameRenderer gameRenderer = (GameRenderer) field(levelRenderer, "gameRenderer");
-            if (current instanceof SkyRenderer old) {
-                old.close();
-            }
-            skyField.set(levelRenderer, new AstralSkyRenderer(textures, atlases, gameRenderer.mainRenderTarget()));
-        } catch (ReflectiveOperationException | RuntimeException e) {
+            float partial = minecraft.getTimer().getGameTimeDeltaPartialTick(true);
+            renderer.extractRenderState(minecraft.level, partial, event.getCamera());
+            renderer.render(new org.joml.Matrix4f(event.getPoseStack().last().pose()));
+        } catch (RuntimeException e) {
             failed = true;   // the End keeps vanilla's sky; nothing else depends on this
-            LOGGER.error("[AstralEnd] couldn't install the End sky renderer", e);
+            LOGGER.error("[AstralEnd] couldn't draw the End sky", e);
         }
-    }
-
-    private static Object field(LevelRenderer levelRenderer, String name) throws ReflectiveOperationException {
-        Field field = LevelRenderer.class.getDeclaredField(name);
-        field.setAccessible(true);
-        return field.get(levelRenderer);
     }
 
     private AstralSky() {}

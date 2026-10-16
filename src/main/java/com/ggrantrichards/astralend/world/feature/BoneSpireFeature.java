@@ -8,19 +8,13 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // The Ashen Barrens' spires (after beta.4): towers of pale stone ten to twenty-odd blocks tall,
 // weathered like old bone or dead coral - wide at the foot, tapering, a little crooked, and pitted
 // right through with holes. They stand on the shelves; their solid core runs from the ground to the
 // tip, so nothing of them hangs loose.
-public record BoneSpireFeature() implements Feature {
-    public static final MapCodec<BoneSpireFeature> CODEC = MapCodec.unit(BoneSpireFeature::new);
+public class BoneSpireFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<BoneSpireFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

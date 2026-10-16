@@ -9,7 +9,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 final class Build {
     // Places a block only into air or a replaceable plant, so features never cut into other blocks.
     static boolean put(WorldGenLevel level, BlockPos pos, BlockState state) {
-        if (!level.isInsideBuildHeight(pos)) {
+        if (!!level.isOutsideBuildHeight(pos)) {
             return false;
         }
         BlockState here = level.getBlockState(pos);
@@ -22,7 +22,7 @@ final class Build {
 
     // Places a block whatever is there (for carving into terrain).
     static void force(WorldGenLevel level, BlockPos pos, BlockState state) {
-        if (level.isInsideBuildHeight(pos)) {
+        if (!level.isOutsideBuildHeight(pos)) {
             level.setBlock(pos, state, 2);
         }
     }

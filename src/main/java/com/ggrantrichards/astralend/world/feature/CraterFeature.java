@@ -8,17 +8,11 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // An impact crater: a round bowl blasted into a Comet Wake island with a raised rim, Stardust
 // drifted in its floor and a lump of Meteoric Iron Ore at the bottom where the fragment struck.
-public record CraterFeature() implements Feature {
-    public static final MapCodec<CraterFeature> CODEC = MapCodec.unit(CraterFeature::new);
+public class CraterFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<CraterFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

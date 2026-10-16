@@ -51,7 +51,7 @@ public final class UpwellingEffect extends MobEffect {
     }
 
     @Override
-    public boolean applyEffectTick(ServerLevel level, LivingEntity mob, int amplifier) {
+    public boolean applyEffectTick(LivingEntity mob, int amplifier) {
         double y = mob.getY();
         double[] s = RISING.computeIfAbsent(mob, m -> new double[] {y, y});
         mob.resetFallDistance();        // falling up never counts as falling down
@@ -59,7 +59,7 @@ public final class UpwellingEffect extends MobEffect {
             // Hit a ceiling: the fall upward ends here, as hard as a fall that far would.
             double fell = y - s[1];
             if (fell > 3.0) {
-                mob.hurtServer(level, level.damageSources().fall(), (float) Math.ceil(fell - 3.0));
+                mob.hurt(mob.damageSources().fall(), (float) Math.ceil(fell - 3.0));
             }
             s[1] = y;
         } else if (mob.onGround()) {

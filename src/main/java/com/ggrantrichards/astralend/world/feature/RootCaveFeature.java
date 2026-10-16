@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.AmethystClusterBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // The End's first caves: inside the Glimmering Crags' bigger islands, the hollows left where the roots
 // of the colossal, long-dead Nullwood rotted away. A root hollow is a chamber deep in the island (where
@@ -24,14 +23,9 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 //
 // It all stays within 24 blocks of the chunk's middle (a feature may only write to the chunks next to
 // its own); neighbouring hollows run into each other, so the tunnels join up into networks.
-public record RootCaveFeature() implements Feature {
-    public static final MapCodec<RootCaveFeature> CODEC = MapCodec.unit(RootCaveFeature::new);
+public class RootCaveFeature extends SimpleFeature {
     private static final int REACH = 22;
 
-    @Override
-    public MapCodec<RootCaveFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

@@ -132,16 +132,16 @@ public final class ModBlocks {
     // you walk a little slower on it, and it softens a fall (ChorusMossBlock).
     public static final RegistryObject<Block> CHORUS_MOSS = register("chorus_moss", com.ggrantrichards.astralend.block.ChorusMossBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.1F).sound(SoundType.MOSS)
-            .speedFactor(0.9F).pushReaction(PushReaction.POPPED));
+            .speedFactor(0.9F).pushReaction(PushReaction.DESTROY));
 
     // ---- Plants ----
     // Lumineshroom: a glowing mushroom whose texture slowly "breathes". Light level is fixed, for performance.
     public static final RegistryObject<Block> LUMINESHROOM = register("lumineshroom", LumineshroomBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).noCollision().instabreak()
-            .sound(SoundType.FUNGUS).lightLevel(state -> 10).pushReaction(PushReaction.POPPED));
+            .sound(SoundType.FUNGUS).lightLevel(state -> 10).pushReaction(PushReaction.DESTROY));
     public static final RegistryObject<Block> STARBLOOM = register("starbloom", StarbloomBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollision().instabreak()
-            .sound(SoundType.GRASS).offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.POPPED));
+            .sound(SoundType.GRASS).offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.DESTROY));
     // Astral Vine: grows upward like twisting vines. The "plant" block is the vine's body and has no item.
     // Its tip glows cold pale blue (after beta.4): the reed groves light the Nebula Fields' rose moss.
     public static final RegistryObject<Block> ASTRAL_VINE = register("astral_vine", AstralVineBlock::new,
@@ -156,7 +156,7 @@ public final class ModBlocks {
     // Comet Cress: a crop that hangs from the underside of Stardust. Its item is ModItems.COMET_CRESS.
     public static final RegistryObject<Block> COMET_CRESS = registerNoItem("comet_cress", CometCressBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).noCollision().randomTicks().instabreak()
-            .sound(SoundType.CROP).pushReaction(PushReaction.POPPED));
+            .sound(SoundType.CROP).pushReaction(PushReaction.DESTROY));
 
     // ================================================================ Phase 3
 
@@ -175,7 +175,7 @@ public final class ModBlocks {
         () -> endStone(MapColor.TERRACOTTA_WHITE));
     // Shimmer Grass: short, pale grass. Like vanilla grass, it drops only when sheared.
     public static final RegistryObject<Block> SHIMMER_GRASS = register("shimmer_grass",
-        p -> new EndPlantBlock(Block.column(12.0, 0.0, 13.0), ASTRAL_SOIL, p),
+        p -> new EndPlantBlock(com.ggrantrichards.astralend.compat.Compat.column(12.0, 0.0, 13.0), ASTRAL_SOIL, p),
         () -> plant(MapColor.COLOR_LIGHT_BLUE, SoundType.GRASS).replaceable().offsetType(BlockBehaviour.OffsetType.XYZ));
 
     // ---- Comet Wake: scorched islands, stardust and blue ice ----
@@ -220,7 +220,7 @@ public final class ModBlocks {
     // (noOcclusion), or the gaps would show the void.
     public static final RegistryObject<Block> SUNSCALE_LICHEN = register("sunscale_lichen", SunscaleLichenBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(0.1F).sound(SoundType.MOSS_CARPET)
-            .lightLevel(state -> state.getValue(SunscaleLichenBlock.CHARGED) ? 12 : 5).noOcclusion().pushReaction(PushReaction.POPPED));
+            .lightLevel(state -> state.getValue(SunscaleLichenBlock.CHARGED) ? 12 : 5).noOcclusion().pushReaction(PushReaction.DESTROY));
     // Phase 5 (Sunstorms): cover you can hang anywhere, and the pedestal that charges crystals and cells.
     public static final RegistryObject<Block> SUNSHADE = register("sunshade", SunshadeBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(0.3F).sound(SoundType.WOOL).noOcclusion());
@@ -249,7 +249,7 @@ public final class ModBlocks {
     // Phase 9: Chorus Moss carpet, like moss carpet.
     public static final RegistryObject<Block> CHORUS_MOSS_CARPET = register("chorus_moss_carpet", net.minecraft.world.level.block.CarpetBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(0.1F).sound(SoundType.MOSS_CARPET)
-            .pushReaction(PushReaction.POPPED));
+            .pushReaction(PushReaction.DESTROY));
     // Phase 8 (Starforging): the Astral Forge, and the tiles Rift Walker boots lay over a drop.
     public static final RegistryObject<Block> ASTRAL_FORGE = register("astral_forge", com.ggrantrichards.astralend.starforge.AstralForgeBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).requiresCorrectToolForDrops().strength(5.0F, 1200.0F)
@@ -259,7 +259,7 @@ public final class ModBlocks {
             .noOcclusion().noLootTable().lightLevel(state -> 5));
     // Life that died out: grey husks of the Nebula Fields' mushrooms and vines, and Pollinator shells.
     public static final RegistryObject<Block> ASHEN_LUMINESHROOM = register("ashen_lumineshroom",
-        p -> new EndPlantBlock(Block.column(6.0, 0.0, 10.0), ASTRAL_SOIL, p),
+        p -> new EndPlantBlock(com.ggrantrichards.astralend.compat.Compat.column(6.0, 0.0, 10.0), ASTRAL_SOIL, p),
         () -> plant(MapColor.COLOR_GRAY, SoundType.FUNGUS));
 
     // ---- Shattered Observatory: the ruins' cut stone ----
@@ -298,19 +298,19 @@ public final class ModBlocks {
     public static final RegistryObject<Block> GLIMMER_CLUSTER = register("glimmer_cluster",
         p -> new net.minecraft.world.level.block.AmethystClusterBlock(7.0F, 3.0F, p),
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.ICE).forceSolidOn().noOcclusion().strength(1.5F)
-            .sound(SoundType.AMETHYST_CLUSTER).lightLevel(state -> 8).pushReaction(PushReaction.POPPED));
+            .sound(SoundType.AMETHYST_CLUSTER).lightLevel(state -> 8).pushReaction(PushReaction.DESTROY));
 
     // ---- Phase 10: Voidgel - jelly from the undersides of the islands. It bounces you like slime and
     // lets you down gently (Slow Falling). ----
     public static final RegistryObject<Block> VOIDGEL = register("voidgel", com.ggrantrichards.astralend.block.VoidgelBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).friction(0.8F).bounceRestitution(0.8F).sound(SoundType.SLIME_BLOCK)
+        () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).friction(0.8F).sound(SoundType.SLIME_BLOCK)
             .noOcclusion().lightLevel(state -> 2));
 
     // ---- Phase 10: End Chimes - End Rods and amethyst on a chain. They hum, and when something
     // teleports near them they ring and still the air: no more teleporting near them for a while. ----
     public static final RegistryObject<Block> END_CHIMES = register("end_chimes", com.ggrantrichards.astralend.block.EndChimesBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).strength(0.5F).sound(SoundType.AMETHYST_CLUSTER)
-            .noOcclusion().noCollision().lightLevel(state -> 10).pushReaction(PushReaction.POPPED));
+            .noOcclusion().noCollision().lightLevel(state -> 10).pushReaction(PushReaction.DESTROY));
 
     // ================================================================ Phase 3.5: the biome worlds
 
@@ -328,9 +328,9 @@ public final class ModBlocks {
     public static final RegistryObject<Block> MEMORY_MOSS = registerNoItem("memory_moss", com.ggrantrichards.astralend.block.MemoryMossBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(0.1F).sound(SoundType.MOSS));
     public static final RegistryObject<Block> MIMIC_PLANT = register("mimic_plant",
-        p -> new com.ggrantrichards.astralend.block.MimicPlantBlock(Block.column(12.0, 0.0, 13.0), ASTRAL_SOIL, p),
+        p -> new com.ggrantrichards.astralend.block.MimicPlantBlock(com.ggrantrichards.astralend.compat.Compat.column(12.0, 0.0, 13.0), ASTRAL_SOIL, p),
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).noCollision().instabreak().randomTicks()
-            .sound(SoundType.AZALEA).offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.POPPED));
+            .sound(SoundType.AZALEA).offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.DESTROY));
 
     // ---- The distillation: the Eclipse's heaven half. Living Turf, its ground (the only green in the
     // End), and Breathcomb, whose light swells and fades over five minutes.
@@ -352,7 +352,7 @@ public final class ModBlocks {
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).instrument(NoteBlockInstrument.BASS).strength(2.0F)
             .sound(SoundType.STEM));
     public static final RegistryObject<Block> NEBULA_TUFTS = register("nebula_tufts",
-        p -> new EndPlantBlock(Block.column(12.0, 0.0, 10.0), ASTRAL_SOIL, p),
+        p -> new EndPlantBlock(com.ggrantrichards.astralend.compat.Compat.column(12.0, 0.0, 10.0), ASTRAL_SOIL, p),
         () -> plant(MapColor.COLOR_PURPLE, SoundType.GRASS).replaceable().offsetType(BlockBehaviour.OffsetType.XZ));
     // A Drift Bladder (after beta.4): glowing gas that floats over the Nebula Fields on a tendril.
     public static final RegistryObject<Block> NEBULA_BLADDER = register("nebula_bladder",
@@ -370,17 +370,17 @@ public final class ModBlocks {
     // ---- Deep Hollows: twisted Nullwood trees ----
     public static final WoodSet NULLWOOD = woodSet("nullwood", "log", "wood", MapColor.COLOR_BLACK, MapColor.COLOR_PURPLE,
         SoundType.WOOD, BlockSetType.DARK_OAK, WoodType.DARK_OAK);
-    public static final RegistryObject<Block> NULLWOOD_LEAVES = register("nullwood_leaves", p -> new LeavesBlock(0.01F, p),
+    public static final RegistryObject<Block> NULLWOOD_LEAVES = register("nullwood_leaves", LeavesBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.2F).randomTicks().sound(SoundType.GRASS)
             .noOcclusion().isValidSpawn((state, level, pos, type) -> false).isSuffocating((state, level, pos) -> false)
-            .isViewBlocking((state, level, pos, aabb) -> false).pushReaction(PushReaction.POPPED)
+            .isViewBlocking((state, level, pos, aabb) -> false).pushReaction(PushReaction.DESTROY)
             .isRedstoneConductor((state, level, pos) -> false));
     public static final RegistryObject<Block> NULLWOOD_SAPLING = register("nullwood_sapling", NullwoodSaplingBlock::new,
         () -> plant(MapColor.COLOR_PURPLE, SoundType.GRASS).randomTicks());
     // Null Lanterns: glowing fruit hanging under Nullwood leaves.
     public static final RegistryObject<Block> NULL_LANTERN = register("null_lantern", NullLanternBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(0.3F).noOcclusion()
-            .sound(SoundType.SHROOMLIGHT).lightLevel(state -> 13).pushReaction(PushReaction.POPPED));
+            .sound(SoundType.SHROOMLIGHT).lightLevel(state -> 13).pushReaction(PushReaction.DESTROY));
 
     // ---- Ashen Barrens and the Corona ----
     public static final RegistryObject<Block> SHIMMER_REED = register("shimmer_reed", EndTallPlantBlock::new,
@@ -394,7 +394,7 @@ public final class ModBlocks {
     // The caves (after beta.3). The Hollow Roots: Hollow Glowcaps on the cave floors, Starsap - old
     // amber sap of the dead Nullwood - in the walls, and the Starsap block it makes.
     public static final RegistryObject<Block> HOLLOW_GLOWCAP = register("hollow_glowcap",
-        p -> new EndPlantBlock(Block.column(8.0, 0.0, 9.0), ASTRAL_SOIL, p),
+        p -> new EndPlantBlock(com.ggrantrichards.astralend.compat.Compat.column(8.0, 0.0, 9.0), ASTRAL_SOIL, p),
         () -> plant(MapColor.COLOR_PURPLE, SoundType.FUNGUS).lightLevel(state -> 9));
     public static final RegistryObject<Block> STARSAP_ORE = register("starsap_ore",
         p -> new DropExperienceBlock(UniformInt.of(1, 4), p),
@@ -455,18 +455,18 @@ public final class ModBlocks {
             register(name + "_fence", FenceBlock::new, wood),
             register(name + "_fence_gate", p -> new FenceGateBlock(woodType, p), () -> wood.get().forceSolidOn()),
             register(name + "_door", p -> new DoorBlock(setType, p),
-                () -> wood.get().strength(3.0F).noOcclusion().pushReaction(PushReaction.POPPED)),
+                () -> wood.get().strength(3.0F).noOcclusion().pushReaction(PushReaction.DESTROY)),
             register(name + "_trapdoor", p -> new TrapDoorBlock(setType, p),
                 () -> wood.get().strength(3.0F).noOcclusion().isValidSpawn((state, level, pos, type) -> false)),
             register(name + "_button", p -> new ButtonBlock(setType, 30, p),
-                () -> BlockBehaviour.Properties.of().noCollision().strength(0.5F).pushReaction(PushReaction.POPPED)),
+                () -> BlockBehaviour.Properties.of().noCollision().strength(0.5F).pushReaction(PushReaction.DESTROY)),
             register(name + "_pressure_plate", p -> new PressurePlateBlock(setType, p),
-                () -> wood.get().forceSolidOn().noCollision().strength(0.5F).pushReaction(PushReaction.POPPED)));
+                () -> wood.get().forceSolidOn().noCollision().strength(0.5F).pushReaction(PushReaction.DESTROY)));
     }
 
     private static BlockBehaviour.Properties tendril() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollision().instabreak()
-            .sound(SoundType.WEEPING_VINES).pushReaction(PushReaction.POPPED);
+            .sound(SoundType.WEEPING_VINES).pushReaction(PushReaction.DESTROY);
     }
 
     // Like vanilla End Stone (hardness 3, blast resistance 9).
@@ -482,12 +482,12 @@ public final class ModBlocks {
 
     private static BlockBehaviour.Properties plant(MapColor color, SoundType sound) {
         return BlockBehaviour.Properties.of().mapColor(color).noCollision().instabreak().sound(sound)
-            .pushReaction(PushReaction.POPPED);
+            .pushReaction(PushReaction.DESTROY);
     }
 
     private static BlockBehaviour.Properties vine() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).randomTicks().noCollision().instabreak()
-            .sound(SoundType.WEEPING_VINES).pushReaction(PushReaction.POPPED);
+            .sound(SoundType.WEEPING_VINES).pushReaction(PushReaction.DESTROY);
     }
 
     private static RegistryObject<Block> stairs(String name, RegistryObject<Block> base) {
@@ -508,13 +508,13 @@ public final class ModBlocks {
                                                   Supplier<BlockBehaviour.Properties> properties) {
         RegistryObject<Block> block = registerNoItem(name, factory, properties);
         ModItems.ITEMS.register(name, () -> new BlockItem(block.get(),
-            new Item.Properties().setId(ModItems.ITEMS.key(name)).useBlockDescriptionPrefix()));
+            new Item.Properties()));
         return block;
     }
 
     private static RegistryObject<Block> registerNoItem(String name, Function<BlockBehaviour.Properties, Block> factory,
                                                         Supplier<BlockBehaviour.Properties> properties) {
-        return BLOCKS.register(name, () -> factory.apply(properties.get().setId(BLOCKS.key(name))));
+        return BLOCKS.register(name, () -> factory.apply(properties.get()));
     }
 
     private ModBlocks() {}

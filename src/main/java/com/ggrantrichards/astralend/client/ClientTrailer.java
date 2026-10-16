@@ -358,7 +358,7 @@ public final class ClientTrailer {
             server.execute(() -> mob.setPos(mobAt));
             Entity seen = minecraft.level.getEntity(mob.getId());
             if (seen != null) {
-                seen.snapTo(mobAt.x, mobAt.y, mobAt.z, seen.getYRot(), seen.getXRot());
+                seen.moveTo(mobAt.x, mobAt.y, mobAt.z, seen.getYRot(), seen.getXRot());
             }
             yaw = yaw0 + (float) (scene.num("yaw", 0) * e);
         } else {
@@ -376,7 +376,7 @@ public final class ClientTrailer {
 
         LocalPlayer player = minecraft.player;
         Vec3 feet = eye.subtract(0, player.getEyeHeight(), 0);
-        player.snapTo(feet.x, feet.y, feet.z, yaw, pitch);
+        player.moveTo(feet.x, feet.y, feet.z, yaw, pitch);
         player.setYHeadRot(yaw);
         player.yHeadRotO = yaw;
         player.yBodyRot = yaw;
@@ -431,7 +431,7 @@ public final class ClientTrailer {
 
     private static void grab(Minecraft minecraft, Scene scene, int f) {
         String name = String.format("trailer/%02d_%s_%04d.png", scene.index(), scene.shot(), f);
-        Screenshot.grab(minecraft.gameDirectory, name, minecraft.gameRenderer.mainRenderTarget(), 1, message -> {});
+        Screenshot.grab(minecraft.gameDirectory, name, minecraft.gameRenderer.getMainRenderTarget(), 1, message -> {});
     }
 
     private static void hideHud(Minecraft minecraft) {

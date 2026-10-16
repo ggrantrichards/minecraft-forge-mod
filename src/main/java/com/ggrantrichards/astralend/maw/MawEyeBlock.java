@@ -57,10 +57,10 @@ public class MawEyeBlock extends Block {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                           InteractionHand hand, BlockHitResult hit) {
         if (state.getValue(LIT) || !stack.is(ModItems.CHARGED_VOID_CRYSTAL.get())) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return net.minecraft.world.Itemnet.minecraft.world.ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (!level.isClientSide()) {
             stack.consume(1, player);
@@ -86,7 +86,7 @@ public class MawEyeBlock extends Block {
                     pos.getZ() + 0.5 + f.getStepZ() * 0.6, 20, 0.2, 0.2, 0.2, 0.05);
             }
         }
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.ItemInteractionResult.SUCCESS;
     }
 
     @Override

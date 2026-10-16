@@ -9,19 +9,13 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // The Ashen Barrens are a graveyard (after beta.4): between the rare whole ribcages, the shelves are
 // strewn with what's left of the rest - a vertebra half-sunk in the ash with its spine-spur standing
 // up, or a single rib curving up out of the ground like a tusk. Every piece stands on the ground or is
 // sunk into it; nothing hangs over an edge.
-public record BoneFragmentFeature() implements Feature {
-    public static final MapCodec<BoneFragmentFeature> CODEC = MapCodec.unit(BoneFragmentFeature::new);
+public class BoneFragmentFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<BoneFragmentFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

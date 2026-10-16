@@ -7,18 +7,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // A Upwell: a Upwell Core set into the underside of a Deep Hollows
 // island, with a sphere of flipped gravity hanging below it. The island is always above the
 // pocket, so anything that falls "up" lands on its underside instead of flying into the void.
-public record UpwellFeature() implements Feature {
-    public static final MapCodec<UpwellFeature> CODEC = MapCodec.unit(UpwellFeature::new);
+public class UpwellFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<UpwellFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

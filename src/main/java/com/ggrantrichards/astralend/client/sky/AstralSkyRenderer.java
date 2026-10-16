@@ -6,31 +6,19 @@ import com.ggrantrichards.astralend.flare.ClientFlares;
 import com.ggrantrichards.astralend.flare.FlarePhase;
 import com.ggrantrichards.astralend.flare.FlareState;
 import com.ggrantrichards.astralend.world.ModBiomes;
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.GameRenderer;
+import org.joml.Matrix4fStack;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.renderpearl.api.buffers.GpuBuffer;
-import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
-import com.mojang.renderpearl.api.commands.RenderPass;
-import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
-import com.mojang.renderpearl.api.vertex.VertexFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalDouble;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.SkyRenderer;
-import net.minecraft.client.renderer.state.level.SkyRenderState;
-import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.model.sprite.AtlasManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -38,11 +26,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 // The End's sky. Draws vanilla's End sky first - black and starless, as it should stay - and adds:
 //
@@ -57,8 +43,9 @@ import org.joml.Vector4f;
 //   - through a spyglass, anywhere: the stars and constellations the void hides (the Constellation
 //     Mazes are solved by sighting them).
 //
-// Nothing here is an entity or touches the world; it's all a few hundred quads a frame.
-public class AstralSkyRenderer extends SkyRenderer {
+// Nothing here is an entity or touches the world; it's all a few hundred quads a frame. (1.21.1 port:
+// drawn just after vanilla's End sky, from AstralSky's level-render hook, in immediate mode.)
+public class AstralSkyRenderer {
     private static final VertexFormat FORMAT = DefaultVertexFormat.POSITION_TEX_COLOR;
     private static final float DISTANCE = 100.0F;
     private static final int MAX_DYNAMIC_QUADS = 800;
@@ -71,15 +58,9 @@ public class AstralSkyRenderer extends SkyRenderer {
     private static final ResourceLocation ECLIPSE_STAR = texture("eclipse_star");
     private static final ResourceLocation AURORA = texture("aurora");
 
-    private final RenderTarget target;
-    private final TextureManager textures;
-    // Loaded up front: a texture can't be loaded (uploaded) while a render pass is open.
-    private final Map<ResourceLocation, AbstractTexture> loaded = new HashMap<>();
-    private final GpuBuffer stars;
+    private final Verts stars;
     private final int fixedStarQuads;
     private final int turningStarQuads;
-    private final GpuBuffer dynamic;
-    private final RenderSystem.AutoStorageIndexBuffer indices = RenderSystem.getSequentialBuffer(PrimitiveTopology.QUADS);
 
     // Read from the level each frame (extractRenderState), used in render().
     private boolean inEnd;
@@ -90,34 +71,25 @@ public class AstralSkyRenderer extends SkyRenderer {
     private float nebula;     // 0..1: how much of it is the Nebula Fields (eased)
     private float scope;      // 0..1: looking through a spyglass (eased) - it shows the stars the void hides
 
-    public AstralSkyRenderer(TextureManager textures, AtlasManager atlases, RenderTarget target) {
-        super(textures, atlases, target);
-        this.target = target;
-        this.textures = textures;
-        for (ResourceLocation id : List.of(STAR, FLARE_SHEET, COMET, WHALE, RING, NEBULA_CLOUD, ECLIPSE_STAR, AURORA)) {
-            this.loaded.put(id, textures.getTexture(id));
-        }
+    public AstralSkyRenderer() {
         int[] counts = new int[2];
         this.stars = buildStars(counts);
         this.fixedStarQuads = counts[0];
         this.turningStarQuads = counts[1];
-        this.dynamic = RenderSystem.getDevice().createBuffer(() -> "Astral End sky", 40, (long) MAX_DYNAMIC_QUADS * 4 * FORMAT.getVertexSize());
     }
 
     private static ResourceLocation texture(String name) {
         return ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "textures/environment/" + name + ".png");
     }
 
-    @Override
-    public void extractRenderState(ClientLevel level, float partialTicks, Camera camera, SkyRenderState state) {
-        super.extractRenderState(level, partialTicks, camera, state);
-        this.inEnd = state.skybox == DimensionType.Skybox.END;
+    public void extractRenderState(ClientLevel level, float partialTicks, Camera camera) {
+        this.inEnd = level.dimension() == net.minecraft.world.level.Level.END;
         if (!this.inEnd) {
             return;
         }
         this.partialTick = partialTicks;
         this.time = level.getGameTime() + partialTicks;
-        this.camera = camera.position();
+        this.camera = camera.getPosition();
         // What the sky looks like here is blended from the biomes in a 24-block square round the camera
         // (the middle counting double), then eased toward: so walking or flying across a border, the
         // Eclipse's sky fades over 10-15 blocks, never snaps.
@@ -137,9 +109,8 @@ public class AstralSkyRenderer extends SkyRenderer {
         this.scope += ((player != null && player.isScoping() ? 1.0F : 0.0F) - this.scope) * 0.15F;
     }
 
-    @Override
-    public void render(GpuBufferSlice skyFog, SkyRenderState state) {
-        super.render(skyFog, state);
+    // `view` is the camera's rotation (the sky is drawn round the eye).
+    public void render(Matrix4f view) {
         if (!this.inEnd) {
             return;
         }
@@ -185,70 +156,66 @@ public class AstralSkyRenderer extends SkyRenderer {
             quads.group(FLARE_SHEET);
             this.flareSheets(quads, flare, stormFlare);
         }
-        quads.upload(this.dynamic);
-
-        Matrix4f view = RenderSystem.getModelViewMatrixCopy();
-        try (RenderPass pass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(() -> "Astral End sky",
-                this.target.getColorTextureView(), Optional.empty(), this.target.getDepthTextureView(), OptionalDouble.empty())) {
-            RenderSystem.bindDefaultUniforms(pass);
-            Vector4f white = new Vector4f(1.0F);
-            for (int i = 0; i < behindStars; i++) {
-                this.draw(pass, quads.groups.get(i), view, white);
-            }
-            // The stars fade while the Eclipse's sky burns.
-            float starAlpha = Math.max(this.eclipse, 0.7F * this.scope) * Mth.clamp(1.0F - 1.4F * stormFlare, 0.0F, 1.0F);
-            this.drawStars(pass, view, 0, this.fixedStarQuads, new Vector4f(1.0F, 1.0F, 1.0F, 0.75F * starAlpha));
-            Matrix4f turning = new Matrix4f(view)
-                .rotate((float) Math.toRadians(23.0), 1.0F, 0.0F, 0.0F)
-                .rotate((float) (this.time / (20.0 * 60.0 * 40.0) * Math.PI * 2.0), 0.0F, 1.0F, 0.0F);
-            this.drawStars(pass, turning, this.fixedStarQuads, this.turningStarQuads, new Vector4f(1.0F, 1.0F, 1.0F, starAlpha));
-            for (int i = behindStars; i < quads.groups.size(); i++) {
-                this.draw(pass, quads.groups.get(i), view, white);
-            }
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.depthMask(false);
+        RenderSystem.disableCull();
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        Matrix4fStack modelView = RenderSystem.getModelViewStack();
+        modelView.pushMatrix();
+        modelView.identity();
+        RenderSystem.applyModelViewMatrix();
+        for (int i = 0; i < behindStars; i++) {
+            this.draw(quads.verts, quads.groups.get(i), view, 1.0F);
         }
-    }
-
-    @Override
-    public void close() {
-        super.close();
-        this.stars.close();
-        this.dynamic.close();
+        // The stars fade while the Eclipse's sky burns.
+        float starAlpha = Math.max(this.eclipse, 0.7F * this.scope) * Mth.clamp(1.0F - 1.4F * stormFlare, 0.0F, 1.0F);
+        this.drawRange(this.stars, STAR, 0, this.fixedStarQuads, view, 0.75F * starAlpha);
+        Matrix4f turning = new Matrix4f(view)
+            .rotate((float) Math.toRadians(23.0), 1.0F, 0.0F, 0.0F)
+            .rotate((float) (this.time / (20.0 * 60.0 * 40.0) * Math.PI * 2.0), 0.0F, 1.0F, 0.0F);
+        this.drawRange(this.stars, STAR, this.fixedStarQuads, this.turningStarQuads, turning, starAlpha);
+        for (int i = behindStars; i < quads.groups.size(); i++) {
+            this.draw(quads.verts, quads.groups.get(i), view, 1.0F);
+        }
+        modelView.popMatrix();
+        RenderSystem.applyModelViewMatrix();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.enableCull();
+        RenderSystem.depthMask(true);
+        RenderSystem.disableBlend();
     }
 
     // ------------------------------------------------------------------ drawing
 
-    private void draw(RenderPass pass, Group group, Matrix4f matrix, Vector4f colour) {
+    private void draw(Verts verts, Group group, Matrix4f matrix, float alpha) {
         if (group.count == 0) {
             return;
         }
-        this.drawRange(pass, this.dynamic, group.texture, group.first, group.count, matrix, colour);
+        this.drawRange(verts, group.texture, group.first, group.count, matrix, alpha);
     }
 
-    private void drawStars(RenderPass pass, Matrix4f matrix, int first, int count, Vector4f colour) {
-        if (count > 0) {
-            this.drawRange(pass, this.stars, STAR, first, count, matrix, colour);
+    private void drawRange(Verts verts, ResourceLocation texture, int firstQuad, int quadCount, Matrix4f matrix, float alpha) {
+        if (quadCount <= 0 || alpha <= 0.0F) {
+            return;
         }
-    }
-
-    private void drawRange(RenderPass pass, GpuBuffer buffer, ResourceLocation texture, int firstQuad, int quadCount, Matrix4f matrix, Vector4f colour) {
-        AbstractTexture tex = this.loaded.get(texture);
-        GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(matrix, colour);
-        pass.setPipeline(RenderSystem.getCompiledPipeline(RenderPipelines.END_SKY));
-        pass.setUniform("DynamicTransforms", transforms);
-        pass.setUniform("Sampler0", tex.getTextureView(), tex.getSampler());
-        pass.setVertexBuffer(0, buffer.slice());
-        pass.setIndexBuffer(this.indices.getBuffer(quadCount * 6), this.indices.type());
-        pass.drawIndexed(quadCount * 6, 1, 0, firstQuad * 4, 0);
+        RenderSystem.setShaderTexture(0, texture);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
+        BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, FORMAT);
+        for (int i = firstQuad * 4; i < (firstQuad + quadCount) * 4; i++) {
+            builder.addVertex(matrix, verts.x[i], verts.y[i], verts.z[i]).setUv(verts.u[i], verts.v[i]).setColor(verts.c[i]);
+        }
+        BufferUploader.drawWithShader(builder.buildOrThrow());
     }
 
     // ------------------------------------------------------------------ the starfield (built once)
 
-    private static GpuBuffer buildStars(int[] counts) {
-        RandomSource random = RandomSource.createThreadLocalInstance(5791L);
+    private static Verts buildStars(int[] counts) {
+        RandomSource random = RandomSource.create(5791L);
         int[] tints = {0xFFE8F0FF, 0xFFE8F0FF, 0xFFFFFFFF, 0xFFC9B6FF, 0xFFFFE2B0, 0xFFB8F4FF};
         int total = 1100;
-        try (ByteBufferBuilder bytes = ByteBufferBuilder.exactlySized(total * 2 * 4 * FORMAT.getVertexSize())) {
-            BufferBuilder builder = new BufferBuilder(bytes, PrimitiveTopology.QUADS, FORMAT);
+        {
+            Verts builder = new Verts(total * 2 * 4 + 64);
             int[] made = new int[2];
             for (int layer = 0; layer < 2; layer++) {
                 int n = layer == 0 ? 400 : 700;
@@ -267,9 +234,7 @@ public class AstralSkyRenderer extends SkyRenderer {
             }
             counts[0] = made[0];
             counts[1] = made[1];
-            try (MeshData mesh = builder.buildOrThrow()) {
-                return RenderSystem.getDevice().createBuffer(() -> "Astral End stars", 40, mesh.vertexBuffer());
-            }
+            return builder;
         }
     }
 
@@ -324,7 +289,7 @@ public class AstralSkyRenderer extends SkyRenderer {
     // black sky - rose, deep magenta and a cold oxygen blue - drifting very slowly round, breathing a
     // little brighter and dimmer. Fixed shapes (one seed), so the same clouds hang there every visit.
     private void nebulaClouds(Quads quads, float strength) {
-        RandomSource random = RandomSource.createThreadLocalInstance(48121L);
+        RandomSource random = RandomSource.create(48121L);
         float drift = (float) (this.time * 0.00004);
         for (int i = 0; i < 16; i++) {
             float yaw = (float) Math.toRadians(i * 137.5F + random.nextFloat() * 30.0F) + drift;
@@ -349,7 +314,7 @@ public class AstralSkyRenderer extends SkyRenderer {
     // Fields' gas does.
     private void eclipseClouds(Quads quads, float strength) {
         float drift = (float) (this.time * 0.00003);
-        RandomSource random = RandomSource.createThreadLocalInstance(77031L);
+        RandomSource random = RandomSource.create(77031L);
         for (int i = 0; i < 14; i++) {
             float yaw = (float) Math.toRadians(i * 137.5F + random.nextFloat() * 40.0F) + drift;
             float elevation = (float) Math.toRadians(8.0F + random.nextFloat() * 50.0F);
@@ -432,7 +397,7 @@ public class AstralSkyRenderer extends SkyRenderer {
     // About once every 45 seconds (now and then), a comet streaks across the far sky.
     private void comet(Quads quads, float sky) {
         long window = (long) (this.time / 900.0);
-        RandomSource random = RandomSource.createThreadLocalInstance(window * 341873128712L + 132897987541L);
+        RandomSource random = RandomSource.create(window * 341873128712L + 132897987541L);
         if (random.nextInt(5) >= 3) {
             return;
         }
@@ -460,7 +425,7 @@ public class AstralSkyRenderer extends SkyRenderer {
     // falling a very long way off. It's never explained.
     private void voidStreak(Quads quads, float strength) {
         long window = (long) (this.time / 3600.0);
-        RandomSource random = RandomSource.createThreadLocalInstance(window * 6364136223846793005L + 1442695040888963407L);
+        RandomSource random = RandomSource.create(window * 6364136223846793005L + 1442695040888963407L);
         if (random.nextInt(3) != 0) {
             return;
         }
@@ -484,7 +449,7 @@ public class AstralSkyRenderer extends SkyRenderer {
     // Very rarely (some of the 20-minute stretches), a vast shape drifts across the far sky.
     private void silhouette(Quads quads, float sky) {
         long window = (long) (this.time / 24000.0);
-        RandomSource random = RandomSource.createThreadLocalInstance(window * 9781237L + 412391L);
+        RandomSource random = RandomSource.create(window * 9781237L + 412391L);
         if (random.nextInt(2) == 0) {
             return;
         }
@@ -517,7 +482,7 @@ public class AstralSkyRenderer extends SkyRenderer {
 
     // A quad facing the camera at `dir` (unit), half-size w x h, rolled by `roll`. Written twice (both
     // windings), so it shows whichever way the pipeline culls. Returns the number of quads written.
-    private static int sprite(BufferBuilder builder, Vector3f dir, float w, float h, float roll, float u0, float v0, float u1, float v1,
+    private static int sprite(Verts builder, Vector3f dir, float w, float h, float roll, float u0, float v0, float u1, float v1,
                               int colour) {
         Vector3f centre = new Vector3f(dir).mul(DISTANCE);
         Vector3f right = new Vector3f(dir).cross(0.0F, 1.0F, 0.0F);
@@ -537,16 +502,16 @@ public class AstralSkyRenderer extends SkyRenderer {
     }
 
     // a = (u0, v0), b = (u0, v1), c = (u1, v1), d = (u1, v0)
-    private static void quadBothSides(BufferBuilder builder, Vector3f a, Vector3f b, Vector3f c, Vector3f d,
+    private static void quadBothSides(Verts builder, Vector3f a, Vector3f b, Vector3f c, Vector3f d,
                                       float u0, float v0, float u1, float v1, int ca, int cb, int cc, int cd) {
-        builder.addVertex(a.x, a.y, a.z).setUv(u0, v0).setColor(ca);
-        builder.addVertex(b.x, b.y, b.z).setUv(u0, v1).setColor(cb);
-        builder.addVertex(c.x, c.y, c.z).setUv(u1, v1).setColor(cc);
-        builder.addVertex(d.x, d.y, d.z).setUv(u1, v0).setColor(cd);
-        builder.addVertex(a.x, a.y, a.z).setUv(u0, v0).setColor(ca);
-        builder.addVertex(d.x, d.y, d.z).setUv(u1, v0).setColor(cd);
-        builder.addVertex(c.x, c.y, c.z).setUv(u1, v1).setColor(cc);
-        builder.addVertex(b.x, b.y, b.z).setUv(u0, v1).setColor(cb);
+        builder.add(a, u0, v0, ca);
+        builder.add(b, u0, v1, cb);
+        builder.add(c, u1, v1, cc);
+        builder.add(d, u1, v0, cd);
+        builder.add(a, u0, v0, ca);
+        builder.add(d, u1, v0, cd);
+        builder.add(c, u1, v1, cc);
+        builder.add(b, u0, v1, cb);
     }
 
     // A run of quads in the per-frame buffer that share one texture. Quads always go into the newest group.
@@ -562,9 +527,43 @@ public class AstralSkyRenderer extends SkyRenderer {
     }
 
     // Collects the frame's quads into one vertex buffer, in groups.
+    // Vertices, kept to be drawn (a quad is four of them).
+    private static final class Verts {
+        float[] x, y, z, u, v;
+        int[] c;
+        int size;
+
+        Verts(int capacity) {
+            this.x = new float[capacity];
+            this.y = new float[capacity];
+            this.z = new float[capacity];
+            this.u = new float[capacity];
+            this.v = new float[capacity];
+            this.c = new int[capacity];
+        }
+
+        void add(Vector3f p, float u, float v, int colour) {
+            if (this.size == this.x.length) {
+                int n = this.size * 2;
+                this.x = java.util.Arrays.copyOf(this.x, n);
+                this.y = java.util.Arrays.copyOf(this.y, n);
+                this.z = java.util.Arrays.copyOf(this.z, n);
+                this.u = java.util.Arrays.copyOf(this.u, n);
+                this.v = java.util.Arrays.copyOf(this.v, n);
+                this.c = java.util.Arrays.copyOf(this.c, n);
+            }
+            this.x[this.size] = p.x;
+            this.y[this.size] = p.y;
+            this.z[this.size] = p.z;
+            this.u[this.size] = u;
+            this.v[this.size] = v;
+            this.c[this.size] = colour;
+            this.size++;
+        }
+    }
+
     private static final class Quads {
-        private final ByteBufferBuilder bytes = new ByteBufferBuilder(MAX_DYNAMIC_QUADS * 4 * FORMAT.getVertexSize());
-        private final BufferBuilder builder = new BufferBuilder(this.bytes, PrimitiveTopology.QUADS, FORMAT);
+        private final Verts verts = new Verts(MAX_DYNAMIC_QUADS * 4);
         private final List<Group> groups = new ArrayList<>();
         private int total;
 
@@ -590,7 +589,7 @@ public class AstralSkyRenderer extends SkyRenderer {
             if (this.full()) {
                 return;
             }
-            quadBothSides(this.builder, a, b, c, d, u0, v0, u1, v1, ca, cb, cc, cd);
+            quadBothSides(this.verts, a, b, c, d, u0, v0, u1, v1, ca, cb, cc, cd);
             this.total += 2;
             this.current().count += 2;
         }
@@ -599,19 +598,9 @@ public class AstralSkyRenderer extends SkyRenderer {
             if (this.full()) {
                 return;
             }
-            int n = AstralSkyRenderer.sprite(this.builder, dir, w, h, roll, u0, v0, u1, v1, colour);
+            int n = AstralSkyRenderer.sprite(this.verts, dir, w, h, roll, u0, v0, u1, v1, colour);
             this.total += n;
             this.current().count += n;
-        }
-
-        void upload(GpuBuffer buffer) {
-            try (MeshData mesh = this.builder.build()) {
-                if (mesh != null) {
-                    RenderSystem.getDevice().createCommandEncoder().writeToBuffer(buffer.slice(), mesh.vertexBuffer());
-                }
-            } finally {
-                this.bytes.close();
-            }
         }
     }
 }

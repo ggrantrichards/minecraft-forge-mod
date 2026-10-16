@@ -68,7 +68,7 @@ public class Hushback extends Animal {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Animal.createAnimalAttributes()
+        return Animal.createMobAttributes()
             .add(Attributes.MAX_HEALTH, 12.0)
             .add(Attributes.MOVEMENT_SPEED, 0.22);
     }
@@ -170,7 +170,7 @@ public class Hushback extends Animal {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return ModEntities.HUSHBACK.get().create(level, MobSpawnType.BREEDING);
+        return ModEntities.HUSHBACK.get().create(level);
     }
 
     @Override
@@ -182,7 +182,7 @@ public class Hushback extends Animal {
                 this.regrow = 2400 + this.random.nextInt(2400);
                 int count = 1 + this.random.nextInt(2);
                 for (int i = 0; i < count; i++) {
-                    this.spawnAtLocation(level, new ItemStack(ModItems.HUSHFLEECE.get()));
+                    this.spawnAtLocation(new ItemStack(ModItems.HUSHFLEECE.get()));
                 }
                 level.playSound(null, this, SoundEvents.SHEEP_SHEAR, SoundSource.PLAYERS, 0.6F, 1.4F);
                 held.hurtAndBreak(1, player, hand);
@@ -226,8 +226,11 @@ public class Hushback extends Animal {
 
     // Hurt one, and the herd round it scatters through the void: each blinks 8-16 blocks away.
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
-        boolean hurt = super.hurtServer(level, source, amount);
+    public boolean hurt(DamageSource source, float amount) {
+        if (!(this.level() instanceof ServerLevel level)) {
+            return super.hurt(source, amount);
+        }
+        boolean hurt = super.hurt(source, amount);
         if (hurt && this.isAlive()) {
             for (Hushback other : level.getEntitiesOfClass(Hushback.class, this.getBoundingBox().inflate(16.0))) {
                 other.blinkAway(level);

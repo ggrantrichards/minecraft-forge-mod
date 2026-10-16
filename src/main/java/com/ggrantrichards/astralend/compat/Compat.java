@@ -16,5 +16,39 @@ public final class Compat {
         }
     }
 
+    // 26.3's Block.column(width, minY, maxY): a box centred in the block, in pixels.
+    public static net.minecraft.world.phys.shapes.VoxelShape column(double width, double minY, double maxY) {
+        double a = (16.0 - width) / 2.0;
+        return net.minecraft.world.level.block.Block.box(a, minY, a, 16.0 - a, maxY, 16.0 - a);
+    }
+
+    // 26.3's Block.boxes(max, f): a shape per value 0..max.
+    public static net.minecraft.world.phys.shapes.VoxelShape[] boxes(int max, java.util.function.IntFunction<net.minecraft.world.phys.shapes.VoxelShape> f) {
+        net.minecraft.world.phys.shapes.VoxelShape[] shapes = new net.minecraft.world.phys.shapes.VoxelShape[max + 1];
+        for (int i = 0; i <= max; i++) {
+            shapes[i] = f.apply(i);
+        }
+        return shapes;
+    }
+
+    // 26.3's DensityFunction.sampleValue(x, y, z).
+    public static double sample(net.minecraft.world.level.levelgen.DensityFunction function, int x, int y, int z) {
+        return function.compute(new net.minecraft.world.level.levelgen.DensityFunction.SinglePointContext(x, y, z));
+    }
+
+    // 26.3's DustParticleOptions(rgb, scale).
+    public static net.minecraft.core.particles.DustParticleOptions dust(int rgb, float scale) {
+        return new net.minecraft.core.particles.DustParticleOptions(Vec3.fromRGB24(rgb).toVector3f(), scale);
+    }
+
+    // 26.3's BiomeSource.createResolver(sampler) / createUncachedResolver(randomState).
+    public interface Resolver {
+        net.minecraft.core.Holder<net.minecraft.world.level.biome.Biome> getNoiseBiome(int quartX, int quartY, int quartZ);
+    }
+
+    public static Resolver resolver(net.minecraft.world.level.biome.BiomeSource source, net.minecraft.world.level.biome.Climate.Sampler sampler) {
+        return (x, y, z) -> source.getNoiseBiome(x, y, z, sampler);
+    }
+
     private Compat() {}
 }

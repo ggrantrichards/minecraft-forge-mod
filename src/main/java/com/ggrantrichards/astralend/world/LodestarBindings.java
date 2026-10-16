@@ -98,7 +98,7 @@ public class LodestarBindings extends SavedData {
             }
         }
         if (player.connection == null) {     // (the survey's stand-in player has no connection)
-            player.snapTo(stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5, player.getYRot(), player.getXRot());
+            player.moveTo(stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5, player.getYRot(), player.getXRot());
             return true;
         }
         com.ggrantrichards.astralend.compat.Compat.teleport(player, end, Vec3.atBottomCenterOf(stand), player.getYRot(), player.getXRot());

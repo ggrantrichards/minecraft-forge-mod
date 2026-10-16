@@ -25,7 +25,7 @@ public class LeviathanHeartBlock extends Block {
                 0.9F, 0.55F, false);
         }
         if (random.nextInt(8) == 0) {
-            level.addParticle(new DustParticleOptions(0x9B4CFF, 1.2F), pos.getX() + random.nextDouble(), pos.getY() + random.nextDouble(),
+            level.addParticle(com.ggrantrichards.astralend.compat.Compat.dust(0x9B4CFF, 1.2F), pos.getX() + random.nextDouble(), pos.getY() + random.nextDouble(),
                 pos.getZ() + random.nextDouble(), 0.0, 0.01, 0.0);
         }
     }

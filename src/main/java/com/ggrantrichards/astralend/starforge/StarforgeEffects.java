@@ -244,7 +244,7 @@ public final class StarforgeEffects {
         }
         echoing = true;
         try {
-            e.target().hurtServer(e.level(), e.level().damageSources().indirectMagic(e.attacker(), e.attacker()), e.amount());
+            e.target().hurt(e.level().damageSources().indirectMagic(e.attacker(), e.attacker()), e.amount());
         } finally {
             echoing = false;
         }

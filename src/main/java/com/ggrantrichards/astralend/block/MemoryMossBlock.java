@@ -29,7 +29,7 @@ import net.minecraft.world.phys.BlockHitResult;
 // (ECHO 3..1, one step a second, each step drawing the shape again); 0 is quiet.
 public class MemoryMossBlock extends Block {
     public static final IntegerProperty ECHO = IntegerProperty.create("echo", 0, 3);
-    private static final DustParticleOptions AFTERIMAGE = new DustParticleOptions(0xC8C0DC, 1.0F);
+    private static final DustParticleOptions AFTERIMAGE = com.ggrantrichards.astralend.compat.Compat.dust(0xC8C0DC, 1.0F);
 
     public MemoryMossBlock(BlockBehaviour.Properties properties) {
         super(properties);
@@ -51,13 +51,13 @@ public class MemoryMossBlock extends Block {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                           InteractionHand hand, BlockHitResult hit) {
         if (stack.is(Items.BRUSH)) {
             if (level instanceof ServerLevel server && state.getValue(ECHO) == 0) {
                 remember(server, pos, state);
             }
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.ItemInteractionResult.SUCCESS;
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hit);
     }

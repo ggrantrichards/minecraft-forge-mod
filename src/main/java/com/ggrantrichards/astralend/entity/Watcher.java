@@ -52,9 +52,12 @@ public class Watcher extends Mob {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+    public boolean hurt(DamageSource source, float damage) {
+        if (!(this.level() instanceof ServerLevel level)) {
+            return super.hurt(source, damage);
+        }
         if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-            return super.hurtServer(level, source, damage);
+            return super.hurt(source, damage);
         }
         this.vanish(level);
         return false;
@@ -81,8 +84,9 @@ public class Watcher extends Mob {
     }
 
     @Override
-    protected void customServerAiStep(ServerLevel level) {
-        super.customServerAiStep(level);
+    protected void customServerAiStep() {
+        ServerLevel level = (ServerLevel) this.level();
+        super.customServerAiStep();
         Player nearest = level.getNearestPlayer(this, 160.0);
         if (this.summoned()) {
             if (this.lingerUntil >= 0 && this.tickCount > this.lingerUntil) {

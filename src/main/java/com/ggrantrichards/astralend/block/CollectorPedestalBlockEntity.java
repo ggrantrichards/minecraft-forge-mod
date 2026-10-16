@@ -79,8 +79,8 @@ public class CollectorPedestalBlockEntity extends BlockEntity {
         }
     }
 
-    @Override
-    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+    // When the pedestal is broken (CollectorPedestalBlock.onRemove).
+    public void dropHeld(BlockPos pos) {
         if (this.level != null && !this.held.isEmpty()) {
             Containers.dropItemStack(this.level, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, this.held);
             this.held = ItemStack.EMPTY;

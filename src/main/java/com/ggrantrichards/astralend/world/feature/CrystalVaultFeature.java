@@ -13,20 +13,14 @@ import net.minecraft.world.level.block.AmethystClusterBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // The Crystal Vaults: under the Shattered Crags, below the field of shards, great geodes drift in the
 // void - shells of Nightstone lined with Glimmer Crystal, hollow inside, the walls grown over with
 // glimmer clusters and spires of crystal rising from the floor. Each is split open somewhere: a crack
 // you can climb in through. And in each, folded down among the clusters and looking like one of them,
 // a Shardback waits.
-public record CrystalVaultFeature() implements Feature {
-    public static final MapCodec<CrystalVaultFeature> CODEC = MapCodec.unit(CrystalVaultFeature::new);
+public class CrystalVaultFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<CrystalVaultFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
@@ -111,9 +105,9 @@ public record CrystalVaultFeature() implements Feature {
         while (fy > cy - ri && level.getBlockState(p.set(cx, fy - 1, cz)).is(Blocks.CAVE_AIR)) {
             fy--;
         }
-        var hunter = ModEntities.SHARDBACK.get().create(level.getLevel(), MobSpawnType.CHUNK_GENERATION);
+        var hunter = ModEntities.SHARDBACK.get().create(level.getLevel());
         if (hunter != null && level.getBlockState(p.set(cx, fy, cz)).is(Blocks.CAVE_AIR)) {
-            hunter.snapTo(cx + 0.5, fy, cz + 0.5, random.nextFloat() * 360.0F, 0.0F);
+            hunter.moveTo(cx + 0.5, fy, cz + 0.5, random.nextFloat() * 360.0F, 0.0F);
             hunter.setPersistenceRequired();
             level.addFreshEntity(hunter);
         }

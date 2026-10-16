@@ -268,13 +268,13 @@ public final class ClientScreenshots {
             other.discard();
         }
         BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(shot.mob())).ifPresentOrElse(type -> {
-            Entity entity = type.create(end, MobSpawnType.COMMAND);
+            Entity entity = type.create(end);
             if (entity == null) {
                 return;
             }
             // 135: facing the camera (north-west); "side": in profile; "angled": three-quarters toward it
             float yaw = shot.style().contains("side") ? 45.0F : shot.style().contains("angled") ? 100.0F : 135.0F;
-            entity.snapTo(shot.mobX(), shot.mobY(), shot.mobZ(), yaw, 0.0F);
+            entity.moveTo(shot.mobX(), shot.mobY(), shot.mobZ(), yaw, 0.0F);
             entity.setYHeadRot(yaw);
             entity.setNoGravity(true);
             // A big mob can clip into a wall and take damage (and flash red): move it to the nearest
@@ -283,7 +283,7 @@ public final class ClientScreenshots {
             for (int r = 1; r <= 3 && !end.noCollision(entity); r++) {
                 for (int dx = -r; dx <= r; dx++) {
                     for (int dz = -r; dz <= r; dz++) {
-                        entity.snapTo(shot.mobX() + dx * 0.5, shot.mobY(), shot.mobZ() + dz * 0.5, yaw, 0.0F);
+                        entity.moveTo(shot.mobX() + dx * 0.5, shot.mobY(), shot.mobZ() + dz * 0.5, yaw, 0.0F);
                         if (end.noCollision(entity)) {
                             break search;
                         }
@@ -291,7 +291,7 @@ public final class ClientScreenshots {
                 }
             }
             if (!end.noCollision(entity)) {
-                entity.snapTo(shot.mobX(), shot.mobY(), shot.mobZ(), yaw, 0.0F);
+                entity.moveTo(shot.mobX(), shot.mobY(), shot.mobZ(), yaw, 0.0F);
             }
             if (entity instanceof UmbralStalker stalker) {
                 stalker.showAsHunting();   // otherwise, with no prey, there'd be nothing to see
@@ -320,7 +320,7 @@ public final class ClientScreenshots {
     }
 
     private static void grab(Minecraft minecraft, String name) {
-        Screenshot.grab(minecraft.gameDirectory, "astralend-" + name + ".png", minecraft.gameRenderer.mainRenderTarget(), 1,
+        Screenshot.grab(minecraft.gameDirectory, "astralend-" + name + ".png", minecraft.gameRenderer.getMainRenderTarget(), 1,
             message -> LOGGER.info("[AstralEnd screenshots] saved {}", name));
     }
 

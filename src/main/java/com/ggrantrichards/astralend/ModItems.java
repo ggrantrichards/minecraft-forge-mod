@@ -26,9 +26,7 @@ public final class ModItems {
 
     // Comet Cress is both a food and the "seed" you plant under Stardust, like a carrot.
     public static final RegistryObject<Item> COMET_CRESS = ITEMS.register("comet_cress",
-        () -> new BlockItem(ModBlocks.COMET_CRESS.get(), new Item.Properties()
-            .setId(ITEMS.key("comet_cress"))
-            .useItemDescriptionPrefix()
+        () -> new net.minecraft.world.item.ItemNameBlockItem(ModBlocks.COMET_CRESS.get(), new Item.Properties()
             .food(new FoodProperties.Builder().nutrition(2).saturationModifier(0.3F).build())));
 
     // ---- Phase 4: what the mobs leave behind
@@ -55,14 +53,13 @@ public final class ModItems {
     // Phase 10: the Resonance Vault's treasures - two banner patterns and an armour trim.
     public static final net.minecraft.tags.TagKey<net.minecraft.world.level.block.entity.BannerPattern> WYRM_PATTERN = patternTag("wyrm");
     public static final net.minecraft.tags.TagKey<net.minecraft.world.level.block.entity.BannerPattern> SPIRE_PATTERN = patternTag("spire");
-    public static final RegistryObject<Item> WYRM_BANNER_PATTERN = register("wyrm_banner_pattern", Item::new,
-        new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE)
-            .delayedComponent(net.minecraft.core.component.DataComponents.PROVIDES_BANNER_PATTERNS, context -> context.getOrThrow(WYRM_PATTERN)));
-    public static final RegistryObject<Item> SPIRE_BANNER_PATTERN = register("spire_banner_pattern", Item::new,
-        new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE)
-            .delayedComponent(net.minecraft.core.component.DataComponents.PROVIDES_BANNER_PATTERNS, context -> context.getOrThrow(SPIRE_PATTERN)));
-    public static final RegistryObject<Item> ECLIPSE_ARMOR_TRIM_SMITHING_TEMPLATE = register("eclipse_armor_trim_smithing_template",
-        net.minecraft.world.item.SmithingTemplateItem::createArmorTrimTemplate, new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON));
+    public static final RegistryObject<Item> WYRM_BANNER_PATTERN = register("wyrm_banner_pattern",
+        p -> new net.minecraft.world.item.BannerPatternItem(WYRM_PATTERN, p), new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE));
+    public static final RegistryObject<Item> SPIRE_BANNER_PATTERN = register("spire_banner_pattern",
+        p -> new net.minecraft.world.item.BannerPatternItem(SPIRE_PATTERN, p), new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE));
+    public static final RegistryObject<Item> ECLIPSE_ARMOR_TRIM_SMITHING_TEMPLATE = ITEMS.register("eclipse_armor_trim_smithing_template",
+        () -> net.minecraft.world.item.SmithingTemplateItem.createArmorTrimTemplate(net.minecraft.resources.ResourceKey.create(
+            net.minecraft.core.registries.Registries.TRIM_PATTERN, net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "eclipse"))));
     // The Resonance Vault's music disc: "Observing the Star" by madeso (CC0).
     public static final RegistryObject<Item> MUSIC_DISC_OBSERVING_THE_STAR = register("music_disc_observing_the_star", Item::new,
         new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE)
@@ -90,12 +87,8 @@ public final class ModItems {
     // Memory Moss: placed, it's moss; eaten, it brings on Remembering (a minute and a half).
     public static final RegistryObject<Item> MEMORY_MOSS = ITEMS.register("memory_moss",
         () -> new BlockItem(ModBlocks.MEMORY_MOSS.get(), new Item.Properties()
-            .setId(ITEMS.key("memory_moss"))
-            .useBlockDescriptionPrefix()
-            .food(new FoodProperties.Builder().nutrition(1).saturationModifier(0.1F).alwaysEdible().build(),
-                net.minecraft.world.item.component.Consumables.defaultFood().onConsume(
-                    new net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect(
-                        new net.minecraft.world.effect.MobEffectInstance(ModEffects.remembering(), 1800))).build())));
+            .food(new FoodProperties.Builder().nutrition(1).saturationModifier(0.1F).alwaysEdible()
+                .effect(() -> new net.minecraft.world.effect.MobEffectInstance(ModEffects.remembering(), 1800), 1.0F).build())));
 
     // The distillation: the Hushback's fleece, and its meat.
     public static final RegistryObject<Item> HUSHFLEECE = simple("hushfleece");
@@ -107,11 +100,9 @@ public final class ModItems {
     // Phase 9: a stew of Lumineshroom and Comet Cress that lets you see in the dark for a while, and a
     // compass that points the way home to the End's central island (like a lodestone compass).
     public static final RegistryObject<Item> GLOWING_STEW = register("glowing_stew", Item::new, new Item.Properties().stacksTo(1)
-        .food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(6).saturationModifier(0.6F).build(),
-            net.minecraft.world.item.component.Consumables.defaultFood().onConsume(
-                new net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect(
-                    new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.NIGHT_VISION, 600))).build())
-        .usingConvertsTo(net.minecraft.world.item.Items.BOWL));
+        .food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(6).saturationModifier(0.6F)
+            .effect(() -> new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.NIGHT_VISION, 600), 1.0F)
+            .usingConvertsTo(net.minecraft.world.item.Items.BOWL).build()));
     public static final RegistryObject<Item> STAR_COMPASS = register("star_compass", com.ggrantrichards.astralend.item.StarCompassItem::new,
         new Item.Properties().stacksTo(1).component(net.minecraft.core.component.DataComponents.LODESTONE_TRACKER,
             new net.minecraft.world.item.component.LodestoneTracker(java.util.Optional.of(net.minecraft.core.GlobalPos.of(
@@ -141,16 +132,17 @@ public final class ModItems {
     }
 
     private static RegistryObject<Item> register(String name, Function<Item.Properties, Item> factory, Item.Properties properties) {
-        return ITEMS.register(name, () -> factory.apply(properties.setId(ITEMS.key(name))));
+        return ITEMS.register(name, () -> factory.apply(properties));
     }
 
     private static RegistryObject<Item> spawnEgg(String mob, RegistryObject<? extends EntityType<?>> type) {
         String name = mob + "_spawn_egg";
-        return ITEMS.register(name, () -> new SpawnEggItem(new Item.Properties().setId(ITEMS.key(name)).spawnEgg(type.get())));
+        // (1.21.1 port: the egg's own texture is its item model, so the tint colours don't show.)
+        return ITEMS.register(name, () -> new net.minecraftforge.common.ForgeSpawnEggItem(type, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
     }
 
     private static RegistryObject<Item> simple(String name) {
-        return ITEMS.register(name, () -> new Item(new Item.Properties().setId(ITEMS.key(name))));
+        return ITEMS.register(name, () -> new Item(new Item.Properties()));
     }
 
     private ModItems() {}

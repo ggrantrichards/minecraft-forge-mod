@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // Biome borders, blended. Every biome's ground is its own - Chorus Moss over End Stone, Nightstone,
 // Pale End Stone, plain End Stone - and left alone, it changes in a line from one column to the next.
@@ -23,18 +22,13 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 // border, thinning out to nothing REACH blocks in - on the top few blocks, so an island that sits
 // across a border is a mottled mix rather than cut in two. The Eclipse keeps to itself: it has its
 // ring of void.
-public record BorderBlendFeature() implements Feature {
-    public static final MapCodec<BorderBlendFeature> CODEC = MapCodec.unit(BorderBlendFeature::new);
+public class BorderBlendFeature extends SimpleFeature {
     private static final int REACH = 24;
     private static final int STEP = 4;
     private static final int DEPTH = 4;
 
     private enum Ground { MOSS, NIGHT, PALE, END, NONE }
 
-    @Override
-    public MapCodec<BorderBlendFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
@@ -43,7 +37,7 @@ public record BorderBlendFeature() implements Feature {
             return false;                                   // the main island and its gap: vanilla's own
         }
         Climate.Sampler sampler = EclipseLayout.sampler(level.getLevel().getChunkSource().randomState());
-        var resolver = generator.getBiomeSource().createResolver(sampler);
+        var resolver = com.ggrantrichards.astralend.compat.Compat.resolver(generator.getBiomeSource(), sampler);
         // The ground on a coarse grid round the chunk.
         int n = (16 + 2 * REACH) / STEP + 1;
         Ground[][] grid = new Ground[n][n];

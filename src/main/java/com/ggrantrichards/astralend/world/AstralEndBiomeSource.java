@@ -92,11 +92,7 @@ public class AstralEndBiomeSource extends BiomeSource {
     }
 
     @Override
-    public BiomeResolver createResolver(Climate.Sampler sampler) {
-        return (quartX, quartY, quartZ) -> this.getNoiseBiome(quartX, quartY, quartZ, sampler);
-    }
-
-    private Holder<Biome> getNoiseBiome(int quartX, int quartY, int quartZ, Climate.Sampler sampler) {
+    public Holder<Biome> getNoiseBiome(int quartX, int quartY, int quartZ, Climate.Sampler sampler) {
         int blockX = QuartPos.toBlock(quartX);
         int blockY = QuartPos.toBlock(quartY);
         int blockZ = QuartPos.toBlock(quartZ);
@@ -127,7 +123,7 @@ public class AstralEndBiomeSource extends BiomeSource {
         // Vanilla's outer-End choice, unchanged.
         int weirdBlockX = (chunkX * 2 + 1) * 8;
         int weirdBlockZ = (chunkZ * 2 + 1) * 8;
-        double heightValue = sampler.erosion().sampleValue(weirdBlockX, blockY, weirdBlockZ);
+        double heightValue = com.ggrantrichards.astralend.compat.Compat.sample(sampler.erosion(), weirdBlockX, blockY, weirdBlockZ);
         if (heightValue > 0.25) {
             return this.highlands;
         } else if (heightValue >= -0.0625) {
@@ -162,9 +158,9 @@ public class AstralEndBiomeSource extends BiomeSource {
 
     // The astral region at a block position (ignoring the central 1,024 blocks); also used by the survey.
     public static AstralRegions.Region region(Climate.Sampler sampler, int blockX, int blockZ) {
-        return AstralRegions.pick(sampler.temperature().sampleValue(blockX, 0, blockZ),
-            sampler.humidity().sampleValue(blockX, 0, blockZ),
-            sampler.weirdness().sampleValue(blockX, 0, blockZ),
-            sampler.continentalness().sampleValue(blockX, 0, blockZ));
+        return com.ggrantrichards.astralend.compat.Compat.sample(AstralRegions.pick(sampler.temperature(), blockX, 0, blockZ),
+            com.ggrantrichards.astralend.compat.Compat.sample(sampler.humidity(), blockX, 0, blockZ),
+            com.ggrantrichards.astralend.compat.Compat.sample(sampler.weirdness(), blockX, 0, blockZ),
+            com.ggrantrichards.astralend.compat.Compat.sample(sampler.continentalness(), blockX, 0, blockZ));
     }
 }

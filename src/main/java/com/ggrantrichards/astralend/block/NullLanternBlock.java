@@ -16,7 +16,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 // The glowing fruit of the Nullwood tree. It hangs under the leaves (or a log) and pops off when
 // what it hangs from is gone - the only light in the Deep Hollows' forests.
 public class NullLanternBlock extends Block {
-    private static final VoxelShape SHAPE = Block.column(8.0, 6.0, 16.0);
+    private static final VoxelShape SHAPE = com.ggrantrichards.astralend.compat.Compat.column(8.0, 6.0, 16.0);
 
     public NullLanternBlock(BlockBehaviour.Properties properties) {
         super(properties);

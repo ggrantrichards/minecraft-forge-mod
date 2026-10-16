@@ -28,7 +28,7 @@ final class StarforgeSurvey {
         net.minecraft.server.level.ServerPlayer player = new net.minecraft.server.level.ServerPlayer(end.getServer(), end,
             new com.mojang.authlib.GameProfile(java.util.UUID.nameUUIDFromBytes("astralend-survey".getBytes()), "AstralSurvey"),
             net.minecraft.server.level.ClientInformation.createDefault());
-        player.snapTo(standOn.getX() + 0.5, standOn.getY(), standOn.getZ() + 0.5, 0.0F, 0.0F);
+        player.moveTo(standOn.getX() + 0.5, standOn.getY(), standOn.getZ() + 0.5, 0.0F, 0.0F);
 
         // ---- the Astral Forge: Radiant onto a diamond chestplate - refused until its constellation, the
         // Remnant, has been sighted from the Eclipse; then forged
@@ -75,8 +75,8 @@ final class StarforgeSurvey {
 
         // ---- armour on a zombie: Radiant's room for a golden heart
         BlockPos at = standOn.offset(3, 0, 0);
-        var zombie = net.minecraft.world.entity.EntityType.ZOMBIE.create(end, MobSpawnType.COMMAND);
-        zombie.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
+        var zombie = net.minecraft.world.entity.EntityType.ZOMBIE.create(end);
+        zombie.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
         zombie.setNoAi(true);
         end.addFreshEntity(zombie);
         zombie.setItemSlot(EquipmentSlot.HEAD, Starforge.apply(new ItemStack(Items.DIAMOND_HELMET), StarforgeUpgrade.RADIANT));
@@ -93,14 +93,14 @@ final class StarforgeSurvey {
         // ---- weapons, held by the fake player: Echo Strike and Glow
         player.setItemSlot(EquipmentSlot.MAINHAND, Starforge.apply(new ItemStack(Items.DIAMOND_SWORD), StarforgeUpgrade.ECHO_STRIKE));
         float full = zombie.getHealth();
-        zombie.hurtServer(end, end.damageSources().playerAttack(player), 4.0F);
+        zombie.hurt(end.damageSources().playerAttack(player), 4.0F);
         float afterHit = zombie.getHealth();
         settle(zombie);   // the echo comes a second later, after the hurt immunity has worn off
         StarforgeEffects.flush(true);
         float afterEcho = zombie.getHealth();
         player.setItemSlot(EquipmentSlot.MAINHAND, Starforge.apply(new ItemStack(Items.NETHERITE_SWORD), StarforgeUpgrade.RADIANT));
         settle(zombie);
-        zombie.hurtServer(end, end.damageSources().playerAttack(player), 1.0F);
+        zombie.hurt(end.damageSources().playerAttack(player), 1.0F);
         boolean glowing = zombie.hasEffect(MobEffects.GLOWING);
         log.accept(String.format("starforge: Echo Strike - health %.1f, after the hit %.1f, after the echo %.1f; Glow - glowing %s",
             full, afterHit, afterEcho, glowing));
@@ -113,7 +113,7 @@ final class StarforgeSurvey {
 
         // ---- Rift Walker: walking off into the air lays tiles of rift ahead
         BlockPos air = standOn.above(24);
-        player.snapTo(air.getX() + 0.5, air.getY(), air.getZ() + 0.5, 0.0F, 0.0F);
+        player.moveTo(air.getX() + 0.5, air.getY(), air.getZ() + 0.5, 0.0F, 0.0F);
         StarforgeEffects.riftWalk(end, player, new Vec3(0.0, 0.0, 0.2));
         int tiles = 0;
         for (BlockPos p : BlockPos.betweenClosed(air.offset(-1, -2, -1), air.offset(1, 0, 3))) {

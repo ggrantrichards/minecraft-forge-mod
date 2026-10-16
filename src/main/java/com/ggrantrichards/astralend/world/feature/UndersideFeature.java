@@ -9,18 +9,12 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // Things found on the very bottom of an island, where only someone hanging under it will look:
 //   "voidgel" - a drip of Voidgel hanging from the underside. (Void Crystal used to grow here too; the
 //               distillation moved it into the Glimmering Crags' root caves.)
-public record UndersideFeature(String kind) implements Feature {
-    public static final MapCodec<UndersideFeature> CODEC = Codec.STRING.fieldOf("kind").xmap(UndersideFeature::new, UndersideFeature::kind);
+public class UndersideFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<UndersideFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

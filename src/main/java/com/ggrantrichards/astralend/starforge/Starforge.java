@@ -20,7 +20,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.item.equipment.Equippable;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
@@ -36,7 +35,7 @@ public final class Starforge {
         () -> DataComponentType.<StarforgeUpgrade>builder().persistent(StarforgeUpgrade.CODEC).networkSynchronized(StarforgeUpgrade.STREAM_CODEC).build());
     // A Void Recall chestplate holding a Rift Pearl, ready to bring you back from the void.
     public static final RegistryObject<DataComponentType<Unit>> RIFT_PEARL = COMPONENTS.register("rift_pearl",
-        () -> DataComponentType.<Unit>builder().persistent(Unit.CODEC).networkSynchronized(Unit.STREAM_CODEC).build());
+        () -> DataComponentType.<Unit>builder().persistent(Unit.CODEC).networkSynchronized(net.minecraft.network.codec.StreamCodec.unit(Unit.INSTANCE)).build());
 
     public static final TagKey<Item> ARMOUR = tag("starforgeable/armor");
     public static final TagKey<Item> MELEE = tag("starforgeable/melee");
@@ -60,8 +59,7 @@ public final class Starforge {
     }
 
     public static EquipmentSlot slotOf(ItemStack stack) {
-        Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
-        return equippable != null ? equippable.slot() : EquipmentSlot.MAINHAND;
+        return stack.getItem() instanceof net.minecraft.world.item.Equipable equipable ? equipable.getEquipmentSlot() : EquipmentSlot.MAINHAND;
     }
 
     // How many pieces of armour this entity wears with the upgrade (0-4).

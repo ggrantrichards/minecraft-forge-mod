@@ -19,7 +19,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.MovementInputUpdateEvent;
-import net.minecraftforge.client.event.RenderAvatarEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
 import org.slf4j.Logger;
@@ -48,7 +48,8 @@ public final class UpsideDown {
         com.ggrantrichards.astralend.Events.post(TickEvent.ClientTickEvent.class, UpsideDown::onClientTick);
         com.ggrantrichards.astralend.Events.on(ViewportEvent.ComputeCameraAngles.class, UpsideDown::onCamera);
         com.ggrantrichards.astralend.Events.on(MovementInputUpdateEvent.class, UpsideDown::onInput);
-        com.ggrantrichards.astralend.Events.on(RenderAvatarEvent.Pre.class, UpsideDown::onRenderPlayer);
+        com.ggrantrichards.astralend.Events.on(RenderPlayerEvent.Pre.class, UpsideDown::onRenderPlayer);
+        com.ggrantrichards.astralend.Events.on(RenderPlayerEvent.Post.class, UpsideDown::afterRenderPlayer);
     }
 
     // Upside down: gravity reversed (the Upwelling effect, or anything else that turns it round).
@@ -172,14 +173,28 @@ public final class UpsideDown {
         }
     }
 
-    private static void onRenderPlayer(RenderAvatarEvent.Pre event) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.level == null) {
+    // Turned over as a Dinnerbone is: about the body's own forward axis, hanging from the feet.
+    // (1.21.1 port: done round the player's renderer, which has no upside-down flag of its own.)
+    private static final java.util.Set<Integer> TURNED = new java.util.HashSet<>();
+
+    private static void onRenderPlayer(RenderPlayerEvent.Pre event) {
+        var player = event.getEntity();
+        if (!isFlipped(player)) {
             return;
         }
-        Entity entity = minecraft.level.getEntity(event.getState().id);
-        if (entity != null && isFlipped(entity)) {
-            event.getState().isUpsideDown = true;
+        var pose = event.getPoseStack();
+        float yaw = 180.0F - net.minecraft.util.Mth.rotLerp(event.getPartialTick(), player.yBodyRotO, player.yBodyRot);
+        pose.pushPose();
+        pose.translate(0.0F, player.getBbHeight() + 0.1F, 0.0F);
+        pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(yaw));
+        pose.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(180.0F));
+        pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-yaw));
+        TURNED.add(player.getId());
+    }
+
+    private static void afterRenderPlayer(RenderPlayerEvent.Post event) {
+        if (TURNED.remove(event.getEntity().getId())) {
+            event.getPoseStack().popPose();
         }
     }
 

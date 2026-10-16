@@ -174,11 +174,11 @@ public final class MobSpawning {
     }
 
     private static <T extends Mob> @org.jspecify.annotations.Nullable T trySpawn(ServerLevel level, EntityType<T> type, double x, double y, double z) {
-        T mob = type.create(level, MobSpawnType.NATURAL);
+        T mob = type.create(level);
         if (mob == null) {
             return null;
         }
-        mob.snapTo(x, y, z, level.getRandom().nextFloat() * 360.0F, 0.0F);
+        mob.moveTo(x, y, z, level.getRandom().nextFloat() * 360.0F, 0.0F);
         if (!level.noCollision(mob) || !level.isLoaded(mob.blockPosition())) {
             return null;
         }

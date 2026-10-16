@@ -15,18 +15,12 @@ import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // A Nullwood tree: a black, twisting trunk that wanders as it climbs, a few crooked branches, and
 // clumps of dark violet leaves hung with glowing Null Lanterns. Grown by world generation in the
 // Deep Hollows, and by saplings.
-public record NullwoodTreeFeature() implements Feature {
-    public static final MapCodec<NullwoodTreeFeature> CODEC = MapCodec.unit(NullwoodTreeFeature::new);
+public class NullwoodTreeFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<NullwoodTreeFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

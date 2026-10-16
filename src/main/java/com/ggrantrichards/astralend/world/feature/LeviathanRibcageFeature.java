@@ -9,17 +9,11 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // The fossil ribcage of a Star Leviathan lying on an Ashen Barrens shelf: a spine half-sunk in
 // the ground, with rib arches rising over it, tallest in the middle. Some ribs have broken away.
-public record LeviathanRibcageFeature() implements Feature {
-    public static final MapCodec<LeviathanRibcageFeature> CODEC = MapCodec.unit(LeviathanRibcageFeature::new);
+public class LeviathanRibcageFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<LeviathanRibcageFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

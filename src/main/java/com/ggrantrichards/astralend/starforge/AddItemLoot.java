@@ -32,7 +32,7 @@ public class AddItemLoot extends LootModifier {
     }
 
     @Override
-    protected ObjectArrayList<ItemStack> doApply(LootTable table, ObjectArrayList<ItemStack> loot, LootContext context) {
+    protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> loot, LootContext context) {
         if (context.getRandom().nextFloat() < this.chance) {
             loot.add(new ItemStack(this.item));
         }

@@ -25,7 +25,7 @@ public class CometCressBlock extends CropBlock {
     public static final int MAX_AGE = 3;
     public static final IntegerProperty AGE = BlockStateProperties.AGE_3;
     // Hanging from the top of the block space: taller as it grows.
-    private static final VoxelShape[] SHAPES = Block.boxes(MAX_AGE, age -> Block.column(16.0, 14.0 - age * 2, 16.0));
+    private static final VoxelShape[] SHAPES = com.ggrantrichards.astralend.compat.Compat.boxes(MAX_AGE, age -> com.ggrantrichards.astralend.compat.Compat.column(16.0, 14.0 - age * 2, 16.0));
 
     public CometCressBlock(BlockBehaviour.Properties properties) {
         super(properties);

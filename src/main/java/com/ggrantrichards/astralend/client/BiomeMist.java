@@ -34,13 +34,13 @@ public final class BiomeMist {
 
     private static final List<Profile> PROFILES = List.of(
         new Profile(ModBiomes.NEBULA_FIELDS,
-            new ParticleOptions[] {new DustParticleOptions(0xF08CBC, 3.0F), new DustParticleOptions(0xC04C88, 3.6F)},
+            new ParticleOptions[] {com.ggrantrichards.astralend.compat.Compat.dust(0xF08CBC, 3.0F), com.ggrantrichards.astralend.compat.Compat.dust(0xC04C88, 3.6F)},
             ParticleTypes.GLOW, 0.4F, 18.0, 0.56, 120, 1.0, 12.0, false, 0.0, 0.0),
         new Profile(ModBiomes.ASHEN_BARRENS,
-            new ParticleOptions[] {new DustParticleOptions(0xDCD6C8, 4.0F), new DustParticleOptions(0xB8B2A4, 3.4F)},
+            new ParticleOptions[] {com.ggrantrichards.astralend.compat.Compat.dust(0xDCD6C8, 4.0F), com.ggrantrichards.astralend.compat.Compat.dust(0xB8B2A4, 3.4F)},
             ParticleTypes.WHITE_ASH, 0.15F, 22.0, 0.44, 150, 0.0, 9.0, false, 0.0, 0.0),
         new Profile(ModBiomes.ECLIPSE,
-            new ParticleOptions[] {new DustParticleOptions(0xF2C45A, 1.1F), new DustParticleOptions(0xE0A23A, 0.8F)},
+            new ParticleOptions[] {com.ggrantrichards.astralend.compat.Compat.dust(0xF2C45A, 1.1F), com.ggrantrichards.astralend.compat.Compat.dust(0xE0A23A, 0.8F)},
             ParticleTypes.GLOW, 0.1F, 20.0, 0.42, 90, 1.0, 10.0, false, 0.0, 0.0),
         new Profile(ModBiomes.SHATTERED_CRAGS,
             new ParticleOptions[0],

@@ -23,7 +23,7 @@ final class PolishSurvey {
         boolean pointsHome = tracker != null && tracker.target().isPresent() && tracker.target().get().dimension() == Level.END
             && tracker.target().get().pos().equals(BlockPos.ZERO);
         ItemStack stew = new ItemStack(ModItems.GLOWING_STEW.get());
-        boolean food = stew.has(DataComponents.FOOD) && stew.has(DataComponents.CONSUMABLE);
+        boolean food = stew.has(DataComponents.FOOD);
         log.accept(String.format("polish: Star Compass points to the End's centre: %s; Glowing Stew is food: %s", pointsHome, food));
         if (!pointsHome || !food) {
             failures.add("polish: the Star Compass should point to (0, 0) in the End, and Glowing Stew should be food");

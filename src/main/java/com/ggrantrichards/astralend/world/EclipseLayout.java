@@ -81,7 +81,7 @@ public final class EclipseLayout {
     }
 
     public static Eclipse inCell(long i, long j, Climate.Sampler nebula) {
-        double n = nebula.temperature().sampleValue((int) (i * CELL + CELL / 3), 0, (int) (j * CELL + 2 * CELL / 3));
+        double n = com.ggrantrichards.astralend.compat.Compat.sample(nebula.temperature(), (int) (i * CELL + CELL / 3), 0, (int) (j * CELL + 2 * CELL / 3));
         long h = mix(i * 0x9E3779B97F4A7C15L ^ j * 0xC2B2AE3D27D4EB4FL ^ Double.doubleToLongBits(n));
         if (unit(h) > CHANCE) {
             return null;

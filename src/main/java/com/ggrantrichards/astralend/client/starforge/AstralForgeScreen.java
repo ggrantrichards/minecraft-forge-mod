@@ -5,10 +5,9 @@ import com.ggrantrichards.astralend.starforge.AstralForgeMenu;
 import com.ggrantrichards.astralend.starforge.StarforgeUpgrade;
 import java.util.List;
 import java.util.Optional;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.CyclingSlotBackground;
 import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -65,25 +64,25 @@ public class AstralForgeScreen extends ItemCombinerScreen<AstralForgeMenu> {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-        super.extractRenderState(graphics, mouseX, mouseY, a);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float a) {
+        super.render(graphics, mouseX, mouseY, a);
         this.extractHints(graphics, mouseX, mouseY);
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-        super.extractBackground(graphics, mouseX, mouseY, a);
-        this.templateIcon.extractRenderState(this.menu, graphics, a, this.leftPos, this.topPos);
-        this.baseIcon.extractRenderState(this.menu, graphics, a, this.leftPos, this.topPos);
-        this.alloyIcon.extractRenderState(this.menu, graphics, a, this.leftPos, this.topPos);
-        this.materialIcon.extractRenderState(this.menu, graphics, a, this.leftPos, this.topPos);
-        this.material2Icon.extractRenderState(this.menu, graphics, a, this.leftPos, this.topPos);
+    protected void renderBg(GuiGraphics graphics, float a, int mouseX, int mouseY) {
+        super.renderBg(graphics, a, mouseX, mouseY);
+        this.templateIcon.render(this.menu, graphics, a, this.leftPos, this.topPos);
+        this.baseIcon.render(this.menu, graphics, a, this.leftPos, this.topPos);
+        this.alloyIcon.render(this.menu, graphics, a, this.leftPos, this.topPos);
+        this.materialIcon.render(this.menu, graphics, a, this.leftPos, this.topPos);
+        this.material2Icon.render(this.menu, graphics, a, this.leftPos, this.topPos);
         this.extractConstellation(graphics);
     }
 
     // The forge draws the upgrade's constellation while you forge: its stars, joined, in the upgrade's
     // colour, in the space over the result slot.
-    private void extractConstellation(GuiGraphicsExtractor graphics) {
+    private void extractConstellation(GuiGraphics graphics) {
         StarforgeUpgrade upgrade = this.menu.upgrade();
         if (upgrade == null) {
             return;
@@ -113,14 +112,14 @@ public class AstralForgeScreen extends ItemCombinerScreen<AstralForgeMenu> {
     }
 
     @Override
-    protected void extractErrorIcon(GuiGraphicsExtractor graphics, int xo, int yo) {
+    protected void renderErrorIcon(GuiGraphics graphics, int xo, int yo) {
         if (this.menu.hasError()) {
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ERROR, xo + ERROR_X, yo + ERROR_Y, 28, 21);
+            graphics.blitSprite(ERROR, xo + ERROR_X, yo + ERROR_Y, 28, 21);
         }
     }
 
     // Hover hints, like the smithing table's: what each empty slot wants, and why nothing's coming out.
-    private void extractHints(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    private void extractHints(GuiGraphics graphics, int mouseX, int mouseY) {
         Optional<Component> hint = Optional.empty();
         if (this.menu.hasError() && this.isHovering(ERROR_X, ERROR_Y, 28, 21, mouseX, mouseY)) {
             hint = Optional.of(Component.translatable("container.astralend.astral_forge.error"));
@@ -128,6 +127,6 @@ public class AstralForgeScreen extends ItemCombinerScreen<AstralForgeMenu> {
         if (this.hoveredSlot != null && !this.hoveredSlot.hasItem() && this.hoveredSlot.index <= AstralForgeMenu.MATERIAL_2) {
             hint = Optional.of(Component.translatable("container.astralend.astral_forge.slot." + this.hoveredSlot.index));
         }
-        hint.ifPresent(text -> graphics.setTooltipForNextFrame(this.font, this.font.split(text, 115), mouseX, mouseY));
+        hint.ifPresent(text -> graphics.renderTooltip(this.font, this.font.split(text, 115), mouseX, mouseY));
     }
 }

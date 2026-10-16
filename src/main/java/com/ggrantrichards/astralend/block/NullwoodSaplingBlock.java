@@ -17,7 +17,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 // A Nullwood sapling. Plant it on the End's ground; it grows into a twisted Nullwood tree on its
 // own after a while, like any sapling.
 public class NullwoodSaplingBlock extends BushBlock {
-    private static final VoxelShape SHAPE = Block.column(12.0, 0.0, 12.0);
+    private static final VoxelShape SHAPE = com.ggrantrichards.astralend.compat.Compat.column(12.0, 0.0, 12.0);
 
     public NullwoodSaplingBlock(BlockBehaviour.Properties properties) {
         super(properties);

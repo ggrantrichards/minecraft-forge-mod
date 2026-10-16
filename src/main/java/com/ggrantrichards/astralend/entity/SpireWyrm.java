@@ -232,8 +232,9 @@ public class SpireWyrm extends Monster {
     }
 
     @Override
-    protected void customServerAiStep(ServerLevel level) {
-        super.customServerAiStep(level);
+    protected void customServerAiStep() {
+        ServerLevel level = (ServerLevel) this.level();
+        super.customServerAiStep();
         if (this.home == null) {
             this.home = this.position();
         }
@@ -446,7 +447,7 @@ public class SpireWyrm extends Monster {
         level.sendParticles(ParticleTypes.REVERSE_PORTAL, at.x, at.y + 0.5, at.z, 60, 2.0, 0.3, 2.0, 0.08);
         for (Player player : level.getEntitiesOfClass(Player.class, new AABB(at, at).inflate(3.5, 2.0, 3.5),
                 p -> !p.isCreative() && !p.isSpectator())) {
-            if (player.hurtServer(level, this.damageSources().mobAttack(this), this.enraged ? 12.0F : 9.0F)) {
+            if (player.hurt(this.damageSources().mobAttack(this), this.enraged ? 12.0F : 9.0F)) {
                 Vec3 away = player.position().subtract(at).multiply(1, 0, 1);
                 away = away.lengthSqr() < 1.0E-4 ? new Vec3(1, 0, 0) : away.normalize();
                 player.push(away.x * 0.55, 0.3, away.z * 0.55);     // staggered, not flung off the tower
@@ -465,7 +466,7 @@ public class SpireWyrm extends Monster {
         cloud.setDuration(120);
         cloud.setRadiusPerTick(-0.006F);
         cloud.setWaitTime(4);
-        cloud.addEffect(new MobEffectInstance(MobEffects.INSTANT_DAMAGE, 1, 0));
+        cloud.addEffect(new MobEffectInstance(MobEffects.HARM, 1, 0));
         level.addFreshEntity(cloud);
         level.sendParticles(ParticleTypes.REVERSE_PORTAL, at.x, at.y + 0.4, at.z, 30, 1.2, 0.2, 1.2, 0.02);
     }
@@ -567,7 +568,7 @@ public class SpireWyrm extends Monster {
         for (int i = 0; i < boxes.size(); i++) {
             boolean tail = i > SEGMENTS - 3;
             for (Player player : level.getEntitiesOfClass(Player.class, boxes.get(i).inflate(0.3), p -> !p.isCreative() && !p.isSpectator())) {
-                if (player.hurtServer(level, this.damageSources().mobAttack(this), i == 0 ? 7.0F : tail ? 6.0F : 4.0F)) {
+                if (player.hurt(this.damageSources().mobAttack(this), i == 0 ? 7.0F : tail ? 6.0F : 4.0F)) {
                     Vec3 away = player.position().subtract(boxes.get(i).getCenter()).multiply(1.0, 0.0, 1.0);
                     away = away.lengthSqr() < 1.0E-4 ? new Vec3(1, 0, 0) : away.normalize();
                     player.push(away.x * (tail ? 1.2 : 0.7), 0.35, away.z * (tail ? 1.2 : 0.7));
@@ -637,26 +638,30 @@ public class SpireWyrm extends Monster {
     // ---- damage
 
     public boolean hurtFromPart(ServerLevel level, SpireWyrmPart part, DamageSource source, float damage) {
-        return this.hurtServer(level, source, damage);
+        return this.hurt(source, damage);
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+    public boolean hurt(DamageSource source, float damage) {
+        if (!(this.level() instanceof ServerLevel level)) {
+            return super.hurt(source, damage);
+        }
         if (this.phase() == Phase.ASLEEP && !source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             this.wake(level);   // a blow to a sleeping wyrm lands in full, and wakes it
-            return super.hurtServer(level, source, damage);
+            return super.hurt(source, damage);
         }
         float scale = switch (this.phase()) {
             case STUNNED -> 1.5F;      // crashed by a bell
             case GROUNDED -> 1.25F;    // head down after a dive
             default -> 0.6F;           // flying, it shrugs off much of a blow
         };
-        return super.hurtServer(level, source, damage * scale);
+        return super.hurt(source, damage * scale);
     }
 
     @Override
-    public boolean doHurtTarget(ServerLevel level, Entity target) {
-        return super.doHurtTarget(level, target);
+    public boolean doHurtTarget(Entity target) {
+        ServerLevel level = (ServerLevel) this.level();
+        return super.doHurtTarget(target);
     }
 
     // ---- boss bar, sounds, saving

@@ -107,7 +107,7 @@ public final class ClientPlaytests {
         }
         if (ticks % test.every() == 0) {
             Screenshot.grab(minecraft.gameDirectory, String.format("playtest/%s_%04d.png", test.name(), ticks),
-                minecraft.gameRenderer.mainRenderTarget(), 1, message -> {});
+                minecraft.gameRenderer.getMainRenderTarget(), 1, message -> {});
         }
         if (ticks >= test.ticks()) {
             release(minecraft);
@@ -151,15 +151,15 @@ public final class ClientPlaytests {
             // Nothing but the Wyrm fight is about getting hurt: the rest can't kill the player (a death
             // screen would stop every scene after it).
             if (!test.name().equals("wyrm_fight")) {
-                player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 20 * 60, 4, false, false));   // Resistance V: no damage
+                player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 60, 4, false, false));   // Resistance V: no damage
             }
             switch (test.name()) {
                 case "whale_ride" -> {
                     ClientScreenshots.Shot s = shot("mob_drift_whale_side");
                     Vec3 at = s != null ? new Vec3(s.mobX(), s.mobY() + 6, s.mobZ()) : new Vec3(0, 120, 0);
                     put(player, end, at.add(-4, 0, 0), -90, 10);
-                    DriftWhale whale = ModEntities.DRIFT_WHALE.get().create(end, MobSpawnType.COMMAND);
-                    whale.snapTo(at.x, at.y, at.z, -90, 0);
+                    DriftWhale whale = ModEntities.DRIFT_WHALE.get().create(end);
+                    whale.moveTo(at.x, at.y, at.z, -90, 0);
                     whale.setPersistenceRequired();
                     end.addFreshEntity(whale);
                     subject = whale;
@@ -178,7 +178,7 @@ public final class ClientPlaytests {
                     player.getInventory().add(new ItemStack(Items.BOW));
                     player.getInventory().add(new ItemStack(Items.ARROW, 64));
                     // Kept alive so the whole fight plays (the damage still shows, as red flashes).
-                    player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 2000, 3, false, false));
+                    player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 2000, 3, false, false));
                     player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 2000, 2, false, false));
                     end.getEntitiesOfClass(SpireWyrm.class, new net.minecraft.world.phys.AABB(nest, nest).inflate(40))
                         .stream().findFirst().ifPresent(w -> subject = w);
@@ -295,7 +295,7 @@ public final class ClientPlaytests {
                     });
                 }
                 if (t % 40 == 20 && subject instanceof SpireWyrm wyrm && wyrm.position().distanceTo(player.position()) < 6) {
-                    server.execute(() -> wyrm.hurtServer((ServerLevel) wyrm.level(), wyrm.damageSources().playerAttack(
+                    server.execute(() -> wyrm.hurt(wyrm.damageSources().playerAttack(
                         server.getPlayerList().getPlayers().get(0)), 7.0F));   // a sword hit when it's in reach
                 }
             }

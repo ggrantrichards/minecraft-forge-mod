@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 // tethered to the moss by a hanging Nebula Tendril. Its rose membrane is see-through, a cold blue glow
 // at its heart, and it leaks the gas it's made of in slow wisps. Mined, it's a glowing, glassy block.
 public class NebulaBladderBlock extends TransparentBlock {
-    private static final DustParticleOptions GAS = new DustParticleOptions(0xE07AA8, 1.6F);
+    private static final DustParticleOptions GAS = com.ggrantrichards.astralend.compat.Compat.dust(0xE07AA8, 1.6F);
 
     public NebulaBladderBlock(BlockBehaviour.Properties properties) {
         super(properties);

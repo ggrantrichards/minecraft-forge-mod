@@ -59,7 +59,7 @@ public class Hydragrip extends Animal {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Animal.createAnimalAttributes()
+        return Animal.createMobAttributes()
             .add(Attributes.MAX_HEALTH, 10.0)
             .add(Attributes.MOVEMENT_SPEED, 0.26)
             .add(Attributes.ATTACK_DAMAGE, 3.0)
@@ -110,17 +110,18 @@ public class Hydragrip extends Animal {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return ModEntities.HYDRAGRIP.get().create(level, MobSpawnType.BREEDING);
+        return ModEntities.HYDRAGRIP.get().create(level);
     }
 
     // An endermite it kills, it eats - and coughs up a pearl.
     @Override
-    public boolean doHurtTarget(ServerLevel level, Entity target) {
-        boolean hit = super.doHurtTarget(level, target);
+    public boolean doHurtTarget(Entity target) {
+        ServerLevel level = (ServerLevel) this.level();
+        boolean hit = super.doHurtTarget(target);
         if (hit && target instanceof Endermite mite && !mite.isAlive()) {
             this.playSound(SoundEvents.GENERIC_EAT.value(), 0.8F, 1.2F);
             level.sendParticles(ParticleTypes.PORTAL, this.getX(), this.getY() + 0.5, this.getZ(), 20, 0.3, 0.3, 0.3, 0.2);
-            this.spawnAtLocation(level, new ItemStack(Items.ENDER_PEARL));
+            this.spawnAtLocation(new ItemStack(Items.ENDER_PEARL));
         }
         return hit;
     }

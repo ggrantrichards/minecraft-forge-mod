@@ -7,18 +7,12 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.block.Blocks;
 
 // A Comet Core: a boulder of the comet that broke apart over the Comet Wake, half-sunk into an
 // island. Its shell is Charred End Stone and blue ice; its heart is Meteoric Iron Ore.
-public record CometCoreFeature() implements Feature {
-    public static final MapCodec<CometCoreFeature> CODEC = MapCodec.unit(CometCoreFeature::new);
+public class CometCoreFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<CometCoreFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

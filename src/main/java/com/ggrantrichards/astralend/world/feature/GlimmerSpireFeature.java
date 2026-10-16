@@ -9,18 +9,12 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.AmethystClusterBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // A crag of the Glimmering Crags: a jagged spike of Nightstone, leaning a little, its edges grown
 // through with teal Glimmer Crystal, tipped with crystal, and clusters around its foot.
 // (Within 7 blocks of its origin, so it stays inside the chunks a feature may touch.)
-public record GlimmerSpireFeature() implements Feature {
-    public static final MapCodec<GlimmerSpireFeature> CODEC = MapCodec.unit(GlimmerSpireFeature::new);
+public class GlimmerSpireFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<GlimmerSpireFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

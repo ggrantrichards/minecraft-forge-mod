@@ -93,23 +93,23 @@ public class StarChartItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public net.minecraft.world.InteractionResultHolder<net.minecraft.world.item.ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack chart = player.getItemInHand(hand);
         CustomData data = chart.get(DataComponents.CUSTOM_DATA);
         if (level.isClientSide()) {
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.InteractionResultHolder.success(player.getItemInHand(hand));
         }
         if (data == null || !data.copyTag().contains("TargetX")) {
             // An unread chart from a chest: it only makes sense under the End's sky.
             if (level.dimension() != Level.END || !(level instanceof ServerLevel server)) {
                 level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.6F);
-                return InteractionResult.SUCCESS;
+                return net.minecraft.world.InteractionResultHolder.success(player.getItemInHand(hand));
             }
             mark(server, player.blockPosition(), chart);
             data = chart.get(DataComponents.CUSTOM_DATA);
             if (data == null || !data.copyTag().contains("TargetX")) {
                 level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.6F);
-                return InteractionResult.SUCCESS;
+                return net.minecraft.world.InteractionResultHolder.success(player.getItemInHand(hand));
             }
         }
         // No words: a thread of starlight runs from your eyes toward the place, rising as it goes, and
@@ -128,6 +128,6 @@ public class StarChartItem extends Item {
         }
         float pitch = (float) Mth.clamp(1.6 - distance / 1500.0, 0.6, 1.6);
         level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.0F, pitch);
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.InteractionResultHolder.success(player.getItemInHand(hand));
     }
 }

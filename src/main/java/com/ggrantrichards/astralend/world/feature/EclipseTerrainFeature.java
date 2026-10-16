@@ -10,7 +10,6 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // The Eclipse's island, built column by column in each chunk it covers, before anything else is
 // placed (it's added to every End biome, at the first generation step, by a Forge biome modifier:
@@ -20,15 +19,10 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 // EclipseLandmarksFeature's.) Its ground (after beta.4, when it became one golden meadow): gold Living
 // Turf over End Stone everywhere, but for a few bare outcrops of End Stone where Sunscale Lichen grows,
 // and green moss on the wet ground round the water.
-public record EclipseTerrainFeature() implements Feature {
-    public static final MapCodec<EclipseTerrainFeature> CODEC = MapCodec.unit(EclipseTerrainFeature::new);
+public class EclipseTerrainFeature extends SimpleFeature {
     public static final double TOP = 62.0;          // the Eclipse's ground level
     private static final double VOID_RING = 36.0;   // cleared round the disc
 
-    @Override
-    public MapCodec<EclipseTerrainFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

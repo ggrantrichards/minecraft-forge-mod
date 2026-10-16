@@ -8,19 +8,13 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // A scorch fissure of the Ashen Barrens (since the golden-meadow rework): a crack wandering across the
 // ground, a few blocks deep, its lips charred black and raw Solarite glowing at the bottom - where a star's
 // flare split the stone long ago - and round the lips a halo of Sunscorched Stone, the pale stone baked
 // amber by the heat. (Within 9 blocks.)
-public record ScorchFissureFeature() implements Feature {
-    public static final MapCodec<ScorchFissureFeature> CODEC = MapCodec.unit(ScorchFissureFeature::new);
+public class ScorchFissureFeature extends SimpleFeature {
 
-    @Override
-    public MapCodec<ScorchFissureFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

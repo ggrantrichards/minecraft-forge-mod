@@ -77,6 +77,14 @@ public class CollectorPedestalBlock extends Block implements EntityBlock {
     }
 
     @Override
+    protected void onRemove(BlockState state, net.minecraft.world.level.Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof CollectorPedestalBlockEntity pedestal) {
+            pedestal.dropHeld(pos);
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new CollectorPedestalBlockEntity(pos, state);
     }
@@ -90,17 +98,17 @@ public class CollectorPedestalBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                           InteractionHand hand, BlockHitResult hit) {
         Holding holding = Holding.of(stack);
         if (holding == Holding.NONE || state.getValue(HOLDING) != Holding.NONE) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return net.minecraft.world.Itemnet.minecraft.world.ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof CollectorPedestalBlockEntity pedestal) {
             pedestal.setHeld(stack.consumeAndReturn(1, player));
             level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_PLACE, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.ItemInteractionResult.SUCCESS;
     }
 
     @Override

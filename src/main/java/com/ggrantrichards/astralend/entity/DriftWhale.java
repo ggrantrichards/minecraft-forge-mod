@@ -128,8 +128,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
         return Mob.createMobAttributes()
             .add(Attributes.MAX_HEALTH, 400.0)
             .add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
-            .add(Attributes.FOLLOW_RANGE, 64.0)
-            .add(Attributes.CAMERA_DISTANCE, 11.0);     // riding in third person, the camera stands clear of its body
+            .add(Attributes.FOLLOW_RANGE, 64.0);
     }
 
     @Override
@@ -252,8 +251,11 @@ public class DriftWhale extends Mob implements ItemSteerable {
 
     // Hurt, it never fights back: it flees, fast, away from whatever hurt it.
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
-        boolean hurt = super.hurtServer(level, source, damage);
+    public boolean hurt(DamageSource source, float damage) {
+        if (!(this.level() instanceof ServerLevel level)) {
+            return super.hurt(source, damage);
+        }
+        boolean hurt = super.hurt(source, damage);
         if (hurt && this.isAlive()) {
             this.fleeTicks = FLEE_TICKS;
             this.sleepTicks = 0;
@@ -388,8 +390,9 @@ public class DriftWhale extends Mob implements ItemSteerable {
     }
 
     @Override
-    protected void customServerAiStep(ServerLevel level) {
-        super.customServerAiStep(level);
+    protected void customServerAiStep() {
+        ServerLevel level = (ServerLevel) this.level();
+        super.customServerAiStep();
         if (this.tickCount % 20 == 0) {
             this.checkAdvancements(level);
         }
@@ -960,7 +963,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
             ModAdvancements.award(player, "whale_song");
         }
         if (this.isTamed() && this.random.nextInt(8) == 0) {
-            this.spawnAtLocation(level, new ItemStack(ModBlocks.WHALELIGHT_SCALE.get()), 0.5F);
+            this.spawnAtLocation(new ItemStack(ModBlocks.WHALELIGHT_SCALE.get()), 0.5F);
         }
     }
 

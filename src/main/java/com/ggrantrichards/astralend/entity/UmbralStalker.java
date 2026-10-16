@@ -233,10 +233,11 @@ public class UmbralStalker extends Monster {
     }
 
     @Override
-    public boolean doHurtTarget(ServerLevel level, Entity target) {
+    public boolean doHurtTarget(Entity target) {
+        ServerLevel level = (ServerLevel) this.level();
         this.revealTicks = 40;
         level.broadcastEntityEvent(this, (byte) 4);
-        boolean hit = super.doHurtTarget(level, target);
+        boolean hit = super.doHurtTarget(target);
         // An EnderMan, struck, often blinks away - and the hunt goes on in the dark.
         if (hit && target instanceof EnderMan enderman && enderman.isAlive() && this.random.nextInt(3) == 0) {
             var to = EndMobs.safeSpotNear(level, enderman.blockPosition(), 8, 16, this.random);
@@ -250,8 +251,11 @@ public class UmbralStalker extends Monster {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
-        boolean hurt = super.hurtServer(level, source, damage);
+    public boolean hurt(DamageSource source, float damage) {
+        if (!(this.level() instanceof ServerLevel level)) {
+            return super.hurt(source, damage);
+        }
+        boolean hurt = super.hurt(source, damage);
         if (hurt) {
             this.revealTicks = 60;
             if (source.is(DamageTypeTags.IS_FIRE) || burning(level, source.getEntity())) {
@@ -267,7 +271,7 @@ public class UmbralStalker extends Monster {
             return false;
         }
         ItemStack held = living.getMainHandItem();
-        if (held.is(Items.TORCH) || held.is(Items.SOUL_TORCH) || held.is(Items.REDSTONE_TORCH) || held.is(Items.COPPER_TORCH)) {
+        if (held.is(Items.TORCH) || held.is(Items.SOUL_TORCH) || held.is(Items.REDSTONE_TORCH)) {
             return true;
         }
         var fireAspect = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FIRE_ASPECT);
@@ -284,7 +288,7 @@ public class UmbralStalker extends Monster {
                 this.igniteForSeconds(3.0F);
                 this.scare();
                 if (stack.isDamageableItem()) {
-                    stack.hurtAndBreak(1, player, hand.asEquipmentSlot());
+                    stack.hurtAndBreak(1, player, net.minecraft.world.entity.LivingEntity.getSlotForHand(hand));
                 } else {
                     stack.consume(1, player);
                 }
@@ -414,7 +418,7 @@ public class UmbralStalker extends Monster {
             if (self.distanceToSqr(target) < 2.6 * 2.6) {
                 this.struck = true;
                 level.broadcastEntityEvent(self, (byte) 4);
-                target.hurtServer(level, self.damageSources().mobAttack(self), 12.0F);
+                target.hurt(self.damageSources().mobAttack(self), 12.0F);
             }
         }
 

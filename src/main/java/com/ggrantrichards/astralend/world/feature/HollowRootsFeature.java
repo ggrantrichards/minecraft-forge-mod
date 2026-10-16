@@ -12,7 +12,6 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 // The Hollow Roots: under the Deep Hollows, through the thick of their ring islands, the hollows
 // where the dead Nullwood's roots rotted out. A chamber where a great root met the island's heart,
@@ -22,14 +21,9 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 // and fireflies drifting in the dark (the biome's ambient particles).
 //
 // It stays within 23 blocks of the chunk's middle (a feature may only write to the chunks next to its own).
-public record HollowRootsFeature() implements Feature {
-    public static final MapCodec<HollowRootsFeature> CODEC = MapCodec.unit(HollowRootsFeature::new);
+public class HollowRootsFeature extends SimpleFeature {
     private static final int REACH = 21;
 
-    @Override
-    public MapCodec<HollowRootsFeature> codec() {
-        return CODEC;
-    }
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {

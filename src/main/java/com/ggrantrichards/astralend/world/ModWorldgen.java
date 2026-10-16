@@ -29,36 +29,36 @@ public final class ModWorldgen {
         BIOME_SOURCES.register("astral_end", () -> AstralEndBiomeSource.CODEC);
 
 
-    public static final DeferredRegister<MapCodec<? extends Feature>> FEATURE_TYPES =
-        DeferredRegister.create(Registries.FEATURE_TYPE, AstralEnd.MODID);
+    public static final DeferredRegister<Feature<?>> FEATURE_TYPES =
+        DeferredRegister.create(Registries.FEATURE, AstralEnd.MODID);
 
     static {
-        FEATURE_TYPES.register("comet_core", () -> CometCoreFeature.CODEC);
-        FEATURE_TYPES.register("stardust_underhang", () -> StardustUnderhangFeature.CODEC);
-        FEATURE_TYPES.register("upwell", () -> UpwellFeature.CODEC);
-        FEATURE_TYPES.register("giant_lumineshroom", () -> GiantLumineshroomFeature.CODEC);
-        FEATURE_TYPES.register("tendril_underside", () -> TendrilUndersideFeature.CODEC);
-        FEATURE_TYPES.register("nullwood_tree", () -> NullwoodTreeFeature.CODEC);
-        FEATURE_TYPES.register("leviathan_ribcage", () -> LeviathanRibcageFeature.CODEC);
-        FEATURE_TYPES.register("bone_fragment", () -> com.ggrantrichards.astralend.world.feature.BoneFragmentFeature.CODEC);
-        FEATURE_TYPES.register("drift_bladder", () -> com.ggrantrichards.astralend.world.feature.DriftBladderFeature.CODEC);
-        FEATURE_TYPES.register("bone_spire", () -> com.ggrantrichards.astralend.world.feature.BoneSpireFeature.CODEC);
-        FEATURE_TYPES.register("withered_stalk", () -> com.ggrantrichards.astralend.world.feature.WitheredStalkFeature.CODEC);
-        FEATURE_TYPES.register("crater", () -> CraterFeature.CODEC);
+        FEATURE_TYPES.register("comet_core", CometCoreFeature::new);
+        FEATURE_TYPES.register("stardust_underhang", StardustUnderhangFeature::new);
+        FEATURE_TYPES.register("upwell", UpwellFeature::new);
+        FEATURE_TYPES.register("giant_lumineshroom", GiantLumineshroomFeature::new);
+        FEATURE_TYPES.register("tendril_underside", TendrilUndersideFeature::new);
+        FEATURE_TYPES.register("nullwood_tree", NullwoodTreeFeature::new);
+        FEATURE_TYPES.register("leviathan_ribcage", LeviathanRibcageFeature::new);
+        FEATURE_TYPES.register("bone_fragment", com.ggrantrichards.astralend.world.feature.BoneFragmentFeature::new);
+        FEATURE_TYPES.register("drift_bladder", com.ggrantrichards.astralend.world.feature.DriftBladderFeature::new);
+        FEATURE_TYPES.register("bone_spire", com.ggrantrichards.astralend.world.feature.BoneSpireFeature::new);
+        FEATURE_TYPES.register("withered_stalk", com.ggrantrichards.astralend.world.feature.WitheredStalkFeature::new);
+        FEATURE_TYPES.register("crater", CraterFeature::new);
         // Phase 10
-        FEATURE_TYPES.register("glimmer_spire", () -> com.ggrantrichards.astralend.world.feature.GlimmerSpireFeature.CODEC);
+        FEATURE_TYPES.register("glimmer_spire", com.ggrantrichards.astralend.world.feature.GlimmerSpireFeature::new);
         // Phase 11
-        FEATURE_TYPES.register("scorch_fissure", () -> com.ggrantrichards.astralend.world.feature.ScorchFissureFeature.CODEC);
-        FEATURE_TYPES.register("oasis", () -> com.ggrantrichards.astralend.world.feature.OasisFeature.CODEC);
-        FEATURE_TYPES.register("underside", () -> com.ggrantrichards.astralend.world.feature.UndersideFeature.CODEC);
+        FEATURE_TYPES.register("scorch_fissure", com.ggrantrichards.astralend.world.feature.ScorchFissureFeature::new);
+        FEATURE_TYPES.register("oasis", com.ggrantrichards.astralend.world.feature.OasisFeature::new);
+        FEATURE_TYPES.register("underside", com.ggrantrichards.astralend.world.feature.UndersideFeature::new);
         // The distillation
-        FEATURE_TYPES.register("root_cave", () -> com.ggrantrichards.astralend.world.feature.RootCaveFeature.CODEC);
-        FEATURE_TYPES.register("eclipse_terrain", () -> com.ggrantrichards.astralend.world.feature.EclipseTerrainFeature.CODEC);
-        FEATURE_TYPES.register("border_blend", () -> com.ggrantrichards.astralend.world.feature.BorderBlendFeature.CODEC);
-        FEATURE_TYPES.register("hollow_roots", () -> com.ggrantrichards.astralend.world.feature.HollowRootsFeature.CODEC);
-        FEATURE_TYPES.register("crystal_vault", () -> com.ggrantrichards.astralend.world.feature.CrystalVaultFeature.CODEC);
-        FEATURE_TYPES.register("eclipse_landmarks", () -> com.ggrantrichards.astralend.world.feature.EclipseLandmarksFeature.CODEC);
-        FEATURE_TYPES.register("memory_moss", () -> com.ggrantrichards.astralend.world.feature.MemoryMossFeature.CODEC);
+        FEATURE_TYPES.register("root_cave", com.ggrantrichards.astralend.world.feature.RootCaveFeature::new);
+        FEATURE_TYPES.register("eclipse_terrain", com.ggrantrichards.astralend.world.feature.EclipseTerrainFeature::new);
+        FEATURE_TYPES.register("border_blend", com.ggrantrichards.astralend.world.feature.BorderBlendFeature::new);
+        FEATURE_TYPES.register("hollow_roots", com.ggrantrichards.astralend.world.feature.HollowRootsFeature::new);
+        FEATURE_TYPES.register("crystal_vault", com.ggrantrichards.astralend.world.feature.CrystalVaultFeature::new);
+        FEATURE_TYPES.register("eclipse_landmarks", com.ggrantrichards.astralend.world.feature.EclipseLandmarksFeature::new);
+        FEATURE_TYPES.register("memory_moss", com.ggrantrichards.astralend.world.feature.MemoryMossFeature::new);
     }
 
     // Phase 6: structures that check the ground before they start (see IslandStructure).

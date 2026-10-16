@@ -21,7 +21,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 // hum. When something teleports within 16 blocks - an EnderMan, a thrown Ender Pearl, a Chorus
 // Fruit - they ring, and for 10 seconds after that nothing can teleport near them (EndChimesBlockEntity).
 public class EndChimesBlock extends BaseEntityBlock {
-    private static final VoxelShape SHAPE = Block.column(10.0, 2.0, 16.0);
+    private static final VoxelShape SHAPE = com.ggrantrichards.astralend.compat.Compat.column(10.0, 2.0, 16.0);
 
     public EndChimesBlock(BlockBehaviour.Properties properties) {
         super(properties);

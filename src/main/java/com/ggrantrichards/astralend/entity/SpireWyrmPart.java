@@ -46,7 +46,10 @@ public class SpireWyrmPart extends net.minecraftforge.entity.PartEntity<SpireWyr
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+    public boolean hurt(DamageSource source, float damage) {
+        if (!(this.level() instanceof ServerLevel level)) {
+            return super.hurt(source, damage);
+        }
         return !this.isInvulnerableToBase(source) && this.getParent().hurtFromPart(level, this, source, damage);
     }
 
