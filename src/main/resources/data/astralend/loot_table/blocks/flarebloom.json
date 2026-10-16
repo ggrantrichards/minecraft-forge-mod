@@ -22,6 +22,14 @@
     },
     {
       "rolls": 1,
+      "condition": {
+        "type": "minecraft:match_block",
+        "blocks": "astralend:flarebloom",
+        "state": {
+          "half": "lower",
+          "open": "true"
+        }
+      },
       "entries": [
         {
           "type": "minecraft:item",
@@ -37,15 +45,7 @@
             }
           ]
         }
-      ],
-      "condition": {
-        "block": "astralend:flarebloom",
-        "properties": {
-          "half": "lower",
-          "open": "true"
-        },
-        "type": "minecraft:block_state_property"
-      }
+      ]
     }
   ],
   "random_sequence": "astralend:blocks/flarebloom"

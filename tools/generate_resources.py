@@ -1350,8 +1350,8 @@ def flares_phase5():
         {"condition": {"type": "minecraft:survives_explosion"}, "rolls": 1,
          "entries": [{"type": "minecraft:item", "name": rid("flarebloom"), "condition": {
              "type": "minecraft:match_block", "blocks": rid("flarebloom"), "state": {"half": "lower"}}}]},
-        {"rolls": 1, "conditions": [{"condition": "minecraft:block_state_property", "block": rid("flarebloom"),
-                                     "properties": {"half": "lower", "open": "true"}}],
+        {"rolls": 1, "condition": {"type": "minecraft:match_block", "blocks": rid("flarebloom"),
+                                   "state": {"half": "lower", "open": "true"}},
          "entries": [{"type": "minecraft:item", "name": rid("flare_pollen"), "functions": [
              {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 1, "max": 2}}]}]},
     ])
