@@ -1,19 +1,19 @@
 package com.ggrantrichards.astralend.world;
 
+import net.minecraft.world.entity.EntityType;
 import com.ggrantrichards.astralend.entity.Hushback;
 import com.ggrantrichards.astralend.entity.UmbralStalker;
 import com.ggrantrichards.astralend.entity.Watcher;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.entity.monster.Enderman;
+import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -29,24 +29,24 @@ import org.jspecify.annotations.Nullable;
 //     Hydragrips keep near the herds.
 public final class WebOfLife {
     public static void register() {
-        TickEvent.LevelTickEvent.Post.BUS.addListener(WebOfLife::onLevelTick);
+        com.ggrantrichards.astralend.Events.post(TickEvent.LevelTickEvent.class, WebOfLife::onLevelTick);
     }
 
-    private static void onLevelTick(TickEvent.LevelTickEvent.Post event) {
+    private static void onLevelTick(TickEvent.LevelTickEvent event) {
         if (!(event.level() instanceof ServerLevel level) || level.dimension() != Level.END || level.getGameTime() % 10 != 3) {
             return;
         }
         boolean growlTime = level.getGameTime() % 40 == 3;
-        for (Entity wolf : level.getEntities(EntityTypes.WOLF, Entity::isAlive)) {
+        for (Entity wolf : level.getEntities(EntityType.WOLF, Entity::isAlive)) {
             if (wolf instanceof Mob mob) {
                 wolfSenses(level, mob, growlTime);
             }
         }
         if (level.getGameTime() % 20 == 13) {
-            for (Enderman enderman : level.getEntities(EntityTypes.ENDERMAN, e -> e.isAlive() && e.getTarget() == null)) {
+            for (EnderMan enderman : level.getEntities(EntityType.ENDERMAN, e -> e.isAlive() && e.getTarget() == null)) {
                 shunWatcher(level, enderman);
             }
-            for (Endermite mite : level.getEntities(EntityTypes.ENDERMITE, e -> e.isAlive() && e.getTarget() == null)) {
+            for (Endermite mite : level.getEntities(EntityType.ENDERMITE, e -> e.isAlive() && e.getTarget() == null)) {
                 pesterHerd(level, mite);
             }
         }
@@ -67,7 +67,7 @@ public final class WebOfLife {
         wolf.getNavigation().stop();
         wolf.getLookControl().setLookAt(found, 30.0F, 30.0F);
         if (growl) {
-            var sound = BuiltInRegistries.SOUND_EVENT.getOptional(Identifier.withDefaultNamespace("entity.wolf.growl"));
+            var sound = BuiltInRegistries.SOUND_EVENT.getOptional(ResourceLocation.withDefaultNamespace("entity.wolf.growl"));
             if (sound.isPresent()) {
                 level.playSound(null, wolf.getX(), wolf.getY(), wolf.getZ(), sound.get(), SoundSource.NEUTRAL, 1.0F, 0.9F);
             } else {
@@ -79,8 +79,8 @@ public final class WebOfLife {
         return found;
     }
 
-    // An Enderman within 24 blocks of a Watcher turns its back on it and walks away. True if it did.
-    public static boolean shunWatcher(ServerLevel level, Enderman enderman) {
+    // An EnderMan within 24 blocks of a Watcher turns its back on it and walks away. True if it did.
+    public static boolean shunWatcher(ServerLevel level, EnderMan enderman) {
         Watcher watcher = null;
         for (Watcher w : level.getEntitiesOfClass(Watcher.class, enderman.getBoundingBox().inflate(24.0), Entity::isAlive)) {
             watcher = w;

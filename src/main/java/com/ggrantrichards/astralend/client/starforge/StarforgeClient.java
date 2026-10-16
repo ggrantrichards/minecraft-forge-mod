@@ -10,15 +10,15 @@ import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.eventbus.api.bus.BusGroup;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 // Client side of Starforging: the Astral Forge's screen, and the upgrade accents on worn armour.
 public final class StarforgeClient {
-    public static void register(BusGroup modBusGroup) {
-        FMLClientSetupEvent.getBus(modBusGroup).addListener(event ->
+    public static void register(IEventBus modBusGroup) {
+        com.ggrantrichards.astralend.Events.on(FMLClientSetupEvent.class, event ->
             event.enqueueWork(() -> MenuScreens.register(ModMenus.ASTRAL_FORGE.get(), AstralForgeScreen::new)));
-        EntityRenderersEvent.AddLayers.BUS.addListener(event -> {
+        com.ggrantrichards.astralend.Events.on(EntityRenderersEvent.AddLayers.class, event -> {
             for (PlayerModelType type : event.getModelTypes()) {
                 AvatarRenderer<AbstractClientPlayer> renderer = event.getPlayerRenderer(type);
                 if (renderer != null) {

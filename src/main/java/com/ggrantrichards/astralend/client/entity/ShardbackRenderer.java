@@ -5,12 +5,12 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.resources.Identifier;
+import com.ggrantrichards.astralend.client.compat.LivingEntityRenderState;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class ShardbackRenderer extends MobRenderer<Shardback, ShardbackRenderer.State, ShardbackRenderer.Model> {
-    private static final Identifier TEXTURE = ModModelLayers.texture("shardback");
+public class ShardbackRenderer extends com.ggrantrichards.astralend.client.compat.StateMobRenderer<Shardback, ShardbackRenderer.State, ShardbackRenderer.Model> {
+    private static final ResourceLocation TEXTURE = ModModelLayers.texture("shardback");
 
     public ShardbackRenderer(EntityRendererProvider.Context context) {
         super(context, new Model(context.bakeLayer(ModModelLayers.SHARDBACK)), 0.6F);
@@ -18,7 +18,7 @@ public class ShardbackRenderer extends MobRenderer<Shardback, ShardbackRenderer.
     }
 
     @Override
-    public Identifier getTextureLocation(State state) {
+    public ResourceLocation getTextureLocation(State state) {
         return TEXTURE;
     }
 
@@ -31,7 +31,7 @@ public class ShardbackRenderer extends MobRenderer<Shardback, ShardbackRenderer.
     public void extractRenderState(Shardback entity, State state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.hidden = entity.isHidden();
-        state.attackTime = entity.getSwingAnimation(partialTicks);
+        state.attackTime = entity.getAttackAnim(partialTicks);
     }
 
     public static class State extends LivingEntityRenderState {
@@ -41,7 +41,7 @@ public class ShardbackRenderer extends MobRenderer<Shardback, ShardbackRenderer.
 
     // Hidden, it folds flat: legs splayed under it, head tucked down, nothing but shards showing.
     // Hunting, it stalks low and heavy, and lunges head first.
-    public static class Model extends EntityModel<State> {
+    public static class Model extends com.ggrantrichards.astralend.client.compat.StateModel<State> {
         private final ModelPart body;
         private final ModelPart head;
         private final ModelPart[] legs = new ModelPart[4];

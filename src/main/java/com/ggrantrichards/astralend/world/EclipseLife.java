@@ -1,13 +1,13 @@
 package com.ggrantrichards.astralend.world;
 
+import net.minecraft.world.entity.EntityType;
 import com.ggrantrichards.astralend.entity.EndMobs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.monster.Enderman;
+import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 
@@ -19,19 +19,19 @@ import net.minecraftforge.event.TickEvent;
 //     never says why. (Unless the Watcher is near: they won't meet its eye - WebOfLife.)
 public final class EclipseLife {
     public static void register() {
-        TickEvent.LevelTickEvent.Post.BUS.addListener(EclipseLife::onLevelTick);
+        com.ggrantrichards.astralend.Events.post(TickEvent.LevelTickEvent.class, EclipseLife::onLevelTick);
     }
 
-    private static void onLevelTick(TickEvent.LevelTickEvent.Post event) {
+    private static void onLevelTick(TickEvent.LevelTickEvent event) {
         if (!(event.level() instanceof ServerLevel level) || level.dimension() != Level.END || level.getGameTime() % 20 != 7) {
             return;
         }
-        for (Enderman enderman : level.getEntities(EntityTypes.ENDERMAN, e -> e.isAlive() && e.getTarget() == null
+        for (EnderMan enderman : level.getEntities(EntityType.ENDERMAN, e -> e.isAlive() && e.getTarget() == null
                 && level.getBiome(e.blockPosition()).is(ModBiomes.ASHEN_BARRENS)
                 && level.getEntitiesOfClass(com.ggrantrichards.astralend.entity.Watcher.class, e.getBoundingBox().inflate(24.0)).isEmpty())) {
             standAtEdge(level, enderman);
         }
-        for (Enderman enderman : level.getEntities(EntityTypes.ENDERMAN, e -> e.isAlive() && level.getBiome(e.blockPosition()).is(ModBiomes.ECLIPSE))) {
+        for (EnderMan enderman : level.getEntities(EntityType.ENDERMAN, e -> e.isAlive() && level.getBiome(e.blockPosition()).is(ModBiomes.ECLIPSE))) {
             BlockPos to = EndMobs.safeSpotNear(level, enderman.blockPosition(), 48, 80, enderman.getRandom());
             level.playSound(null, enderman.blockPosition(), SoundEvents.ENDERMAN_SCREAM, SoundSource.HOSTILE, 1.0F, 1.2F);
             level.sendParticles(ParticleTypes.PORTAL, enderman.getX(), enderman.getY() + 1.5, enderman.getZ(), 40, 0.4, 1.0, 0.4, 0.3);
@@ -45,7 +45,7 @@ public final class EclipseLife {
 
     // At an edge (the void within two blocks to one side): stand still, facing it. Otherwise walk to the
     // nearest edge within 12 blocks.
-    private static void standAtEdge(ServerLevel level, Enderman enderman) {
+    private static void standAtEdge(ServerLevel level, EnderMan enderman) {
         BlockPos at = enderman.blockPosition();
         for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
             for (int i = 1; i <= 2; i++) {

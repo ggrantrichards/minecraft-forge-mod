@@ -44,7 +44,7 @@ public record EclipseTerrainFeature() implements Feature {
         double well = EclipseLayout.WELLSPRING_RADIUS * r;
         BlockState air = Blocks.AIR.defaultBlockState();
         BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
-        int minY = level.getMinY(), maxY = minY + 128;
+        int minY = level.getMinBuildHeight(), maxY = minY + 128;
         boolean changed = false;
         for (int x = x0; x < x0 + 16; x++) {
             for (int z = z0; z < z0 + 16; z++) {

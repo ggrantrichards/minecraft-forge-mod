@@ -49,7 +49,7 @@ public class HoverNearGroundGoal extends Goal {
             int x = mob.getBlockX() + mob.getRandom().nextInt(range * 2 + 1) - range;
             int z = mob.getBlockZ() + mob.getRandom().nextInt(range * 2 + 1) - range;
             int ground = level.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
-            if (ground <= level.getMinY() + 1 || Math.abs(ground - mob.getBlockY()) > range + maxHeight) {
+            if (ground <= level.getMinBuildHeight() + 1 || Math.abs(ground - mob.getBlockY()) > range + maxHeight) {
                 continue;  // over the void, or far above or below
             }
             BlockPos pos = new BlockPos(x, ground + minHeight + mob.getRandom().nextInt(maxHeight - minHeight + 1), z);

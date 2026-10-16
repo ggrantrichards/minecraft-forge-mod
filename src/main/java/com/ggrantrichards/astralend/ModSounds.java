@@ -1,7 +1,7 @@
 package com.ggrantrichards.astralend;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
@@ -42,7 +42,7 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> VOID_HUM = music("ambient.void_hum");
 
     private static RegistryObject<SoundEvent> music(String name) {
-        return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(AstralEnd.MODID, name)));
+        return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, name)));
     }
 
     private ModSounds() {}

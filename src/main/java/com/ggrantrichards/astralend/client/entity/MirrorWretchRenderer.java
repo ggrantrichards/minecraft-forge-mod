@@ -5,12 +5,12 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.resources.Identifier;
+import com.ggrantrichards.astralend.client.compat.LivingEntityRenderState;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class MirrorWretchRenderer extends MobRenderer<MirrorWretch, MirrorWretchRenderer.State, MirrorWretchRenderer.Model> {
-    private static final Identifier TEXTURE = ModModelLayers.texture("mirror_wretch");
+public class MirrorWretchRenderer extends com.ggrantrichards.astralend.client.compat.StateMobRenderer<MirrorWretch, MirrorWretchRenderer.State, MirrorWretchRenderer.Model> {
+    private static final ResourceLocation TEXTURE = ModModelLayers.texture("mirror_wretch");
 
     public MirrorWretchRenderer(EntityRendererProvider.Context context) {
         super(context, new Model(context.bakeLayer(ModModelLayers.MIRROR_WRETCH)), 0.7F);
@@ -24,7 +24,7 @@ public class MirrorWretchRenderer extends MobRenderer<MirrorWretch, MirrorWretch
     }
 
     @Override
-    public Identifier getTextureLocation(State state) {
+    public ResourceLocation getTextureLocation(State state) {
         return TEXTURE;
     }
 
@@ -36,7 +36,7 @@ public class MirrorWretchRenderer extends MobRenderer<MirrorWretch, MirrorWretch
     @Override
     public void extractRenderState(MirrorWretch entity, State state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
-        state.attackTime = entity.getSwingAnimation(partialTicks);
+        state.attackTime = entity.getAttackAnim(partialTicks);
         state.rear = entity.rear(partialTicks);
     }
 
@@ -49,7 +49,7 @@ public class MirrorWretchRenderer extends MobRenderer<MirrorWretch, MirrorWretch
     // little way up; when it hunts it rears - the chest swings up from the segments, the front legs
     // paw the air, the neck and head rise over two blocks - and it strikes down from there. Its back
     // legs never leave the ground. The vocal sacs down its throat swell one after another.
-    public static class Model extends EntityModel<State> {
+    public static class Model extends com.ggrantrichards.astralend.client.compat.StateModel<State> {
         private final ModelPart chest;
         private final ModelPart neck;
         private final ModelPart head;

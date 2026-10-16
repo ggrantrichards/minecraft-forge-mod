@@ -47,10 +47,10 @@ public final class BiomeMist {
             ParticleTypes.END_ROD, 1.0F, 14.0, 0.5, 26, -40.0, 30.0, true, -0.05, 0.0));
 
     public static void register() {
-        TickEvent.ClientTickEvent.Post.BUS.addListener(BiomeMist::onClientTick);
+        com.ggrantrichards.astralend.Events.post(TickEvent.ClientTickEvent.class, BiomeMist::onClientTick);
     }
 
-    private static void onClientTick(TickEvent.ClientTickEvent.Post event) {
+    private static void onClientTick(TickEvent.ClientTickEvent event) {
         Minecraft minecraft = Minecraft.getInstance();
         ClientLevel level = minecraft.level;
         LocalPlayer player = minecraft.player;
@@ -83,7 +83,7 @@ public final class BiomeMist {
             if (!profile.overVoid()) {
                 // Low over the land, never out over the void.
                 int ground = level.getHeight(Heightmap.Types.MOTION_BLOCKING, p.getX(), p.getZ());
-                if (ground <= level.getMinY() + 1 || y < ground + profile.minAbove() || y > ground + profile.maxAbove()) {
+                if (ground <= level.getMinBuildHeight() + 1 || y < ground + profile.minAbove() || y > ground + profile.maxAbove()) {
                     continue;
                 }
             }

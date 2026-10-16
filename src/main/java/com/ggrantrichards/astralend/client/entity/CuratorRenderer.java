@@ -6,8 +6,8 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.resources.Identifier;
+import com.ggrantrichards.astralend.client.compat.LivingEntityRenderState;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 // The Curator, drawn at 1.6x (a hulking war-construct: see tools/mobs/make_mobs.py). Dormant, it stands
@@ -15,8 +15,8 @@ import net.minecraft.util.Mth;
 // before it lands: the cannon arm raised and aimed (then kicked back by the shot), the crouch before
 // the charge and the lunge of it, a fist drawn back for each punch, both arms up for the slam. In its
 // second phase the display case in its chest is gone, the core shows, and it hangs upside down.
-public class CuratorRenderer extends MobRenderer<Curator, CuratorRenderer.State, CuratorRenderer.Model> {
-    private static final Identifier TEXTURE = ModModelLayers.texture("curator");
+public class CuratorRenderer extends com.ggrantrichards.astralend.client.compat.StateMobRenderer<Curator, CuratorRenderer.State, CuratorRenderer.Model> {
+    private static final ResourceLocation TEXTURE = ModModelLayers.texture("curator");
     private static final float SCALE = 1.6F;
 
     public CuratorRenderer(EntityRendererProvider.Context context) {
@@ -25,7 +25,7 @@ public class CuratorRenderer extends MobRenderer<Curator, CuratorRenderer.State,
     }
 
     @Override
-    public Identifier getTextureLocation(State state) {
+    public ResourceLocation getTextureLocation(State state) {
         return TEXTURE;
     }
 
@@ -60,7 +60,7 @@ public class CuratorRenderer extends MobRenderer<Curator, CuratorRenderer.State,
         public float actionTicks;
     }
 
-    public static class Model extends EntityModel<State> {
+    public static class Model extends com.ggrantrichards.astralend.client.compat.StateModel<State> {
         private final ModelPart body;
         private final ModelPart head;
         private final ModelPart chestCase;

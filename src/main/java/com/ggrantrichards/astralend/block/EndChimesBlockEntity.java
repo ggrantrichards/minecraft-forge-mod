@@ -17,7 +17,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.EntityTeleportEvent;
 
 // The End Chimes that are loaded, and how long each stays still after it last rang. Teleports are
-// caught through Forge's teleport events (an Enderman's or Shulker's random teleport, an Ender Pearl,
+// caught through Forge's teleport events (an EnderMan's or Shulker's random teleport, an Ender Pearl,
 // a Chorus Fruit): the first one within RANGE of a chime rings it; for the next 10 seconds any other
 // is stopped.
 public class EndChimesBlockEntity extends BlockEntity {
@@ -31,9 +31,9 @@ public class EndChimesBlockEntity extends BlockEntity {
     }
 
     public static void register() {
-        EntityTeleportEvent.EntityRandom.BUS.addListener((java.util.function.Predicate<EntityTeleportEvent.EntityRandom>) EndChimesBlockEntity::onTeleport);
-        EntityTeleportEvent.EnderPearl.BUS.addListener((java.util.function.Predicate<EntityTeleportEvent.EnderPearl>) EndChimesBlockEntity::onTeleport);
-        EntityTeleportEvent.ChorusFruit.BUS.addListener((java.util.function.Predicate<EntityTeleportEvent.ChorusFruit>) EndChimesBlockEntity::onTeleport);
+        com.ggrantrichards.astralend.Events.cancelling(EntityTeleportEvent.EntityRandom.class, EndChimesBlockEntity::onTeleport);
+        com.ggrantrichards.astralend.Events.cancelling(EntityTeleportEvent.EnderPearl.class, EndChimesBlockEntity::onTeleport);
+        com.ggrantrichards.astralend.Events.cancelling(EntityTeleportEvent.ChorusFruit.class, EndChimesBlockEntity::onTeleport);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class EndChimesBlockEntity extends BlockEntity {
             return false;
         }
         boolean stopped = stillsTeleport(level, event.getPrev(), event.getTarget());
-        if (stopped && event.getEntity() instanceof net.minecraft.world.entity.monster.Enderman) {
+        if (stopped && event.getEntity() instanceof net.minecraft.world.entity.monster.EnderMan) {
             for (net.minecraft.server.level.ServerPlayer player : level.getEntitiesOfClass(net.minecraft.server.level.ServerPlayer.class,
                     event.getEntity().getBoundingBox().inflate(RANGE + 8.0))) {
                 com.ggrantrichards.astralend.world.ModAdvancements.award(player, "still_air");

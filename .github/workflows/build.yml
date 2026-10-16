@@ -163,7 +163,7 @@ jobs:
         if: failure()
         run: |
           mkdir -p /tmp/logs
-          { grep -E "error:" -A4 build.log | head -200; echo "---"; tail -40 build.log; } > /tmp/logs/build.txt 2>/dev/null || true
+          { grep -E "error:" -A4 build.log; echo "---"; tail -40 build.log; } > /tmp/logs/build.txt 2>/dev/null || true
           grep -E "Errors in element|Failed to parse|No key|Unknown|not a valid|Exception|Caused by|Missing|ERROR" gametest.log 2>/dev/null \
             | cut -c1-800 | head -120 > /tmp/logs/gametest.txt || true
           { grep -nE "/(WARN|ERROR)\]|Exception|Caused by" survey.log | grep -v "Cache miss" | head -80; echo "---"; \

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
@@ -33,7 +33,7 @@ final class MechanicsSurvey {
         }
 
         // ---- the Drift Whale: killable, and it flees
-        DriftWhale whale = ModEntities.DRIFT_WHALE.get().create(end, EntitySpawnReason.COMMAND);
+        DriftWhale whale = ModEntities.DRIFT_WHALE.get().create(end, MobSpawnType.COMMAND);
         if (whale != null) {
             whale.snapTo(standOn.getX() + 0.5, standOn.getY() + 12.0, standOn.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(whale);
@@ -47,7 +47,7 @@ final class MechanicsSurvey {
         }
 
         // ---- the Umbral Stalker fears fire
-        UmbralStalker stalker = ModEntities.UMBRAL_STALKER.get().create(end, EntitySpawnReason.COMMAND);
+        UmbralStalker stalker = ModEntities.UMBRAL_STALKER.get().create(end, MobSpawnType.COMMAND);
         if (stalker != null) {
             stalker.snapTo(standOn.getX() + 0.5, standOn.getY() + 1.0, standOn.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(stalker);
@@ -61,7 +61,7 @@ final class MechanicsSurvey {
         }
 
         // ---- the Spire Wyrm sleeps until disturbed, and a blow wakes it
-        com.ggrantrichards.astralend.entity.SpireWyrm wyrm = ModEntities.SPIRE_WYRM.get().create(end, EntitySpawnReason.COMMAND);
+        com.ggrantrichards.astralend.entity.SpireWyrm wyrm = ModEntities.SPIRE_WYRM.get().create(end, MobSpawnType.COMMAND);
         if (wyrm != null) {
             wyrm.snapTo(standOn.getX() + 0.5, standOn.getY() + 30.0, standOn.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(wyrm);
@@ -82,7 +82,7 @@ final class MechanicsSurvey {
     static void checkWyrmFight(ServerLevel end, List<String> failures, Consumer<String> log) {
         BlockPos nest = new BlockPos(0, 180, 400);
         end.getChunk(nest.getX() >> 4, nest.getZ() >> 4);
-        com.ggrantrichards.astralend.entity.SpireWyrm wyrm = ModEntities.SPIRE_WYRM.get().create(end, EntitySpawnReason.COMMAND);
+        com.ggrantrichards.astralend.entity.SpireWyrm wyrm = ModEntities.SPIRE_WYRM.get().create(end, MobSpawnType.COMMAND);
         if (wyrm == null) {
             failures.add("Spire Wyrm fight: couldn't create one");
             return;
@@ -134,9 +134,9 @@ final class MechanicsSurvey {
         for (int k = 0; k < mobs.length; k++) {
             String mob = mobs[k];
             var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getOptional(
-                net.minecraft.resources.Identifier.fromNamespaceAndPath("astralend", mob + "_spawn_egg"));
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("astralend", mob + "_spawn_egg"));
             var type = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(
-                net.minecraft.resources.Identifier.fromNamespaceAndPath("astralend", mob));
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("astralend", mob));
             if (item.isEmpty() || type.isEmpty()) {
                 failures.add("spawn egg: no egg or no mob for " + mob);
                 continue;
@@ -259,7 +259,7 @@ final class MechanicsSurvey {
         if (echo != 3 || !edible) {
             failures.add("systems: Memory Moss should start remembering when disturbed, and be edible");
         }
-        DriftWhale whale = ModEntities.DRIFT_WHALE.get().create(end, EntitySpawnReason.COMMAND);
+        DriftWhale whale = ModEntities.DRIFT_WHALE.get().create(end, MobSpawnType.COMMAND);
         if (whale != null) {
             whale.snapTo(standOn.getX() + 0.5, standOn.getY() + 14.0, standOn.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(whale);
@@ -277,7 +277,7 @@ final class MechanicsSurvey {
                 failures.add("systems: a Drift Whale should be tamed only by Chorus Fruit from whoever just sang to it");
             }
             // No two alike: a pod's whales differ in size and pace, and they play.
-            DriftWhale calf = ModEntities.DRIFT_WHALE.get().create(end, EntitySpawnReason.COMMAND);
+            DriftWhale calf = ModEntities.DRIFT_WHALE.get().create(end, MobSpawnType.COMMAND);
             if (calf != null) {
                 calf.snapTo(standOn.getX() + 12.5, standOn.getY() + 14.0, standOn.getZ() + 0.5, 0.0F, 0.0F);
                 end.addFreshEntity(calf);
@@ -344,7 +344,7 @@ final class MechanicsSurvey {
             for (int k = 0; k < 12; k++) {
                 double a = k * Math.PI / 6.0;
                 int x = from.getX() + (int) Math.round(Math.cos(a) * r), z = from.getZ() + (int) Math.round(Math.sin(a) * r);
-                if (end.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, x, z) <= end.getMinY() + 1) {
+                if (end.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, x, z) <= end.getMinBuildHeight() + 1) {
                     return new BlockPos(x, from.getY(), z);
                 }
             }
@@ -359,7 +359,7 @@ final class MechanicsSurvey {
     static void checkLoot(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
         for (String vanilla : new String[] {"loot_table/entities/sheep.json", "loot_table/chests/end_city_treasure.json",
                                             "loot_table/blocks/stone_slab.json"}) {
-            var res = end.getServer().getResourceManager().getResource(net.minecraft.resources.Identifier.withDefaultNamespace(vanilla));
+            var res = end.getServer().getResourceManager().getResource(net.minecraft.resources.ResourceLocation.withDefaultNamespace(vanilla));
             if (res.isPresent()) {
                 try (var reader = res.get().openAsReader()) {
                     String text = reader.lines().map(String::trim).collect(java.util.stream.Collectors.joining(" "));
@@ -427,7 +427,7 @@ final class MechanicsSurvey {
     // Kills a fresh mob of `type` (with the stand-in's blow, burning if asked) and counts the `item` it drops.
     private static int killFor(ServerLevel end, net.minecraft.world.entity.EntityType<?> type, BlockPos at,
                                net.minecraft.server.level.ServerPlayer player, boolean burning, net.minecraft.world.item.Item item) {
-        var mob = (net.minecraft.world.entity.LivingEntity) type.create(end, EntitySpawnReason.COMMAND);
+        var mob = (net.minecraft.world.entity.LivingEntity) type.create(end, MobSpawnType.COMMAND);
         mob.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
         end.addFreshEntity(mob);
         if (burning) {
@@ -463,7 +463,7 @@ final class MechanicsSurvey {
         }
         java.util.List<net.minecraft.world.entity.Entity> made = new java.util.ArrayList<>();
         java.util.function.BiFunction<net.minecraft.world.entity.EntityType<?>, Vec3, net.minecraft.world.entity.Entity> put = (type, pos) -> {
-            var e = type.create(end, EntitySpawnReason.COMMAND);
+            var e = type.create(end, MobSpawnType.COMMAND);
             e.snapTo(pos.x, pos.y, pos.z, 0.0F, 0.0F);
             end.addFreshEntity(e);
             made.add(e);
@@ -480,7 +480,7 @@ final class MechanicsSurvey {
             // Hushbacks: a lookout sees an endermite and chimes; the herd shies away.
             var lookout = (com.ggrantrichards.astralend.entity.Hushback) put.apply(ModEntities.HUSHBACK.get(), o);
             var mate = (com.ggrantrichards.astralend.entity.Hushback) put.apply(ModEntities.HUSHBACK.get(), o.add(2, 0, 0));
-            var mite = put.apply(net.minecraft.world.entity.EntityTypes.ENDERMITE, o.add(0, 0, 6));
+            var mite = put.apply(net.minecraft.world.entity.EntityType.ENDERMITE, o.add(0, 0, 6));
             lookout.standLookout(200);
             var threat = lookout.threatNear(end);
             if (threat != null) {
@@ -509,7 +509,7 @@ final class MechanicsSurvey {
             boolean paired = kidB.isPlaying() && kidB.playMate() == kidA && !kidB.isIt();
             kidA.tag();
             check.accept("Hydragrip young play tag (caught, the other is it)", paired && !kidA.isIt() && kidB.isIt());
-            var axolotl = (net.minecraft.world.entity.LivingEntity) put.apply(net.minecraft.world.entity.EntityTypes.AXOLOTL, o.add(-6, 0, 8));
+            var axolotl = (net.minecraft.world.entity.LivingEntity) put.apply(net.minecraft.world.entity.EntityType.AXOLOTL, o.add(-6, 0, 8));
             grip.startPlay(axolotl, false);
             for (int i = 0; i < 20; i++) {
                 grip.tick();
@@ -526,13 +526,13 @@ final class MechanicsSurvey {
             }
             check.accept("a Hollowback falters before someone holding Breathcomb", hollow.isHesitating());
             hollow.discard();
-            // Umbral Stalker: hunts an Enderman when no player is about; keeps clear of Pollinators and a woken Shardback.
+            // Umbral Stalker: hunts an EnderMan when no player is about; keeps clear of Pollinators and a woken Shardback.
             var stalker = (com.ggrantrichards.astralend.entity.UmbralStalker) put.apply(ModEntities.UMBRAL_STALKER.get(), o.add(10, 0, 10));
-            var enderman = put.apply(net.minecraft.world.entity.EntityTypes.ENDERMAN, o.add(10, 0, 2));
+            var enderman = put.apply(net.minecraft.world.entity.EntityType.ENDERMAN, o.add(10, 0, 2));
             for (int i = 0; i < 100 && stalker.getTarget() == null; i++) {
                 stalker.tick();
             }
-            check.accept("an Umbral Stalker hunts an Enderman", stalker.getTarget() == enderman);
+            check.accept("an Umbral Stalker hunts an EnderMan", stalker.getTarget() == enderman);
             stalker.setTarget(null);
             var shard = (com.ggrantrichards.astralend.entity.Shardback) put.apply(ModEntities.SHARDBACK.get(), o.add(13, 0, 13));
             boolean ignoresHidden = stalker.shunned() == null;
@@ -543,34 +543,34 @@ final class MechanicsSurvey {
             check.accept("an Umbral Stalker keeps clear of a Pollinator's light", stalker.shunned() == glow);
             glow.discard();
             stalker.discard();
-            // A wolf gives a hidden Stalker away (a fresh one, out of reach of the Enderman).
+            // A wolf gives a hidden Stalker away (a fresh one, out of reach of the EnderMan).
             var lurker = (com.ggrantrichards.astralend.entity.UmbralStalker) put.apply(ModEntities.UMBRAL_STALKER.get(), o.add(-14, 0, 14));
             lurker.tick();
             boolean hidden = !lurker.isRevealed();
-            var wolf = (net.minecraft.world.entity.Mob) put.apply(net.minecraft.world.entity.EntityTypes.WOLF, o.add(-14, 0, 6));
+            var wolf = (net.minecraft.world.entity.Mob) put.apply(net.minecraft.world.entity.EntityType.WOLF, o.add(-14, 0, 6));
             var sensed = com.ggrantrichards.astralend.world.WebOfLife.wolfSenses(end, wolf, true);
             lurker.tick();
             check.accept("a wolf growls at a hidden Umbral Stalker and gives it away", hidden && sensed == lurker && lurker.isRevealed());
             lurker.discard();
             wolf.discard();
-            // Shardback: an Enderman within six blocks of its geode sets it off.
+            // Shardback: an EnderMan within six blocks of its geode sets it off.
             enderman.snapTo(o.x + 10, o.y, o.z + 2, 0.0F, 0.0F);       // (if the Stalker's blow sent it blinking off)
             var ambusher = (com.ggrantrichards.astralend.entity.Shardback) put.apply(ModEntities.SHARDBACK.get(), o.add(10, 0, -2));
             for (int i = 0; i < 100 && ambusher.getTarget() == null; i++) {
                 ambusher.tick();
             }
-            check.accept("a Shardback ambushes an Enderman that comes close", ambusher.getTarget() == enderman && !ambusher.isHidden());
+            check.accept("a Shardback ambushes an EnderMan that comes close", ambusher.getTarget() == enderman && !ambusher.isHidden());
             ambusher.discard();
             // Endermen won't meet the Watcher's eye.
             var watcher = put.apply(ModEntities.WATCHER.get(), o.add(10, 3, -14));
             enderman.snapTo(o.x + 10, o.y, o.z - 4, 180.0F, 0.0F);
-            boolean turned = com.ggrantrichards.astralend.world.WebOfLife.shunWatcher(end, (net.minecraft.world.entity.monster.Enderman) enderman);
+            boolean turned = com.ggrantrichards.astralend.world.WebOfLife.shunWatcher(end, (net.minecraft.world.entity.monster.EnderMan) enderman);
             Vec3 facing = enderman.getLookAngle();
-            check.accept("an Enderman turns its back on the Watcher", turned && facing.z > 0.5);
+            check.accept("an EnderMan turns its back on the Watcher", turned && facing.z > 0.5);
             watcher.discard();
             // Mirror Wretch: eats endermites; hums at whales, which answer and then keep away, silent.
             var wretch = (com.ggrantrichards.astralend.entity.MirrorWretch) put.apply(ModEntities.MIRROR_WRETCH.get(), o.add(-12, 0, -12));
-            var meal = put.apply(net.minecraft.world.entity.EntityTypes.ENDERMITE, o.add(-10, 0, -12));
+            var meal = put.apply(net.minecraft.world.entity.EntityType.ENDERMITE, o.add(-10, 0, -12));
             for (int i = 0; i < 150 && wretch.getTarget() == null; i++) {
                 wretch.tick();
             }
@@ -643,7 +643,7 @@ final class MechanicsSurvey {
         // Hushback: shorn; hurt one and the herd blinks away.
         java.util.List<com.ggrantrichards.astralend.entity.Hushback> herd = new java.util.ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            var h = ModEntities.HUSHBACK.get().create(end, EntitySpawnReason.COMMAND);
+            var h = ModEntities.HUSHBACK.get().create(end, MobSpawnType.COMMAND);
             h.snapTo(at.getX() + 0.5 + i * 2, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(h);
             herd.add(h);
@@ -660,8 +660,8 @@ final class MechanicsSurvey {
             failures.add("new mobs: a Hushback should be shorn with shears, and its herd should blink away when one is hurt");
         }
         // Hydragrip: kills an endermite, a pearl comes up; won't go for players.
-        var grip = ModEntities.HYDRAGRIP.get().create(end, EntitySpawnReason.COMMAND);
-        var mite = net.minecraft.world.entity.EntityTypes.ENDERMITE.create(end, EntitySpawnReason.COMMAND);
+        var grip = ModEntities.HYDRAGRIP.get().create(end, MobSpawnType.COMMAND);
+        var mite = net.minecraft.world.entity.EntityType.ENDERMITE.create(end, MobSpawnType.COMMAND);
         grip.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 4.5, 0.0F, 0.0F);
         mite.snapTo(at.getX() + 1.5, at.getY(), at.getZ() + 4.5, 0.0F, 0.0F);
         end.addFreshEntity(grip);
@@ -685,7 +685,7 @@ final class MechanicsSurvey {
         player.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
         boolean ground = com.ggrantrichards.astralend.entity.MirrorWretch.atEdgeForTest(end, player);
         end.setBlock(ledge.below(), Blocks.AIR.defaultBlockState(), 3);
-        var wretch = ModEntities.MIRROR_WRETCH.get().create(end, EntitySpawnReason.COMMAND);
+        var wretch = ModEntities.MIRROR_WRETCH.get().create(end, MobSpawnType.COMMAND);
         wretch.snapTo(at.getX() - 1.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
         end.addFreshEntity(wretch);
         player.setDeltaMovement(Vec3.ZERO);
@@ -700,7 +700,7 @@ final class MechanicsSurvey {
         // Hollowback: struck, it blinks aside (1 in 3) - a dozen blows, and it will have.
         boolean blinked = false;
         for (int i = 0; i < 16 && !blinked; i++) {      // a fresh one each time (no hurt cooldown); 1 in 3 blinks
-            var hollow = ModEntities.HOLLOWBACK.get().create(end, EntitySpawnReason.COMMAND);
+            var hollow = ModEntities.HOLLOWBACK.get().create(end, MobSpawnType.COMMAND);
             hollow.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 8.5, 0.0F, 0.0F);
             end.addFreshEntity(hollow);
             Vec3 was = hollow.position();
@@ -713,7 +713,7 @@ final class MechanicsSurvey {
             failures.add("new mobs: a Hollowback should blink aside when struck");
         }
         // The Curator.
-        var curator = ModEntities.CURATOR.get().create(end, EntitySpawnReason.COMMAND);
+        var curator = ModEntities.CURATOR.get().create(end, MobSpawnType.COMMAND);
         curator.snapTo(at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, 0.0F, 0.0F);
         curator.setHome(at);
         end.addFreshEntity(curator);
@@ -721,7 +721,7 @@ final class MechanicsSurvey {
         curator.hurtServer(end, end.damageSources().playerAttack(player), 1.0F);
         boolean woke = !curator.isDormant();
         var potion = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(
-            net.minecraft.resources.Identifier.withDefaultNamespace("splash_potion")).map(t -> t.create(end, EntitySpawnReason.COMMAND)).orElse(null);
+            net.minecraft.resources.ResourceLocation.withDefaultNamespace("splash_potion")).map(t -> t.create(end, MobSpawnType.COMMAND)).orElse(null);
         boolean staggered = false;
         if (potion != null) {
             potion.snapTo(curator.getX(), curator.getY() + 3.0, curator.getZ(), 0.0F, 0.0F);
@@ -736,7 +736,7 @@ final class MechanicsSurvey {
         if (end.getBlockEntity(chime) instanceof com.ggrantrichards.astralend.block.EndChimesBlockEntity bell) {
             bell.ring(end);
         }
-        var arrow = (net.minecraft.world.entity.projectile.arrow.AbstractArrow) net.minecraft.world.entity.EntityTypes.ARROW.create(end, EntitySpawnReason.COMMAND);
+        var arrow = (net.minecraft.world.entity.projectile.AbstractArrow) net.minecraft.world.entity.EntityType.ARROW.create(end, MobSpawnType.COMMAND);
         Vec3 standing = curator.position();
         float health = curator.getHealth();
         for (int i = 0; i < 45; i++) {
@@ -765,7 +765,7 @@ final class MechanicsSurvey {
     }
 
     static void checkContent(ServerLevel end, BlockPos standOn, List<String> failures, Consumer<String> log) {
-        var mite = ModEntities.POLLINATOR.get().create(end, EntitySpawnReason.COMMAND);
+        var mite = ModEntities.POLLINATOR.get().create(end, MobSpawnType.COMMAND);
         if (mite != null) {
             mite.snapTo(standOn.getX() + 0.5, standOn.getY() + 1.0, standOn.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(mite);

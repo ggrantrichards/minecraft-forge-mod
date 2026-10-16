@@ -1,14 +1,14 @@
 package com.ggrantrichards.astralend.world;
 
 import com.ggrantrichards.astralend.AstralEnd;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEnderpearl;
+import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -25,15 +25,15 @@ public final class LowGravity {
     public static final double EXTRA_SAFE_FALL = 3.0;      // blocks
     public static final double PEARL_BOOST = 1.2;
 
-    private static final Identifier GRAVITY_ID = Identifier.fromNamespaceAndPath(AstralEnd.MODID, "low_gravity");
-    private static final Identifier SAFE_FALL_ID = Identifier.fromNamespaceAndPath(AstralEnd.MODID, "low_gravity_safe_fall");
+    private static final ResourceLocation GRAVITY_ID = ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "low_gravity");
+    private static final ResourceLocation SAFE_FALL_ID = ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "low_gravity_safe_fall");
 
     public static void register() {
-        TickEvent.LevelTickEvent.Post.BUS.addListener(LowGravity::onLevelTick);
-        EntityJoinLevelEvent.BUS.addListener(LowGravity::onEntityJoin);
+        com.ggrantrichards.astralend.Events.post(TickEvent.LevelTickEvent.class, LowGravity::onLevelTick);
+        com.ggrantrichards.astralend.Events.on(EntityJoinLevelEvent.class, LowGravity::onEntityJoin);
     }
 
-    private static void onLevelTick(TickEvent.LevelTickEvent.Post event) {
+    private static void onLevelTick(TickEvent.LevelTickEvent event) {
         if (event.side() != LogicalSide.SERVER || !(event.level() instanceof ServerLevel level) || level.getGameTime() % 20 != 0) {
             return;
         }

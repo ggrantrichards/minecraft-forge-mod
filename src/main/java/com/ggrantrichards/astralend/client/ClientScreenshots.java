@@ -14,18 +14,17 @@ import com.ggrantrichards.astralend.flare.Sunstorms;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
@@ -59,11 +58,11 @@ public final class ClientScreenshots {
 
     public static void register() {
         if (Boolean.getBoolean("astralend.screenshots")) {
-            TickEvent.ClientTickEvent.Post.BUS.addListener(ClientScreenshots::onTick);
+            com.ggrantrichards.astralend.Events.post(TickEvent.ClientTickEvent.class, ClientScreenshots::onTick);
         }
     }
 
-    private static void onTick(TickEvent.ClientTickEvent.Post event) {
+    private static void onTick(TickEvent.ClientTickEvent event) {
         Minecraft minecraft = Minecraft.getInstance();
         if (done) {
             return;
@@ -151,8 +150,7 @@ public final class ClientScreenshots {
             server.tickRateManager().setFrozen(false);
             player.getInventory().clearContent();
             player.setGameMode(GameType.SPECTATOR);
-            player.teleport(new TeleportTransition(end, new Vec3(shot.x(), shot.y(), shot.z()), Vec3.ZERO, shot.yaw(), shot.pitch(),
-                TeleportTransition.DO_NOTHING));
+            com.ggrantrichards.astralend.compat.Compat.teleport(player, end, new Vec3(shot.x(), shot.y(), shot.z()), shot.yaw(), shot.pitch());
             if (showPlayer || shot.style().contains("forge")) {
                 StarforgeShots.setUp(server, end, player, shot.x(), shot.y(), shot.z(), shot.yaw(), shot.style());
             }
@@ -269,8 +267,8 @@ public final class ClientScreenshots {
                 e -> BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()).getNamespace().equals(AstralEnd.MODID))) {
             other.discard();
         }
-        BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.parse(shot.mob())).ifPresentOrElse(type -> {
-            Entity entity = type.create(end, EntitySpawnReason.COMMAND);
+        BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(shot.mob())).ifPresentOrElse(type -> {
+            Entity entity = type.create(end, MobSpawnType.COMMAND);
             if (entity == null) {
                 return;
             }

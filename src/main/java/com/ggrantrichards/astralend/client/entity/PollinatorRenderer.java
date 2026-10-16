@@ -1,19 +1,19 @@
 package com.ggrantrichards.astralend.client.entity;
 
+import net.minecraft.client.renderer.RenderType;
 import com.ggrantrichards.astralend.entity.EndPollinator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import com.ggrantrichards.astralend.client.compat.LivingEntityRenderState;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class PollinatorRenderer extends MobRenderer<EndPollinator, LivingEntityRenderState, PollinatorRenderer.Model> {
-    private static final Identifier TEXTURE = ModModelLayers.texture("pollinator");
+public class PollinatorRenderer extends com.ggrantrichards.astralend.client.compat.StateMobRenderer<EndPollinator, LivingEntityRenderState, PollinatorRenderer.Model> {
+    private static final ResourceLocation TEXTURE = ModModelLayers.texture("pollinator");
 
     public PollinatorRenderer(EntityRendererProvider.Context context) {
         super(context, new Model(context.bakeLayer(ModModelLayers.POLLINATOR)), 0.2F);
@@ -21,7 +21,7 @@ public class PollinatorRenderer extends MobRenderer<EndPollinator, LivingEntityR
     }
 
     @Override
-    public Identifier getTextureLocation(LivingEntityRenderState state) {
+    public ResourceLocation getTextureLocation(LivingEntityRenderState state) {
         return TEXTURE;
     }
 
@@ -43,12 +43,12 @@ public class PollinatorRenderer extends MobRenderer<EndPollinator, LivingEntityR
     }
 
     // The bell pulses and bobs; the tendrils trail and sway.
-    public static class Model extends EntityModel<LivingEntityRenderState> {
+    public static class Model extends com.ggrantrichards.astralend.client.compat.StateModel<LivingEntityRenderState> {
         private final ModelPart bell;
         private final ModelPart[] tendrils = new ModelPart[5];
 
         public Model(ModelPart root) {
-            super(root, RenderTypes::entityTranslucent);
+            super(root, RenderType::entityTranslucent);
             this.bell = root.getChild("bell");
             for (int i = 0; i < 5; i++) {
                 this.tendrils[i] = this.bell.getChild("tendril_" + (i + 1));

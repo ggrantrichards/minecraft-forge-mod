@@ -2,7 +2,7 @@ package com.ggrantrichards.astralend.world;
 
 import com.ggrantrichards.astralend.AstralEnd;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
@@ -34,8 +34,8 @@ public final class ModBiomes {
         return ResourceKey.create(Registries.BIOME, id(path));
     }
 
-    private static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(AstralEnd.MODID, path);
+    private static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, path);
     }
 
     private ModBiomes() {}

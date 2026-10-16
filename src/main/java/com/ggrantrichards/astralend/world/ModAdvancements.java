@@ -2,7 +2,7 @@ package com.ggrantrichards.astralend.world;
 
 import com.ggrantrichards.astralend.AstralEnd;
 import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -14,7 +14,7 @@ public final class ModAdvancements {
         if (server == null) {
             return;
         }
-        AdvancementHolder advancement = server.getAdvancements().get(Identifier.fromNamespaceAndPath(AstralEnd.MODID, "end/" + name));
+        AdvancementHolder advancement = server.getAdvancements().get(ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "end/" + name));
         if (advancement != null && !player.getAdvancements().getOrStartProgress(advancement).isDone()) {
             player.getAdvancements().award(advancement, "done");
         }
@@ -25,7 +25,7 @@ public final class ModAdvancements {
         if (server == null) {
             return false;
         }
-        AdvancementHolder advancement = server.getAdvancements().get(Identifier.fromNamespaceAndPath(AstralEnd.MODID, "end/" + name));
+        AdvancementHolder advancement = server.getAdvancements().get(ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "end/" + name));
         return advancement != null && player.getAdvancements().getOrStartProgress(advancement).isDone();
     }
 

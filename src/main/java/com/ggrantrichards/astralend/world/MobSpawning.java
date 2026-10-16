@@ -9,13 +9,13 @@ import com.ggrantrichards.astralend.entity.Watcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
@@ -35,11 +35,11 @@ import net.minecraftforge.fml.LogicalSide;
 public final class MobSpawning {
     private static final int CHECK_EVERY = 200;  // ticks
     public static final ResourceKey<Structure> OBSERVATORY = ResourceKey.create(Registries.STRUCTURE,
-        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "shattered_observatory"));
+        ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "shattered_observatory"));
 
     public static void register() {
-        TickEvent.LevelTickEvent.Post.BUS.addListener(MobSpawning::onLevelTick);
-        FurnaceFuelBurnTimeEvent.BUS.addListener(event -> {
+        com.ggrantrichards.astralend.Events.post(TickEvent.LevelTickEvent.class, MobSpawning::onLevelTick);
+        com.ggrantrichards.astralend.Events.on(FurnaceFuelBurnTimeEvent.class, event -> {
             if (event.getItemStack().is(ModItems.BOTTLED_FLARE.get())) {
                 event.setBurnTime(24000);   // a captured Sunstorm: 120 items, more than a lava bucket
             } else if (event.getItemStack().is(ModItems.STARSAP.get())) {
@@ -50,7 +50,7 @@ public final class MobSpawning {
         });
     }
 
-    private static void onLevelTick(TickEvent.LevelTickEvent.Post event) {
+    private static void onLevelTick(TickEvent.LevelTickEvent event) {
         if (event.side() != LogicalSide.SERVER || !(event.level() instanceof ServerLevel level) || level.dimension() != Level.END
             || level.getGameTime() % CHECK_EVERY != 0) {
             return;
@@ -126,7 +126,7 @@ public final class MobSpawning {
     private static final java.util.Map<java.util.UUID, BlockPos> GUIDE = new java.util.HashMap<>();
     private static final java.util.Map<java.util.UUID, BlockPos> GUIDE_FROM = new java.util.HashMap<>();
     public static final net.minecraft.tags.TagKey<Structure> REMAINS = net.minecraft.tags.TagKey.create(Registries.STRUCTURE,
-        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "leviathan_remains"));
+        ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "leviathan_remains"));
 
     public static void watcherSeen(ServerPlayer player) {
         RECENT.put(player.getUUID(), player.level().getGameTime());
@@ -161,7 +161,7 @@ public final class MobSpawning {
             int x = Mth.floor(player.getX() + Math.cos(angle) * distance);
             int z = Mth.floor(player.getZ() + Math.sin(angle) * distance);
             int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
-            boolean ground = y > level.getMinY() + 1;
+            boolean ground = y > level.getMinBuildHeight() + 1;
             if (!guiding && (!ground
                 || !level.structureManager().getStructureWithPieceAt(new BlockPos(x, y - 1, z), holder -> holder.is(OBSERVATORY)).isValid())) {
                 continue;
@@ -174,7 +174,7 @@ public final class MobSpawning {
     }
 
     private static <T extends Mob> @org.jspecify.annotations.Nullable T trySpawn(ServerLevel level, EntityType<T> type, double x, double y, double z) {
-        T mob = type.create(level, EntitySpawnReason.NATURAL);
+        T mob = type.create(level, MobSpawnType.NATURAL);
         if (mob == null) {
             return null;
         }
@@ -182,7 +182,7 @@ public final class MobSpawning {
         if (!level.noCollision(mob) || !level.isLoaded(mob.blockPosition())) {
             return null;
         }
-        mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), EntitySpawnReason.NATURAL, null);
+        mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.NATURAL, null);
         return level.addFreshEntity(mob) ? mob : null;
     }
 

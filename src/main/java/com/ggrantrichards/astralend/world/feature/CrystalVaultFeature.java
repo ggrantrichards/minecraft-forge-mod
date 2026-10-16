@@ -7,7 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.AmethystClusterBlock;
 import net.minecraft.world.level.block.Blocks;
@@ -33,7 +33,7 @@ public record CrystalVaultFeature() implements Feature {
         int cx = (origin.getX() & ~15) + 8 + random.nextInt(5) - 2;
         int cz = (origin.getZ() & ~15) + 8 + random.nextInt(5) - 2;
         double r = 7.0 + random.nextDouble() * 4.5;
-        int cy = level.getMinY() + 16 + random.nextInt(14);
+        int cy = level.getMinBuildHeight() + 16 + random.nextInt(14);
         // Only in open void: nothing already there.
         BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
         int ri = Mth.ceil(r) + 1;
@@ -111,7 +111,7 @@ public record CrystalVaultFeature() implements Feature {
         while (fy > cy - ri && level.getBlockState(p.set(cx, fy - 1, cz)).is(Blocks.CAVE_AIR)) {
             fy--;
         }
-        var hunter = ModEntities.SHARDBACK.get().create(level.getLevel(), EntitySpawnReason.CHUNK_GENERATION);
+        var hunter = ModEntities.SHARDBACK.get().create(level.getLevel(), MobSpawnType.CHUNK_GENERATION);
         if (hunter != null && level.getBlockState(p.set(cx, fy, cz)).is(Blocks.CAVE_AIR)) {
             hunter.snapTo(cx + 0.5, fy, cz + 0.5, random.nextFloat() * 360.0F, 0.0F);
             hunter.setPersistenceRequired();

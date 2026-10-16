@@ -15,8 +15,7 @@ import net.minecraftforge.client.event.RenderBlockScreenEffectEvent;
 public final class SpectatorOverlayFix {
     public static void register() {
         // A Predicate listener: returning true cancels the event.
-        RenderBlockScreenEffectEvent.BlockOverlayEvent.BUS.addListener(
-            (Predicate<RenderBlockScreenEffectEvent.BlockOverlayEvent>) SpectatorOverlayFix::onBlockOverlay);
+        com.ggrantrichards.astralend.Events.cancelling(RenderBlockScreenEffectEvent.BlockOverlayEvent.class, SpectatorOverlayFix::onBlockOverlay);
     }
 
     private static boolean onBlockOverlay(RenderBlockScreenEffectEvent.BlockOverlayEvent event) {

@@ -6,14 +6,14 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.VegetationBlock;
+import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 // A glowing mushroom that grows on Chorus Moss, End Stone and Nightstone.
-public class LumineshroomBlock extends VegetationBlock {
+public class LumineshroomBlock extends BushBlock {
     private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 10.0);
 
     public LumineshroomBlock(BlockBehaviour.Properties properties) {

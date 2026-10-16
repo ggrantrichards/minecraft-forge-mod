@@ -13,7 +13,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 // With no argument, says where the cycle is; with one, jumps straight to that phase.
 public final class FlareCommand {
     public static void register() {
-        RegisterCommandsEvent.BUS.addListener(event -> event.getDispatcher().register(
+        com.ggrantrichards.astralend.Events.on(RegisterCommandsEvent.class, event -> event.getDispatcher().register(
             Commands.literal("astralend").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("flare")
                     .executes(context -> status(context.getSource()))

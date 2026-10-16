@@ -33,7 +33,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.sprite.AtlasManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -62,19 +62,19 @@ public class AstralSkyRenderer extends SkyRenderer {
     private static final VertexFormat FORMAT = DefaultVertexFormat.POSITION_TEX_COLOR;
     private static final float DISTANCE = 100.0F;
     private static final int MAX_DYNAMIC_QUADS = 800;
-    private static final Identifier STAR = texture("star");
-    private static final Identifier FLARE_SHEET = texture("flare_sheet");
-    private static final Identifier COMET = texture("comet");
-    private static final Identifier WHALE = texture("silhouette_whale");
-    private static final Identifier RING = texture("silhouette_ring");
-    private static final Identifier NEBULA_CLOUD = texture("nebula_cloud");
-    private static final Identifier ECLIPSE_STAR = texture("eclipse_star");
-    private static final Identifier AURORA = texture("aurora");
+    private static final ResourceLocation STAR = texture("star");
+    private static final ResourceLocation FLARE_SHEET = texture("flare_sheet");
+    private static final ResourceLocation COMET = texture("comet");
+    private static final ResourceLocation WHALE = texture("silhouette_whale");
+    private static final ResourceLocation RING = texture("silhouette_ring");
+    private static final ResourceLocation NEBULA_CLOUD = texture("nebula_cloud");
+    private static final ResourceLocation ECLIPSE_STAR = texture("eclipse_star");
+    private static final ResourceLocation AURORA = texture("aurora");
 
     private final RenderTarget target;
     private final TextureManager textures;
     // Loaded up front: a texture can't be loaded (uploaded) while a render pass is open.
-    private final Map<Identifier, AbstractTexture> loaded = new HashMap<>();
+    private final Map<ResourceLocation, AbstractTexture> loaded = new HashMap<>();
     private final GpuBuffer stars;
     private final int fixedStarQuads;
     private final int turningStarQuads;
@@ -94,7 +94,7 @@ public class AstralSkyRenderer extends SkyRenderer {
         super(textures, atlases, target);
         this.target = target;
         this.textures = textures;
-        for (Identifier id : List.of(STAR, FLARE_SHEET, COMET, WHALE, RING, NEBULA_CLOUD, ECLIPSE_STAR, AURORA)) {
+        for (ResourceLocation id : List.of(STAR, FLARE_SHEET, COMET, WHALE, RING, NEBULA_CLOUD, ECLIPSE_STAR, AURORA)) {
             this.loaded.put(id, textures.getTexture(id));
         }
         int[] counts = new int[2];
@@ -104,8 +104,8 @@ public class AstralSkyRenderer extends SkyRenderer {
         this.dynamic = RenderSystem.getDevice().createBuffer(() -> "Astral End sky", 40, (long) MAX_DYNAMIC_QUADS * 4 * FORMAT.getVertexSize());
     }
 
-    private static Identifier texture(String name) {
-        return Identifier.fromNamespaceAndPath(AstralEnd.MODID, "textures/environment/" + name + ".png");
+    private static ResourceLocation texture(String name) {
+        return ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "textures/environment/" + name + ".png");
     }
 
     @Override
@@ -230,7 +230,7 @@ public class AstralSkyRenderer extends SkyRenderer {
         }
     }
 
-    private void drawRange(RenderPass pass, GpuBuffer buffer, Identifier texture, int firstQuad, int quadCount, Matrix4f matrix, Vector4f colour) {
+    private void drawRange(RenderPass pass, GpuBuffer buffer, ResourceLocation texture, int firstQuad, int quadCount, Matrix4f matrix, Vector4f colour) {
         AbstractTexture tex = this.loaded.get(texture);
         GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(matrix, colour);
         pass.setPipeline(RenderSystem.getCompiledPipeline(RenderPipelines.END_SKY));
@@ -551,11 +551,11 @@ public class AstralSkyRenderer extends SkyRenderer {
 
     // A run of quads in the per-frame buffer that share one texture. Quads always go into the newest group.
     private static final class Group {
-        final Identifier texture;
+        final ResourceLocation texture;
         int first;
         int count;
 
-        Group(Identifier texture, int first) {
+        Group(ResourceLocation texture, int first) {
             this.texture = texture;
             this.first = first;
         }
@@ -568,7 +568,7 @@ public class AstralSkyRenderer extends SkyRenderer {
         private final List<Group> groups = new ArrayList<>();
         private int total;
 
-        Group group(Identifier texture) {
+        Group group(ResourceLocation texture) {
             Group group = new Group(texture, this.total);
             this.groups.add(group);
             return group;

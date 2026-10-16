@@ -25,12 +25,12 @@ public record UndersideFeature(String kind) implements Feature {
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
         // The lowest solid block in this column, with open air under it.
-        BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos(origin.getX(), level.getMinY() + 1, origin.getZ());
-        int top = level.getMinY() + 120;
+        BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos(origin.getX(), level.getMinBuildHeight() + 1, origin.getZ());
+        int top = level.getMinBuildHeight() + 120;
         while (p.getY() < top && level.getBlockState(p).isAir()) {
             p.move(Direction.UP);
         }
-        if (p.getY() >= top || p.getY() <= level.getMinY() + 2) {
+        if (p.getY() >= top || p.getY() <= level.getMinBuildHeight() + 2) {
             return false;
         }
         BlockPos bottom = p.immutable();

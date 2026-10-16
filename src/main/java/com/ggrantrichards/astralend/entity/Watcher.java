@@ -62,10 +62,10 @@ public class Watcher extends Mob {
 
     @Override
     public net.minecraft.world.entity.SpawnGroupData finalizeSpawn(net.minecraft.world.level.ServerLevelAccessor level,
-            net.minecraft.world.DifficultyInstance difficulty, net.minecraft.world.entity.EntitySpawnReason reason,
+            net.minecraft.world.DifficultyInstance difficulty, net.minecraft.world.entity.MobSpawnType reason,
             net.minecraft.world.entity.SpawnGroupData data) {
-        if (reason == net.minecraft.world.entity.EntitySpawnReason.SPAWN_ITEM_USE || reason == net.minecraft.world.entity.EntitySpawnReason.COMMAND
-                || reason == net.minecraft.world.entity.EntitySpawnReason.SPAWNER || reason == net.minecraft.world.entity.EntitySpawnReason.TRIAL_SPAWNER) {
+        if (reason == net.minecraft.world.entity.MobSpawnType.SPAWN_EGG || reason == net.minecraft.world.entity.MobSpawnType.COMMAND
+                || reason == net.minecraft.world.entity.MobSpawnType.SPAWNER || reason == net.minecraft.world.entity.MobSpawnType.TRIAL_SPAWNER) {
             this.setPersistenceRequired();       // summoned: it stays (and stays across a reload)
         }
         return super.finalizeSpawn(level, difficulty, reason, data);

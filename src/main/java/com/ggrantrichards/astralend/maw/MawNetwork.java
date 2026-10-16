@@ -16,7 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -29,9 +29,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.level.saveddata.SavedDataType;
+import com.ggrantrichards.astralend.compat.SavedDataType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 
@@ -39,6 +38,11 @@ import net.minecraftforge.event.TickEvent;
 // attuned to). Walking into a woken Maw's throat sends you on to the next Maw on your own list, for
 // an ender pearl or four chorus fruit, and you're spat out of that Maw's mouth.
 public class MawNetwork extends SavedData {
+    @Override
+    public net.minecraft.nbt.CompoundTag save(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        return TYPE.save(this, tag);
+    }
+
     // A woken Maw: the middle of its throat, where travellers come out, and which way its mouth faces.
     public record Maw(BlockPos throat, BlockPos exit, int facing) {
         static final Codec<Maw> CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -57,7 +61,7 @@ public class MawNetwork extends SavedData {
         Codec.unboundedMap(UUIDUtil.STRING_CODEC, BlockPos.CODEC.listOf()).fieldOf("known").forGetter(n -> n.known)
     ).apply(i, MawNetwork::new));
     public static final SavedDataType<MawNetwork> TYPE = new SavedDataType<>(
-        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "maw_network"), MawNetwork::new, CODEC,
+        ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "maw_network"), MawNetwork::new, CODEC,
         DataFixTypes.SAVED_DATA_RANDOM_SEQUENCES);
 
     private static final int MAX_THROAT = 1200;
@@ -78,11 +82,11 @@ public class MawNetwork extends SavedData {
     }
 
     public static MawNetwork get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(TYPE);
+        return TYPE.get(level);
     }
 
     public static void register() {
-        TickEvent.LevelTickEvent.Post.BUS.addListener(MawNetwork::onLevelTick);
+        com.ggrantrichards.astralend.Events.post(TickEvent.LevelTickEvent.class, MawNetwork::onLevelTick);
     }
 
     public List<Maw> maws() {
@@ -226,7 +230,7 @@ public class MawNetwork extends SavedData {
 
     // ------------------------------------------------------------------ travel
 
-    private static void onLevelTick(TickEvent.LevelTickEvent.Post event) {
+    private static void onLevelTick(TickEvent.LevelTickEvent event) {
         if (!(event.level() instanceof ServerLevel level) || level.dimension() != Level.END || level.getGameTime() % 2 != 0) {
             return;
         }
@@ -278,7 +282,7 @@ public class MawNetwork extends SavedData {
         level.playSound(null, player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0F, 0.5F);
         Direction out = there.direction();
         Vec3 to = Vec3.atBottomCenterOf(there.exit());
-        player.teleport(new TeleportTransition(level, to, Vec3.ZERO, out.toYRot(), 0.0F, TeleportTransition.DO_NOTHING));
+        com.ggrantrichards.astralend.compat.Compat.teleport(player, level, to, out.toYRot(), 0.0F);
         player.setDeltaMovement(out.getStepX() * 0.9, 0.45, out.getStepZ() * 0.9);
         player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket(player));
         player.resetFallDistance();

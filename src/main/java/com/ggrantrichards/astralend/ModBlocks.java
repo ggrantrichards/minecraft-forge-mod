@@ -20,7 +20,7 @@ import com.ggrantrichards.astralend.block.SunshadeBlock;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.UniformInt;
@@ -37,7 +37,7 @@ import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StairBlock;
-import net.minecraft.world.level.block.TintedParticleLeavesBlock;
+import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.WallBlock;
@@ -58,7 +58,7 @@ public final class ModBlocks {
 
     // The End's natural ground blocks, which its plants grow on (a block tag, so datapacks can add to it).
     public static final TagKey<Block> ASTRAL_SOIL = TagKey.create(Registries.BLOCK,
-        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "astral_soil"));
+        ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "astral_soil"));
 
     // ---- Nightstone: the dark stone of the Deep Hollows and the Crags (deepslate-like) ----
     public static final RegistryObject<Block> NIGHTSTONE = register("nightstone", Block::new,
@@ -370,7 +370,7 @@ public final class ModBlocks {
     // ---- Deep Hollows: twisted Nullwood trees ----
     public static final WoodSet NULLWOOD = woodSet("nullwood", "log", "wood", MapColor.COLOR_BLACK, MapColor.COLOR_PURPLE,
         SoundType.WOOD, BlockSetType.DARK_OAK, WoodType.DARK_OAK);
-    public static final RegistryObject<Block> NULLWOOD_LEAVES = register("nullwood_leaves", p -> new TintedParticleLeavesBlock(0.01F, p),
+    public static final RegistryObject<Block> NULLWOOD_LEAVES = register("nullwood_leaves", p -> new LeavesBlock(0.01F, p),
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.2F).randomTicks().sound(SoundType.GRASS)
             .noOcclusion().isValidSpawn((state, level, pos, type) -> false).isSuffocating((state, level, pos) -> false)
             .isViewBlocking((state, level, pos, aabb) -> false).pushReaction(PushReaction.POPPED)

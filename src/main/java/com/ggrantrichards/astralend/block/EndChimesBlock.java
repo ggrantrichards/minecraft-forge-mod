@@ -9,7 +9,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -19,7 +18,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 // End Chimes: End Rods and amethyst hung from the underside of a block. They give light and a low
-// hum. When something teleports within 16 blocks - an Enderman, a thrown Ender Pearl, a Chorus
+// hum. When something teleports within 16 blocks - an EnderMan, a thrown Ender Pearl, a Chorus
 // Fruit - they ring, and for 10 seconds after that nothing can teleport near them (EndChimesBlockEntity).
 public class EndChimesBlock extends BaseEntityBlock {
     private static final VoxelShape SHAPE = Block.column(10.0, 2.0, 16.0);
@@ -45,11 +44,10 @@ public class EndChimesBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction,
-                                     BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour, net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
         return direction == Direction.UP && !this.canSurvive(state, level, pos)
             ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState()
-            : super.updateShape(state, level, ticks, pos, direction, neighbourPos, neighbour, random);
+            : super.updateShape(state, direction, neighbour, level, pos, neighbourPos);
     }
 
     // Struck by hand, they ring too - and go still. (In a Leviathan's reliquary, that's how the

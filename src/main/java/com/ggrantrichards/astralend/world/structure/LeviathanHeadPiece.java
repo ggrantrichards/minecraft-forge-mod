@@ -10,7 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
@@ -31,7 +31,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 // Portal Lens wakes the throat into a wormhole (MawNetwork); its travellers come out on the tongue-bone.
 public class LeviathanHeadPiece extends StructurePiece {
     private static final ResourceKey<LootTable> LOOT = ResourceKey.create(Registries.LOOT_TABLE,
-        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "chests/leviathan_skull"));
+        ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "chests/leviathan_skull"));
     public static final int MIN_U = -16, MAX_U = 16, MIN_V = 0, MAX_V = 70, MIN_W = LeviathanShape.SKULL_W - 1, MAX_W = LeviathanShape.SNOUT + 4;
 
     private final BlockPos origin;     // the structure's origin (the frame's middle)
@@ -49,9 +49,9 @@ public class LeviathanHeadPiece extends StructurePiece {
 
     public LeviathanHeadPiece(StructurePieceSerializationContext context, CompoundTag tag) {
         super(ModWorldgen.LEVIATHAN_HEAD_PIECE.get(), tag);
-        this.origin = new BlockPos(tag.getIntOr("OX", 0), tag.getIntOr("OY", 0), tag.getIntOr("OZ", 0));
-        this.turn = tag.getIntOr("Turn", 0);
-        this.seed = tag.getLongOr("Seed", 0L);
+        this.origin = new BlockPos((tag.contains("OX") ? tag.getInt("OX") : 0), (tag.contains("OY") ? tag.getInt("OY") : 0), (tag.contains("OZ") ? tag.getInt("OZ") : 0));
+        this.turn = (tag.contains("Turn") ? tag.getInt("Turn") : 0);
+        this.seed = (tag.contains("Seed") ? tag.getLong("Seed") : 0L);
         this.shape = new LeviathanShape(this.seed);
     }
 

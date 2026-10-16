@@ -32,7 +32,7 @@ public final class EndMobs {
     public static boolean voidBelow(ServerLevel level, BlockPos pos) {
         for (int dy = 1; dy <= 64; dy++) {
             BlockPos p = pos.below(dy);
-            if (p.getY() < level.getMinY()) {
+            if (p.getY() < level.getMinBuildHeight()) {
                 return true;
             }
             if (!level.getBlockState(p).isAir()) {

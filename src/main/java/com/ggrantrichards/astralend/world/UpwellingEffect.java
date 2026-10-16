@@ -4,7 +4,7 @@ import com.ggrantrichards.astralend.AstralEnd;
 import com.ggrantrichards.astralend.ModEffects;
 import java.util.Map;
 import java.util.WeakHashMap;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -23,7 +23,7 @@ import net.minecraftforge.event.entity.living.MobEffectEvent;
 public final class UpwellingEffect extends MobEffect {
     public static final double MAX_RISE = 20.0;
     private static final int SLOW_FALLING_TICKS = 300;
-    private static final Identifier ID = Identifier.fromNamespaceAndPath(AstralEnd.MODID, "upwelling");
+    private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "upwelling");
     // entity -> {y where it took hold, y it last stood or hung at}. Server side; weak keys.
     private static final Map<LivingEntity, double[]> RISING = new WeakHashMap<>();
 
@@ -33,10 +33,10 @@ public final class UpwellingEffect extends MobEffect {
     }
 
     public static void register() {
-        MobEffectEvent.Expired.BUS.addListener((java.util.function.Consumer<MobEffectEvent.Expired>) event -> wearOff(event.getEntity(), event.getEffectInstance()));
-        MobEffectEvent.Remove.BUS.addListener((java.util.function.Consumer<MobEffectEvent.Remove>) event -> wearOff(event.getEntity(), event.getEffectInstance()));
+        com.ggrantrichards.astralend.Events.on(MobEffectEvent.Expired.class, event -> wearOff(event.getEntity(), event.getEffectInstance()));
+        com.ggrantrichards.astralend.Events.on(MobEffectEvent.Remove.class, event -> wearOff(event.getEntity(), event.getEffectInstance()));
         // Standing on a ceiling, a jump pushes you off it: down.
-        net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent.BUS.addListener(event -> {
+        com.ggrantrichards.astralend.Events.on(net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent.class, event -> {
             LivingEntity entity = event.getEntity();
             if (entity.getAttributeValue(Attributes.GRAVITY) < 0.0 && entity.getDeltaMovement().y > 0.0) {
                 net.minecraft.world.phys.Vec3 v = entity.getDeltaMovement();

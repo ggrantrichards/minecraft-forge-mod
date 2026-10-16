@@ -13,7 +13,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -92,7 +92,7 @@ public class LeviathanPedestalBlock extends Block {
         for (int i = 0; i < 2; i++) {
             double a = random.nextDouble() * Math.PI * 2.0;
             BlockPos at = pos.offset((int) Math.round(Math.cos(a) * 8), 1, (int) Math.round(Math.sin(a) * 8));
-            var watcher = ModEntities.WATCHER.get().create(level, EntitySpawnReason.EVENT);
+            var watcher = ModEntities.WATCHER.get().create(level, MobSpawnType.EVENT);
             if (watcher != null) {
                 watcher.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, (float) Math.toDegrees(a) + 90.0F, 0.0F);
                 watcher.linger(600);

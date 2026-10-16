@@ -5,7 +5,7 @@ import com.ggrantrichards.astralend.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
@@ -70,7 +70,7 @@ public final class ModEntities {
             .clientTrackingRange(10).build(ENTITY_TYPES.key("shardback")));
 
     public static void register() {
-        EntityAttributeCreationEvent.BUS.addListener(event -> {
+        com.ggrantrichards.astralend.Events.on(EntityAttributeCreationEvent.class, event -> {
             event.put(POLLINATOR.get(), EndPollinator.createAttributes().build());
             event.put(UMBRAL_STALKER.get(), UmbralStalker.createAttributes().build());
             event.put(DRIFT_WHALE.get(), DriftWhale.createAttributes().build());
@@ -83,7 +83,7 @@ public final class ModEntities {
             event.put(CURATOR.get(), Curator.createAttributes().build());
             event.put(SHARDBACK.get(), Shardback.createAttributes().build());
         });
-        SpawnPlacementRegisterEvent.BUS.addListener(event -> {
+        com.ggrantrichards.astralend.Events.on(SpawnPlacementRegisterEvent.class, event -> {
             var replace = SpawnPlacementRegisterEvent.Operation.REPLACE;
             var ground = Heightmap.Types.MOTION_BLOCKING_NO_LEAVES;
             event.register(POLLINATOR.get(), SpawnPlacementTypes.ON_GROUND, ground, ModEntities::onAstralSoil, replace);
@@ -96,18 +96,18 @@ public final class ModEntities {
     }
 
     private static <T extends net.minecraft.world.entity.Entity> boolean onAstralSoil(
-        EntityType<T> type, LevelAccessor level, EntitySpawnReason reason, BlockPos pos, RandomSource random) {
+        EntityType<T> type, LevelAccessor level, MobSpawnType reason, BlockPos pos, RandomSource random) {
         return level.getBlockState(pos.below()).is(ModBlocks.ASTRAL_SOIL);
     }
 
     private static <T extends net.minecraft.world.entity.Entity> boolean onSolidGround(
-        EntityType<T> type, LevelAccessor level, EntitySpawnReason reason, BlockPos pos, RandomSource random) {
+        EntityType<T> type, LevelAccessor level, MobSpawnType reason, BlockPos pos, RandomSource random) {
         return !level.getBlockState(pos.below()).isAir();
     }
 
     // The Hydragrip: on the turf, with water within a few blocks.
     private static <T extends net.minecraft.world.entity.Entity> boolean nearWater(
-        EntityType<T> type, LevelAccessor level, EntitySpawnReason reason, BlockPos pos, RandomSource random) {
+        EntityType<T> type, LevelAccessor level, MobSpawnType reason, BlockPos pos, RandomSource random) {
         if (!level.getBlockState(pos.below()).is(ModBlocks.ASTRAL_SOIL)) {
             return false;
         }
@@ -120,7 +120,7 @@ public final class ModEntities {
     }
 
     // The Umbral Stalker: only under a roof of rock, in the dark (the Glimmering Crags' root caves).
-    private static boolean inCave(EntityType<? extends Monster> type, ServerLevelAccessor level, EntitySpawnReason reason,
+    private static boolean inCave(EntityType<? extends Monster> type, ServerLevelAccessor level, MobSpawnType reason,
                                   BlockPos pos, RandomSource random) {
         return !level.canSeeSky(pos) && Monster.checkMonsterSpawnRules(type, level, reason, pos, random);
     }

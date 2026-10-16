@@ -8,7 +8,7 @@ import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -38,10 +38,10 @@ public final class MazeScoping {
     private static final double MAX_ANGLE = Math.toRadians(6.0);
     private static final int REACH = 48;
     public static final ResourceKey<Structure> MAZE = ResourceKey.create(Registries.STRUCTURE,
-        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "constellation_maze"));
+        ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "constellation_maze"));
     // A Leviathan carries a maze on its last tower.
     public static final ResourceKey<Structure> LEVIATHAN = ResourceKey.create(Registries.STRUCTURE,
-        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "leviathan"));
+        ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "leviathan"));
 
     // Per player, while they look through a spyglass in a maze: the constellation in view and for how long.
     private record Sighting(int[] constellation, int[] held, boolean[] hinted, boolean eclipse) {}
@@ -49,10 +49,10 @@ public final class MazeScoping {
     private static final Map<UUID, Sighting> SIGHTINGS = new HashMap<>();
 
     public static void register() {
-        TickEvent.LevelTickEvent.Post.BUS.addListener(MazeScoping::onLevelTick);
+        com.ggrantrichards.astralend.Events.post(TickEvent.LevelTickEvent.class, MazeScoping::onLevelTick);
     }
 
-    private static void onLevelTick(TickEvent.LevelTickEvent.Post event) {
+    private static void onLevelTick(TickEvent.LevelTickEvent event) {
         if (!(event.level() instanceof ServerLevel level) || level.dimension() != Level.END) {
             return;
         }
@@ -131,7 +131,7 @@ public final class MazeScoping {
     }
 
     public static final net.minecraft.tags.TagKey<net.minecraft.world.level.biome.Biome> ECLIPSE = net.minecraft.tags.TagKey.create(
-        Registries.BIOME, Identifier.fromNamespaceAndPath(AstralEnd.MODID, "eclipse"));
+        Registries.BIOME, ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "eclipse"));
 
     // The constellations the bridges starting near the player answer to (those still dark), and where
     // each lies in the sky.

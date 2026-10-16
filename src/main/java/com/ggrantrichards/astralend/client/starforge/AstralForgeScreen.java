@@ -10,20 +10,20 @@ import net.minecraft.client.gui.screens.inventory.CyclingSlotBackground;
 import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
 // The Astral Forge's screen: the smithing table's, widened by two slots. Empty slots show what goes
 // in them (cycling, like the smithing table's), and hovering one says so.
 public class AstralForgeScreen extends ItemCombinerScreen<AstralForgeMenu> {
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(AstralEnd.MODID, "textures/gui/container/astral_forge.png");
-    private static final Identifier ERROR = Identifier.withDefaultNamespace("container/smithing/error");
-    private static final List<Identifier> TEMPLATE_ICONS = List.of(sprite("starforge_template"));
-    private static final List<Identifier> BASE_ICONS = List.of(vanilla("helmet"), vanilla("sword"), vanilla("chestplate"), vanilla("pickaxe"),
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "textures/gui/container/astral_forge.png");
+    private static final ResourceLocation ERROR = ResourceLocation.withDefaultNamespace("container/smithing/error");
+    private static final List<ResourceLocation> TEMPLATE_ICONS = List.of(sprite("starforge_template"));
+    private static final List<ResourceLocation> BASE_ICONS = List.of(vanilla("helmet"), vanilla("sword"), vanilla("chestplate"), vanilla("pickaxe"),
         vanilla("leggings"), vanilla("axe"), vanilla("boots"), sprite("bow"), vanilla("shovel"), sprite("trident"), vanilla("hoe"));
-    private static final List<Identifier> ALLOY_ICONS = List.of(vanilla("ingot"));
-    private static final List<Identifier> MATERIAL_ICONS = List.of(sprite("curators_core"), sprite("rift_pearl"), sprite("cracked_lens"),
+    private static final List<ResourceLocation> ALLOY_ICONS = List.of(vanilla("ingot"));
+    private static final List<ResourceLocation> MATERIAL_ICONS = List.of(sprite("curators_core"), sprite("rift_pearl"), sprite("cracked_lens"),
         sprite("bottled_flare"), sprite("whalelight_scale"));
     private static final int ERROR_X = 100;
     private static final int ERROR_Y = 46;
@@ -40,12 +40,12 @@ public class AstralForgeScreen extends ItemCombinerScreen<AstralForgeMenu> {
         this.titleLabelY = 15;
     }
 
-    private static Identifier sprite(String name) {
-        return Identifier.fromNamespaceAndPath(AstralEnd.MODID, "container/slot/" + name);
+    private static ResourceLocation sprite(String name) {
+        return ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "container/slot/" + name);
     }
 
-    private static Identifier vanilla(String name) {
-        return Identifier.withDefaultNamespace("container/slot/" + name);
+    private static ResourceLocation vanilla(String name) {
+        return ResourceLocation.withDefaultNamespace("container/slot/" + name);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class AstralForgeScreen extends ItemCombinerScreen<AstralForgeMenu> {
     }
 
     // (Every upgrade takes a single material now; the second slot only takes it instead of the first.)
-    private List<Identifier> partnerIcons() {
+    private List<ResourceLocation> partnerIcons() {
         return List.of();
     }
 

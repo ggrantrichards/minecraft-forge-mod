@@ -20,7 +20,7 @@ public final class VoidHum {
     private static float target;
 
     public static void register() {
-        TickEvent.ClientTickEvent.Post.BUS.addListener(event -> tick());
+        com.ggrantrichards.astralend.Events.post(TickEvent.ClientTickEvent.class, event -> tick());
     }
 
     private static void tick() {
@@ -55,7 +55,7 @@ public final class VoidHum {
     private static boolean voidBelow(Level level, BlockPos pos) {
         for (int dy = 2; dy <= 48; dy++) {
             BlockPos p = pos.below(dy);
-            if (p.getY() < level.getMinY()) {
+            if (p.getY() < level.getMinBuildHeight()) {
                 return true;
             }
             if (!level.getBlockState(p).isAir()) {

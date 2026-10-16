@@ -34,7 +34,7 @@ import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -63,13 +63,13 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 // a Leviathan's Maw gives one up when it's first woken.
 public final class StarforgeEffects {
     public static void register() {
-        TickEvent.PlayerTickEvent.Post.BUS.addListener(StarforgeEffects::onPlayerTick);
-        TickEvent.ServerTickEvent.Post.BUS.addListener(StarforgeEffects::onServerTick);
-        LivingAttackEvent.BUS.addListener((Predicate<LivingAttackEvent>) StarforgeEffects::onAttacked);
-        LivingDamageEvent.BUS.addListener((Predicate<LivingDamageEvent>) StarforgeEffects::onDamage);
-        ProjectileImpactEvent.BUS.addListener(StarforgeEffects::onProjectileImpact);
-        LivingDropsEvent.BUS.addListener((Predicate<LivingDropsEvent>) StarforgeEffects::onDrops);
-        LivingDeathEvent.BUS.addListener((Predicate<LivingDeathEvent>) StarforgeEffects::onDeath);
+        com.ggrantrichards.astralend.Events.post(TickEvent.PlayerTickEvent.class, StarforgeEffects::onPlayerTick);
+        com.ggrantrichards.astralend.Events.post(TickEvent.ServerTickEvent.class, StarforgeEffects::onServerTick);
+        com.ggrantrichards.astralend.Events.cancelling(LivingAttackEvent.class, StarforgeEffects::onAttacked);
+        com.ggrantrichards.astralend.Events.cancelling(LivingDamageEvent.class, StarforgeEffects::onDamage);
+        com.ggrantrichards.astralend.Events.on(ProjectileImpactEvent.class, StarforgeEffects::onProjectileImpact);
+        com.ggrantrichards.astralend.Events.cancelling(LivingDropsEvent.class, StarforgeEffects::onDrops);
+        com.ggrantrichards.astralend.Events.cancelling(LivingDeathEvent.class, StarforgeEffects::onDeath);
     }
 
     // ------------------------------------------------------------------ per-player state
@@ -86,7 +86,7 @@ public final class StarforgeEffects {
         return PLAYERS.computeIfAbsent(player.getUUID(), id -> new PlayerState());
     }
 
-    private static void onPlayerTick(TickEvent.PlayerTickEvent.Post event) {
+    private static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (!(event.player() instanceof ServerPlayer player) || !(player.level() instanceof ServerLevel level) || player.isSpectator()) {
             return;
         }
@@ -161,8 +161,8 @@ public final class StarforgeEffects {
         BlockPos to = s.footing.pos();
         ServerLevel from = (ServerLevel) player.level();
         from.sendParticles(ParticleTypes.REVERSE_PORTAL, player.getX(), player.getY() + 1, player.getZ(), 60, 0.4, 1.0, 0.4, 0.1);
-        player.teleport(new net.minecraft.world.level.portal.TeleportTransition(target, Vec3.atBottomCenterOf(to), Vec3.ZERO, player.getYRot(),
-            player.getXRot(), net.minecraft.world.level.portal.TeleportTransition.DO_NOTHING));
+        com.ggrantrichards.astralend.compat.Compat.teleport(player, target, Vec3.atBottomCenterOf(to), player.getYRot(),
+            player.getXRot());
         player.resetFallDistance();
         target.sendParticles(ParticleTypes.REVERSE_PORTAL, to.getX() + 0.5, to.getY() + 1, to.getZ() + 0.5, 60, 0.4, 1.0, 0.4, 0.1);
         target.playSound(null, to, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1.0F, 1.2F);
@@ -313,7 +313,7 @@ public final class StarforgeEffects {
         }
     }
 
-    private static void onServerTick(TickEvent.ServerTickEvent.Post event) {
+    private static void onServerTick(TickEvent.ServerTickEvent event) {
         flush(false);
         if (event.server().getTickCount() % 1200 == 0) {
             PLAYERS.keySet().removeIf(id -> event.server().getPlayerList().getPlayer(id) == null);

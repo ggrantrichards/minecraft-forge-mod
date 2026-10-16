@@ -7,14 +7,14 @@ import java.util.EnumSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -34,8 +34,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
@@ -50,7 +49,7 @@ import org.jspecify.annotations.Nullable;
 // while, glowing behind its tail, then sink back home to their plants. Whale calves chase them in
 // play (DriftWhale); a Pollinator only scatters a little.
 public class EndPollinator extends Animal {
-    public static final TagKey<Block> FLORA = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(AstralEnd.MODID, "pollinator_flora"));
+    public static final TagKey<Block> FLORA = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "pollinator_flora"));
     private static final int MIN_SPORE_TIME = 6000;   // 5 minutes
     private static final int MAX_SPORE_TIME = 12000;  // 10 minutes
 
@@ -108,7 +107,7 @@ public class EndPollinator extends Animal {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return ModEntities.POLLINATOR.get().create(level, EntitySpawnReason.BREEDING);
+        return ModEntities.POLLINATOR.get().create(level, MobSpawnType.BREEDING);
     }
 
     @Override
@@ -154,15 +153,15 @@ public class EndPollinator extends Animal {
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
+    protected void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
         output.putInt("SporeTime", this.sporeTime);
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
+    protected void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
-        this.sporeTime = input.getIntOr("SporeTime", MIN_SPORE_TIME);
+        this.sporeTime = (input.contains("SporeTime") ? input.getInt("SporeTime") : MIN_SPORE_TIME);
     }
 
     // The nearest glowing flora within `range` blocks sideways and `height` up or down, or null.

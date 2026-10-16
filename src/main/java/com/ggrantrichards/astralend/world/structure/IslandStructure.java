@@ -45,8 +45,8 @@ public class IslandStructure extends Structure {
         for (int[] o : offsets) {
             int y = context.chunkGenerator().getBaseHeight(cx + o[0], cz + o[1], Heightmap.Types.WORLD_SURFACE_WG,
                 context.heightAccessor(), context.randomState());
-            boolean ground = y > context.heightAccessor().getMinY() + 1;
-            if (ground ? y < minSurface || y > maxSurface : minSurface > context.heightAccessor().getMinY()) {
+            boolean ground = y > context.heightAccessor().getMinBuildHeight() + 1;
+            if (ground ? y < minSurface || y > maxSurface : minSurface > context.heightAccessor().getMinBuildHeight()) {
                 return Optional.empty();
             }
         }

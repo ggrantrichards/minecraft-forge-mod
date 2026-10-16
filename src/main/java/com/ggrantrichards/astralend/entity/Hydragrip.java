@@ -10,7 +10,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -19,7 +19,6 @@ import net.minecraft.world.entity.ai.goal.BreedGoal;
 import net.minecraft.world.entity.ai.goal.FollowParentGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
@@ -111,7 +110,7 @@ public class Hydragrip extends Animal {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return ModEntities.HYDRAGRIP.get().create(level, EntitySpawnReason.BREEDING);
+        return ModEntities.HYDRAGRIP.get().create(level, MobSpawnType.BREEDING);
     }
 
     // An endermite it kills, it eats - and coughs up a pearl.
@@ -182,7 +181,7 @@ public class Hydragrip extends Animal {
             return null;
         }
         for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(12.0), e -> e != this && e.isAlive())) {
-            if (e.getType() == EntityTypes.AXOLOTL || (this.isBaby() && e instanceof Hydragrip other && other.isBaby() && !other.isPlaying())) {
+            if (e.getType() == EntityType.AXOLOTL || (this.isBaby() && e instanceof Hydragrip other && other.isBaby() && !other.isPlaying())) {
                 return e;
             }
         }
@@ -286,7 +285,7 @@ public class Hydragrip extends Animal {
             if (mate == null) {
                 return;
             }
-            boolean axolotl = mate.getType() == EntityTypes.AXOLOTL;
+            boolean axolotl = mate.getType() == EntityType.AXOLOTL;
             if (self.playIt) {
                 if (self.tickCount % 5 == 0) {
                     self.getNavigation().moveTo(mate, 1.4);

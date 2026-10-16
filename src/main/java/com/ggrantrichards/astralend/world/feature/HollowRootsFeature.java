@@ -76,12 +76,12 @@ public record HollowRootsFeature() implements Feature {
     private static int[] span(WorldGenLevel level, int x, int z) {
         BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
         int best = 0, bestTop = 0, runTop = Integer.MIN_VALUE;
-        for (int y = level.getMinY() + 127; y >= level.getMinY(); y--) {
+        for (int y = level.getMinBuildHeight() + 127; y >= level.getMinBuildHeight(); y--) {
             boolean solid = !level.getBlockState(p.set(x, y, z)).isAir();
             if (solid && runTop == Integer.MIN_VALUE) {
                 runTop = y;
             }
-            if ((!solid || y == level.getMinY()) && runTop != Integer.MIN_VALUE) {
+            if ((!solid || y == level.getMinBuildHeight()) && runTop != Integer.MIN_VALUE) {
                 int bottom = solid ? y : y + 1;
                 if (runTop - bottom > best) {
                     best = runTop - bottom;

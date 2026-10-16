@@ -12,7 +12,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -244,7 +244,7 @@ public class MirrorWretch extends Monster {
     // Spawns only in the Ashen Barrens (since beta.4), where the Endermen stand at the islands' edges facing
     // the void: they're listening to it.
     public static boolean checkWretchSpawnRules(EntityType<? extends Monster> type, ServerLevelAccessor level,
-                                                EntitySpawnReason reason, BlockPos pos, RandomSource random) {
+                                                MobSpawnType reason, BlockPos pos, RandomSource random) {
         return Monster.checkMonsterSpawnRules(type, level, reason, pos, random) && level.getBiome(pos).is(ModBiomes.ASHEN_BARRENS);
     }
 }

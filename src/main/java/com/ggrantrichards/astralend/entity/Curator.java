@@ -28,8 +28,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
@@ -635,7 +634,7 @@ public class Curator extends Monster {
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
+    protected void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
         output.putBoolean("Dormant", this.isDormant());
         output.putBoolean("Exposed", this.isExposed());
@@ -645,11 +644,11 @@ public class Curator extends Monster {
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
+    protected void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
-        this.entityData.set(DATA_DORMANT, input.getBooleanOr("Dormant", true));
-        this.entityData.set(DATA_EXPOSED, input.getBooleanOr("Exposed", false));
-        long home = input.getLongOr("Home", Long.MIN_VALUE);
+        this.entityData.set(DATA_DORMANT, (input.contains("Dormant") ? input.getBoolean("Dormant") : true));
+        this.entityData.set(DATA_EXPOSED, (input.contains("Exposed") ? input.getBoolean("Exposed") : false));
+        long home = (input.contains("Home") ? input.getLong("Home") : Long.MIN_VALUE);
         this.home = home == Long.MIN_VALUE ? null : BlockPos.of(home);
         if (this.hasCustomName()) {
             this.bossEvent.setName(this.getDisplayName());

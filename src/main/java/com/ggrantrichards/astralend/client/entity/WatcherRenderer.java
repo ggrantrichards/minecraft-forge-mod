@@ -6,12 +6,12 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.resources.Identifier;
+import com.ggrantrichards.astralend.client.compat.LivingEntityRenderState;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class WatcherRenderer extends MobRenderer<Watcher, LivingEntityRenderState, WatcherRenderer.Model> {
-    private static final Identifier TEXTURE = ModModelLayers.texture("watcher");
+public class WatcherRenderer extends com.ggrantrichards.astralend.client.compat.StateMobRenderer<Watcher, LivingEntityRenderState, WatcherRenderer.Model> {
+    private static final ResourceLocation TEXTURE = ModModelLayers.texture("watcher");
 
     public WatcherRenderer(EntityRendererProvider.Context context) {
         super(context, new Model(context.bakeLayer(ModModelLayers.WATCHER)), 0.0F);
@@ -19,7 +19,7 @@ public class WatcherRenderer extends MobRenderer<Watcher, LivingEntityRenderStat
     }
 
     @Override
-    public Identifier getTextureLocation(LivingEntityRenderState state) {
+    public ResourceLocation getTextureLocation(LivingEntityRenderState state) {
         return TEXTURE;
     }
 
@@ -35,7 +35,7 @@ public class WatcherRenderer extends MobRenderer<Watcher, LivingEntityRenderStat
 
     // It hangs in the air, rising and falling a little. Its head turns to keep the eye on you, the
     // hands drift on their own, and the four shards circle it slowly.
-    public static class Model extends EntityModel<LivingEntityRenderState> {
+    public static class Model extends com.ggrantrichards.astralend.client.compat.StateModel<LivingEntityRenderState> {
         private final ModelPart head;
         private final ModelPart body;
         private final ModelPart rightHand;

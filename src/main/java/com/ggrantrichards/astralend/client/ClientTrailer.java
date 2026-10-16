@@ -17,7 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -75,8 +75,8 @@ public final class ClientTrailer {
 
     public static void register() {
         if (Boolean.getBoolean("astralend.trailer")) {
-            TickEvent.ClientTickEvent.Post.BUS.addListener(ClientTrailer::onTick);
-            ViewportEvent.ComputeCameraAngles.BUS.addListener(event -> {
+            com.ggrantrichards.astralend.Events.post(TickEvent.ClientTickEvent.class, ClientTrailer::onTick);
+            com.ggrantrichards.astralend.Events.on(ViewportEvent.ComputeCameraAngles.class, event -> {
                 renders++;
                 if (phase == Phase.RECORD || phase == Phase.ARM || phase == Phase.SETTLE) {
                     event.setRoll(roll);
@@ -85,7 +85,7 @@ public final class ClientTrailer {
         }
     }
 
-    private static void onTick(TickEvent.ClientTickEvent.Post event) {
+    private static void onTick(TickEvent.ClientTickEvent event) {
         Minecraft minecraft = Minecraft.getInstance();
         if (done) {
             return;
@@ -408,7 +408,7 @@ public final class ClientTrailer {
             ServerLevel end = server.getLevel(Level.END);
             Vec3 ahead = eye0.add(forward.scale(34.0));
             int ground = end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mth.floor(ahead.x), Mth.floor(ahead.z));
-            boolean land = ground > end.getMinY() + 8;
+            boolean land = ground > end.getMinBuildHeight() + 8;
             Vec3 stop = new Vec3(Mth.floor(ahead.x) + 0.5, land ? ground - 1 : eye0.y - 14, Mth.floor(ahead.z) + 0.5);
             // in close enough to see: across the sky from the far left, passing over and landing ahead
             Vec3 start = stop.add(forward.scale(30.0)).add(right.scale(-48.0)).add(0, 52.0, 0);

@@ -107,7 +107,7 @@ public class Hollowback extends Monster {
                 if (open) {
                     // a low growl as its head opens (26.3's wolf sounds come by variant: looked up by name)
                     net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT
-                        .getOptional(net.minecraft.resources.Identifier.withDefaultNamespace("entity.wolf.growl"))
+                        .getOptional(net.minecraft.resources.ResourceLocation.withDefaultNamespace("entity.wolf.growl"))
                         .ifPresent(sound -> this.playSound(sound, 1.0F, 0.6F));
                 }
             }

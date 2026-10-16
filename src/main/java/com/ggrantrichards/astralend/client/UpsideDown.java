@@ -45,10 +45,10 @@ public final class UpsideDown {
     private static boolean warned;
 
     public static void register() {
-        TickEvent.ClientTickEvent.Post.BUS.addListener(UpsideDown::onClientTick);
-        ViewportEvent.ComputeCameraAngles.BUS.addListener(UpsideDown::onCamera);
-        MovementInputUpdateEvent.BUS.addListener(UpsideDown::onInput);
-        RenderAvatarEvent.Pre.BUS.addListener((Consumer<RenderAvatarEvent.Pre>) UpsideDown::onRenderPlayer);
+        com.ggrantrichards.astralend.Events.post(TickEvent.ClientTickEvent.class, UpsideDown::onClientTick);
+        com.ggrantrichards.astralend.Events.on(ViewportEvent.ComputeCameraAngles.class, UpsideDown::onCamera);
+        com.ggrantrichards.astralend.Events.on(MovementInputUpdateEvent.class, UpsideDown::onInput);
+        com.ggrantrichards.astralend.Events.on(RenderAvatarEvent.Pre.class, UpsideDown::onRenderPlayer);
     }
 
     // Upside down: gravity reversed (the Upwelling effect, or anything else that turns it round).
@@ -57,7 +57,7 @@ public final class UpsideDown {
             && living.getAttributeValue(Attributes.GRAVITY) < 0.0;
     }
 
-    private static void onClientTick(TickEvent.ClientTickEvent.Post event) {
+    private static void onClientTick(TickEvent.ClientTickEvent event) {
         LocalPlayer player = Minecraft.getInstance().player;
         flipOld = flip;
         boolean flipped = player != null && isFlipped(player);

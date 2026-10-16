@@ -12,7 +12,7 @@ import net.minecraftforge.event.level.NoteBlockEvent;
 // Memory Moss) carries to every whale within 48 blocks; each turns toward it and sings back.
 public final class WhaleSong {
     public static void register() {
-        NoteBlockEvent.Play.BUS.addListener((java.util.function.Predicate<NoteBlockEvent.Play>) WhaleSong::onPlay);
+        com.ggrantrichards.astralend.Events.cancelling(NoteBlockEvent.Play.class, WhaleSong::onPlay);
     }
 
     private static boolean onPlay(NoteBlockEvent.Play event) {

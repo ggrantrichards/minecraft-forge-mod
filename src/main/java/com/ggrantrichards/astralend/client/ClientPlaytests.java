@@ -19,13 +19,12 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import org.slf4j.Logger;
@@ -63,11 +62,11 @@ public final class ClientPlaytests {
 
     public static void register() {
         if (Boolean.getBoolean("astralend.playtests")) {
-            TickEvent.ClientTickEvent.Post.BUS.addListener(ClientPlaytests::onTick);
+            com.ggrantrichards.astralend.Events.post(TickEvent.ClientTickEvent.class, ClientPlaytests::onTick);
         }
     }
 
-    private static void onTick(TickEvent.ClientTickEvent.Post event) {
+    private static void onTick(TickEvent.ClientTickEvent event) {
         Minecraft minecraft = Minecraft.getInstance();
         if (done) {
             return;
@@ -95,7 +94,7 @@ public final class ClientPlaytests {
             return;       // settling: chunks loading round the new place
         }
         // A safety net: anyone falling out of the world is put back where the scene began.
-        if (minecraft.player.getY() < minecraft.level.getMinY() - 10 && ticks % 20 == 0) {
+        if (minecraft.player.getY() < minecraft.level.getMinBuildHeight() - 10 && ticks % 20 == 0) {
             LOGGER.warn(TAG + "{} fell out of the world at tick {}", test.name(), ticks);
             start(minecraft, server, index);
             return;
@@ -159,7 +158,7 @@ public final class ClientPlaytests {
                     ClientScreenshots.Shot s = shot("mob_drift_whale_side");
                     Vec3 at = s != null ? new Vec3(s.mobX(), s.mobY() + 6, s.mobZ()) : new Vec3(0, 120, 0);
                     put(player, end, at.add(-4, 0, 0), -90, 10);
-                    DriftWhale whale = ModEntities.DRIFT_WHALE.get().create(end, EntitySpawnReason.COMMAND);
+                    DriftWhale whale = ModEntities.DRIFT_WHALE.get().create(end, MobSpawnType.COMMAND);
                     whale.snapTo(at.x, at.y, at.z, -90, 0);
                     whale.setPersistenceRequired();
                     end.addFreshEntity(whale);
@@ -190,7 +189,7 @@ public final class ClientPlaytests {
                     BlockPos ground = s != null ? BlockPos.containing(s.x(), s.y(), s.z()) : new BlockPos(0, 80, 400);
                     end.getChunkAt(ground);                          // loaded first, or the heightmap is empty
                     ground = end.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, ground);
-                    if (ground.getY() <= end.getMinY() + 1) {
+                    if (ground.getY() <= end.getMinBuildHeight() + 1) {
                         ground = new BlockPos(ground.getX(), 80, ground.getZ());
                         end.setBlockAndUpdate(ground.below(), com.ggrantrichards.astralend.ModBlocks.NIGHTSTONE.get().defaultBlockState());
                     }
@@ -235,7 +234,7 @@ public final class ClientPlaytests {
     }
 
     private static void put(ServerPlayer player, ServerLevel end, Vec3 at, float yaw, float pitch) {
-        player.teleport(new TeleportTransition(end, at, Vec3.ZERO, yaw, pitch, TeleportTransition.DO_NOTHING));
+        com.ggrantrichards.astralend.compat.Compat.teleport(player, end, at, yaw, pitch);
     }
 
     // One tick of the test: what the player presses and where they look.
@@ -339,7 +338,7 @@ public final class ClientPlaytests {
                 keys.keySprint.setDown(true);
                 if (t % 30 == 0) {
                     LOGGER.info(TAG + "{} t={} at {} biome {}", test.name(), t, player.blockPosition().toShortString(),
-                        minecraft.level.getBiome(player.blockPosition()).unwrapKey().map(k -> k.identifier().toString()).orElse("?"));
+                        minecraft.level.getBiome(player.blockPosition()).unwrapKey().map(k -> k.location().toString()).orElse("?"));
                 }
             }
             case "maw_hall" -> {
@@ -351,7 +350,7 @@ public final class ClientPlaytests {
                 player.setXRot(t < 120 ? 25.0F : 5.0F);
                 if (t % 26 == 0) {
                     LOGGER.info(TAG + "meadow_drop t={} at {} on ground {} biome {}", t, player.position(), player.onGround(),
-                        minecraft.level.getBiome(player.blockPosition()).unwrapKey().map(k -> k.identifier().toString()).orElse("?"));
+                        minecraft.level.getBiome(player.blockPosition()).unwrapKey().map(k -> k.location().toString()).orElse("?"));
                 }
             }
             default -> { }

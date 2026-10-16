@@ -1,5 +1,6 @@
 package com.ggrantrichards.astralend.entity;
 
+import net.minecraft.nbt.CompoundTag;
 import com.ggrantrichards.astralend.ModBlocks;
 import com.ggrantrichards.astralend.item.ChorusFlowerOnAStickItem;
 import com.ggrantrichards.astralend.world.ModAdvancements;
@@ -173,7 +174,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
 
     @Override
     public net.minecraft.world.entity.SpawnGroupData finalizeSpawn(net.minecraft.world.level.ServerLevelAccessor level,
-            net.minecraft.world.DifficultyInstance difficulty, net.minecraft.world.entity.EntitySpawnReason reason,
+            net.minecraft.world.DifficultyInstance difficulty, net.minecraft.world.entity.MobSpawnType reason,
             net.minecraft.world.entity.SpawnGroupData data) {
         this.setSize((float) (0.85 + 0.3 * this.trait(0)));
         return super.finalizeSpawn(level, difficulty, reason, data);
@@ -979,7 +980,7 @@ public class DriftWhale extends Mob implements ItemSteerable {
     }
 
     @Override
-    protected void addAdditionalSaveData(net.minecraft.world.level.storage.ValueOutput output) {
+    protected void addAdditionalSaveData(net.minecraft.nbt.CompoundTag output) {
         super.addAdditionalSaveData(output);
         if (this.owner != null) {
             output.putString("Owner", this.owner.toString());
@@ -987,9 +988,9 @@ public class DriftWhale extends Mob implements ItemSteerable {
     }
 
     @Override
-    protected void readAdditionalSaveData(net.minecraft.world.level.storage.ValueInput input) {
+    protected void readAdditionalSaveData(net.minecraft.nbt.CompoundTag input) {
         super.readAdditionalSaveData(input);
-        String owner = input.getStringOr("Owner", "");
+        String owner = (input.contains("Owner") ? input.getString("Owner") : "");
         this.owner = owner.isEmpty() ? null : UUID.fromString(owner);
     }
 

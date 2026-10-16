@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
@@ -75,7 +75,7 @@ final class StarforgeSurvey {
 
         // ---- armour on a zombie: Radiant's room for a golden heart
         BlockPos at = standOn.offset(3, 0, 0);
-        var zombie = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(end, EntitySpawnReason.COMMAND);
+        var zombie = net.minecraft.world.entity.EntityType.ZOMBIE.create(end, MobSpawnType.COMMAND);
         zombie.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0.0F, 0.0F);
         zombie.setNoAi(true);
         end.addFreshEntity(zombie);

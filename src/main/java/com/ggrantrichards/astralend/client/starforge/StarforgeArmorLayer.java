@@ -1,5 +1,6 @@
 package com.ggrantrichards.astralend.client.starforge;
 
+import net.minecraft.client.renderer.RenderType;
 import com.ggrantrichards.astralend.AstralEnd;
 import com.ggrantrichards.astralend.starforge.Starforge;
 import com.ggrantrichards.astralend.starforge.StarforgeUpgrade;
@@ -10,9 +11,8 @@ import net.minecraft.client.renderer.entity.ArmorModelSet;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 
@@ -42,10 +42,10 @@ public class StarforgeArmorLayer<S extends HumanoidRenderState, M extends Humano
         }
         HumanoidModel<S> model = this.models.get(slot);
         String layer = slot == EquipmentSlot.LEGS ? "humanoid_leggings" : "humanoid";
-        Identifier texture = Identifier.fromNamespaceAndPath(AstralEnd.MODID,
+        ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID,
             "textures/entity/equipment/starforge/" + layer + "_" + upgrade.getSerializedName() + ".png");
         // Drawn after the armour itself (and its trim), like a trim, or the armour would cover it.
-        collector.order(4).submitModel(model, state, poseStack, RenderTypes.armorTrim(texture, false), light, OverlayTexture.NO_OVERLAY, -1, null,
+        collector.order(4).submitModel(model, state, poseStack, RenderType.armorTrim(texture, false), light, OverlayTexture.NO_OVERLAY, -1, null,
             state.outlineColor);
     }
 }

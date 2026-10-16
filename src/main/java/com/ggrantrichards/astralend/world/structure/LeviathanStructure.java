@@ -24,7 +24,7 @@ public class LeviathanStructure extends Structure {
         int cx = context.chunkPos().getMiddleBlockX();
         int cz = context.chunkPos().getMiddleBlockZ();
         int turn = context.random().nextInt(4);
-        int minY = context.heightAccessor().getMinY();
+        int minY = context.heightAccessor().getMinBuildHeight();
         int y0 = minY + 100 + context.random().nextInt(14);
         int[] cs = LeviathanPiece.CS[turn];
         // Under the whole of it - tail to snout, across its width - at most two points may have land, and

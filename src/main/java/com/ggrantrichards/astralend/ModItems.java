@@ -67,7 +67,7 @@ public final class ModItems {
     public static final RegistryObject<Item> MUSIC_DISC_OBSERVING_THE_STAR = register("music_disc_observing_the_star", Item::new,
         new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE)
             .jukeboxPlayable(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.JUKEBOX_SONG,
-                net.minecraft.resources.Identifier.fromNamespaceAndPath(AstralEnd.MODID, "observing_the_star"))));
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "observing_the_star"))));
     public static final RegistryObject<Item> CHORUS_FLOWER_ON_A_STICK = register("chorus_flower_on_a_stick",
         com.ggrantrichards.astralend.item.ChorusFlowerOnAStickItem::new, new Item.Properties().durability(30));
     public static final RegistryObject<Item> STAR_CHART = register("star_chart", StarChartItem::new, new Item.Properties().stacksTo(1));
@@ -137,7 +137,7 @@ public final class ModItems {
 
     private static net.minecraft.tags.TagKey<net.minecraft.world.level.block.entity.BannerPattern> patternTag(String name) {
         return net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.BANNER_PATTERN,
-            net.minecraft.resources.Identifier.fromNamespaceAndPath(AstralEnd.MODID, "pattern_item/" + name));
+            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "pattern_item/" + name));
     }
 
     private static RegistryObject<Item> register(String name, Function<Item.Properties, Item> factory, Item.Properties properties) {

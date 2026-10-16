@@ -21,7 +21,7 @@ public final class FogBlend {
     private static float[] ratio = {1.0F, 1.0F, 1.0F};
 
     public static void register() {
-        ViewportEvent.ComputeFogColor.BUS.addListener(FogBlend::onFogColor);
+        com.ggrantrichards.astralend.Events.on(ViewportEvent.ComputeFogColor.class, FogBlend::onFogColor);
     }
 
     private static void onFogColor(ViewportEvent.ComputeFogColor event) {
@@ -76,7 +76,7 @@ public final class FogBlend {
     }
 
     private static Integer fog(ClientLevel level, BlockPos pos) {
-        return level.getBiome(pos).unwrapKey().map(k -> BiomeFogs.FOG.get(k.identifier().toString())).orElse(null);
+        return level.getBiome(pos).unwrapKey().map(k -> BiomeFogs.FOG.get(k.location().toString())).orElse(null);
     }
 
     private FogBlend() {}

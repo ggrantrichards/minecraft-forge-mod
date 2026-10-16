@@ -33,8 +33,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BellBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
@@ -708,7 +707,7 @@ public class SpireWyrm extends Monster {
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
+    protected void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
         if (this.home != null) {
             output.putDouble("HomeX", this.home.x);
@@ -719,15 +718,15 @@ public class SpireWyrm extends Monster {
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
+    protected void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
-        if (input.getDoubleOr("HomeY", Double.NaN) == input.getDoubleOr("HomeY", 0.0)) {
-            this.home = new Vec3(input.getDoubleOr("HomeX", 0.0), input.getDoubleOr("HomeY", 0.0), input.getDoubleOr("HomeZ", 0.0));
+        if ((input.contains("HomeY") ? input.getDouble("HomeY") : Double.NaN) == (input.contains("HomeY") ? input.getDouble("HomeY") : 0.0)) {
+            this.home = new Vec3((input.contains("HomeX") ? input.getDouble("HomeX") : 0.0), (input.contains("HomeY") ? input.getDouble("HomeY") : 0.0), (input.contains("HomeZ") ? input.getDouble("HomeZ") : 0.0));
         }
         if (this.hasCustomName()) {
             this.bossEvent.setName(this.getDisplayName());
         }
-        this.setPhase(input.getBooleanOr("Asleep", true) ? Phase.ASLEEP : Phase.CIRCLE);
+        this.setPhase((input.contains("Asleep") ? input.getBoolean("Asleep") : true) ? Phase.ASLEEP : Phase.CIRCLE);
         this.trail.clear();
     }
 }

@@ -1,26 +1,26 @@
 package com.ggrantrichards.astralend.client.entity;
 
+import net.minecraft.client.renderer.RenderType;
 import com.ggrantrichards.astralend.entity.Hushback;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.resources.Identifier;
+import com.ggrantrichards.astralend.client.compat.LivingEntityRenderState;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 // The Hushback, drawn see-through: its dark, clear hide and fleece over opaque bones.
-public class HushbackRenderer extends MobRenderer<Hushback, HushbackRenderer.State, HushbackRenderer.Model> {
-    private static final Identifier TEXTURE = ModModelLayers.texture("hushback");
+public class HushbackRenderer extends com.ggrantrichards.astralend.client.compat.StateMobRenderer<Hushback, HushbackRenderer.State, HushbackRenderer.Model> {
+    private static final ResourceLocation TEXTURE = ModModelLayers.texture("hushback");
 
     public HushbackRenderer(EntityRendererProvider.Context context) {
         super(context, new Model(context.bakeLayer(ModModelLayers.HUSHBACK)), 0.6F);
     }
 
     @Override
-    public Identifier getTextureLocation(State state) {
+    public ResourceLocation getTextureLocation(State state) {
         return TEXTURE;
     }
 
@@ -51,7 +51,7 @@ public class HushbackRenderer extends MobRenderer<Hushback, HushbackRenderer.Sta
     }
 
     // Walks like a sheep, grazes with its head low (high, on watch), and breathes slowly.
-    public static class Model extends EntityModel<State> {
+    public static class Model extends com.ggrantrichards.astralend.client.compat.StateModel<State> {
         private final ModelPart body;
         private final ModelPart head;
         private final ModelPart fleece;
@@ -59,7 +59,7 @@ public class HushbackRenderer extends MobRenderer<Hushback, HushbackRenderer.Sta
         private final ModelPart[] legs = new ModelPart[4];
 
         public Model(ModelPart root) {
-            super(root, RenderTypes::entityTranslucent);
+            super(root, RenderType::entityTranslucent);
             this.body = root.getChild("body");
             this.head = this.body.getChild("head");
             this.fleece = this.body.getChild("fleece");

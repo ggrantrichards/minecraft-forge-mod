@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -35,7 +35,7 @@ final class PolishSurvey {
         String[] names = {"end/astral_horizons", "end/chart_the_stars", "end/head_to_toe", "end/something_looks_back",
                           "end/say_ahh", "recipes/building_blocks/polished_nightstone", "recipes/misc/glowing_stew"};
         for (String name : names) {
-            if (advancements.get(Identifier.fromNamespaceAndPath(AstralEnd.MODID, name)) != null) {
+            if (advancements.get(ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, name)) != null) {
                 found++;
             } else {
                 log.accept("polish: missing advancement " + name);

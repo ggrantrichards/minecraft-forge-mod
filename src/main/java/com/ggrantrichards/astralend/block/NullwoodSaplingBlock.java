@@ -8,7 +8,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.VegetationBlock;
+import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -16,7 +16,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 // A Nullwood sapling. Plant it on the End's ground; it grows into a twisted Nullwood tree on its
 // own after a while, like any sapling.
-public class NullwoodSaplingBlock extends VegetationBlock {
+public class NullwoodSaplingBlock extends BushBlock {
     private static final VoxelShape SHAPE = Block.column(12.0, 0.0, 12.0);
 
     public NullwoodSaplingBlock(BlockBehaviour.Properties properties) {

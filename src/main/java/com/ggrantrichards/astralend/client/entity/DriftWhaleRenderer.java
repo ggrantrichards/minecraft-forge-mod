@@ -1,19 +1,19 @@
 package com.ggrantrichards.astralend.client.entity;
 
+import net.minecraft.client.renderer.RenderType;
 import com.ggrantrichards.astralend.entity.DriftWhale;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import com.ggrantrichards.astralend.client.compat.LivingEntityRenderState;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class DriftWhaleRenderer extends MobRenderer<DriftWhale, DriftWhaleRenderer.State, DriftWhaleRenderer.Model> {
-    private static final Identifier TEXTURE = ModModelLayers.texture("drift_whale");
+public class DriftWhaleRenderer extends com.ggrantrichards.astralend.client.compat.StateMobRenderer<DriftWhale, DriftWhaleRenderer.State, DriftWhaleRenderer.Model> {
+    private static final ResourceLocation TEXTURE = ModModelLayers.texture("drift_whale");
     public static final float SCALE = 2.5F;
 
     public DriftWhaleRenderer(EntityRendererProvider.Context context) {
@@ -22,7 +22,7 @@ public class DriftWhaleRenderer extends MobRenderer<DriftWhale, DriftWhaleRender
     }
 
     @Override
-    public Identifier getTextureLocation(State state) {
+    public ResourceLocation getTextureLocation(State state) {
         return TEXTURE;
     }
 
@@ -60,7 +60,7 @@ public class DriftWhaleRenderer extends MobRenderer<DriftWhale, DriftWhaleRender
     // A slow, heavy swim: a wave runs down the body to the tail and fluke, the long fins row, and
     // the whole whale rolls a little, each at its own tempo. It pitches as it climbs and dives, and
     // rolls right over when it plays. While it hums, its head lifts and its jaw opens.
-    public static class Model extends EntityModel<State> {
+    public static class Model extends com.ggrantrichards.astralend.client.compat.StateModel<State> {
         private final ModelPart body;
         private final ModelPart head;
         private final ModelPart jaw;
@@ -71,7 +71,7 @@ public class DriftWhaleRenderer extends MobRenderer<DriftWhale, DriftWhaleRender
         private final ModelPart rightFin;
 
         public Model(ModelPart root) {
-            super(root, RenderTypes::entityTranslucent);
+            super(root, RenderType::entityTranslucent);
             this.body = root.getChild("body");
             this.head = this.body.getChild("head");
             this.jaw = this.head.getChild("jaw");

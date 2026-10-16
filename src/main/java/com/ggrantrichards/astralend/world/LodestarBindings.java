@@ -10,14 +10,13 @@ import java.util.Set;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.level.saveddata.SavedDataType;
+import com.ggrantrichards.astralend.compat.SavedDataType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -25,10 +24,15 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 // Which Lodestar holds each player (saved with the End). Die in the End with one, and on respawning
 // you're sent back to stand beside it - if it's still there.
 public class LodestarBindings extends SavedData {
+    @Override
+    public net.minecraft.nbt.CompoundTag save(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        return TYPE.save(this, tag);
+    }
+
     public static final Codec<LodestarBindings> CODEC = Codec.unboundedMap(UUIDUtil.STRING_CODEC, BlockPos.CODEC)
         .xmap(LodestarBindings::new, b -> b.bound);
     public static final SavedDataType<LodestarBindings> TYPE = new SavedDataType<>(
-        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "lodestars"), LodestarBindings::new, CODEC,
+        ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "lodestars"), LodestarBindings::new, CODEC,
         DataFixTypes.SAVED_DATA_RANDOM_SEQUENCES);
 
     private final Map<UUID, BlockPos> bound;
@@ -43,7 +47,7 @@ public class LodestarBindings extends SavedData {
     }
 
     public static LodestarBindings get(ServerLevel end) {
-        return end.getDataStorage().computeIfAbsent(TYPE);
+        return TYPE.get(end);
     }
 
     public void bind(ServerPlayer player, BlockPos pos) {
@@ -56,13 +60,13 @@ public class LodestarBindings extends SavedData {
     }
 
     public static void register() {
-        LivingDeathEvent.BUS.addListener((java.util.function.Predicate<LivingDeathEvent>) event -> {
+        com.ggrantrichards.astralend.Events.cancelling(LivingDeathEvent.class, event -> {
             if (event.getEntity() instanceof ServerPlayer player && player.level().dimension() == Level.END) {
                 DIED_IN_END.add(player.getUUID());
             }
             return false;
         });
-        PlayerEvent.PlayerRespawnEvent.BUS.addListener(event -> {
+        com.ggrantrichards.astralend.Events.on(PlayerEvent.PlayerRespawnEvent.class, event -> {
             if (event.getEntity() instanceof ServerPlayer player && !event.isEndConquered() && DIED_IN_END.remove(player.getUUID())) {
                 sendBack(player);
             }
@@ -97,8 +101,7 @@ public class LodestarBindings extends SavedData {
             player.snapTo(stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5, player.getYRot(), player.getXRot());
             return true;
         }
-        player.teleport(new TeleportTransition(end, Vec3.atBottomCenterOf(stand), Vec3.ZERO, player.getYRot(), player.getXRot(),
-            TeleportTransition.DO_NOTHING));
+        com.ggrantrichards.astralend.compat.Compat.teleport(player, end, Vec3.atBottomCenterOf(stand), player.getYRot(), player.getXRot());
         return true;
     }
 }

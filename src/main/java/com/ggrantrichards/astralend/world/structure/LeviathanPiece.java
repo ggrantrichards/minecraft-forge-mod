@@ -9,13 +9,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.StructureManager;
@@ -41,11 +40,11 @@ import net.minecraft.world.level.storage.loot.LootTable;
 // start that a structure may reach.
 public class LeviathanPiece extends StructurePiece {
     private static final ResourceKey<LootTable> LOOT = ResourceKey.create(Registries.LOOT_TABLE,
-        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "chests/leviathan"));
+        ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "chests/leviathan"));
     private static final ResourceKey<LootTable> STOMACH_LOOT = ResourceKey.create(Registries.LOOT_TABLE,
-        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "chests/leviathan_stomach"));
+        ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "chests/leviathan_stomach"));
     private static final ResourceKey<LootTable> MAZE_LOOT = ResourceKey.create(Registries.LOOT_TABLE,
-        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "chests/constellation_maze"));
+        ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "chests/constellation_maze"));
     public static final int MIN_U = -30, MAX_U = 30, MIN_V = 0, MAX_V = 112, MIN_W = -124, MAX_W = LeviathanShape.SKULL_W - 2;
     // The Constellation Maze over its tower: its platforms (u, height over the tower's roof, w from the
     // tower) - the first is the tower's own roof - and the dais.
@@ -66,9 +65,9 @@ public class LeviathanPiece extends StructurePiece {
 
     public LeviathanPiece(StructurePieceSerializationContext context, CompoundTag tag) {
         super(ModWorldgen.LEVIATHAN_PIECE.get(), tag);
-        this.origin = new BlockPos(tag.getIntOr("OX", 0), tag.getIntOr("OY", 0), tag.getIntOr("OZ", 0));
-        this.turn = tag.getIntOr("Turn", 0);
-        this.seed = tag.getLongOr("Seed", 0L);
+        this.origin = new BlockPos((tag.contains("OX") ? tag.getInt("OX") : 0), (tag.contains("OY") ? tag.getInt("OY") : 0), (tag.contains("OZ") ? tag.getInt("OZ") : 0));
+        this.turn = (tag.contains("Turn") ? tag.getInt("Turn") : 0);
+        this.seed = (tag.contains("Seed") ? tag.getLong("Seed") : 0L);
         this.shape = new LeviathanShape(this.seed);
     }
 
@@ -109,7 +108,7 @@ public class LeviathanPiece extends StructurePiece {
 
     // Vanilla's purple stained glass, looked up by name (26.3 doesn't name the dyed blocks in Blocks).
     private static final java.util.function.Supplier<BlockState> PURPLE_GLASS = com.google.common.base.Suppliers.memoize(() ->
-        net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(Identifier.fromNamespaceAndPath("minecraft", "purple_stained_glass"))
+        net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(ResourceLocation.fromNamespaceAndPath("minecraft", "purple_stained_glass"))
             .map(net.minecraft.world.level.block.Block::defaultBlockState).orElse(ModBlocks.ASTRAL_GLASS.get().defaultBlockState()));
 
     static BlockState state(LeviathanShape.Material m, int turn) {
@@ -236,7 +235,7 @@ public class LeviathanPiece extends StructurePiece {
             // (A shulker can't hold on to the top of a slab - it teleports off - so each sits on a purpur block.)
             for (int side = -1; side <= 1; side += 2) {
                 this.put(level, chunk, this.at(2 * side, roof, t + 2), Blocks.PURPUR_BLOCK.defaultBlockState());
-                this.spawn(level, chunk, EntityTypes.SHULKER, 2 * side, roof + 1, t + 2, null);
+                this.spawn(level, chunk, EntityType.SHULKER, 2 * side, roof + 1, t + 2, null);
             }
         }
         this.chest(level, chunk, rnd, this.at(-2, above(this.shape.mazeTower(), 5), this.shape.mazeTower() + 2), LOOT);
@@ -378,14 +377,14 @@ public class LeviathanPiece extends StructurePiece {
         if (!chunk.isInside(p)) {
             return;
         }
-        var entity = type.create(level.getLevel(), EntitySpawnReason.STRUCTURE);
+        var entity = type.create(level.getLevel(), MobSpawnType.STRUCTURE);
         if (entity == null) {
             return;
         }
         entity.snapTo(p.getX() + 0.5, p.getY(), p.getZ() + 0.5, (float) (this.turn * 90 - 90), 0.0F);
         if (entity instanceof Mob mob) {
             mob.setPersistenceRequired();
-            mob.finalizeSpawn(level, level.getCurrentDifficultyAt(p), EntitySpawnReason.STRUCTURE, null);
+            mob.finalizeSpawn(level, level.getCurrentDifficultyAt(p), MobSpawnType.STRUCTURE, null);
         }
         if (entity instanceof Curator curator && home != null) {
             curator.setHome(home);

@@ -5,7 +5,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.VegetationBlock;
+import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -13,7 +13,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 // A small plant that grows on the End's ground blocks (the #astralend:astral_soil tag):
 // Shimmer Grass, Ashen Lumineshrooms and Petrified Astral Vines.
-public class EndPlantBlock extends VegetationBlock {
+public class EndPlantBlock extends BushBlock {
     private final VoxelShape shape;
     private final TagKey<Block> soil;
 

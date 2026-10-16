@@ -99,7 +99,7 @@ public record BorderBlendFeature() implements Feature {
                 int top = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z) - 1;
                 boolean surface = true;
                 int done = 0;
-                for (int y = top; y >= level.getMinY() && done < DEPTH; y--) {
+                for (int y = top; y >= level.getMinBuildHeight() && done < DEPTH; y--) {
                     p.set(x, y, z);
                     BlockState state = level.getBlockState(p);
                     if (state.isAir()) {
@@ -122,7 +122,7 @@ public record BorderBlendFeature() implements Feature {
     }
 
     private static Ground ground(Holder<Biome> biome) {
-        String key = biome.unwrapKey().map(k -> k.identifier().toString()).orElse("");
+        String key = biome.unwrapKey().map(k -> k.location().toString()).orElse("");
         return switch (key) {
             case "astralend:nebula_fields" -> Ground.MOSS;
             case "astralend:glimmering_crags", "astralend:shattered_crags", "astralend:deep_hollows" -> Ground.NIGHT;

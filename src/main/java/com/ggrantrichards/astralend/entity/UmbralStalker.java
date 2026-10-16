@@ -9,7 +9,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -33,7 +33,7 @@ import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.entity.monster.Enderman;
+import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -43,7 +43,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
@@ -55,7 +55,7 @@ import org.jspecify.annotations.Nullable;
 // While it has no prey it is completely invisible in the dark - not even a shimmer. Once it picks a
 // target it activates: a faint shimmer shows where it moves, and it becomes fully visible when it
 // attacks, is hurt, or stands in light (block light 7 or more). It knows where you are through any
-// wall, creeps up from behind and backs off when you turn to face it - the reverse of an Enderman.
+// wall, creeps up from behind and backs off when you turn to face it - the reverse of an EnderMan.
 //
 // It hates light. While it hunts it snuffs out the lights around it for good - torches and lanterns
 // go out and drop, candles and campfires are put out (the blocks in #astralend:snuffed_by_stalkers;
@@ -79,7 +79,7 @@ public class UmbralStalker extends Monster {
     public static final int FEAR_TICKS = 160;     // how long fire keeps it away
     public static final int SNUFF_RANGE = 5;
     public static final TagKey<Block> SNUFFED = TagKey.create(Registries.BLOCK,
-        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "snuffed_by_stalkers"));
+        ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "snuffed_by_stalkers"));
     private static final TargetingConditions SENSES = TargetingConditions.forCombat().range(32.0).ignoreLineOfSight();
     private int revealTicks;
     private boolean displayHunting;
@@ -237,8 +237,8 @@ public class UmbralStalker extends Monster {
         this.revealTicks = 40;
         level.broadcastEntityEvent(this, (byte) 4);
         boolean hit = super.doHurtTarget(level, target);
-        // An Enderman, struck, often blinks away - and the hunt goes on in the dark.
-        if (hit && target instanceof Enderman enderman && enderman.isAlive() && this.random.nextInt(3) == 0) {
+        // An EnderMan, struck, often blinks away - and the hunt goes on in the dark.
+        if (hit && target instanceof EnderMan enderman && enderman.isAlive() && this.random.nextInt(3) == 0) {
             var to = EndMobs.safeSpotNear(level, enderman.blockPosition(), 8, 16, this.random);
             if (to != null) {
                 level.sendParticles(ParticleTypes.PORTAL, enderman.getX(), enderman.getY() + 1.5, enderman.getZ(), 30, 0.4, 1.0, 0.4, 0.3);
@@ -295,9 +295,9 @@ public class UmbralStalker extends Monster {
     }
 
     // Puts out one light near it: torches and lanterns go out and drop, candles and campfires are
-    // put out. Only with mobGriefing on, like an Enderman's block-taking.
+    // put out. Only with mobGriefing on, like an EnderMan's block-taking.
     private void snuffLight(ServerLevel level) {
-        if (!level.getGameRules().get(GameRules.MOB_GRIEFING)) {
+        if (!level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
             return;
         }
         BlockPos centre = this.blockPosition();
@@ -471,7 +471,7 @@ public class UmbralStalker extends Monster {
         @Override
         public boolean canUse() {
             UmbralStalker self = UmbralStalker.this;
-            if ((self.getTarget() != null && !(self.getTarget() instanceof Enderman)) || self.tickCount % 10 != 0
+            if ((self.getTarget() != null && !(self.getTarget() instanceof EnderMan)) || self.tickCount % 10 != 0
                     || !(self.level() instanceof ServerLevel level)) {
                 return false;
             }
@@ -484,7 +484,7 @@ public class UmbralStalker extends Monster {
         }
     }
 
-    // The nearest Enderman within 24 blocks, when no player is about (a player always comes first).
+    // The nearest EnderMan within 24 blocks, when no player is about (a player always comes first).
     private class HuntEndermenGoal extends Goal {
         HuntEndermenGoal() {
             this.setFlags(EnumSet.of(Goal.Flag.TARGET));
@@ -497,7 +497,7 @@ public class UmbralStalker extends Monster {
                     || level.getNearestPlayer(SENSES, self) != null) {
                 return false;
             }
-            Enderman prey = self.nearestEnderman();
+            EnderMan prey = self.nearestEnderman();
             if (prey != null) {
                 self.setTarget(prey);
             }
@@ -505,9 +505,9 @@ public class UmbralStalker extends Monster {
         }
     }
 
-    public @Nullable Enderman nearestEnderman() {
-        Enderman best = null;
-        for (Enderman e : this.level().getEntitiesOfClass(Enderman.class, this.getBoundingBox().inflate(24.0), Entity::isAlive)) {
+    public @Nullable EnderMan nearestEnderman() {
+        EnderMan best = null;
+        for (EnderMan e : this.level().getEntitiesOfClass(EnderMan.class, this.getBoundingBox().inflate(24.0), Entity::isAlive)) {
             if (best == null || e.distanceToSqr(this) < best.distanceToSqr(this)) {
                 best = e;
             }

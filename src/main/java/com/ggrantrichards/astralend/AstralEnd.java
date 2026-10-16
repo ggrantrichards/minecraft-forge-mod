@@ -31,7 +31,8 @@ public final class AstralEnd {
 
     // Forge calls this constructor once, while the game is loading.
     public AstralEnd(FMLJavaModLoadingContext context) {
-        var modBusGroup = context.getModBusGroup();
+        var modBusGroup = context.getModEventBus();
+        Events.setModBus(modBusGroup);
 
         // Register everything the mod adds. The order doesn't matter; Forge handles it.
         ModBlocks.BLOCKS.register(modBusGroup);
@@ -83,7 +84,7 @@ public final class AstralEnd {
         }
         WorldgenSurvey.register(); // does nothing unless started with -Dastralend.survey=true
 
-        FMLCommonSetupEvent.getBus(modBusGroup).addListener(this::commonSetup);
+        com.ggrantrichards.astralend.Events.on(FMLCommonSetupEvent.class, this::commonSetup);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

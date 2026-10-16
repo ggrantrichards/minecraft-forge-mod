@@ -22,14 +22,13 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.nbt.CompoundTag;
 import org.jspecify.annotations.Nullable;
 
 // The Shardback: the Crystal Vaults' hunter. A low, heavy thing with a back grown over in Glimmer
 // Crystal, it waits folded down in a geode, still as the crystals round it, and from a few steps off
 // it's one more cluster. Come within six blocks (or hit it) and it unfolds and leaps. Back in the
-// dark for a while with nothing to hunt, it folds itself down again. An Enderman that blinks into a
+// dark for a while with nothing to hunt, it folds itself down again. An EnderMan that blinks into a
 // vault and stands staring at the crystals gets the same welcome.
 public class Shardback extends Monster {
     private static final EntityDataAccessor<Boolean> DATA_HIDDEN = SynchedEntityData.defineId(Shardback.class, EntityDataSerializers.BOOLEAN);
@@ -103,15 +102,15 @@ public class Shardback extends Monster {
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
+    protected void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
         output.putBoolean("Hidden", this.isHidden());
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
+    protected void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
-        this.setHidden(input.getBooleanOr("Hidden", true));
+        this.setHidden((input.contains("Hidden") ? input.getBoolean("Hidden") : true));
     }
 
     @Override
@@ -129,7 +128,7 @@ public class Shardback extends Monster {
         return SoundEvents.AMETHYST_CLUSTER_BREAK;
     }
 
-    // An Enderman within six blocks (where a player would set it off too).
+    // An EnderMan within six blocks (where a player would set it off too).
     private class AmbushEndermanGoal extends Goal {
         AmbushEndermanGoal() {
             this.setFlags(EnumSet.of(Goal.Flag.TARGET));
@@ -141,7 +140,7 @@ public class Shardback extends Monster {
             if (self.getTarget() != null || self.random.nextInt(5) != 0) {
                 return false;
             }
-            for (var e : self.level().getEntitiesOfClass(net.minecraft.world.entity.monster.Enderman.class, self.getBoundingBox().inflate(6.0),
+            for (var e : self.level().getEntitiesOfClass(net.minecraft.world.entity.monster.EnderMan.class, self.getBoundingBox().inflate(6.0),
                     LivingEntity::isAlive)) {
                 self.setTarget(e);
                 break;

@@ -36,7 +36,6 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.RandomState;
-import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import org.slf4j.Logger;
@@ -72,7 +71,7 @@ public final class WorldgenSurvey {
 
     public static void register() {
         if (Boolean.getBoolean("astralend.survey")) {
-            ServerStartedEvent.BUS.addListener(WorldgenSurvey::run);
+            com.ggrantrichards.astralend.Events.on(ServerStartedEvent.class, WorldgenSurvey::run);
         }
     }
 
@@ -101,13 +100,13 @@ public final class WorldgenSurvey {
         // first tick; halting with all their follow-up work still queued runs that work inline while
         // stopping, which overflows the stack and loses the save (and with it the answer above).
         surveyed = server;
-        TickEvent.ServerTickEvent.Post.BUS.addListener(WorldgenSurvey::stopWhenSettled);
+        com.ggrantrichards.astralend.Events.post(TickEvent.ServerTickEvent.class, WorldgenSurvey::stopWhenSettled);
     }
 
     private static MinecraftServer surveyed;
     private static int ticksAfterSurvey;
 
-    private static void stopWhenSettled(TickEvent.ServerTickEvent.Post event) {
+    private static void stopWhenSettled(TickEvent.ServerTickEvent event) {
         if (surveyed != null && ++ticksAfterSurvey == 200) {
             log("ten seconds of ticks after the survey; stopping (stopping saves the world)");
             surveyed.halt(false);
@@ -140,8 +139,8 @@ public final class WorldgenSurvey {
         overworld.getChunk(0, 0);
         ArmorStand traveller = new ArmorStand(overworld, 0.5, 100, 0.5);
         overworld.addFreshEntity(traveller);
-        TeleportTransition transition = ((Portal) Blocks.END_PORTAL).getPortalDestination(overworld, traveller, BlockPos.containing(0.5, 100, 0.5));
-        Entity arrived = transition == null ? null : traveller.teleport(transition);
+        net.minecraft.world.level.portal.DimensionTransition transition = ((Portal) Blocks.END_PORTAL).getPortalDestination(overworld, traveller, BlockPos.containing(0.5, 100, 0.5));
+        Entity arrived = transition == null ? null : traveller.changeDimension(transition);
         if (arrived == null || arrived.level() != end) {
             failures.add("stepping through an End Portal didn't reach the End");
             return;
@@ -360,7 +359,7 @@ public final class WorldgenSurvey {
                 failures.add(name + ": no " + home.biome() + " area to test it in");
                 continue;
             }
-            var entity = home.type().create(end, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+            var entity = home.type().create(end, net.minecraft.world.entity.MobSpawnType.COMMAND);
             if (!(entity instanceof net.minecraft.world.entity.Mob mob)) {
                 failures.add(name + ": couldn't be created");
                 continue;
@@ -521,7 +520,7 @@ public final class WorldgenSurvey {
                 if ((x - wx) * (x - wx) + (z - wz) * (z - wz) > r * r) {
                     continue;
                 }
-                for (int y = end.getMinY(); y < end.getMinY() + 128; y++) {
+                for (int y = end.getMinBuildHeight(); y < end.getMinBuildHeight() + 128; y++) {
                     BlockState state = end.getBlockState(p.set(x, y, z));
                     if (state.is(Blocks.WATER)) {
                         water++;
@@ -590,17 +589,17 @@ public final class WorldgenSurvey {
             }
             BlockPos cover = com.ggrantrichards.astralend.entity.EndMobs.coverNear(end, meadow, 12, end.getRandom());
             BlockPos water = com.ggrantrichards.astralend.entity.EndMobs.waterNear(end, meadow, 16);
-            var whale = ModEntities.DRIFT_WHALE.get().create(end, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+            var whale = ModEntities.DRIFT_WHALE.get().create(end, net.minecraft.world.entity.MobSpawnType.COMMAND);
             whale.snapTo(meadow.getX() + 0.5, meadow.getY() + 30, meadow.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(whale);
             made.add(whale);
             var out = whale.outOfTheStorm(end);
             boolean outward = out != null && out.x * (whale.getX() - e.x()) + out.z * (whale.getZ() - e.z()) > 0.0;
-            var herd = ModEntities.HUSHBACK.get().create(end, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+            var herd = ModEntities.HUSHBACK.get().create(end, net.minecraft.world.entity.MobSpawnType.COMMAND);
             herd.snapTo(meadow.getX() + 0.5, meadow.getY(), meadow.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(herd);
             made.add(herd);
-            var mite = net.minecraft.world.entity.EntityTypes.ENDERMITE.create(end, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+            var mite = net.minecraft.world.entity.EntityType.ENDERMITE.create(end, net.minecraft.world.entity.MobSpawnType.COMMAND);
             mite.snapTo(meadow.getX() + 3.5, meadow.getY(), meadow.getZ() + 0.5, 0.0F, 0.0F);
             end.addFreshEntity(mite);
             made.add(mite);
@@ -624,7 +623,7 @@ public final class WorldgenSurvey {
     // off its flank, and the reliquary from its door.
     private static void testLeviathan(ServerLevel end, List<String> failures) {
         var tag = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.STRUCTURE,
-            net.minecraft.resources.Identifier.fromNamespaceAndPath(com.ggrantrichards.astralend.AstralEnd.MODID, "leviathan"));
+            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(com.ggrantrichards.astralend.AstralEnd.MODID, "leviathan"));
         BlockPos start = end.findNearestMapStructure(tag, new BlockPos(1200, 64, 0), 200, false);
         if (start == null) {
             failures.add("leviathan: none found within 3200 blocks");
@@ -665,7 +664,7 @@ public final class WorldgenSurvey {
             Math.max(box.maxZ(), skullBox.maxZ())));
         testMaze(end, body.mazeStart(), failures);
         // A Drift Whale passing through: once round the skeleton, humming low.
-        var passing = ModEntities.DRIFT_WHALE.get().create(end, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        var passing = ModEntities.DRIFT_WHALE.get().create(end, net.minecraft.world.entity.MobSpawnType.COMMAND);
         passing.snapTo(heart.getX() + 0.5, heart.getY() + 2.0, heart.getZ() + 0.5, 0.0F, 0.0F);
         end.addFreshEntity(passing);
         boolean circles = passing.noticeLeviathan(end) && passing.isCircling();
@@ -921,7 +920,7 @@ public final class WorldgenSurvey {
                     }
                 }
             }
-            var biome = end.getBiome(roots.centre.atY(30)).unwrapKey().map(k -> k.identifier().toString()).orElse("?");
+            var biome = end.getBiome(roots.centre.atY(30)).unwrapKey().map(k -> k.location().toString()).orElse("?");
             log(String.format("caves: the Hollow Roots (%s at y=30 under the Deep Hollows' centre): %d glowcaps, %d Starsap ore in %d chunks",
                 biome, glowcaps, sap, chunks));
             if (cap != null) {
@@ -952,7 +951,7 @@ public final class WorldgenSurvey {
                     }
                 }
             }
-            var biome = end.getBiome(vaults.centre.atY(20)).unwrapKey().map(k -> k.identifier().toString()).orElse("?");
+            var biome = end.getBiome(vaults.centre.atY(20)).unwrapKey().map(k -> k.location().toString()).orElse("?");
             var hunters = end.getEntitiesOfClass(com.ggrantrichards.astralend.entity.Shardback.class,
                 new net.minecraft.world.phys.AABB(vaults.centre).inflate(80, 80, 80));
             log(String.format("caves: the Crystal Vaults (%s at y=20 under the Shattered Crags' centre): %d Glimmer Crystal in geodes, %d Shardbacks (%d hidden)",
@@ -1044,8 +1043,8 @@ public final class WorldgenSurvey {
                 int x = p.getX() - 100;
                 int y = Math.max(70, end.getChunkSource().getGenerator().getBaseHeight(x, p.getZ(),
                     net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG, end, end.getChunkSource().randomState())) + 30;
-                log("border: " + here.unwrapKey().map(k -> k.identifier().toString()).orElse("?") + " gives way to "
-                    + there.unwrapKey().map(k -> k.identifier().toString()).orElse("?") + " at " + p.toShortString());
+                log("border: " + here.unwrapKey().map(k -> k.location().toString()).orElse("?") + " gives way to "
+                    + there.unwrapKey().map(k -> k.location().toString()).orElse("?") + " at " + p.toShortString());
                 lines.add(String.format(java.util.Locale.ROOT, "pt_border %d.5 %d %d.5 -90 15", x, y, p.getZ()));
                 return;
             }
@@ -1080,7 +1079,7 @@ public final class WorldgenSurvey {
             BlockPos from = area != null ? area.centre : BlockPos.ZERO;
             net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tag = net.minecraft.tags.TagKey.create(
                 net.minecraft.core.registries.Registries.STRUCTURE,
-                net.minecraft.resources.Identifier.fromNamespaceAndPath(com.ggrantrichards.astralend.AstralEnd.MODID, w.name()));
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(com.ggrantrichards.astralend.AstralEnd.MODID, w.name()));
             List<BlockPos> starts = new ArrayList<>();
             BlockPos search = from;
             // The nearest few, so a hot crater turns up too: each search starts past the last one found.
@@ -1108,7 +1107,7 @@ public final class WorldgenSurvey {
                 BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
                 for (int x = start.getX() - 56; x <= start.getX() + 56 && marker == null; x++) {
                     for (int z = start.getZ() - 56; z <= start.getZ() + 56 && marker == null; z++) {
-                        for (int y = end.getMinY(); y < end.getMinY() + 256; y++) {
+                        for (int y = end.getMinBuildHeight(); y < end.getMinBuildHeight() + 256; y++) {
                             BlockState state = end.getBlockState(p.set(x, y, z));
                             if (state.is(w.marker()) && (w.marker() != ModBlocks.VOID_CRYSTAL_BLOCK.get()
                                     || end.getBlockState(p.east()).is(ModBlocks.ASTRAL_GLASS.get()))) {
@@ -1151,7 +1150,7 @@ public final class WorldgenSurvey {
                 placed++;
                 String loot = "";
                 if (end.getBlockEntity(marker) instanceof net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity chest) {
-                    loot = ", chest loot " + (chest.getLootTable() == null ? "none" : chest.getLootTable().identifier());
+                    loot = ", chest loot " + (chest.getLootTable() == null ? "none" : chest.getLootTable().location());
                     if (chest.getLootTable() == null) {
                         failures.add(w.name() + ": its chest at " + marker.toShortString() + " has no loot table");
                     }
@@ -1216,7 +1215,7 @@ public final class WorldgenSurvey {
                     }
                     int x = from.getX() + dx, z = from.getZ() + dz;
                     int ground = end.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
-                    if (ground < end.getMinY() + 8 || Math.abs(ground - from.getY()) > 12) {
+                    if (ground < end.getMinBuildHeight() + 8 || Math.abs(ground - from.getY()) > 12) {
                         continue;
                     }
                     net.minecraft.world.phys.Vec3 mob = new net.minecraft.world.phys.Vec3(x + 0.5, ground + lift + 0.5, z + 0.5);
@@ -1261,7 +1260,7 @@ public final class WorldgenSurvey {
             for (int ox = -48; ox <= 48; ox += 24) {
                 for (int oz = -48; oz <= 48; oz += 24) {
                     int h = generator.getBaseHeight(spot.getX() + ox, spot.getZ() + oz, Heightmap.Types.WORLD_SURFACE_WG, end, randomState);
-                    if (h > end.getMinY() + 1) {
+                    if (h > end.getMinBuildHeight() + 1) {
                         land++;
                     }
                 }
@@ -1368,7 +1367,7 @@ public final class WorldgenSurvey {
                         boolean sample = inside && x == 8 && z == 8 && (dx + dz) % 2 == 0 && area.profiles.size() < 8;
                         StringBuilder profile = sample ? new StringBuilder(bx + "," + bz + " solid at y:") : null;
                         int runTop = Integer.MIN_VALUE;
-                        for (int y = end.getMaxY(); y >= end.getMinY(); y--) {
+                        for (int y = end.getMaxBuildHeight() - 1; y >= end.getMinBuildHeight(); y--) {
                             BlockPos pos = new BlockPos(bx, y, bz);
                             BlockState state = chunk.getBlockState(pos);
                             if (profile != null) {
@@ -1423,7 +1422,7 @@ public final class WorldgenSurvey {
                         }
                         if (profile != null) {
                             if (runTop != Integer.MIN_VALUE) {
-                                profile.append(' ').append(runTop).append('-').append(end.getMinY());
+                                profile.append(' ').append(runTop).append('-').append(end.getMinBuildHeight());
                             }
                             profile.append(", heightmap ").append(end.getHeight(Heightmap.Types.WORLD_SURFACE_WG, bx, bz));
                             area.profiles.add(profile.toString());
@@ -1486,7 +1485,7 @@ public final class WorldgenSurvey {
                 BlockPos p = area.endStoneIn.get(i);
                 if (level != null) {
                     log(String.format("  End Stone at %s: biome there %s, above %s, below %s, beside %s", p.toShortString(),
-                        level.getBiome(p).unwrapKey().map(k -> k.identifier().toString()).orElse("?"),
+                        level.getBiome(p).unwrapKey().map(k -> k.location().toString()).orElse("?"),
                         level.getBlockState(p.above()).getBlock().getName().getString(),
                         level.getBlockState(p.below()).getBlock().getName().getString(),
                         level.getBlockState(p.east()).getBlock().getName().getString()));
@@ -1590,7 +1589,7 @@ public final class WorldgenSurvey {
             }
             tried++;
             if (net.minecraft.world.entity.SpawnPlacements.checkSpawnRules(stalker, end,
-                    net.minecraft.world.entity.EntitySpawnReason.NATURAL, floor, end.getRandom())) {
+                    net.minecraft.world.entity.MobSpawnType.NATURAL, floor, end.getRandom())) {
                 caveYes++;
             }
             if (tried >= 40) {
@@ -1598,7 +1597,7 @@ public final class WorldgenSurvey {
             }
         }
         boolean openNo = area.standOn == null || !net.minecraft.world.entity.SpawnPlacements.checkSpawnRules(stalker, end,
-            net.minecraft.world.entity.EntitySpawnReason.NATURAL, area.standOn, end.getRandom());
+            net.minecraft.world.entity.MobSpawnType.NATURAL, area.standOn, end.getRandom());
         log(String.format("Umbral Stalker spawn rule: %d of %d dark cave floors allow it; open ground %s", caveYes, tried,
             openNo ? "doesn't" : "DOES"));
         if (caveYes == 0 || !openNo) {

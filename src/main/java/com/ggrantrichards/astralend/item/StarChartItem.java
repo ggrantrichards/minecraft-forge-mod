@@ -13,7 +13,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -58,9 +58,9 @@ public class StarChartItem extends Item {
     // structure already (the Constellation Maze's, which always marks a Leviathan) marks that one.
     private static void mark(ServerLevel level, BlockPos origin, ItemStack chart) {
         CustomData preset = chart.get(DataComponents.CUSTOM_DATA);
-        String named = preset == null ? "" : preset.copyTag().getStringOr("Structure", "");
+        String named = preset == null ? "" : preset.copyTag().getString("Structure");
         String structure = STRUCTURES.contains(named) ? named : STRUCTURES.get(level.getRandom().nextInt(STRUCTURES.size()));
-        TagKey<Structure> tag = TagKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath(AstralEnd.MODID, structure));
+        TagKey<Structure> tag = TagKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, structure));
         BlockPos site = level.findNearestMapStructure(tag, origin, 64, false);
         if (site != null) {
             write(chart, site, "Structure", structure,
@@ -70,7 +70,7 @@ public class StarChartItem extends Item {
         ResourceKey<Biome> wanted = DESTINATIONS.get(level.getRandom().nextInt(DESTINATIONS.size()));
         Pair<BlockPos, Holder<Biome>> found = level.findClosestBiome3d(biome -> biome.is(wanted), origin, 3200, 64, 64);
         if (found != null) {
-            String biome = wanted.identifier().getPath();
+            String biome = wanted.location().getPath();
             write(chart, found.getFirst(), "Biome", biome, Component.translatable("item.astralend.star_chart.marks", biomeName(biome)));
         }
     }
@@ -115,8 +115,8 @@ public class StarChartItem extends Item {
         // No words: a thread of starlight runs from your eyes toward the place, rising as it goes, and
         // the nearer the place, the brighter the note.
         CompoundTag tag = data.copyTag();
-        double dx = tag.getIntOr("TargetX", 0) + 0.5 - player.getX();
-        double dz = tag.getIntOr("TargetZ", 0) + 0.5 - player.getZ();
+        double dx = (tag.contains("TargetX") ? tag.getInt("TargetX") : 0) + 0.5 - player.getX();
+        double dz = (tag.contains("TargetZ") ? tag.getInt("TargetZ") : 0) + 0.5 - player.getZ();
         double distance = Math.sqrt(dx * dx + dz * dz);
         if (level instanceof ServerLevel server && distance > 1.0) {
             Vec3 dir = new Vec3(dx / distance, 0.12, dz / distance).normalize();

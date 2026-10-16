@@ -9,7 +9,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -44,11 +44,11 @@ public final class Starforge {
     public static final TagKey<Item> TOOLS = tag("starforgeable/tools");
 
     private static TagKey<Item> tag(String path) {
-        return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(AstralEnd.MODID, path));
+        return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, path));
     }
 
     public static void register() {
-        ItemTooltipEvent.BUS.addListener(Starforge::onTooltip);
+        com.ggrantrichards.astralend.Events.on(ItemTooltipEvent.class, Starforge::onTooltip);
     }
 
     public static @Nullable StarforgeUpgrade get(ItemStack stack) {
@@ -102,7 +102,7 @@ public final class Starforge {
             EquipmentSlot slot = slotOf(result);
             EquipmentSlotGroup group = EquipmentSlotGroup.bySlot(slot);
             // One id per slot, so pieces on different slots add up (like vanilla's armour.<slot>).
-            Identifier id = Identifier.fromNamespaceAndPath(AstralEnd.MODID, "starforge." + slot.getName());
+            ResourceLocation id = ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "starforge." + slot.getName());
             if (upgrade == StarforgeUpgrade.RADIANT) {
                 // Room for the half heart Soak Light gives.
                 modifiers = modifiers.withModifierAdded(Attributes.MAX_ABSORPTION,

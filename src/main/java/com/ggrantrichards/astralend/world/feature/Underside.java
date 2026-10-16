@@ -9,8 +9,8 @@ final class Underside {
     // `clearBelow` air blocks under it, or null.
     static BlockPos find(WorldGenLevel level, int x, int z, int clearBelow) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, 0, z);
-        int top = Math.min(level.getMaxY() - 1, 120);
-        int bottom = level.getMinY() + clearBelow + 1;
+        int top = Math.min(level.getMaxBuildHeight() - 1 - 1, 120);
+        int bottom = level.getMinBuildHeight() + clearBelow + 1;
         boolean wasSolid = false;
         for (int y = top; y >= bottom; y--) {
             boolean solid = !level.getBlockState(pos.setY(y)).isAir();

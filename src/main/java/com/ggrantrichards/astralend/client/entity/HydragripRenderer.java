@@ -6,12 +6,12 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.resources.Identifier;
+import com.ggrantrichards.astralend.client.compat.LivingEntityRenderState;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class HydragripRenderer extends MobRenderer<Hydragrip, HydragripRenderer.State, HydragripRenderer.Model> {
-    private static final Identifier TEXTURE = ModModelLayers.texture("hydragrip");
+public class HydragripRenderer extends com.ggrantrichards.astralend.client.compat.StateMobRenderer<Hydragrip, HydragripRenderer.State, HydragripRenderer.Model> {
+    private static final ResourceLocation TEXTURE = ModModelLayers.texture("hydragrip");
 
     public HydragripRenderer(EntityRendererProvider.Context context) {
         super(context, new Model(context.bakeLayer(ModModelLayers.HYDRAGRIP)), 0.5F);
@@ -19,7 +19,7 @@ public class HydragripRenderer extends MobRenderer<Hydragrip, HydragripRenderer.
     }
 
     @Override
-    public Identifier getTextureLocation(State state) {
+    public ResourceLocation getTextureLocation(State state) {
         return TEXTURE;
     }
 
@@ -32,7 +32,7 @@ public class HydragripRenderer extends MobRenderer<Hydragrip, HydragripRenderer.
     public void extractRenderState(Hydragrip entity, State state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.swimming = entity.isInWater();
-        state.attackTime = entity.getSwingAnimation(partialTicks);
+        state.attackTime = entity.getAttackAnim(partialTicks);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class HydragripRenderer extends MobRenderer<Hydragrip, HydragripRenderer.
     // Trots on land, high on its legs, its long neck bobbing and its tail swaying behind; in the water
     // its legs fold back and its body and finned tail undulate. Its frills ripple all the while, and
     // its jaw snaps open when it bites.
-    public static class Model extends EntityModel<State> {
+    public static class Model extends com.ggrantrichards.astralend.client.compat.StateModel<State> {
         private final ModelPart body;
         private final ModelPart neck;
         private final ModelPart head;

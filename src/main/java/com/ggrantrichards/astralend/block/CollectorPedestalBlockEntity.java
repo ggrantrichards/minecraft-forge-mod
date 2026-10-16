@@ -15,8 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.nbt.CompoundTag;
 
 // What a Collector Pedestal holds, and how long it has been charging. Once a second during a flare,
 // if the pedestal is in the Eclipse with nothing above it, the charge grows; after 30 seconds of
@@ -89,16 +88,18 @@ public class CollectorPedestalBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
-        output.store("held", ItemStack.OPTIONAL_CODEC, this.held);
+    protected void saveAdditional(CompoundTag output, net.minecraft.core.HolderLookup.Provider registries) {
+        super.saveAdditional(output, registries);
+        if (!this.held.isEmpty()) {
+            output.put("held", this.held.save(registries));
+        }
         output.putInt("charge", this.charge);
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
-        this.held = input.read("held", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
-        this.charge = input.getIntOr("charge", 0);
+    protected void loadAdditional(CompoundTag input, net.minecraft.core.HolderLookup.Provider registries) {
+        super.loadAdditional(input, registries);
+        this.held = ItemStack.parseOptional(registries, input.getCompound("held"));
+        this.charge = (input.contains("charge") ? input.getInt("charge") : 0);
     }
 }

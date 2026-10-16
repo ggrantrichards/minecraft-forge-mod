@@ -7,15 +7,15 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.resources.Identifier;
+import com.ggrantrichards.astralend.client.compat.LivingEntityRenderState;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 // Draws the Spire Wyrm: its head where the entity is, and each body segment where its SpireWyrmPart
 // is - all as parts of one model, placed in the model's own space every frame.
-public class SpireWyrmRenderer extends MobRenderer<SpireWyrm, SpireWyrmRenderer.State, SpireWyrmRenderer.Model> {
-    private static final Identifier TEXTURE = ModModelLayers.texture("spire_wyrm");
+public class SpireWyrmRenderer extends com.ggrantrichards.astralend.client.compat.StateMobRenderer<SpireWyrm, SpireWyrmRenderer.State, SpireWyrmRenderer.Model> {
+    private static final ResourceLocation TEXTURE = ModModelLayers.texture("spire_wyrm");
     public static final float SCALE = 2.5F;
 
     public SpireWyrmRenderer(EntityRendererProvider.Context context) {
@@ -24,7 +24,7 @@ public class SpireWyrmRenderer extends MobRenderer<SpireWyrm, SpireWyrmRenderer.
     }
 
     @Override
-    public Identifier getTextureLocation(State state) {
+    public ResourceLocation getTextureLocation(State state) {
         return TEXTURE;
     }
 
@@ -55,10 +55,6 @@ public class SpireWyrmRenderer extends MobRenderer<SpireWyrm, SpireWyrmRenderer.
 
     // Its body trails up to 20 blocks behind its head, so it's drawn whenever any of it could be in
     // view - not just when the head is (which made the body blink out as the head left the screen).
-    @Override
-    protected net.minecraft.world.phys.AABB getBoundingBoxForCulling(SpireWyrm entity, float partialTick) {
-        return entity.getBoundingBox().inflate(24.0);     // the whole long body, not just the head's box
-    }
 
     @Override
     protected void scale(State state, PoseStack poseStack) {
@@ -80,7 +76,7 @@ public class SpireWyrmRenderer extends MobRenderer<SpireWyrm, SpireWyrmRenderer.
         public boolean asleep;
     }
 
-    public static class Model extends EntityModel<State> {
+    public static class Model extends com.ggrantrichards.astralend.client.compat.StateModel<State> {
         private final ModelPart head;
         private final ModelPart jaw;
         private final ModelPart[] segments = new ModelPart[SpireWyrm.SEGMENTS];

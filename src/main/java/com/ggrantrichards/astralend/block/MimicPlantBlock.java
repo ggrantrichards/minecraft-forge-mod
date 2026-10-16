@@ -9,7 +9,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Enderman;
+import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -41,7 +41,7 @@ public class MimicPlantBlock extends EndPlantBlock {
         SoundEvent sound;
         if (source instanceof Player player) {
             sound = level.getBlockState(player.getOnPos()).getSoundType().getStepSound();
-        } else if (source instanceof Enderman) {
+        } else if (source instanceof EnderMan) {
             sound = random.nextBoolean() ? SoundEvents.ENDERMAN_TELEPORT : SoundEvents.ENDERMAN_AMBIENT;
         } else {
             sound = level.getBlockState(source.getOnPos()).getSoundType().getStepSound();

@@ -1,18 +1,18 @@
 package com.ggrantrichards.astralend.client.entity;
 
+import net.minecraft.client.renderer.RenderType;
 import com.ggrantrichards.astralend.entity.UmbralStalker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.resources.Identifier;
+import com.ggrantrichards.astralend.client.compat.LivingEntityRenderState;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class UmbralStalkerRenderer extends MobRenderer<UmbralStalker, UmbralStalkerRenderer.State, UmbralStalkerRenderer.Model> {
-    private static final Identifier TEXTURE = ModModelLayers.texture("umbral_stalker");
+public class UmbralStalkerRenderer extends com.ggrantrichards.astralend.client.compat.StateMobRenderer<UmbralStalker, UmbralStalkerRenderer.State, UmbralStalkerRenderer.Model> {
+    private static final ResourceLocation TEXTURE = ModModelLayers.texture("umbral_stalker");
     public static final float SCALE = 1.1F;   // about 2.2 blocks tall, hunched
 
     public UmbralStalkerRenderer(EntityRendererProvider.Context context) {
@@ -21,7 +21,7 @@ public class UmbralStalkerRenderer extends MobRenderer<UmbralStalker, UmbralStal
     }
 
     @Override
-    public Identifier getTextureLocation(State state) {
+    public ResourceLocation getTextureLocation(State state) {
         return TEXTURE;
     }
 
@@ -69,7 +69,7 @@ public class UmbralStalkerRenderer extends MobRenderer<UmbralStalker, UmbralStal
     // It walks on its knuckles like a gorilla: each arm swings with the opposite leg, the shoulders
     // roll, and the head (low in front) follows its target. While hidden it creeps low, like a big cat
     // stalking; a normal blow is one fist swung down; in a pounce both arms reach out ahead of it.
-    public static class Model extends EntityModel<State> {
+    public static class Model extends com.ggrantrichards.astralend.client.compat.StateModel<State> {
         private final ModelPart body;
         private final ModelPart head;
         private final ModelPart rightArm;
@@ -78,7 +78,7 @@ public class UmbralStalkerRenderer extends MobRenderer<UmbralStalker, UmbralStal
         private final ModelPart leftLeg;
 
         public Model(ModelPart root) {
-            super(root, RenderTypes::entityTranslucent);
+            super(root, RenderType::entityTranslucent);
             this.body = root.getChild("body");
             this.head = this.body.getChild("head");
             this.rightArm = root.getChild("right_arm");

@@ -30,7 +30,7 @@ final class Build {
     // The top solid block of a column, or null if the column is empty.
     static BlockPos surface(WorldGenLevel level, int x, int z) {
         int y = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z) - 1;
-        if (y <= level.getMinY()) {
+        if (y <= level.getMinBuildHeight()) {
             return null;
         }
         BlockPos pos = new BlockPos(x, y, z);

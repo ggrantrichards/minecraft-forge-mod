@@ -34,7 +34,7 @@ public final class AstralSky {
     private static boolean failed;
 
     public static void register() {
-        TickEvent.ClientTickEvent.Post.BUS.addListener(event -> onTick());
+        com.ggrantrichards.astralend.Events.post(TickEvent.ClientTickEvent.class, event -> onTick());
     }
 
     private static void onTick() {

@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,7 +27,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.level.saveddata.SavedDataType;
+import com.ggrantrichards.astralend.compat.SavedDataType;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.fml.LogicalSide;
@@ -44,6 +44,11 @@ import net.minecraftforge.fml.LogicalSide;
 //
 // One timer for the whole End, saved with the world. Clients hear about it through FlareNetwork.
 public class Sunstorms extends SavedData {
+    @Override
+    public net.minecraft.nbt.CompoundTag save(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+        return TYPE.save(this, tag);
+    }
+
     public static final int WARNING_TICKS = 1200;
     public static final int FLARE_MIN_TICKS = 1200;
     public static final int FLARE_MAX_TICKS = 2400;
@@ -51,7 +56,7 @@ public class Sunstorms extends SavedData {
     public static final int CALM_MIN_TICKS = 18000;
     public static final int CALM_MAX_TICKS = 30000;
     public static final ResourceKey<DamageType> SUNBURN = ResourceKey.create(Registries.DAMAGE_TYPE,
-        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "sunburn"));
+        ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "sunburn"));
 
     public static final Codec<Sunstorms> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.INT.fieldOf("phase").forGetter(f -> f.phase.ordinal()),
@@ -60,7 +65,7 @@ public class Sunstorms extends SavedData {
         Codec.FLOAT.fieldOf("wind_yaw").forGetter(f -> f.windYaw)
     ).apply(instance, Sunstorms::new));
     public static final SavedDataType<Sunstorms> TYPE = new SavedDataType<>(
-        Identifier.fromNamespaceAndPath(AstralEnd.MODID, "sunstorms"), Sunstorms::new, CODEC,
+        ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "sunstorms"), Sunstorms::new, CODEC,
         DataFixTypes.SAVED_DATA_RANDOM_SEQUENCES);   // nothing to upgrade yet; any saved-data type will do
 
     private FlarePhase phase;
@@ -83,11 +88,11 @@ public class Sunstorms extends SavedData {
     }
 
     public static void register() {
-        TickEvent.LevelTickEvent.Post.BUS.addListener(Sunstorms::onLevelTick);
+        com.ggrantrichards.astralend.Events.post(TickEvent.LevelTickEvent.class, Sunstorms::onLevelTick);
     }
 
     public static Sunstorms get(ServerLevel end) {
-        return end.getDataStorage().computeIfAbsent(TYPE);
+        return TYPE.get(end);
     }
 
     // The current phase in this level: always CALM outside the End.
@@ -104,7 +109,7 @@ public class Sunstorms extends SavedData {
     // Where Sunstorms are felt: biomes tagged #astralend:sunstorms (the Eclipse). An empty tag
     // in a data pack turns flares off.
     public static final net.minecraft.tags.TagKey<net.minecraft.world.level.biome.Biome> FLARE_BIOMES = net.minecraft.tags.TagKey.create(
-        Registries.BIOME, net.minecraft.resources.Identifier.fromNamespaceAndPath(AstralEnd.MODID, "sunstorms"));
+        Registries.BIOME, net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "sunstorms"));
 
     public static boolean inSunstorms(Level level, BlockPos pos) {
         return level.dimension() == Level.END && level.getBiome(pos).is(FLARE_BIOMES);
@@ -133,7 +138,7 @@ public class Sunstorms extends SavedData {
 
     // ------------------------------------------------------------------ the cycle
 
-    private static void onLevelTick(TickEvent.LevelTickEvent.Post event) {
+    private static void onLevelTick(TickEvent.LevelTickEvent event) {
         if (event.side() != LogicalSide.SERVER || !(event.level() instanceof ServerLevel level) || level.dimension() != Level.END) {
             return;
         }
@@ -223,7 +228,7 @@ public class Sunstorms extends SavedData {
 
     // The Solar Array's old mirrors still focus the flares onto its field (Phase 6).
     public static final ResourceKey<net.minecraft.world.level.levelgen.structure.Structure> SOLAR_ARRAY = ResourceKey.create(
-        Registries.STRUCTURE, net.minecraft.resources.Identifier.fromNamespaceAndPath(AstralEnd.MODID, "solar_array"));
+        Registries.STRUCTURE, net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "solar_array"));
 
     // Once a second during a flare: everyone in the Eclipse under open sky burns - half a heart every
     // 3 seconds at first, a full heart after 30 seconds of exposure, and twice that on a Solar Array's

@@ -22,7 +22,7 @@ public final class WoodStripping {
     private static Map<Block, Block> stripped;
 
     public static void register() {
-        PlayerInteractEvent.RightClickBlock.BUS.addListener((Predicate<PlayerInteractEvent.RightClickBlock>) WoodStripping::onRightClick);
+        com.ggrantrichards.astralend.Events.cancelling(PlayerInteractEvent.RightClickBlock.class, WoodStripping::onRightClick);
     }
 
     private static Map<Block, Block> table() {

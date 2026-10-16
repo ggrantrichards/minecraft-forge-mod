@@ -27,13 +27,13 @@ final class Dioramas {
 
     // A biome: 64 blocks square round `centre`, from the highest block down 72.
     static void biome(ServerLevel level, String name, BlockPos centre) {
-        int top = level.getMinY();
+        int top = level.getMinBuildHeight();
         for (int dx = -32; dx < 32; dx += 4) {
             for (int dz = -32; dz < 32; dz += 4) {
                 top = Math.max(top, level.getHeight(Heightmap.Types.WORLD_SURFACE, centre.getX() + dx, centre.getZ() + dz));
             }
         }
-        dump(level, name, new BlockPos(centre.getX() - 32, Math.max(level.getMinY(), top - 72), centre.getZ() - 32),
+        dump(level, name, new BlockPos(centre.getX() - 32, Math.max(level.getMinBuildHeight(), top - 72), centre.getZ() - 32),
             new BlockPos(centre.getX() + 31, top + 1, centre.getZ() + 31));
     }
 

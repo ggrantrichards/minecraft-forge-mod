@@ -21,7 +21,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -37,8 +37,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
@@ -171,7 +170,7 @@ public class Hushback extends Animal {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return ModEntities.HUSHBACK.get().create(level, EntitySpawnReason.BREEDING);
+        return ModEntities.HUSHBACK.get().create(level, MobSpawnType.BREEDING);
     }
 
     @Override
@@ -270,7 +269,7 @@ public class Hushback extends Animal {
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
+    protected void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
         output.putBoolean("Sheared", this.isSheared());
         output.putInt("Regrow", this.regrow);
@@ -376,9 +375,9 @@ public class Hushback extends Animal {
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
+    protected void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
-        this.entityData.set(SHEARED, input.getBooleanOr("Sheared", false));
-        this.regrow = input.getIntOr("Regrow", 0);
+        this.entityData.set(SHEARED, (input.contains("Sheared") ? input.getBoolean("Sheared") : false));
+        this.regrow = (input.contains("Regrow") ? input.getInt("Regrow") : 0);
     }
 }

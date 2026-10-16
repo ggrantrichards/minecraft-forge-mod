@@ -4,7 +4,7 @@ import com.ggrantrichards.astralend.AstralEnd;
 import java.util.Map;
 import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -25,13 +25,13 @@ import net.minecraftforge.fml.LogicalSide;
 public final class Upwells {
     public static final double GRAVITY_CHANGE = -1.6;   // multiplier on the total: 0.08 -> -0.048
     private static final int LINGER_TICKS = 4;
-    private static final Identifier ID = Identifier.fromNamespaceAndPath(AstralEnd.MODID, "upwells");
+    private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, "upwells");
 
     // Server thread only. Weak keys, so unloaded or dead entities are forgotten.
     private static final Map<LivingEntity, Long> INSIDE = new WeakHashMap<>();
 
     public static void register() {
-        TickEvent.LevelTickEvent.Post.BUS.addListener(Upwells::onLevelTick);
+        com.ggrantrichards.astralend.Events.post(TickEvent.LevelTickEvent.class, Upwells::onLevelTick);
     }
 
     public static boolean enabledAt(Level level, BlockPos pos) {
@@ -55,7 +55,7 @@ public final class Upwells {
         return gravity != null && gravity.hasModifier(ID);
     }
 
-    private static void onLevelTick(TickEvent.LevelTickEvent.Post event) {
+    private static void onLevelTick(TickEvent.LevelTickEvent event) {
         if (event.side() != LogicalSide.SERVER || INSIDE.isEmpty()) {
             return;
         }
