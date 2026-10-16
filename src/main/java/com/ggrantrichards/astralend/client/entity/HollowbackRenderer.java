@@ -30,6 +30,6 @@ public class HollowbackRenderer extends MobRenderer<Hollowback, HushbackRenderer
     public void extractRenderState(Hollowback entity, HushbackRenderer.State state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.snarl = entity.isAggressive();
-        state.bite = entity.getAttackAnim(partialTicks);
+        state.bite = entity.getSwingAnimation(partialTicks);
     }
 }
