@@ -87,7 +87,6 @@ public final class AstralEnd {
             com.ggrantrichards.astralend.client.starforge.StarforgeItemModels.register();  // (1.21.1 port) upgrade accents, the Star Compass
         }
         WorldgenSurvey.register(); // does nothing unless started with -Dastralend.survey=true
-        com.ggrantrichards.astralend.dev.ReloadProbe.register();   // (1.21.1 port, temporary)
 
         com.ggrantrichards.astralend.Events.on(FMLCommonSetupEvent.class, this::commonSetup);
     }
