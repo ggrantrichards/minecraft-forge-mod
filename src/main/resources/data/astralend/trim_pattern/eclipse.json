@@ -3,5 +3,5 @@
   "description": {
     "translate": "trim_pattern.astralend.eclipse"
   },
-  "decal": false
+  "template_item": "astralend:eclipse_armor_trim_smithing_template"
 }

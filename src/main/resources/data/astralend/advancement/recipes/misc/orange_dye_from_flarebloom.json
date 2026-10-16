@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:orange_dye_from_flarebloom"
+        "recipe": "astralend:orange_dye_from_flarebloom"
       }
     },
     "has_flarebloom": {

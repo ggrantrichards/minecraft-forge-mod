@@ -19,15 +19,17 @@
     "found": {
       "trigger": "minecraft:location",
       "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "structures": "astralend:leviathan"
-            }
+        "player": [
+          {
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "structures": "astralend:leviathan"
+              }
+            },
+            "condition": "minecraft:entity_properties"
           }
-        }
+        ]
       }
     }
   },

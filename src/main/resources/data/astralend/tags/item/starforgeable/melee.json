@@ -1,11 +1,29 @@
 {
   "replace": false,
   "values": [
-    "minecraft:diamond_axe",
-    "minecraft:diamond_sword",
-    "minecraft:mace",
-    "minecraft:netherite_axe",
-    "minecraft:netherite_sword",
-    "minecraft:trident"
+    {
+      "id": "minecraft:diamond_axe",
+      "required": false
+    },
+    {
+      "id": "minecraft:diamond_sword",
+      "required": false
+    },
+    {
+      "id": "minecraft:mace",
+      "required": false
+    },
+    {
+      "id": "minecraft:netherite_axe",
+      "required": false
+    },
+    {
+      "id": "minecraft:netherite_sword",
+      "required": false
+    },
+    {
+      "id": "minecraft:trident",
+      "required": false
+    }
   ]
 }

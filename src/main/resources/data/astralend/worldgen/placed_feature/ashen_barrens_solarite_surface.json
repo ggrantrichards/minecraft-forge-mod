@@ -13,10 +13,9 @@
       "heightmap": "WORLD_SURFACE_WG"
     },
     {
-      "type": "minecraft:offset",
-      "x": 0,
-      "z": 0,
-      "y": {
+      "type": "minecraft:random_offset",
+      "xz_spread": 0,
+      "y_spread": {
         "type": "minecraft:uniform",
         "min_inclusive": -3,
         "max_inclusive": 0

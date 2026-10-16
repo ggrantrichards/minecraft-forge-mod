@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:chiseled_nightstone"
+        "recipe": "astralend:chiseled_nightstone"
       }
     },
     "has_nightstone_slab": {

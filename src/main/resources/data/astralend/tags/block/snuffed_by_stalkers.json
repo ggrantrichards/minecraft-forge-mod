@@ -1,17 +1,47 @@
 {
   "replace": false,
   "values": [
-    "#minecraft:campfires",
-    "#minecraft:candles",
+    {
+      "id": "#minecraft:campfires",
+      "required": false
+    },
+    {
+      "id": "#minecraft:candles",
+      "required": false
+    },
     "astralend:null_lantern",
     "astralend:spore_lantern",
-    "minecraft:copper_torch",
-    "minecraft:copper_wall_torch",
-    "minecraft:lantern",
-    "minecraft:soul_lantern",
-    "minecraft:soul_torch",
-    "minecraft:soul_wall_torch",
-    "minecraft:torch",
-    "minecraft:wall_torch"
+    {
+      "id": "minecraft:copper_torch",
+      "required": false
+    },
+    {
+      "id": "minecraft:copper_wall_torch",
+      "required": false
+    },
+    {
+      "id": "minecraft:lantern",
+      "required": false
+    },
+    {
+      "id": "minecraft:soul_lantern",
+      "required": false
+    },
+    {
+      "id": "minecraft:soul_torch",
+      "required": false
+    },
+    {
+      "id": "minecraft:soul_wall_torch",
+      "required": false
+    },
+    {
+      "id": "minecraft:torch",
+      "required": false
+    },
+    {
+      "id": "minecraft:wall_torch",
+      "required": false
+    }
   ]
 }

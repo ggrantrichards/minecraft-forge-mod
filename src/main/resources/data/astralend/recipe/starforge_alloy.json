@@ -2,10 +2,18 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "astralend:void_crystal",
-    "astralend:meteoric_iron_ingot",
-    "minecraft:dragon_breath",
-    "astralend:glowing_spores"
+    {
+      "item": "astralend:void_crystal"
+    },
+    {
+      "item": "astralend:meteoric_iron_ingot"
+    },
+    {
+      "item": "minecraft:dragon_breath"
+    },
+    {
+      "item": "astralend:glowing_spores"
+    }
   ],
   "result": {
     "id": "astralend:starforge_alloy"

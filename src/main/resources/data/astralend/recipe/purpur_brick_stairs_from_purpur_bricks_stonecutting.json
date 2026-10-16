@@ -1,6 +1,8 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": "astralend:purpur_bricks",
+  "ingredient": {
+    "item": "astralend:purpur_bricks"
+  },
   "result": {
     "id": "astralend:purpur_brick_stairs"
   }

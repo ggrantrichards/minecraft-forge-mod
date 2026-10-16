@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "R": "minecraft:fishing_rod",
-    "C": "minecraft:chorus_flower"
+    "R": {
+      "item": "minecraft:fishing_rod"
+    },
+    "C": {
+      "item": "minecraft:chorus_flower"
+    }
   },
   "pattern": [
     "R ",

@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:end_chimes"
+        "recipe": "astralend:end_chimes"
       }
     },
     "has_amethyst_shard": {

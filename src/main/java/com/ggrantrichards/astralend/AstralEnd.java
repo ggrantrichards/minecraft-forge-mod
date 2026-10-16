@@ -47,6 +47,7 @@ public final class AstralEnd {
         ModWorldgen.FEATURE_TYPES.register(modBusGroup);
         ModWorldgen.STRUCTURE_TYPES.register(modBusGroup);
         ModWorldgen.STRUCTURE_PIECES.register(modBusGroup);
+        ModWorldgen.DENSITY_FUNCTION_TYPES.register(modBusGroup);
         com.ggrantrichards.astralend.starforge.Starforge.COMPONENTS.register(modBusGroup);   // Phase 8: Starforging
         com.ggrantrichards.astralend.starforge.ModMenus.MENUS.register(modBusGroup);
         com.ggrantrichards.astralend.starforge.StarforgeLoot.SERIALIZERS.register(modBusGroup);
@@ -56,6 +57,7 @@ public final class AstralEnd {
         com.ggrantrichards.astralend.world.UpwellingEffect.register();
         com.ggrantrichards.astralend.block.EndChimesBlockEntity.register();
         WoodStripping.register();
+        com.ggrantrichards.astralend.world.ModBrewing.register();   // (1.21.1 port) the brewing recipes
         ModEntities.register();   // mob attributes and where they may spawn
         MobSpawning.register();   // Drift Whales and the Watcher
         FlareNetwork.register();  // Phase 5: Sunstorms - the timer, its effects, and syncing it to clients
@@ -81,6 +83,7 @@ public final class AstralEnd {
             com.ggrantrichards.astralend.client.FogBlend.register();        // fog eased between biomes over ~50 blocks
             com.ggrantrichards.astralend.client.BiomeMist.register();       // drifting gas, ash mist and falling starlight
             com.ggrantrichards.astralend.client.starforge.StarforgeClient.register(modBusGroup);  // the Forge's screen, armour accents
+            com.ggrantrichards.astralend.client.starforge.StarforgeItemModels.register();  // (1.21.1 port) upgrade accents, the Star Compass
         }
         WorldgenSurvey.register(); // does nothing unless started with -Dastralend.survey=true
 

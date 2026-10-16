@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:glow_ink_sac_from_glowing_spores"
+        "recipe": "astralend:glow_ink_sac_from_glowing_spores"
       }
     },
     "has_glowing_spores": {

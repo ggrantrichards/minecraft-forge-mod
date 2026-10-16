@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:sunscorched_stone_brick_slab"
+        "recipe": "astralend:sunscorched_stone_brick_slab"
       }
     },
     "has_sunscorched_stone_bricks": {

@@ -4,7 +4,9 @@
   "cookingtime": 100,
   "experience": 0.35,
   "group": "cooked_hushback_flank",
-  "ingredient": "astralend:hushback_flank",
+  "ingredient": {
+    "item": "astralend:hushback_flank"
+  },
   "result": {
     "id": "astralend:cooked_hushback_flank"
   }

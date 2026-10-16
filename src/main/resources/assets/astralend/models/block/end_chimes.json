@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cross",
   "textures": {
     "cross": "astralend:block/end_chimes"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

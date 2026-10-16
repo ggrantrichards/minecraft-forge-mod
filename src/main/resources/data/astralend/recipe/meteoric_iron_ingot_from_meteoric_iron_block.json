@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "astralend:meteoric_iron_block"
+    {
+      "item": "astralend:meteoric_iron_block"
+    }
   ],
   "result": {
     "count": 9,

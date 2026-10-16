@@ -1,94 +1,104 @@
 {
   "type": "minecraft:max",
-  "left": {
+  "argument1": {
     "type": "minecraft:min",
-    "left": {
-      "type": "minecraft:gradient",
-      "axis": "y",
-      "from_coordinate": 0,
+    "argument1": {
+      "type": "minecraft:y_clamped_gradient",
+      "from_y": 0,
+      "to_y": 128,
       "from_value": 13.625,
-      "to_coordinate": 128,
       "to_value": -18.375
     },
-    "right": {
+    "argument2": {
       "type": "minecraft:add",
-      "left": {
-        "type": "minecraft:gradient",
-        "axis": "y",
-        "from_coordinate": 0,
+      "argument1": {
+        "type": "minecraft:y_clamped_gradient",
+        "from_y": 0,
+        "to_y": 128,
         "from_value": -13.625,
-        "to_coordinate": 128,
         "to_value": 18.375
       },
-      "right": {
+      "argument2": {
         "type": "minecraft:mul",
-        "left": {
+        "argument1": {
           "type": "minecraft:mul",
-          "left": {
+          "argument1": {
             "type": "minecraft:add",
-            "left": {
+            "argument1": {
               "type": "minecraft:add",
-              "left": "minecraft:end/islands",
-              "right": 0.12
+              "argument1": {
+                "type": "minecraft:end_islands"
+              },
+              "argument2": 0.12
             },
-            "right": {
+            "argument2": {
               "type": "minecraft:mul",
-              "left": "minecraft:end/base_3d_noise",
-              "right": 0.2
+              "argument1": "minecraft:end/base_3d_noise",
+              "argument2": 0.2
             }
           },
-          "right": 14.0
+          "argument2": 14.0
         },
-        "right": 0.25
+        "argument2": 0.25
       }
     }
   },
-  "right": {
+  "argument2": {
     "type": "minecraft:mul",
-    "left": {
+    "argument1": {
       "type": "minecraft:min",
-      "left": {
-        "type": "minecraft:sub",
-        "left": 54.5,
-        "right": {
-          "type": "minecraft:gradient",
-          "axis": "y",
-          "from_coordinate": 0,
-          "from_value": 0.0,
-          "to_coordinate": 128,
-          "to_value": 128.0
+      "argument1": {
+        "type": "minecraft:add",
+        "argument1": 54.5,
+        "argument2": {
+          "type": "minecraft:mul",
+          "argument1": -1.0,
+          "argument2": {
+            "type": "minecraft:y_clamped_gradient",
+            "from_y": 0,
+            "to_y": 128,
+            "from_value": 0.0,
+            "to_value": 128.0
+          }
         }
       },
-      "right": {
-        "type": "minecraft:sub",
-        "left": {
-          "type": "minecraft:gradient",
-          "axis": "y",
-          "from_coordinate": 0,
+      "argument2": {
+        "type": "minecraft:add",
+        "argument1": {
+          "type": "minecraft:y_clamped_gradient",
+          "from_y": 0,
+          "to_y": 128,
           "from_value": 0.0,
-          "to_coordinate": 128,
           "to_value": 128.0
         },
-        "right": {
-          "type": "minecraft:sub",
-          "left": 54.5,
-          "right": {
-            "type": "minecraft:clamp",
-            "input": {
+        "argument2": {
+          "type": "minecraft:mul",
+          "argument1": -1.0,
+          "argument2": {
+            "type": "minecraft:add",
+            "argument1": 54.5,
+            "argument2": {
               "type": "minecraft:mul",
-              "left": {
-                "type": "minecraft:add",
-                "left": "astralend:terrain/mask",
-                "right": -0.02
-              },
-              "right": 40.0
-            },
-            "min": 0.0,
-            "max": 10.0
+              "argument1": -1.0,
+              "argument2": {
+                "type": "minecraft:clamp",
+                "input": {
+                  "type": "minecraft:mul",
+                  "argument1": {
+                    "type": "minecraft:add",
+                    "argument1": "astralend:terrain/mask",
+                    "argument2": -0.02
+                  },
+                  "argument2": 40.0
+                },
+                "min": 0.0,
+                "max": 10.0
+              }
+            }
           }
         }
       }
     },
-    "right": 0.4
+    "argument2": 0.4
   }
 }

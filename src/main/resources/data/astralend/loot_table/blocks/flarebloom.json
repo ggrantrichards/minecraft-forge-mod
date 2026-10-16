@@ -2,48 +2,54 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "condition": {
-        "type": "minecraft:survives_explosion"
-      },
       "rolls": 1,
       "entries": [
         {
           "type": "minecraft:item",
           "name": "astralend:flarebloom",
-          "condition": {
-            "type": "minecraft:match_block",
-            "blocks": "astralend:flarebloom",
-            "state": {
-              "half": "lower"
+          "conditions": [
+            {
+              "condition": "minecraft:block_state_property",
+              "block": "astralend:flarebloom",
+              "properties": {
+                "half": "lower"
+              }
             }
-          }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
         }
       ]
     },
     {
       "rolls": 1,
-      "condition": {
-        "type": "minecraft:match_block",
-        "blocks": "astralend:flarebloom",
-        "state": {
-          "half": "lower",
-          "open": "true"
-        }
-      },
       "entries": [
         {
           "type": "minecraft:item",
           "name": "astralend:flare_pollen",
-          "modifier": [
+          "functions": [
             {
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
                 "max": 2
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "astralend:flarebloom",
+          "properties": {
+            "half": "lower",
+            "open": "true"
+          }
         }
       ]
     }

@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "M": "astralend:meteoric_iron_ingot",
-    "L": "minecraft:lodestone"
+    "M": {
+      "item": "astralend:meteoric_iron_ingot"
+    },
+    "L": {
+      "item": "minecraft:lodestone"
+    }
   },
   "pattern": [
     " M ",

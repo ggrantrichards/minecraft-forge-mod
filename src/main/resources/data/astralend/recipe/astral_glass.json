@@ -4,7 +4,9 @@
   "cookingtime": 200,
   "experience": 0.1,
   "group": "astral_glass",
-  "ingredient": "astralend:stardust_block",
+  "ingredient": {
+    "item": "astralend:stardust_block"
+  },
   "result": {
     "id": "astralend:astral_glass"
   }

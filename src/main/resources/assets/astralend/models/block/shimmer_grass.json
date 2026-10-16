@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cross",
   "textures": {
     "cross": "astralend:block/shimmer_grass"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

@@ -3,7 +3,9 @@
   "category": "misc",
   "group": "yellow_dye",
   "ingredients": [
-    "astralend:starbloom"
+    {
+      "item": "astralend:starbloom"
+    }
   ],
   "result": {
     "id": "minecraft:yellow_dye"

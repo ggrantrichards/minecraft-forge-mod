@@ -19,113 +19,129 @@
     "nebula_fields": {
       "trigger": "minecraft:location",
       "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "biomes": "astralend:nebula_fields"
-            }
+        "player": [
+          {
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "astralend:nebula_fields"
+              }
+            },
+            "condition": "minecraft:entity_properties"
           }
-        }
+        ]
       }
     },
     "ashen_barrens": {
       "trigger": "minecraft:location",
       "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "biomes": "astralend:ashen_barrens"
-            }
+        "player": [
+          {
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "astralend:ashen_barrens"
+              }
+            },
+            "condition": "minecraft:entity_properties"
           }
-        }
+        ]
       }
     },
     "glimmering_crags": {
       "trigger": "minecraft:location",
       "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "biomes": "astralend:glimmering_crags"
-            }
+        "player": [
+          {
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "astralend:glimmering_crags"
+              }
+            },
+            "condition": "minecraft:entity_properties"
           }
-        }
+        ]
       }
     },
     "deep_hollows": {
       "trigger": "minecraft:location",
       "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "biomes": "astralend:deep_hollows"
-            }
+        "player": [
+          {
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "astralend:deep_hollows"
+              }
+            },
+            "condition": "minecraft:entity_properties"
           }
-        }
+        ]
       }
     },
     "shattered_crags": {
       "trigger": "minecraft:location",
       "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "biomes": "astralend:shattered_crags"
-            }
+        "player": [
+          {
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "astralend:shattered_crags"
+              }
+            },
+            "condition": "minecraft:entity_properties"
           }
-        }
+        ]
       }
     },
     "eclipse": {
       "trigger": "minecraft:location",
       "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "biomes": "astralend:eclipse"
-            }
+        "player": [
+          {
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "astralend:eclipse"
+              }
+            },
+            "condition": "minecraft:entity_properties"
           }
-        }
+        ]
       }
     },
     "hollow_roots": {
       "trigger": "minecraft:location",
       "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "biomes": "astralend:hollow_roots"
-            }
+        "player": [
+          {
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "astralend:hollow_roots"
+              }
+            },
+            "condition": "minecraft:entity_properties"
           }
-        }
+        ]
       }
     },
     "crystal_vaults": {
       "trigger": "minecraft:location",
       "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "biomes": "astralend:crystal_vaults"
-            }
+        "player": [
+          {
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "astralend:crystal_vaults"
+              }
+            },
+            "condition": "minecraft:entity_properties"
           }
-        }
+        ]
       }
     }
   },

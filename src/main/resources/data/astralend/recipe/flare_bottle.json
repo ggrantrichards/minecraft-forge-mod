@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "S": "astralend:solarite_ingot",
-    "G": "astralend:astral_glass"
+    "S": {
+      "item": "astralend:solarite_ingot"
+    },
+    "G": {
+      "item": "astralend:astral_glass"
+    }
   },
   "pattern": [
     "S",

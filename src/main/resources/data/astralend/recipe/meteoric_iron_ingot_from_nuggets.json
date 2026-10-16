@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "astralend:meteoric_iron_nugget"
+    "#": {
+      "item": "astralend:meteoric_iron_nugget"
+    }
   },
   "pattern": [
     "###",

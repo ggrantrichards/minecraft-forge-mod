@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "astralend:starsap_block"
+    {
+      "item": "astralend:starsap_block"
+    }
   ],
   "result": {
     "id": "astralend:starsap",

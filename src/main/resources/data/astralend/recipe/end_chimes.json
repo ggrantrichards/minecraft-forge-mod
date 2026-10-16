@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "A": "minecraft:amethyst_shard",
-    "R": "minecraft:end_rod"
+    "A": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "R": {
+      "item": "minecraft:end_rod"
+    }
   },
   "pattern": [
     "AAA",

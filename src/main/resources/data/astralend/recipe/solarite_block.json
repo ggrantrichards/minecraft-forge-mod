@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": "astralend:solarite_ingot"
+    "#": {
+      "item": "astralend:solarite_ingot"
+    }
   },
   "pattern": [
     "###",

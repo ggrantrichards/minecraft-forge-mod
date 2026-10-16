@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:meteoric_iron_block"
+        "recipe": "astralend:meteoric_iron_block"
       }
     },
     "has_meteoric_iron_ingot": {

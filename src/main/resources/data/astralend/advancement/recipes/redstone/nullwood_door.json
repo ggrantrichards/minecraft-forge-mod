@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:nullwood_door"
+        "recipe": "astralend:nullwood_door"
       }
     },
     "has_nullwood_planks": {

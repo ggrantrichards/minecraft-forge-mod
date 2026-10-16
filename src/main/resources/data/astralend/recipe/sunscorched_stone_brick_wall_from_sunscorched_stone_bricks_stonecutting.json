@@ -1,6 +1,8 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": "astralend:sunscorched_stone_bricks",
+  "ingredient": {
+    "item": "astralend:sunscorched_stone_bricks"
+  },
   "result": {
     "id": "astralend:sunscorched_stone_brick_wall"
   }

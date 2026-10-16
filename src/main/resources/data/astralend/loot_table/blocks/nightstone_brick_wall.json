@@ -2,16 +2,18 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "condition": {
-        "type": "minecraft:survives_explosion"
-      },
       "entries": [
         {
           "type": "minecraft:item",
           "name": "astralend:nightstone_brick_wall"
         }
       ],
-      "rolls": 1
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
     }
   ],
   "random_sequence": "astralend:blocks/nightstone_brick_wall"

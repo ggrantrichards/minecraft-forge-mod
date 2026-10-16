@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:glimmer_crystal"
+        "recipe": "astralend:glimmer_crystal"
       }
     },
     "has_glimmer_cluster": {

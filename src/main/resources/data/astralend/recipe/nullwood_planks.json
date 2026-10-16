@@ -3,7 +3,9 @@
   "category": "building",
   "group": "planks",
   "ingredients": [
-    "#astralend:nullwood_logs"
+    {
+      "tag": "astralend:nullwood_logs"
+    }
   ],
   "result": {
     "count": 4,

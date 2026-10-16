@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:cooked_hushback_flank_from_smelting"
+        "recipe": "astralend:cooked_hushback_flank_from_smelting"
       }
     },
     "has_hushback_flank": {

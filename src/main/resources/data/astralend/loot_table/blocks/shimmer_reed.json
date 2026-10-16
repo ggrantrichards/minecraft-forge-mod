@@ -2,23 +2,27 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "condition": {
-        "type": "minecraft:survives_explosion"
-      },
       "entries": [
         {
           "type": "minecraft:item",
           "name": "astralend:shimmer_reed",
-          "condition": {
-            "type": "minecraft:match_block",
-            "blocks": "astralend:shimmer_reed",
-            "state": {
-              "half": "lower"
+          "conditions": [
+            {
+              "condition": "minecraft:block_state_property",
+              "block": "astralend:shimmer_reed",
+              "properties": {
+                "half": "lower"
+              }
             }
-          }
+          ]
         }
       ],
-      "rolls": 1
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
     }
   ],
   "random_sequence": "astralend:blocks/shimmer_reed"

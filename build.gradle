@@ -16,6 +16,14 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+// Forge 52 loads a mod from one directory, so the classes and resources are built into the same one
+// (as Forge's own 1.21 template does); otherwise the game finds mods.toml but not the mod.
+sourceSets.each {
+    def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
+    it.output.resourcesDir = dir
+    it.java.destinationDirectory = dir
+}
+
 minecraft {
     mappings channel: 'official', version: '1.21.1'
     copyIdeResources = true

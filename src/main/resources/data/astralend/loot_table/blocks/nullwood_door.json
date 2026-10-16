@@ -2,23 +2,27 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "condition": {
-        "type": "minecraft:survives_explosion"
-      },
       "entries": [
         {
           "type": "minecraft:item",
           "name": "astralend:nullwood_door",
-          "condition": {
-            "type": "minecraft:match_block",
-            "blocks": "astralend:nullwood_door",
-            "state": {
-              "half": "lower"
+          "conditions": [
+            {
+              "condition": "minecraft:block_state_property",
+              "block": "astralend:nullwood_door",
+              "properties": {
+                "half": "lower"
+              }
             }
-          }
+          ]
         }
       ],
-      "rolls": 1
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
     }
   ],
   "random_sequence": "astralend:blocks/nullwood_door"

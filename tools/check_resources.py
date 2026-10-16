@@ -239,7 +239,7 @@ for file in sorted(WORLDGEN.rglob("*.json")) if WORLDGEN.exists() else []:
     ident = f"{NS}:{'/'.join(path)}"   # density functions live in subfolders: astralend:terrain/outer
     worldgen_ids.setdefault(kind, set()).add(ident)
     known.add(ident)
-known |= {f"{NS}:{n}" for n in re.findall(r'(?:BIOME_SOURCES|FEATURE_TYPES|STRUCTURE_TYPES)\.register\("([a-z0-9_]+)"',
+known |= {f"{NS}:{n}" for n in re.findall(r'(?:BIOME_SOURCES|FEATURE_TYPES|STRUCTURE_TYPES|DENSITY_FUNCTION_TYPES)\.register\("([a-z0-9_]+)"',
                                            (JAVA / "world/ModWorldgen.java").read_text())}
 # Phase 5: mob effects and potions (ModEffects.java), and data-driven damage types.
 effects_src = (JAVA / "ModEffects.java").read_text()
@@ -288,8 +288,13 @@ def need(kind, ref, where):
         err(f"{where}: {ref} is not a {kind} (no data/{NS}/worldgen/{kind}/{ref.split(':')[1]}.json)")
 
 
+# (1.21.1 port) Configured features live in worldgen/configured_feature (26.3: worldgen/feature).
+FEATURE_KIND = "configured_feature" if (WORLDGEN / "configured_feature").exists() else "feature"
+# Tags are registered by their files ({"tag": "astralend:x"} ingredients name them without the #).
+known |= {f"{NS}:{'/'.join(f.relative_to(RES / 'data' / NS / 'tags').with_suffix('').parts[1:])}"
+          for f in (RES / "data" / NS / "tags").rglob("*.json")}
 for file in sorted((WORLDGEN / "placed_feature").glob("*.json")) if WORLDGEN.exists() else []:
-    need("feature", (load(file) or {}).get("feature", ""), file.relative_to(ROOT))
+    need(FEATURE_KIND, (load(file) or {}).get("feature", ""), file.relative_to(ROOT))
 for file in sorted((WORLDGEN / "biome").glob("*.json")) if WORLDGEN.exists() else []:
     for step in (load(file) or {}).get("features", []):
         for ref in step:

@@ -3,7 +3,9 @@
   "category": "redstone",
   "group": "wooden_button",
   "ingredients": [
-    "astralend:nullwood_planks"
+    {
+      "item": "astralend:nullwood_planks"
+    }
   ],
   "result": {
     "id": "astralend:nullwood_button"

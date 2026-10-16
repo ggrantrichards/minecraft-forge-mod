@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "astralend:purpur_bricks"
+    "#": {
+      "item": "astralend:purpur_bricks"
+    }
   },
   "pattern": [
     "###",

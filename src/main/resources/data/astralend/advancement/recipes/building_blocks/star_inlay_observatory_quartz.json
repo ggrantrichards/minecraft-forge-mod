@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:star_inlay_observatory_quartz"
+        "recipe": "astralend:star_inlay_observatory_quartz"
       }
     },
     "has_observatory_quartz_slab": {

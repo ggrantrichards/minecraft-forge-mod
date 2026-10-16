@@ -12,7 +12,7 @@
           "type": "minecraft:item",
           "name": "astralend:raw_meteoric_iron",
           "weight": 6,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -20,7 +20,7 @@
                 "min": 1,
                 "max": 4
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -28,7 +28,7 @@
           "type": "minecraft:item",
           "name": "astralend:meteoric_iron_nugget",
           "weight": 5,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -36,7 +36,7 @@
                 "min": 2,
                 "max": 7
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -44,7 +44,7 @@
           "type": "minecraft:item",
           "name": "minecraft:blue_ice",
           "weight": 4,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -52,7 +52,7 @@
                 "min": 2,
                 "max": 6
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -60,7 +60,7 @@
           "type": "minecraft:item",
           "name": "astralend:stardust_block",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -68,7 +68,7 @@
                 "min": 1,
                 "max": 4
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -76,7 +76,7 @@
           "type": "minecraft:item",
           "name": "astralend:comet_cress",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -84,7 +84,7 @@
                 "min": 1,
                 "max": 3
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -92,7 +92,7 @@
           "type": "minecraft:item",
           "name": "astralend:void_crystal",
           "weight": 2,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -100,7 +100,7 @@
                 "min": 1,
                 "max": 2
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -108,7 +108,7 @@
           "type": "minecraft:item",
           "name": "astralend:meteoric_iron_ingot",
           "weight": 1,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -116,7 +116,7 @@
                 "min": 1,
                 "max": 2
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         }
@@ -131,10 +131,12 @@
           "weight": 1
         }
       ],
-      "condition": {
-        "chance": 0.25,
-        "type": "minecraft:random_chance"
-      }
+      "conditions": [
+        {
+          "chance": 0.25,
+          "condition": "minecraft:random_chance"
+        }
+      ]
     },
     {
       "rolls": 1,
@@ -145,10 +147,12 @@
           "weight": 1
         }
       ],
-      "condition": {
-        "chance": 0.3,
-        "type": "minecraft:random_chance"
-      }
+      "conditions": [
+        {
+          "chance": 0.3,
+          "condition": "minecraft:random_chance"
+        }
+      ]
     }
   ],
   "random_sequence": "astralend:chests/comet_crater"

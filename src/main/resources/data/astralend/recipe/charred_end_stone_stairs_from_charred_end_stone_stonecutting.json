@@ -1,6 +1,8 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": "astralend:charred_end_stone",
+  "ingredient": {
+    "item": "astralend:charred_end_stone"
+  },
   "result": {
     "id": "astralend:charred_end_stone_stairs"
   }

@@ -3,7 +3,9 @@
   "category": "building",
   "group": "bark",
   "key": {
-    "#": "astralend:nullwood_log"
+    "#": {
+      "item": "astralend:nullwood_log"
+    }
   },
   "pattern": [
     "##",

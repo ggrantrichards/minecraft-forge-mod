@@ -1,6 +1,8 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": "astralend:pale_end_stone",
+  "ingredient": {
+    "item": "astralend:pale_end_stone"
+  },
   "result": {
     "id": "astralend:pale_end_stone_wall"
   }

@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:glowing_stew"
+        "recipe": "astralend:glowing_stew"
       }
     },
     "has_lumineshroom": {

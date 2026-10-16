@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:starsap_from_block"
+        "recipe": "astralend:starsap_from_block"
       }
     },
     "has_starsap_block": {

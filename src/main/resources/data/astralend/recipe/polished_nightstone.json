@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "S": "astralend:nightstone"
+    "S": {
+      "item": "astralend:nightstone"
+    }
   },
   "pattern": [
     "SS",

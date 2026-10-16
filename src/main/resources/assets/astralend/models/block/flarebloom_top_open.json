@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cross",
   "textures": {
     "cross": "astralend:block/flarebloom_top_open"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

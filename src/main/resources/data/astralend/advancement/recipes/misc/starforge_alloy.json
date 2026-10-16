@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:starforge_alloy"
+        "recipe": "astralend:starforge_alloy"
       }
     },
     "has_void_crystal": {

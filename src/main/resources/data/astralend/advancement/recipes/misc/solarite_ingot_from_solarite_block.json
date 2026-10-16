@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:solarite_ingot_from_solarite_block"
+        "recipe": "astralend:solarite_ingot_from_solarite_block"
       }
     },
     "has_solarite_block": {

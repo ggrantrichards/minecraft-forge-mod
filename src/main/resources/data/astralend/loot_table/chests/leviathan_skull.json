@@ -8,7 +8,7 @@
           "type": "minecraft:item",
           "name": "astralend:charged_void_crystal",
           "weight": 1,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -16,7 +16,7 @@
                 "min": 1,
                 "max": 2
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         }
@@ -33,7 +33,7 @@
           "type": "minecraft:item",
           "name": "astralend:void_crystal",
           "weight": 4,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -41,7 +41,7 @@
                 "min": 1,
                 "max": 4
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -49,7 +49,7 @@
           "type": "minecraft:item",
           "name": "astralend:chart_fragment",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -57,7 +57,7 @@
                 "min": 1,
                 "max": 2
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -65,7 +65,7 @@
           "type": "minecraft:item",
           "name": "astralend:leviathan_bone_block",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -73,7 +73,7 @@
                 "min": 2,
                 "max": 6
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -81,7 +81,7 @@
           "type": "minecraft:item",
           "name": "astralend:whalelight_scale",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -89,7 +89,7 @@
                 "min": 1,
                 "max": 4
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -97,7 +97,7 @@
           "type": "minecraft:item",
           "name": "minecraft:ender_pearl",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -105,7 +105,7 @@
                 "min": 1,
                 "max": 3
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -123,7 +123,7 @@
           "type": "minecraft:item",
           "name": "minecraft:soul_lantern",
           "weight": 2,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -131,7 +131,7 @@
                 "min": 1,
                 "max": 2
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -139,7 +139,7 @@
           "type": "minecraft:item",
           "name": "astralend:glowing_spores",
           "weight": 2,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -147,7 +147,7 @@
                 "min": 2,
                 "max": 5
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         }
@@ -162,10 +162,12 @@
           "weight": 1
         }
       ],
-      "condition": {
-        "chance": 0.35,
-        "type": "minecraft:random_chance"
-      }
+      "conditions": [
+        {
+          "chance": 0.35,
+          "condition": "minecraft:random_chance"
+        }
+      ]
     },
     {
       "rolls": 1,
@@ -176,10 +178,12 @@
           "weight": 1
         }
       ],
-      "condition": {
-        "chance": 0.15,
-        "type": "minecraft:random_chance"
-      }
+      "conditions": [
+        {
+          "chance": 0.15,
+          "condition": "minecraft:random_chance"
+        }
+      ]
     }
   ],
   "random_sequence": "astralend:chests/leviathan_skull"

@@ -8,10 +8,10 @@
           "type": "minecraft:item",
           "name": "minecraft:potion",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "id": "astralend:upwelling",
-              "type": "minecraft:set_potion"
+              "function": "minecraft:set_potion"
             }
           ]
         },
@@ -19,10 +19,10 @@
           "type": "minecraft:item",
           "name": "minecraft:potion",
           "weight": 1,
-          "modifier": [
+          "functions": [
             {
               "id": "astralend:long_upwelling",
-              "type": "minecraft:set_potion"
+              "function": "minecraft:set_potion"
             }
           ]
         }
@@ -39,7 +39,7 @@
           "type": "minecraft:item",
           "name": "astralend:glimmer_cluster",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -47,7 +47,7 @@
                 "min": 1,
                 "max": 3
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -55,7 +55,7 @@
           "type": "minecraft:item",
           "name": "minecraft:arrow",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -63,7 +63,7 @@
                 "min": 4,
                 "max": 12
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -71,7 +71,7 @@
           "type": "minecraft:item",
           "name": "astralend:upwell_mote",
           "weight": 1,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -79,7 +79,7 @@
                 "min": 1,
                 "max": 2
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -87,7 +87,7 @@
           "type": "minecraft:item",
           "name": "minecraft:golden_carrot",
           "weight": 2,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -95,7 +95,7 @@
                 "min": 2,
                 "max": 5
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },

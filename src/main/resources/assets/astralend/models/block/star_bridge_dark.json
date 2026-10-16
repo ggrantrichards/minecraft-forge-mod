@@ -2,5 +2,6 @@
   "textures": {
     "particle": "astralend:block/star_bridge"
   },
-  "elements": []
+  "elements": [],
+  "render_type": "minecraft:translucent"
 }

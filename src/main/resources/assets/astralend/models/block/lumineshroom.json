@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cross",
   "textures": {
     "cross": "astralend:block/lumineshroom"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

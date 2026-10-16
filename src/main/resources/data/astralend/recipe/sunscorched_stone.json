@@ -4,7 +4,9 @@
   "cookingtime": 200,
   "experience": 0.1,
   "group": "sunscorched_stone",
-  "ingredient": "astralend:pale_end_stone",
+  "ingredient": {
+    "item": "astralend:pale_end_stone"
+  },
   "result": {
     "id": "astralend:sunscorched_stone"
   }

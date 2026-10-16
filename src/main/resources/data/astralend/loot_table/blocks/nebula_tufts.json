@@ -2,14 +2,21 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "condition": "minecraft:tool/can_shear",
       "entries": [
         {
           "type": "minecraft:item",
           "name": "astralend:nebula_tufts"
         }
       ],
-      "rolls": 1
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:match_tool",
+          "predicate": {
+            "items": "minecraft:shears"
+          }
+        }
+      ]
     }
   ],
   "random_sequence": "astralend:blocks/nebula_tufts"

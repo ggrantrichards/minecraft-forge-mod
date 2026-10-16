@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "S": "astralend:starbloom",
-    "C": "minecraft:compass"
+    "S": {
+      "item": "astralend:starbloom"
+    },
+    "C": {
+      "item": "minecraft:compass"
+    }
   },
   "pattern": [
     " S ",

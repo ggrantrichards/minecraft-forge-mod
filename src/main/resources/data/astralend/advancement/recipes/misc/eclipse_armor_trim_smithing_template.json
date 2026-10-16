@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:eclipse_armor_trim_smithing_template"
+        "recipe": "astralend:eclipse_armor_trim_smithing_template"
       }
     },
     "has_diamond": {

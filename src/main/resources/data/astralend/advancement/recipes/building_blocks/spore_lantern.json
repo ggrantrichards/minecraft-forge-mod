@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:spore_lantern"
+        "recipe": "astralend:spore_lantern"
       }
     },
     "has_glowing_spores": {

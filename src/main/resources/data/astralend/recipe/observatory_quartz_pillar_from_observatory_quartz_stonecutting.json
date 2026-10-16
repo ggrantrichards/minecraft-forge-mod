@@ -1,6 +1,8 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": "astralend:observatory_quartz",
+  "ingredient": {
+    "item": "astralend:observatory_quartz"
+  },
   "result": {
     "id": "astralend:observatory_quartz_pillar"
   }

@@ -1,64 +1,54 @@
 {
-  "attributes": {
-    "minecraft:gameplay/natural_mob_spawns": {
-      "argument": {
-        "spawn_costs": {},
-        "spawns_by_category": {
-          "monster": [
-            {
-              "type": "minecraft:enderman",
-              "count": 4,
-              "weight": 10
-            },
-            {
-              "type": "astralend:umbral_stalker",
-              "count": 1,
-              "weight": 6
-            }
-          ]
-        }
-      },
-      "modifier": "overlay"
-    },
-    "minecraft:visual/fog_color": "#2c3448",
-    "minecraft:audio/background_music": {
-      "default": {
-        "sound": "astralend:music.glimmering_crags",
-        "min_delay": 3000,
-        "max_delay": 12000,
-        "replace_current_music": false
-      }
-    },
-    "minecraft:audio/ambient_sounds": {
-      "loop": "astralend:ambient.glimmering_crags.loop",
-      "additions": {
-        "sound": "astralend:ambient.glimmering_crags.additions",
-        "tick_chance": 0.006
-      },
-      "mood": {
-        "sound": "minecraft:ambient.cave",
-        "tick_delay": 6000,
-        "block_search_extent": 8,
-        "offset": 2.0
-      }
-    },
-    "minecraft:visual/ambient_particles": {
-      "argument": [
-        {
-          "particle": {
-            "type": "minecraft:end_rod"
-          },
-          "probability": 0.003
-        }
-      ],
-      "modifier": "append"
-    }
-  },
-  "carvers": [],
+  "has_precipitation": false,
+  "temperature": 0.5,
   "downfall": 0.5,
   "effects": {
-    "water_color": "#8a96c0"
+    "fog_color": 2896968,
+    "sky_color": 0,
+    "water_color": 9082560,
+    "water_fog_color": 329011,
+    "music": {
+      "sound": "astralend:music.glimmering_crags",
+      "min_delay": 3000,
+      "max_delay": 12000,
+      "replace_current_music": false
+    },
+    "ambient_sound": "astralend:ambient.glimmering_crags.loop",
+    "additions_sound": {
+      "sound": "astralend:ambient.glimmering_crags.additions",
+      "tick_chance": 0.006
+    },
+    "mood_sound": {
+      "sound": "minecraft:ambient.cave",
+      "tick_delay": 6000,
+      "block_search_extent": 8,
+      "offset": 2.0
+    },
+    "particle": {
+      "options": {
+        "type": "minecraft:end_rod"
+      },
+      "probability": 0.003
+    }
   },
+  "spawners": {
+    "monster": [
+      {
+        "type": "minecraft:enderman",
+        "weight": 10,
+        "minCount": 4,
+        "maxCount": 4
+      },
+      {
+        "type": "astralend:umbral_stalker",
+        "weight": 6,
+        "minCount": 1,
+        "maxCount": 1
+      }
+    ]
+  },
+  "spawn_costs": {},
+  "carvers": {},
   "features": [
     [],
     [],
@@ -78,7 +68,5 @@
       "astralend:glimmering_crags_clusters",
       "astralend:glimmering_crags_voidgel"
     ]
-  ],
-  "has_precipitation": false,
-  "temperature": 0.5
+  ]
 }

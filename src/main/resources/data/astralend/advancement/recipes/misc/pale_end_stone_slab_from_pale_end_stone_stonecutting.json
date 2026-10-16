@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:pale_end_stone_slab_from_pale_end_stone_stonecutting"
+        "recipe": "astralend:pale_end_stone_slab_from_pale_end_stone_stonecutting"
       }
     },
     "has_pale_end_stone": {

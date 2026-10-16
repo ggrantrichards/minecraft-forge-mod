@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:astral_forge"
+        "recipe": "astralend:astral_forge"
       }
     },
     "has_void_crystal": {

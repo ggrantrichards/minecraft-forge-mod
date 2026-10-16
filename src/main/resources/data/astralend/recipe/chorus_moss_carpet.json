@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": "astralend:chorus_moss"
+    "#": {
+      "item": "astralend:chorus_moss"
+    }
   },
   "pattern": [
     "##"

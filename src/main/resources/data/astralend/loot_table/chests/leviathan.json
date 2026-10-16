@@ -12,7 +12,7 @@
           "type": "minecraft:item",
           "name": "astralend:void_crystal",
           "weight": 4,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -20,7 +20,7 @@
                 "min": 2,
                 "max": 5
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -28,7 +28,7 @@
           "type": "minecraft:item",
           "name": "astralend:charged_void_crystal",
           "weight": 2,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -36,7 +36,7 @@
                 "min": 1,
                 "max": 2
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -44,7 +44,7 @@
           "type": "minecraft:item",
           "name": "astralend:whalelight_scale",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -52,7 +52,7 @@
                 "min": 1,
                 "max": 4
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -60,7 +60,7 @@
           "type": "minecraft:item",
           "name": "astralend:leviathan_bone_block",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -68,7 +68,7 @@
                 "min": 2,
                 "max": 6
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -76,7 +76,7 @@
           "type": "minecraft:item",
           "name": "minecraft:ender_pearl",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -84,7 +84,7 @@
                 "min": 2,
                 "max": 4
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -92,7 +92,7 @@
           "type": "minecraft:item",
           "name": "minecraft:shulker_shell",
           "weight": 1,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -100,7 +100,7 @@
                 "min": 1,
                 "max": 1
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -108,7 +108,7 @@
           "type": "minecraft:item",
           "name": "minecraft:experience_bottle",
           "weight": 2,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -116,7 +116,7 @@
                 "min": 2,
                 "max": 5
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -124,7 +124,7 @@
           "type": "minecraft:item",
           "name": "minecraft:purpur_block",
           "weight": 2,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -132,7 +132,7 @@
                 "min": 4,
                 "max": 12
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -140,7 +140,7 @@
           "type": "minecraft:item",
           "name": "minecraft:diamond",
           "weight": 1,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -148,7 +148,7 @@
                 "min": 1,
                 "max": 3
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -156,7 +156,7 @@
           "type": "minecraft:item",
           "name": "minecraft:golden_apple",
           "weight": 1,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -164,7 +164,7 @@
                 "min": 1,
                 "max": 1
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         }
@@ -179,10 +179,12 @@
           "weight": 1
         }
       ],
-      "condition": {
-        "chance": 0.35,
-        "type": "minecraft:random_chance"
-      }
+      "conditions": [
+        {
+          "chance": 0.35,
+          "condition": "minecraft:random_chance"
+        }
+      ]
     },
     {
       "rolls": 1,
@@ -193,10 +195,12 @@
           "weight": 1
         }
       ],
-      "condition": {
-        "chance": 0.2,
-        "type": "minecraft:random_chance"
-      }
+      "conditions": [
+        {
+          "chance": 0.2,
+          "condition": "minecraft:random_chance"
+        }
+      ]
     },
     {
       "rolls": 1,
@@ -207,10 +211,12 @@
           "weight": 1
         }
       ],
-      "condition": {
-        "chance": 0.04,
-        "type": "minecraft:random_chance"
-      }
+      "conditions": [
+        {
+          "chance": 0.04,
+          "condition": "minecraft:random_chance"
+        }
+      ]
     }
   ],
   "random_sequence": "astralend:chests/leviathan"

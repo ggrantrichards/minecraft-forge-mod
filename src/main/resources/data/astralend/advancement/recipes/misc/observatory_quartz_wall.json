@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:observatory_quartz_wall"
+        "recipe": "astralend:observatory_quartz_wall"
       }
     },
     "has_observatory_quartz": {

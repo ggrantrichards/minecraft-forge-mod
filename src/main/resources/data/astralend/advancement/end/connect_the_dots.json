@@ -19,9 +19,7 @@
     "maze": {
       "trigger": "minecraft:player_generates_container_loot",
       "conditions": {
-        "loot_tables": [
-          "astralend:chests/constellation_maze"
-        ]
+        "loot_table": "astralend:chests/constellation_maze"
       }
     }
   },

@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "S": "astralend:lumine_stem"
+    "S": {
+      "item": "astralend:lumine_stem"
+    }
   },
   "pattern": [
     "SS",

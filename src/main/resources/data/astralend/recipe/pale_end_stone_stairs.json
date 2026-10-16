@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": "astralend:pale_end_stone"
+    "#": {
+      "item": "astralend:pale_end_stone"
+    }
   },
   "pattern": [
     "#  ",

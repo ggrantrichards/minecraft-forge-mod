@@ -55,10 +55,12 @@
           "weight": 1
         }
       ],
-      "condition": {
-        "chance": 0.5,
-        "type": "minecraft:random_chance"
-      }
+      "conditions": [
+        {
+          "chance": 0.5,
+          "condition": "minecraft:random_chance"
+        }
+      ]
     },
     {
       "rolls": {
@@ -71,7 +73,7 @@
           "type": "minecraft:item",
           "name": "astralend:void_crystal",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -79,7 +81,7 @@
                 "min": 1,
                 "max": 3
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -87,7 +89,7 @@
           "type": "minecraft:item",
           "name": "astralend:charged_void_crystal",
           "weight": 2,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -95,7 +97,7 @@
                 "min": 1,
                 "max": 2
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -103,7 +105,7 @@
           "type": "minecraft:item",
           "name": "minecraft:diamond",
           "weight": 2,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -111,7 +113,7 @@
                 "min": 2,
                 "max": 4
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -119,7 +121,7 @@
           "type": "minecraft:item",
           "name": "minecraft:netherite_scrap",
           "weight": 1,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -127,7 +129,7 @@
                 "min": 1,
                 "max": 2
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },

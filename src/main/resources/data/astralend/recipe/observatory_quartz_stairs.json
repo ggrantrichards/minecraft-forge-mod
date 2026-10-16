@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": "astralend:observatory_quartz"
+    "#": {
+      "item": "astralend:observatory_quartz"
+    }
   },
   "pattern": [
     "#  ",

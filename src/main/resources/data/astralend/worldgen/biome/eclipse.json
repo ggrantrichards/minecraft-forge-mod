@@ -1,72 +1,63 @@
 {
-  "attributes": {
-    "minecraft:gameplay/natural_mob_spawns": {
-      "argument": {
-        "spawn_costs": {},
-        "spawns_by_category": {
-          "monster": [
-            {
-              "type": "minecraft:endermite",
-              "count": 2,
-              "weight": 3
-            }
-          ],
-          "creature": [
-            {
-              "type": "astralend:hushback",
-              "count": 4,
-              "weight": 10
-            },
-            {
-              "type": "astralend:hydragrip",
-              "count": 2,
-              "weight": 5
-            }
-          ]
-        }
-      },
-      "modifier": "overlay"
-    },
-    "minecraft:visual/fog_color": "#4a3920",
-    "minecraft:audio/background_music": {
-      "default": {
-        "sound": "astralend:music.eclipse",
-        "min_delay": 3000,
-        "max_delay": 12000,
-        "replace_current_music": false
-      }
-    },
-    "minecraft:audio/ambient_sounds": {
-      "loop": "astralend:ambient.eclipse.loop",
-      "additions": {
-        "sound": "astralend:ambient.eclipse.additions",
-        "tick_chance": 0.006
-      },
-      "mood": {
-        "sound": "minecraft:ambient.cave",
-        "tick_delay": 6000,
-        "block_search_extent": 8,
-        "offset": 2.0
-      }
-    },
-    "minecraft:visual/ambient_particles": {
-      "argument": [
-        {
-          "particle": {
-            "type": "minecraft:end_rod"
-          },
-          "probability": 0.002
-        }
-      ],
-      "modifier": "append"
-    }
-  },
-  "carvers": [],
+  "has_precipitation": false,
+  "temperature": 0.5,
   "downfall": 0.5,
   "effects": {
-    "water_color": "#34c8bc",
-    "grass_color": "#d2b04c"
+    "fog_color": 4864288,
+    "sky_color": 0,
+    "water_color": 3459260,
+    "water_fog_color": 329011,
+    "grass_color": 13807692,
+    "music": {
+      "sound": "astralend:music.eclipse",
+      "min_delay": 3000,
+      "max_delay": 12000,
+      "replace_current_music": false
+    },
+    "ambient_sound": "astralend:ambient.eclipse.loop",
+    "additions_sound": {
+      "sound": "astralend:ambient.eclipse.additions",
+      "tick_chance": 0.006
+    },
+    "mood_sound": {
+      "sound": "minecraft:ambient.cave",
+      "tick_delay": 6000,
+      "block_search_extent": 8,
+      "offset": 2.0
+    },
+    "particle": {
+      "options": {
+        "type": "minecraft:end_rod"
+      },
+      "probability": 0.002
+    }
   },
+  "spawners": {
+    "monster": [
+      {
+        "type": "minecraft:endermite",
+        "weight": 3,
+        "minCount": 2,
+        "maxCount": 2
+      }
+    ],
+    "creature": [
+      {
+        "type": "astralend:hushback",
+        "weight": 10,
+        "minCount": 4,
+        "maxCount": 4
+      },
+      {
+        "type": "astralend:hydragrip",
+        "weight": 5,
+        "minCount": 2,
+        "maxCount": 2
+      }
+    ]
+  },
+  "spawn_costs": {},
+  "carvers": {},
   "features": [
     [],
     [],
@@ -90,7 +81,5 @@
       "astralend:gilded_reach_short_grass",
       "astralend:gilded_reach_tall_grass"
     ]
-  ],
-  "has_precipitation": false,
-  "temperature": 0.5
+  ]
 }

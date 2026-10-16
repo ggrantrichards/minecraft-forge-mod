@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:nullwood_fence_gate"
+        "recipe": "astralend:nullwood_fence_gate"
       }
     },
     "has_stick": {

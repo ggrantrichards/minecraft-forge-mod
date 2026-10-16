@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:yellow_dye_from_starbloom"
+        "recipe": "astralend:yellow_dye_from_starbloom"
       }
     },
     "has_starbloom": {

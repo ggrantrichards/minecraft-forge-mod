@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:purpur_bricks"
+        "recipe": "astralend:purpur_bricks"
       }
     },
     "has_purpur_block": {

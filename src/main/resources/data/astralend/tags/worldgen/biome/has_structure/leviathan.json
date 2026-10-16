@@ -1,7 +1,13 @@
 {
   "values": [
-    "minecraft:small_end_islands",
-    "minecraft:end_barrens",
+    {
+      "id": "minecraft:small_end_islands",
+      "required": false
+    },
+    {
+      "id": "minecraft:end_barrens",
+      "required": false
+    },
     "astralend:ashen_barrens",
     "astralend:nebula_fields",
     "astralend:deep_hollows"

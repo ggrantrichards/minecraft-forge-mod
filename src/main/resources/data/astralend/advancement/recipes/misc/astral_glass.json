@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:astral_glass"
+        "recipe": "astralend:astral_glass"
       }
     },
     "has_stardust_block": {

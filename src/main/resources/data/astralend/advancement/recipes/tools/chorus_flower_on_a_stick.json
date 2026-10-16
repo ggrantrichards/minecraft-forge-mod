@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:chorus_flower_on_a_stick"
+        "recipe": "astralend:chorus_flower_on_a_stick"
       }
     },
     "has_fishing_rod": {

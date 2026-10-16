@@ -3,8 +3,12 @@
   "category": "misc",
   "group": "wooden_fence",
   "key": {
-    "#": "minecraft:stick",
-    "W": "astralend:nullwood_planks"
+    "#": {
+      "item": "minecraft:stick"
+    },
+    "W": {
+      "item": "astralend:nullwood_planks"
+    }
   },
   "pattern": [
     "W#W",

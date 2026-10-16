@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:nightstone_brick_wall"
+        "recipe": "astralend:nightstone_brick_wall"
       }
     },
     "has_nightstone_bricks": {

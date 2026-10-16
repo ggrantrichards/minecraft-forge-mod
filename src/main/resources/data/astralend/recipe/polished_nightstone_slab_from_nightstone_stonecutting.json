@@ -1,6 +1,8 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": "astralend:nightstone",
+  "ingredient": {
+    "item": "astralend:nightstone"
+  },
   "result": {
     "count": 2,
     "id": "astralend:polished_nightstone_slab"

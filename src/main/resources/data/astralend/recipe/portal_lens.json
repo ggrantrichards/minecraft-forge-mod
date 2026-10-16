@@ -2,12 +2,24 @@
   "type": "minecraft:crafting_shapeless",
   "category": "equipment",
   "ingredients": [
-    "minecraft:spyglass",
-    "astralend:cracked_lens",
-    "astralend:void_crystal",
-    "astralend:temporal_crystal",
-    "astralend:chart_fragment",
-    "astralend:chart_fragment"
+    {
+      "item": "minecraft:spyglass"
+    },
+    {
+      "item": "astralend:cracked_lens"
+    },
+    {
+      "item": "astralend:void_crystal"
+    },
+    {
+      "item": "astralend:temporal_crystal"
+    },
+    {
+      "item": "astralend:chart_fragment"
+    },
+    {
+      "item": "astralend:chart_fragment"
+    }
   ],
   "result": {
     "id": "astralend:portal_lens"

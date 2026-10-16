@@ -8,7 +8,13 @@
     "astralend:nightstone",
     "astralend:pale_end_stone",
     "astralend:sunscorched_stone",
-    "minecraft:end_stone",
-    "minecraft:moss_block"
+    {
+      "id": "minecraft:end_stone",
+      "required": false
+    },
+    {
+      "id": "minecraft:moss_block",
+      "required": false
+    }
   ]
 }

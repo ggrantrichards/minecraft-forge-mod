@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:lumine_hyphae"
+        "recipe": "astralend:lumine_hyphae"
       }
     },
     "has_lumine_stem": {

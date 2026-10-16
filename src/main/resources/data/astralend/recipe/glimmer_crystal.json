@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "C": "astralend:glimmer_cluster"
+    "C": {
+      "item": "astralend:glimmer_cluster"
+    }
   },
   "pattern": [
     "CC",

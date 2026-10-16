@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "astralend:raw_solarite_block"
+    {
+      "item": "astralend:raw_solarite_block"
+    }
   ],
   "result": {
     "count": 9,

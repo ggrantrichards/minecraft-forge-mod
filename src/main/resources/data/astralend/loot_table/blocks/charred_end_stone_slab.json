@@ -5,23 +5,25 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "modifier": [
+          "name": "astralend:charred_end_stone_slab",
+          "functions": [
             {
-              "type": "minecraft:set_count",
-              "condition": {
-                "type": "minecraft:match_block",
-                "blocks": "astralend:charred_end_stone_slab",
-                "state": {
-                  "type": "double"
+              "count": 2,
+              "function": "minecraft:set_count",
+              "conditions": [
+                {
+                  "condition": "minecraft:block_state_property",
+                  "block": "astralend:charred_end_stone_slab",
+                  "properties": {
+                    "type": "double"
+                  }
                 }
-              },
-              "count": 2
+              ]
             },
             {
-              "type": "minecraft:explosion_decay"
+              "function": "minecraft:explosion_decay"
             }
-          ],
-          "name": "astralend:charred_end_stone_slab"
+          ]
         }
       ],
       "rolls": 1

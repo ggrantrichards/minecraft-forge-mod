@@ -12,7 +12,7 @@
           "type": "minecraft:item",
           "name": "astralend:glimmer_crystal",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -20,7 +20,7 @@
                 "min": 2,
                 "max": 6
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -28,7 +28,7 @@
           "type": "minecraft:item",
           "name": "astralend:void_crystal",
           "weight": 2,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -36,7 +36,7 @@
                 "min": 1,
                 "max": 2
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -44,7 +44,7 @@
           "type": "minecraft:item",
           "name": "astralend:meteoric_iron_ingot",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -52,7 +52,7 @@
                 "min": 1,
                 "max": 3
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -60,7 +60,7 @@
           "type": "minecraft:item",
           "name": "minecraft:ender_pearl",
           "weight": 3,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -68,7 +68,7 @@
                 "min": 1,
                 "max": 3
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -76,7 +76,7 @@
           "type": "minecraft:item",
           "name": "minecraft:diamond",
           "weight": 1,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -84,7 +84,7 @@
                 "min": 1,
                 "max": 2
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -92,7 +92,7 @@
           "type": "minecraft:item",
           "name": "astralend:upwell_mote",
           "weight": 2,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -100,7 +100,7 @@
                 "min": 1,
                 "max": 3
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -108,7 +108,7 @@
           "type": "minecraft:item",
           "name": "minecraft:experience_bottle",
           "weight": 2,
-          "modifier": [
+          "functions": [
             {
               "add": false,
               "count": {
@@ -116,7 +116,7 @@
                 "min": 2,
                 "max": 5
               },
-              "type": "minecraft:set_count"
+              "function": "minecraft:set_count"
             }
           ]
         },
@@ -134,10 +134,10 @@
           "type": "minecraft:item",
           "name": "minecraft:potion",
           "weight": 2,
-          "modifier": [
+          "functions": [
             {
               "id": "astralend:upwelling",
-              "type": "minecraft:set_potion"
+              "function": "minecraft:set_potion"
             }
           ]
         },
@@ -145,10 +145,10 @@
           "type": "minecraft:item",
           "name": "minecraft:potion",
           "weight": 1,
-          "modifier": [
+          "functions": [
             {
               "id": "astralend:long_upwelling",
-              "type": "minecraft:set_potion"
+              "function": "minecraft:set_potion"
             }
           ]
         }
@@ -163,10 +163,12 @@
           "weight": 1
         }
       ],
-      "condition": {
-        "chance": 0.15,
-        "type": "minecraft:random_chance"
-      }
+      "conditions": [
+        {
+          "chance": 0.15,
+          "condition": "minecraft:random_chance"
+        }
+      ]
     }
   ],
   "random_sequence": "astralend:chests/resonant_spire"

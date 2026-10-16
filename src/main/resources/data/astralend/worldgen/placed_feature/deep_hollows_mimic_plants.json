@@ -20,24 +20,20 @@
       "count": 5
     },
     {
-      "type": "minecraft:offset",
-      "x": {
-        "type": "minecraft:trapezoid",
-        "max": 6,
-        "min": -6,
-        "plateau": 0
+      "type": "minecraft:random_offset",
+      "xz_spread": {
+        "type": "minecraft:clamped_normal",
+        "mean": 0.0,
+        "deviation": 2.449,
+        "min_inclusive": -6,
+        "max_inclusive": 6
       },
-      "y": {
-        "type": "minecraft:trapezoid",
-        "max": 2,
-        "min": -2,
-        "plateau": 0
-      },
-      "z": {
-        "type": "minecraft:trapezoid",
-        "max": 6,
-        "min": -6,
-        "plateau": 0
+      "y_spread": {
+        "type": "minecraft:clamped_normal",
+        "mean": 0.0,
+        "deviation": 0.816,
+        "min_inclusive": -2,
+        "max_inclusive": 2
       }
     },
     {
@@ -51,7 +47,9 @@
           },
           {
             "type": "minecraft:would_survive",
-            "state": "astralend:mimic_plant"
+            "state": {
+              "Name": "astralend:mimic_plant"
+            }
           },
           {
             "type": "minecraft:matching_blocks",

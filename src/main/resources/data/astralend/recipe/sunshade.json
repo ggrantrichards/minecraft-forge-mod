@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "F": "astralend:hushfleece",
-    "S": "astralend:solarite_ingot"
+    "F": {
+      "item": "astralend:hushfleece"
+    },
+    "S": {
+      "item": "astralend:solarite_ingot"
+    }
   },
   "pattern": [
     "FFF",

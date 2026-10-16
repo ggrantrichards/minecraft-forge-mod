@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "D": "minecraft:diamond",
-    "T": "astralend:starforge_template",
-    "Q": "astralend:observatory_quartz"
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "T": {
+      "item": "astralend:starforge_template"
+    },
+    "Q": {
+      "item": "astralend:observatory_quartz"
+    }
   },
   "pattern": [
     "DTD",

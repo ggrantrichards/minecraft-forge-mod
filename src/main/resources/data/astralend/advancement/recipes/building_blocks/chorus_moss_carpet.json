@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:chorus_moss_carpet"
+        "recipe": "astralend:chorus_moss_carpet"
       }
     },
     "has_chorus_moss": {

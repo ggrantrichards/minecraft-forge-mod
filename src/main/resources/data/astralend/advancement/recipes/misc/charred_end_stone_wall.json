@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:charred_end_stone_wall"
+        "recipe": "astralend:charred_end_stone_wall"
       }
     },
     "has_charred_end_stone": {

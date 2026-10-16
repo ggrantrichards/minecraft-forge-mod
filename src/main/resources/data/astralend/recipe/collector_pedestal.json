@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "S": "astralend:solarite_ingot",
-    "G": "astralend:astral_glass",
-    "P": "astralend:polished_sunscorched_stone"
+    "S": {
+      "item": "astralend:solarite_ingot"
+    },
+    "G": {
+      "item": "astralend:astral_glass"
+    },
+    "P": {
+      "item": "astralend:polished_sunscorched_stone"
+    }
   },
   "pattern": [
     "SGS",

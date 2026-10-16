@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": "astralend:raw_solarite"
+    "#": {
+      "item": "astralend:raw_solarite"
+    }
   },
   "pattern": [
     "###",

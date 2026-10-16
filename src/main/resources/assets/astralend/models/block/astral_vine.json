@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cross",
   "textures": {
     "cross": "astralend:block/astral_vine"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

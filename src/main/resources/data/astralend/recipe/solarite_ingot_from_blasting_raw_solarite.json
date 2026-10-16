@@ -4,7 +4,9 @@
   "cookingtime": 100,
   "experience": 1.0,
   "group": "solarite_ingot",
-  "ingredient": "astralend:raw_solarite",
+  "ingredient": {
+    "item": "astralend:raw_solarite"
+  },
   "result": {
     "id": "astralend:solarite_ingot"
   }

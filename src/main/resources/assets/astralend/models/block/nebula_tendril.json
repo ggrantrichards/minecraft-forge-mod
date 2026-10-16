@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cross",
   "textures": {
     "cross": "astralend:block/nebula_tendril"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

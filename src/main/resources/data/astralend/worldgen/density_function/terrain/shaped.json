@@ -1,26 +1,497 @@
 {
-  "type": "minecraft:lerp",
-  "alpha": "astralend:terrain/weight/shattered_crags",
-  "first": {
-    "type": "minecraft:lerp",
-    "alpha": "astralend:terrain/weight/glimmering_crags",
-    "first": {
-      "type": "minecraft:lerp",
-      "alpha": "astralend:terrain/weight/ashen_barrens",
-      "first": {
-        "type": "minecraft:lerp",
-        "alpha": "astralend:terrain/weight/deep_hollows",
-        "first": {
-          "type": "minecraft:lerp",
-          "alpha": "astralend:terrain/weight/nebula_fields",
-          "first": "minecraft:end/sloped_cheese",
-          "second": "astralend:terrain/nebula_fields"
+  "type": "minecraft:add",
+  "argument1": {
+    "type": "minecraft:add",
+    "argument1": {
+      "type": "minecraft:add",
+      "argument1": {
+        "type": "minecraft:add",
+        "argument1": {
+          "type": "minecraft:add",
+          "argument1": "minecraft:end/sloped_cheese",
+          "argument2": {
+            "type": "minecraft:mul",
+            "argument1": "astralend:terrain/weight/nebula_fields",
+            "argument2": {
+              "type": "minecraft:add",
+              "argument1": "astralend:terrain/nebula_fields",
+              "argument2": {
+                "type": "minecraft:mul",
+                "argument1": -1.0,
+                "argument2": "minecraft:end/sloped_cheese"
+              }
+            }
+          }
         },
-        "second": "astralend:terrain/deep_hollows"
+        "argument2": {
+          "type": "minecraft:mul",
+          "argument1": "astralend:terrain/weight/deep_hollows",
+          "argument2": {
+            "type": "minecraft:add",
+            "argument1": "astralend:terrain/deep_hollows",
+            "argument2": {
+              "type": "minecraft:mul",
+              "argument1": -1.0,
+              "argument2": {
+                "type": "minecraft:add",
+                "argument1": "minecraft:end/sloped_cheese",
+                "argument2": {
+                  "type": "minecraft:mul",
+                  "argument1": "astralend:terrain/weight/nebula_fields",
+                  "argument2": {
+                    "type": "minecraft:add",
+                    "argument1": "astralend:terrain/nebula_fields",
+                    "argument2": {
+                      "type": "minecraft:mul",
+                      "argument1": -1.0,
+                      "argument2": "minecraft:end/sloped_cheese"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       },
-      "second": "astralend:terrain/ashen_barrens"
+      "argument2": {
+        "type": "minecraft:mul",
+        "argument1": "astralend:terrain/weight/ashen_barrens",
+        "argument2": {
+          "type": "minecraft:add",
+          "argument1": "astralend:terrain/ashen_barrens",
+          "argument2": {
+            "type": "minecraft:mul",
+            "argument1": -1.0,
+            "argument2": {
+              "type": "minecraft:add",
+              "argument1": {
+                "type": "minecraft:add",
+                "argument1": "minecraft:end/sloped_cheese",
+                "argument2": {
+                  "type": "minecraft:mul",
+                  "argument1": "astralend:terrain/weight/nebula_fields",
+                  "argument2": {
+                    "type": "minecraft:add",
+                    "argument1": "astralend:terrain/nebula_fields",
+                    "argument2": {
+                      "type": "minecraft:mul",
+                      "argument1": -1.0,
+                      "argument2": "minecraft:end/sloped_cheese"
+                    }
+                  }
+                }
+              },
+              "argument2": {
+                "type": "minecraft:mul",
+                "argument1": "astralend:terrain/weight/deep_hollows",
+                "argument2": {
+                  "type": "minecraft:add",
+                  "argument1": "astralend:terrain/deep_hollows",
+                  "argument2": {
+                    "type": "minecraft:mul",
+                    "argument1": -1.0,
+                    "argument2": {
+                      "type": "minecraft:add",
+                      "argument1": "minecraft:end/sloped_cheese",
+                      "argument2": {
+                        "type": "minecraft:mul",
+                        "argument1": "astralend:terrain/weight/nebula_fields",
+                        "argument2": {
+                          "type": "minecraft:add",
+                          "argument1": "astralend:terrain/nebula_fields",
+                          "argument2": {
+                            "type": "minecraft:mul",
+                            "argument1": -1.0,
+                            "argument2": "minecraft:end/sloped_cheese"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
-    "second": "astralend:terrain/glimmering_crags"
+    "argument2": {
+      "type": "minecraft:mul",
+      "argument1": "astralend:terrain/weight/glimmering_crags",
+      "argument2": {
+        "type": "minecraft:add",
+        "argument1": "astralend:terrain/glimmering_crags",
+        "argument2": {
+          "type": "minecraft:mul",
+          "argument1": -1.0,
+          "argument2": {
+            "type": "minecraft:add",
+            "argument1": {
+              "type": "minecraft:add",
+              "argument1": {
+                "type": "minecraft:add",
+                "argument1": "minecraft:end/sloped_cheese",
+                "argument2": {
+                  "type": "minecraft:mul",
+                  "argument1": "astralend:terrain/weight/nebula_fields",
+                  "argument2": {
+                    "type": "minecraft:add",
+                    "argument1": "astralend:terrain/nebula_fields",
+                    "argument2": {
+                      "type": "minecraft:mul",
+                      "argument1": -1.0,
+                      "argument2": "minecraft:end/sloped_cheese"
+                    }
+                  }
+                }
+              },
+              "argument2": {
+                "type": "minecraft:mul",
+                "argument1": "astralend:terrain/weight/deep_hollows",
+                "argument2": {
+                  "type": "minecraft:add",
+                  "argument1": "astralend:terrain/deep_hollows",
+                  "argument2": {
+                    "type": "minecraft:mul",
+                    "argument1": -1.0,
+                    "argument2": {
+                      "type": "minecraft:add",
+                      "argument1": "minecraft:end/sloped_cheese",
+                      "argument2": {
+                        "type": "minecraft:mul",
+                        "argument1": "astralend:terrain/weight/nebula_fields",
+                        "argument2": {
+                          "type": "minecraft:add",
+                          "argument1": "astralend:terrain/nebula_fields",
+                          "argument2": {
+                            "type": "minecraft:mul",
+                            "argument1": -1.0,
+                            "argument2": "minecraft:end/sloped_cheese"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "argument2": {
+              "type": "minecraft:mul",
+              "argument1": "astralend:terrain/weight/ashen_barrens",
+              "argument2": {
+                "type": "minecraft:add",
+                "argument1": "astralend:terrain/ashen_barrens",
+                "argument2": {
+                  "type": "minecraft:mul",
+                  "argument1": -1.0,
+                  "argument2": {
+                    "type": "minecraft:add",
+                    "argument1": {
+                      "type": "minecraft:add",
+                      "argument1": "minecraft:end/sloped_cheese",
+                      "argument2": {
+                        "type": "minecraft:mul",
+                        "argument1": "astralend:terrain/weight/nebula_fields",
+                        "argument2": {
+                          "type": "minecraft:add",
+                          "argument1": "astralend:terrain/nebula_fields",
+                          "argument2": {
+                            "type": "minecraft:mul",
+                            "argument1": -1.0,
+                            "argument2": "minecraft:end/sloped_cheese"
+                          }
+                        }
+                      }
+                    },
+                    "argument2": {
+                      "type": "minecraft:mul",
+                      "argument1": "astralend:terrain/weight/deep_hollows",
+                      "argument2": {
+                        "type": "minecraft:add",
+                        "argument1": "astralend:terrain/deep_hollows",
+                        "argument2": {
+                          "type": "minecraft:mul",
+                          "argument1": -1.0,
+                          "argument2": {
+                            "type": "minecraft:add",
+                            "argument1": "minecraft:end/sloped_cheese",
+                            "argument2": {
+                              "type": "minecraft:mul",
+                              "argument1": "astralend:terrain/weight/nebula_fields",
+                              "argument2": {
+                                "type": "minecraft:add",
+                                "argument1": "astralend:terrain/nebula_fields",
+                                "argument2": {
+                                  "type": "minecraft:mul",
+                                  "argument1": -1.0,
+                                  "argument2": "minecraft:end/sloped_cheese"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   },
-  "second": "astralend:terrain/shattered_crags"
+  "argument2": {
+    "type": "minecraft:mul",
+    "argument1": "astralend:terrain/weight/shattered_crags",
+    "argument2": {
+      "type": "minecraft:add",
+      "argument1": "astralend:terrain/shattered_crags",
+      "argument2": {
+        "type": "minecraft:mul",
+        "argument1": -1.0,
+        "argument2": {
+          "type": "minecraft:add",
+          "argument1": {
+            "type": "minecraft:add",
+            "argument1": {
+              "type": "minecraft:add",
+              "argument1": {
+                "type": "minecraft:add",
+                "argument1": "minecraft:end/sloped_cheese",
+                "argument2": {
+                  "type": "minecraft:mul",
+                  "argument1": "astralend:terrain/weight/nebula_fields",
+                  "argument2": {
+                    "type": "minecraft:add",
+                    "argument1": "astralend:terrain/nebula_fields",
+                    "argument2": {
+                      "type": "minecraft:mul",
+                      "argument1": -1.0,
+                      "argument2": "minecraft:end/sloped_cheese"
+                    }
+                  }
+                }
+              },
+              "argument2": {
+                "type": "minecraft:mul",
+                "argument1": "astralend:terrain/weight/deep_hollows",
+                "argument2": {
+                  "type": "minecraft:add",
+                  "argument1": "astralend:terrain/deep_hollows",
+                  "argument2": {
+                    "type": "minecraft:mul",
+                    "argument1": -1.0,
+                    "argument2": {
+                      "type": "minecraft:add",
+                      "argument1": "minecraft:end/sloped_cheese",
+                      "argument2": {
+                        "type": "minecraft:mul",
+                        "argument1": "astralend:terrain/weight/nebula_fields",
+                        "argument2": {
+                          "type": "minecraft:add",
+                          "argument1": "astralend:terrain/nebula_fields",
+                          "argument2": {
+                            "type": "minecraft:mul",
+                            "argument1": -1.0,
+                            "argument2": "minecraft:end/sloped_cheese"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "argument2": {
+              "type": "minecraft:mul",
+              "argument1": "astralend:terrain/weight/ashen_barrens",
+              "argument2": {
+                "type": "minecraft:add",
+                "argument1": "astralend:terrain/ashen_barrens",
+                "argument2": {
+                  "type": "minecraft:mul",
+                  "argument1": -1.0,
+                  "argument2": {
+                    "type": "minecraft:add",
+                    "argument1": {
+                      "type": "minecraft:add",
+                      "argument1": "minecraft:end/sloped_cheese",
+                      "argument2": {
+                        "type": "minecraft:mul",
+                        "argument1": "astralend:terrain/weight/nebula_fields",
+                        "argument2": {
+                          "type": "minecraft:add",
+                          "argument1": "astralend:terrain/nebula_fields",
+                          "argument2": {
+                            "type": "minecraft:mul",
+                            "argument1": -1.0,
+                            "argument2": "minecraft:end/sloped_cheese"
+                          }
+                        }
+                      }
+                    },
+                    "argument2": {
+                      "type": "minecraft:mul",
+                      "argument1": "astralend:terrain/weight/deep_hollows",
+                      "argument2": {
+                        "type": "minecraft:add",
+                        "argument1": "astralend:terrain/deep_hollows",
+                        "argument2": {
+                          "type": "minecraft:mul",
+                          "argument1": -1.0,
+                          "argument2": {
+                            "type": "minecraft:add",
+                            "argument1": "minecraft:end/sloped_cheese",
+                            "argument2": {
+                              "type": "minecraft:mul",
+                              "argument1": "astralend:terrain/weight/nebula_fields",
+                              "argument2": {
+                                "type": "minecraft:add",
+                                "argument1": "astralend:terrain/nebula_fields",
+                                "argument2": {
+                                  "type": "minecraft:mul",
+                                  "argument1": -1.0,
+                                  "argument2": "minecraft:end/sloped_cheese"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "argument2": {
+            "type": "minecraft:mul",
+            "argument1": "astralend:terrain/weight/glimmering_crags",
+            "argument2": {
+              "type": "minecraft:add",
+              "argument1": "astralend:terrain/glimmering_crags",
+              "argument2": {
+                "type": "minecraft:mul",
+                "argument1": -1.0,
+                "argument2": {
+                  "type": "minecraft:add",
+                  "argument1": {
+                    "type": "minecraft:add",
+                    "argument1": {
+                      "type": "minecraft:add",
+                      "argument1": "minecraft:end/sloped_cheese",
+                      "argument2": {
+                        "type": "minecraft:mul",
+                        "argument1": "astralend:terrain/weight/nebula_fields",
+                        "argument2": {
+                          "type": "minecraft:add",
+                          "argument1": "astralend:terrain/nebula_fields",
+                          "argument2": {
+                            "type": "minecraft:mul",
+                            "argument1": -1.0,
+                            "argument2": "minecraft:end/sloped_cheese"
+                          }
+                        }
+                      }
+                    },
+                    "argument2": {
+                      "type": "minecraft:mul",
+                      "argument1": "astralend:terrain/weight/deep_hollows",
+                      "argument2": {
+                        "type": "minecraft:add",
+                        "argument1": "astralend:terrain/deep_hollows",
+                        "argument2": {
+                          "type": "minecraft:mul",
+                          "argument1": -1.0,
+                          "argument2": {
+                            "type": "minecraft:add",
+                            "argument1": "minecraft:end/sloped_cheese",
+                            "argument2": {
+                              "type": "minecraft:mul",
+                              "argument1": "astralend:terrain/weight/nebula_fields",
+                              "argument2": {
+                                "type": "minecraft:add",
+                                "argument1": "astralend:terrain/nebula_fields",
+                                "argument2": {
+                                  "type": "minecraft:mul",
+                                  "argument1": -1.0,
+                                  "argument2": "minecraft:end/sloped_cheese"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "argument2": {
+                    "type": "minecraft:mul",
+                    "argument1": "astralend:terrain/weight/ashen_barrens",
+                    "argument2": {
+                      "type": "minecraft:add",
+                      "argument1": "astralend:terrain/ashen_barrens",
+                      "argument2": {
+                        "type": "minecraft:mul",
+                        "argument1": -1.0,
+                        "argument2": {
+                          "type": "minecraft:add",
+                          "argument1": {
+                            "type": "minecraft:add",
+                            "argument1": "minecraft:end/sloped_cheese",
+                            "argument2": {
+                              "type": "minecraft:mul",
+                              "argument1": "astralend:terrain/weight/nebula_fields",
+                              "argument2": {
+                                "type": "minecraft:add",
+                                "argument1": "astralend:terrain/nebula_fields",
+                                "argument2": {
+                                  "type": "minecraft:mul",
+                                  "argument1": -1.0,
+                                  "argument2": "minecraft:end/sloped_cheese"
+                                }
+                              }
+                            }
+                          },
+                          "argument2": {
+                            "type": "minecraft:mul",
+                            "argument1": "astralend:terrain/weight/deep_hollows",
+                            "argument2": {
+                              "type": "minecraft:add",
+                              "argument1": "astralend:terrain/deep_hollows",
+                              "argument2": {
+                                "type": "minecraft:mul",
+                                "argument1": -1.0,
+                                "argument2": {
+                                  "type": "minecraft:add",
+                                  "argument1": "minecraft:end/sloped_cheese",
+                                  "argument2": {
+                                    "type": "minecraft:mul",
+                                    "argument1": "astralend:terrain/weight/nebula_fields",
+                                    "argument2": {
+                                      "type": "minecraft:add",
+                                      "argument1": "astralend:terrain/nebula_fields",
+                                      "argument2": {
+                                        "type": "minecraft:mul",
+                                        "argument1": -1.0,
+                                        "argument2": "minecraft:end/sloped_cheese"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

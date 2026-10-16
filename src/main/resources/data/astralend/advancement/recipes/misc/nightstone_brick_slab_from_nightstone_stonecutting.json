@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:nightstone_brick_slab_from_nightstone_stonecutting"
+        "recipe": "astralend:nightstone_brick_slab_from_nightstone_stonecutting"
       }
     },
     "has_nightstone": {

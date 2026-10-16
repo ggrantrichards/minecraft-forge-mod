@@ -3,7 +3,9 @@
   "category": "redstone",
   "group": "wooden_trapdoor",
   "key": {
-    "#": "astralend:nullwood_planks"
+    "#": {
+      "item": "astralend:nullwood_planks"
+    }
   },
   "pattern": [
     "###",

@@ -9,3 +9,8 @@ net.minecraft.client.player.Input
 net.minecraft.world.food.FoodProperties$Builder
 net.minecraft.world.inventory.ItemCombinerMenu
 net.minecraft.world.level.levelgen.feature.Feature
+net.minecraftforge.event.brewing.BrewingRecipeRegisterEvent
+net.minecraftforge.client.event.ModelEvent$ModifyBakingResult
+net.minecraftforge.client.event.ModelEvent$RegisterAdditional
+net.minecraft.client.renderer.block.model.ItemOverrides
+net.minecraft.client.resources.model.ModelResourceLocation

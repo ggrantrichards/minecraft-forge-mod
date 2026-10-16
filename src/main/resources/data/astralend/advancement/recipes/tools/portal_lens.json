@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:portal_lens"
+        "recipe": "astralend:portal_lens"
       }
     },
     "has_spyglass": {

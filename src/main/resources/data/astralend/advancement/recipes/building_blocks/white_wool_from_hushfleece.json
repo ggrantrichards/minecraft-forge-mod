@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:white_wool_from_hushfleece"
+        "recipe": "astralend:white_wool_from_hushfleece"
       }
     },
     "has_hushfleece": {

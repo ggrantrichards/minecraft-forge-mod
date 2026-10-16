@@ -4,7 +4,9 @@
   "cookingtime": 200,
   "experience": 1.0,
   "group": "meteoric_iron_ingot",
-  "ingredient": "astralend:meteoric_iron_ore",
+  "ingredient": {
+    "item": "astralend:meteoric_iron_ore"
+  },
   "result": {
     "id": "astralend:meteoric_iron_ingot"
   }

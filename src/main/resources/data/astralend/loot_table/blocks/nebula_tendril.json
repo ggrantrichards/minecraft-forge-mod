@@ -5,14 +5,35 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "condition": {
-            "type": "minecraft:any_of",
-            "terms": [
-              "minecraft:tool/can_shear",
-              "minecraft:tool/can_silk_touch"
-            ]
-          },
-          "name": "astralend:nebula_tendril"
+          "name": "astralend:nebula_tendril",
+          "conditions": [
+            {
+              "terms": [
+                {
+                  "condition": "minecraft:match_tool",
+                  "predicate": {
+                    "items": "minecraft:shears"
+                  }
+                },
+                {
+                  "condition": "minecraft:match_tool",
+                  "predicate": {
+                    "predicates": {
+                      "minecraft:enchantments": [
+                        {
+                          "enchantments": "minecraft:silk_touch",
+                          "levels": {
+                            "min": 1
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "condition": "minecraft:any_of"
+            }
+          ]
         }
       ],
       "rolls": 1

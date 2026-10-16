@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "astralend:void_crystal_block"
+    {
+      "item": "astralend:void_crystal_block"
+    }
   ],
   "result": {
     "count": 9,

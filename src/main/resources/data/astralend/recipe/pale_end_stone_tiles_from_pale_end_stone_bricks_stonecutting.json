@@ -1,6 +1,8 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": "astralend:pale_end_stone_bricks",
+  "ingredient": {
+    "item": "astralend:pale_end_stone_bricks"
+  },
   "result": {
     "id": "astralend:pale_end_stone_tiles"
   }

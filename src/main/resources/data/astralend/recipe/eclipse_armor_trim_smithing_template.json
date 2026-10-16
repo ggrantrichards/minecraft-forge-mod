@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "D": "minecraft:diamond",
-    "T": "astralend:eclipse_armor_trim_smithing_template",
-    "N": "astralend:nightstone"
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "T": {
+      "item": "astralend:eclipse_armor_trim_smithing_template"
+    },
+    "N": {
+      "item": "astralend:nightstone"
+    }
   },
   "pattern": [
     "DTD",

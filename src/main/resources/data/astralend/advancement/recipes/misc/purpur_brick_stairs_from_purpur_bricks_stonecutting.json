@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:purpur_brick_stairs_from_purpur_bricks_stonecutting"
+        "recipe": "astralend:purpur_brick_stairs_from_purpur_bricks_stonecutting"
       }
     },
     "has_purpur_bricks": {

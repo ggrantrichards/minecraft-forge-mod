@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "astralend:collector_pedestal"
+        "recipe": "astralend:collector_pedestal"
       }
     },
     "has_solarite_ingot": {

@@ -1,6 +1,9 @@
 {
   "values": [
-    "minecraft:end_highlands",
+    {
+      "id": "minecraft:end_highlands",
+      "required": false
+    },
     "astralend:nebula_fields"
   ]
 }

@@ -3,7 +3,9 @@
   "category": "misc",
   "group": "orange_dye",
   "ingredients": [
-    "astralend:flarebloom"
+    {
+      "item": "astralend:flarebloom"
+    }
   ],
   "result": {
     "count": 2,

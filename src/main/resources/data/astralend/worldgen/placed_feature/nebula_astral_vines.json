@@ -22,24 +22,20 @@
       "count": 10
     },
     {
-      "type": "minecraft:offset",
-      "x": {
-        "type": "minecraft:trapezoid",
-        "max": 5,
-        "min": -5,
-        "plateau": 0
+      "type": "minecraft:random_offset",
+      "xz_spread": {
+        "type": "minecraft:clamped_normal",
+        "mean": 0.0,
+        "deviation": 2.041,
+        "min_inclusive": -5,
+        "max_inclusive": 5
       },
-      "y": {
-        "type": "minecraft:trapezoid",
-        "max": 1,
-        "min": -1,
-        "plateau": 0
-      },
-      "z": {
-        "type": "minecraft:trapezoid",
-        "max": 5,
-        "min": -5,
-        "plateau": 0
+      "y_spread": {
+        "type": "minecraft:clamped_normal",
+        "mean": 0.0,
+        "deviation": 0.408,
+        "min_inclusive": -1,
+        "max_inclusive": 1
       }
     },
     {

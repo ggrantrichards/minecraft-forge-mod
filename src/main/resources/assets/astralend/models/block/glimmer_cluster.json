@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cross",
   "textures": {
     "cross": "astralend:block/glimmer_cluster"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

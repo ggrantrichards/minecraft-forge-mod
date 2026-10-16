@@ -20,7 +20,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 // Registers the biome source type "astralend:astral_end", which
 // data/minecraft/dimension/the_end.json uses for the End, and the feature types coded in Java
-// (used by data/astralend/worldgen/feature/*.json), and the structure type "astralend:island".
+// (used by data/astralend/worldgen/configured_feature/*.json), and the structure type "astralend:island".
 public final class ModWorldgen {
     public static final DeferredRegister<MapCodec<? extends BiomeSource>> BIOME_SOURCES =
         DeferredRegister.create(Registries.BIOME_SOURCE, AstralEnd.MODID);
@@ -79,6 +79,13 @@ public final class ModWorldgen {
     // Its skull, the Maw (the Rift Maw that was, merged into the one Leviathan).
     public static final RegistryObject<net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType> LEVIATHAN_HEAD_PIECE =
         STRUCTURE_PIECES.register("leviathan_head", () -> com.ggrantrichards.astralend.world.structure.LeviathanHeadPiece::new);
+
+    // (1.21.1 port) Density function types 26.3 has and 1.21.1 doesn't.
+    public static final DeferredRegister<MapCodec<? extends net.minecraft.world.level.levelgen.DensityFunction>> DENSITY_FUNCTION_TYPES =
+        DeferredRegister.create(Registries.DENSITY_FUNCTION_TYPE, AstralEnd.MODID);
+
+    public static final RegistryObject<MapCodec<? extends net.minecraft.world.level.levelgen.DensityFunction>> DISTANCE_TO_POINT =
+        DENSITY_FUNCTION_TYPES.register("distance_to_point", () -> DistanceToPoint.DATA_CODEC);
 
     private ModWorldgen() {}
 }

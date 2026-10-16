@@ -19,18 +19,20 @@
     "swam": {
       "trigger": "minecraft:location",
       "conditions": {
-        "player": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:location": {
-              "biomes": "astralend:eclipse",
-              "fluid": {
-                "fluids": "#minecraft:water"
+        "player": [
+          {
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "biomes": "astralend:eclipse",
+                "fluid": {
+                  "fluids": "#minecraft:water"
+                }
               }
-            }
+            },
+            "condition": "minecraft:entity_properties"
           }
-        }
+        ]
       }
     }
   },
