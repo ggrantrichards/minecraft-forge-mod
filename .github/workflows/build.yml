@@ -47,6 +47,10 @@ jobs:
       - name: Check the server loaded everything
         run: |
           cp run/logs/latest.log server.log
+          # (The game test server exits cleanly even when the mod fails to load, so look for the mod's own line.)
+          if ! grep -q "The Astral End loaded" server.log; then
+            echo "::error::the mod did not load in the server"; grep -E "ERROR|Exception|not found" server.log | head -40; exit 1
+          fi
           if grep -E "Missing (metadata|data pack).*astralend|Could not find resource pack for mod file" server.log; then
             echo "::error::astralend's resources did not load"; exit 1
           fi
