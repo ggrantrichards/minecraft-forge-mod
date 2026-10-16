@@ -42,8 +42,8 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-// The Hushback: a herd grazer of the Gilded Reach, its hide so pale and clear that its bones
-// show through. It makes almost no sound. Hurt one and the whole herd round it blinks away at once,
+// The Hushback: a herd grazer of the Gilded Reach, its hide dark and clear as the void, so that its
+// bones show through. It makes almost no sound. Hurt one and the whole herd round it blinks away at once,
 // the way an enderman does, and reappears some way off - so it's food and fleece for the patient, not
 // the greedy. Shear it for Hushfleece (it grows back as it grazes the turf); Breathcomb tempts it and
 // makes it breed.

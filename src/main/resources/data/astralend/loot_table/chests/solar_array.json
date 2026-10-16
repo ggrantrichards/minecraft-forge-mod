@@ -12,15 +12,15 @@
           "type": "minecraft:item",
           "name": "astralend:solarite_ingot",
           "weight": 6,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 2,
                 "max": 6
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -28,15 +28,15 @@
           "type": "minecraft:item",
           "name": "astralend:raw_solarite",
           "weight": 5,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 2,
                 "max": 6
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -44,15 +44,15 @@
           "type": "minecraft:item",
           "name": "astralend:solarite_block",
           "weight": 2,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
                 "max": 2
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -60,15 +60,15 @@
           "type": "minecraft:item",
           "name": "astralend:flare_bottle",
           "weight": 3,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
                 "max": 2
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -76,15 +76,15 @@
           "type": "minecraft:item",
           "name": "astralend:flare_pollen",
           "weight": 4,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 2,
                 "max": 6
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -92,15 +92,15 @@
           "type": "minecraft:item",
           "name": "astralend:charged_void_crystal",
           "weight": 2,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
                 "max": 1
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -113,15 +113,15 @@
           "type": "minecraft:item",
           "name": "astralend:sunshade",
           "weight": 3,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 2,
                 "max": 4
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         }
@@ -129,51 +129,45 @@
     },
     {
       "rolls": 1,
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.4
-        }
-      ],
       "entries": [
         {
           "type": "minecraft:item",
           "name": "astralend:temporal_crystal",
           "weight": 1
         }
-      ]
+      ],
+      "condition": {
+        "chance": 0.4,
+        "type": "minecraft:random_chance"
+      }
     },
     {
       "rolls": 1,
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.25
-        }
-      ],
       "entries": [
         {
           "type": "minecraft:item",
           "name": "astralend:bottled_flare",
           "weight": 1
         }
-      ]
+      ],
+      "condition": {
+        "chance": 0.25,
+        "type": "minecraft:random_chance"
+      }
     },
     {
       "rolls": 1,
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.35
-        }
-      ],
       "entries": [
         {
           "type": "minecraft:item",
           "name": "astralend:starforge_alloy",
           "weight": 1
         }
-      ]
+      ],
+      "condition": {
+        "chance": 0.35,
+        "type": "minecraft:random_chance"
+      }
     }
   ],
   "random_sequence": "astralend:chests/solar_array"

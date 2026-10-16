@@ -318,6 +318,18 @@ public final class WorldgenSurvey {
         }
         checkCaves(areas.get('D'), areas.get('X'), end, failures);   // (before the viewpoints: it adds the caves' shots)
         writeViewpoints(areas, end, structures);
+        // Cut-outs for the website's dioramas: a piece of each biome, and each structure.
+        for (Area area : areas.values()) {
+            if (area.standOn != null) {
+                Dioramas.biome(end, "biome_" + area.info.name().toLowerCase(java.util.Locale.ROOT).replace("the ", "").replace(' ', '_'), area.standOn);
+            }
+        }
+        for (String s : List.of("comet_crater", "shattered_observatory", "solar_array")) {
+            BlockPos marker = structures.getOrDefault(s + "_hot", structures.get(s));
+            if (marker != null) {
+                Dioramas.around(end, s, marker, 34, 26, 40);
+            }
+        }
         checkNebula(areas.get('N'), failures);
         checkAurora(areas.get('A'), failures);
         checkDeepHollows(areas.get('D'), end, failures);
@@ -646,6 +658,10 @@ public final class WorldgenSurvey {
             }
         }
         BlockPos pedestal = body.pedestal(), arena = body.arena(), heart = body.heart(), throat = head.throat();
+        // The whole skeleton, cut out for the website's diorama.
+        Dioramas.dump(end, "leviathan", new BlockPos(Math.min(box.minX(), skullBox.minX()), Math.min(box.minY(), skullBox.minY()),
+            Math.min(box.minZ(), skullBox.minZ())), new BlockPos(Math.max(box.maxX(), skullBox.maxX()), Math.max(box.maxY(), skullBox.maxY()),
+            Math.max(box.maxZ(), skullBox.maxZ())));
         testMaze(end, body.mazeStart(), failures);
         // A Drift Whale passing through: once round the skeleton, humming low.
         var passing = ModEntities.DRIFT_WHALE.get().create(end, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
@@ -910,6 +926,7 @@ public final class WorldgenSurvey {
             if (cap != null) {
                 // A view along the cave, from a few blocks off a glowcap, at eye height.
                 BlockPos eye = caveEye(end, cap);
+                Dioramas.cave(end, "cave_hollow_roots", cap);
                 EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "biome_hollow_roots %d.5 %d %d.5 %.1f 10.0", eye.getX(), eye.getY(), eye.getZ(),
                     yawTo(eye, cap)));
             }
@@ -942,6 +959,7 @@ public final class WorldgenSurvey {
             if (geode != null) {
                 BlockPos at = geode;
                 BlockPos eye = caveEye(end, at);
+                Dioramas.cave(end, "cave_crystal_vaults", at);
                 EXTRA_SHOTS.add(String.format(java.util.Locale.ROOT, "biome_crystal_vaults %d.5 %d %d.5 %.1f 15.0", eye.getX(), eye.getY(), eye.getZ(),
                     yawTo(eye, at)));
             }
@@ -1729,6 +1747,10 @@ public final class WorldgenSurvey {
 
     private static long distSqr(BlockPos pos) {
         return (long) pos.getX() * pos.getX() + (long) pos.getZ() * pos.getZ();
+    }
+
+    static void logLine(String line) {
+        log(line);
     }
 
     private static void log(String line) {

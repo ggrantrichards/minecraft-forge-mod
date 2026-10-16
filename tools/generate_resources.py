@@ -123,7 +123,45 @@ def english_variant(name, kind):
 written = []
 
 
+def old_condition(c):
+    """{"condition": "minecraft:x", ...} (old) -> {"type": "minecraft:x", ...}, terms and all."""
+    if isinstance(c, dict):
+        c = dict(c)
+        if isinstance(c.get("condition"), str) and "type" not in c:
+            c["type"] = c.pop("condition")
+        for k in ("terms", "term"):
+            if k in c:
+                c[k] = [old_condition(x) for x in c[k]] if isinstance(c[k], list) else old_condition(c[k])
+    return c
+
+
+def loot_format(o):
+    """Loot tables in 26.3's format. Its codecs read "modifier" (each with a "type") and a single
+    "condition" (with a "type"), and silently ignore the old "functions"/"function" and
+    "conditions"/"condition" keys - a table written the old way loads without a word but drops one of
+    everything, unconditionally. Everything written to loot_table/ goes through here, so a table can't
+    slip back to the old keys (MechanicsSurvey.checkLoot rolls the real tables to prove it)."""
+    if isinstance(o, list):
+        return [loot_format(x) for x in o]
+    if not isinstance(o, dict):
+        return o
+    o = {k: loot_format(v) for k, v in o.items()}
+    if "function" in o:
+        o["type"] = o.pop("function")
+    if "functions" in o:
+        o["modifier"] = o.get("modifier", []) + o.pop("functions")
+    if isinstance(o.get("conditions"), list):
+        terms = [old_condition(c) for c in o.pop("conditions")] + ([o.pop("condition")] if "condition" in o else [])
+        o["condition"] = terms[0] if len(terms) == 1 else {"type": "minecraft:all_of", "terms": terms}
+    pred = o.get("predicate")
+    if isinstance(pred, dict) and o.get("type") == "minecraft:entity_properties":
+        o["predicate"] = {(k if ":" in k else f"minecraft:{k}"): v for k, v in pred.items()}
+    return o
+
+
 def write(path, obj):
+    if "loot_table" in path.parts:
+        obj = loot_format(obj)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(obj, indent=2) + "\n")
     written.append(path)

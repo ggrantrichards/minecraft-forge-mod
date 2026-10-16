@@ -85,6 +85,18 @@ jobs:
         timeout-minutes: 20
         run: .github/scripts/screenshots.sh
 
+      # Draws the survey's cut-outs of the biomes and structures (dev/Dioramas.java) in isometric with
+      # the game's own textures, for the website. The textures stay here: only the pictures are published.
+      - name: Draw the dioramas
+        if: always() && hashFiles('run/dioramas/*.txt') != ''
+        run: |
+          pip install -q pillow
+          JAR=$(find .gradle/mavenizer/repo -name 'client-extra*.jar' | head -1)
+          mkdir -p /tmp/vanilla && unzip -qo "$JAR" 'assets/minecraft/textures/block/*' -d /tmp/vanilla
+          mkdir -p run/screenshots
+          python3 tools/dioramas/render.py run/dioramas run/screenshots src/main/resources/assets/astralend/textures/block \
+            /tmp/vanilla/assets/minecraft/textures/block
+
       - name: Publish the screenshots
         if: always() && hashFiles('run/screenshots/astralend-*.png') != ''
         run: |

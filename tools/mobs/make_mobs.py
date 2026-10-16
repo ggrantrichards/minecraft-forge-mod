@@ -1152,10 +1152,13 @@ SPIRE_WYRM = Mob("spire_wyrm", (128, 64), [
 
 # ---- The distillation's Eclipse mobs.
 
-# Hushback: a herd grazer so pale and clear its bones show. The hide and fleece are translucent (the
-# renderer draws it see-through); the bones inside are opaque and drawn first, so they show through.
-HIDE_CLEAR = [hexc("d8e4ec", 120), hexc("e4eef4", 120), hexc("eef6fa", 130), hexc("f8fcff", 140)]
-HB_BONE = [hexc("b8ae98"), hexc("d0c8b2"), hexc("e8e2d0"), hexc("f6f2e6")]
+# Hushback: a herd grazer of the Gilded Reach whose hide is dark and clear as the void, so its bones show
+# through, warm as the meadow's gold. The hide and fleece are translucent (the renderer draws it
+# see-through); the bones inside are opaque and drawn first, so they show through. A few gold tufts of
+# fleece, and two calm pale eyes. (It took the Hollowback's dark look in beta.5; the Hollowback was
+# remade as the builders' experiment.)
+HIDE_CLEAR = [hexc("1c1830", 150), hexc("262040", 160), hexc("302a4e", 170), hexc("3c345c", 180)]
+HB_BONE = [hexc("4a4232"), hexc("5e5440"), hexc("746850"), hexc("8a7c5e")]
 
 
 def hush_hide(face, px, py, fw, fh, rnd):
@@ -1163,10 +1166,10 @@ def hush_hide(face, px, py, fw, fh, rnd):
 
 
 def hush_fleece(face, px, py, fw, fh, rnd):
-    """Sparse tufts on the back and flanks; the rest clear."""
+    """Sparse gold tufts on the back and flanks; the rest clear."""
     if face == "down":
         return None
-    return hexc("ffffff", 150) if (n() > 0.55 and rnd.random() < 0.7) else None
+    return hexc("b8a46a", 110) if (n() > 0.8 and rnd.random() < 0.45) else None
 
 
 def bone(face, px, py, fw, fh, rnd):
@@ -1182,7 +1185,9 @@ def rib(face, px, py, fw, fh, rnd):
 
 def hush_eye(face, px, py, fw, fh, rnd):
     if face == "north" and py == 2 and px in (0, fw - 1):
-        return hexc("2a2440")
+        return hexc("e6e0ff")                          # calm, pale
+    if face == "north" and py == 3 and px in (0, fw - 1):
+        return hexc("9a90c8")
     return hush_hide(face, px, py, fw, fh, rnd)
 
 
@@ -1203,7 +1208,7 @@ HUSHBACK = Mob("hushback", (128, 64), [
     Part("leg_fl", (3, 16, -5), [B(-0.5, 0, -0.5, 1, 8, 1, bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hush_hide, key="leg")]),
     Part("leg_br", (-3, 16, 8), [B(-0.5, 0, -0.5, 1, 8, 1, bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hush_hide, key="leg")]),
     Part("leg_bl", (3, 16, 8), [B(-0.5, 0, -0.5, 1, 8, 1, bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hush_hide, key="leg")]),
-], egg=(hexc("e4eef4"), hexc("b8ae98")))
+], egg=(hexc("262040"), hexc("d8c494")))
 
 
 # ---- Redesigned after BetterEnd's mobs: compact bodies, one signature feature, flat cards
@@ -1452,22 +1457,43 @@ MIRROR_WRETCH = Mob("mirror_wretch", (128, 64), [
 
 # ---- The distillation's Leviathan mobs.
 
-# Hollowback: a Hushback hollowed out - the same shape, but its clear hide gone dark and cracked like
-# old horn, its fleece hanging in grey rags, the bones inside blackened, and two dull violet eyes.
-HOLLOW_HIDE = [hexc("1a1622", 150), hexc("241e2e", 160), hexc("2f283a", 170), hexc("3b3348", 180)]
+# Hollowback: a Hushback the Leviathan's builders took and worked on. Its clear hide is gone, grown over
+# with plates of cracked black horn; seams are stitched shut down its flanks and across its brow; purpur
+# implants are sunk along its spine, each with a violet light burning in it; one eye is a purpur lens.
+# The same shape as the Hushback (it was one), so the herd still half knows it.
+HOLLOW_HIDE = [hexc("0e0b12", 235), hexc("17121e", 240), hexc("211a2a", 245), hexc("2c2436", 250)]
 HOLLOW_BONE = [hexc("2c2620"), hexc("3e362c"), hexc("544a3c"), hexc("6a5e4c")]
+STITCH = hexc("b8b0c4")
+IMPLANT_GLOW = hexc("c58cff")
+
+
+def hollow_leg(face, px, py, fw, fh, rnd):
+    """Cracked horn."""
+    if n() > 0.9:
+        return hexc("05040a", 250)                        # a crack
+    return clamp(1 + shade_flat(face) + (1 if n() > 0.75 else 0), HOLLOW_HIDE)
 
 
 def hollow_hide(face, px, py, fw, fh, rnd):
-    if n() > 0.86:
-        return hexc("0c0a10", 235)                        # a crack
-    return clamp(1 + shade_flat(face) + (1 if n() > 0.7 else 0), HOLLOW_HIDE)
+    """Broad plates of horn grown over the hide: a dark seam round each, now and then a crack."""
+    if face != "down" and (px % 7 == 6 or py % 8 == 7):
+        return HOLLOW_HIDE[0]
+    return hollow_leg(face, px, py, fw, fh, rnd)
+
+
+def hollow_body(face, px, py, fw, fh, rnd):
+    """The flanks are stitched shut along the middle: a seam with pale cross-stitches."""
+    if face in ("east", "west") and py == fh // 2 and 2 <= px <= fw - 3:
+        return STITCH if px % 3 == 0 else hexc("05040a")
+    if face in ("east", "west") and py in (fh // 2 - 1, fh // 2 + 1) and px % 3 == 0 and 2 <= px <= fw - 3:
+        return mix(STITCH, HOLLOW_HIDE[1], 0.45)
+    return hollow_hide(face, px, py, fw, fh, rnd)
 
 
 def hollow_rags(face, px, py, fw, fh, rnd):
     if face == "down":
         return None
-    return hexc("3e3a46", 230) if (n() > 0.78 and rnd.random() < 0.5) else None
+    return hexc("3e3a46", 230) if (n() > 0.85 and rnd.random() < 0.5) else None
 
 
 def hollow_bone(face, px, py, fw, fh, rnd):
@@ -1481,14 +1507,39 @@ def hollow_rib(face, px, py, fw, fh, rnd):
 
 
 def hollow_eye(face, px, py, fw, fh, rnd):
-    if face == "north" and py == 2 and px in (0, fw - 1):
-        return hexc("8a5ab4")
+    if face == "north":
+        if py == 2 and px == 0:
+            return hexc("8a5ab4")                         # its own eye, dull
+        if 1 <= py <= 3 and fw - 3 <= px <= fw - 1:
+            return PURPUR[3] if (py, px) != (2, fw - 2) else hexc("e8d0ff")   # the purpur lens
+        if py == 0 and 1 <= px <= fw - 2:
+            return STITCH if px % 2 else hexc("05040a")   # the brow, stitched
     return hollow_hide(face, px, py, fw, fh, rnd)
 
 
 def hollow_eye_glow(face, px, py, fw, fh, rnd):
-    if face == "north" and py == 2 and px in (0, fw - 1):
-        return hexc("b07ae0")
+    if face == "north":
+        if py == 2 and px == 0:
+            return hexc("b07ae0")
+        if (py, px) == (2, fw - 2):
+            return hexc("f0e0ff")
+    return None
+
+
+def implant(face, px, py, fw, fh, rnd):
+    """A purpur implant: purpur sides with a dark rim, a violet light in its top."""
+    if face == "up" and edge_dist(px, py, fw, fh) > 0:
+        return IMPLANT_GLOW
+    if edge_dist(px, py, fw, fh) == 0:
+        return PURPUR[1]
+    return clamp(3 + shade_flat(face), PURPUR)
+
+
+def implant_glow(face, px, py, fw, fh, rnd):
+    if face == "up" and edge_dist(px, py, fw, fh) > 0:
+        return IMPLANT_GLOW
+    if face in ("north", "south", "east", "west") and py == 0 and edge_dist(px, py, fw, fh) > 0:
+        return hexc("8a5ab4")
     return None
 
 
@@ -1497,7 +1548,12 @@ HOLLOWBACK = Mob("hollowback", (128, 64), [
         B(-0.5, -5, -8, 1, 1, 16, hollow_bone, key="spine"),
         B(-4, -4, -6, 8, 7, 1, hollow_rib, key="rib"), B(-4, -4, -2, 8, 7, 1, hollow_rib, key="rib"),
         B(-4, -4, 2, 8, 7, 1, hollow_rib, key="rib"), B(-3, -3, 6, 6, 5, 1, hollow_rib),
-        B(-5, -5, -9, 10, 9, 18, hollow_hide),
+        B(-5, -5, -9, 10, 9, 18, hollow_body),
+        # three implants sunk along the spine, and a cable of purpur joining them
+        B(-1.5, -7, -6, 3, 2, 3, implant, implant_glow, key="implant"),
+        B(-1.5, -7, -1, 3, 2, 3, implant, implant_glow, key="implant"),
+        B(-1.5, -7, 4, 3, 2, 3, implant, implant_glow, key="implant"),
+        B(-0.5, -6, -6, 1, 1, 13, implant, key="cable"),
     ], [
         Part("fleece", (0, 0, 0), [B(-5, -5, -9, 10, 9, 18, hollow_rags, inflate=1.0)]),
         Part("head", (0, -2, -9), [
@@ -1505,11 +1561,11 @@ HOLLOWBACK = Mob("hollowback", (128, 64), [
             B(-3, -4, -6, 6, 6, 7, hollow_eye, hollow_eye_glow),
         ]),
     ]),
-    Part("leg_fr", (-3, 16, -5), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_hide, key="leg")]),
-    Part("leg_fl", (3, 16, -5), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_hide, key="leg")]),
-    Part("leg_br", (-3, 16, 8), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_hide, key="leg")]),
-    Part("leg_bl", (3, 16, 8), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_hide, key="leg")]),
-], egg=(HOLLOW_HIDE[2], hexc("8a5ab4")))
+    Part("leg_fr", (-3, 16, -5), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_leg, key="leg")]),
+    Part("leg_fl", (3, 16, -5), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_leg, key="leg")]),
+    Part("leg_br", (-3, 16, 8), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_leg, key="leg")]),
+    Part("leg_bl", (3, 16, 8), [B(-0.5, 0, -0.5, 1, 8, 1, hollow_bone, key="legbone"), B(-1.5, 0, -1.5, 3, 8, 3, hollow_leg, key="leg")]),
+], egg=(HOLLOW_HIDE[2], hexc("c58cff")))
 
 
 # The Curator: the keeper of a Leviathan's reliquary - a hulking war-construct of the End's builders (after

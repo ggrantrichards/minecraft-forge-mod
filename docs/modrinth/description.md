@@ -50,7 +50,7 @@ Starforge needs.
 - **Drift Whales** travel in pods toward the Gilded Reach, no two alike - big leaders, calves by their
   mothers, curious ones and shy ones - answering each other's hums, rolling and breaching at play. Sing
   one a song (Memory Moss, a note block, Chorus Fruit) and it's yours to ride.
-- **Hushbacks**, clear-hided grazers whose herd blinks away when one is hurt; **Hydragrips**, dark
+- **Hushbacks**, dark, clear-hided grazers whose herd blinks away when one is hurt; **Hydragrips**, dark
   newts lit with cyan, which hunt endermites by the water; and, in the Ashen Barrens, the **Mirror Wretch**, a
   slithering worm with a round toothed mouth and a vocal sac for every voice it has stolen, calling you in
   voices you know from the void's edge - the Endermen at the edges stand listening.

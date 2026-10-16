@@ -12,15 +12,15 @@
           "type": "minecraft:item",
           "name": "astralend:void_crystal",
           "weight": 4,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 2,
                 "max": 5
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -28,15 +28,15 @@
           "type": "minecraft:item",
           "name": "astralend:charged_void_crystal",
           "weight": 2,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
                 "max": 2
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -44,15 +44,15 @@
           "type": "minecraft:item",
           "name": "astralend:whalelight_scale",
           "weight": 3,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
                 "max": 4
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -60,15 +60,15 @@
           "type": "minecraft:item",
           "name": "astralend:leviathan_bone_block",
           "weight": 3,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 2,
                 "max": 6
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -76,15 +76,15 @@
           "type": "minecraft:item",
           "name": "minecraft:ender_pearl",
           "weight": 3,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 2,
                 "max": 4
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -92,15 +92,15 @@
           "type": "minecraft:item",
           "name": "minecraft:shulker_shell",
           "weight": 1,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
                 "max": 1
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -108,15 +108,15 @@
           "type": "minecraft:item",
           "name": "minecraft:experience_bottle",
           "weight": 2,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 2,
                 "max": 5
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -124,15 +124,15 @@
           "type": "minecraft:item",
           "name": "minecraft:purpur_block",
           "weight": 2,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 4,
                 "max": 12
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -140,15 +140,15 @@
           "type": "minecraft:item",
           "name": "minecraft:diamond",
           "weight": 1,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
                 "max": 3
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -156,15 +156,15 @@
           "type": "minecraft:item",
           "name": "minecraft:golden_apple",
           "weight": 1,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
                 "max": 1
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         }
@@ -172,51 +172,45 @@
     },
     {
       "rolls": 1,
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.35
-        }
-      ],
       "entries": [
         {
           "type": "minecraft:item",
           "name": "astralend:starforge_alloy",
           "weight": 1
         }
-      ]
+      ],
+      "condition": {
+        "chance": 0.35,
+        "type": "minecraft:random_chance"
+      }
     },
     {
       "rolls": 1,
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.2
-        }
-      ],
       "entries": [
         {
           "type": "minecraft:item",
           "name": "astralend:temporal_crystal",
           "weight": 1
         }
-      ]
+      ],
+      "condition": {
+        "chance": 0.2,
+        "type": "minecraft:random_chance"
+      }
     },
     {
       "rolls": 1,
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.04
-        }
-      ],
       "entries": [
         {
           "type": "minecraft:item",
           "name": "astralend:rift_pearl",
           "weight": 1
         }
-      ]
+      ],
+      "condition": {
+        "chance": 0.04,
+        "type": "minecraft:random_chance"
+      }
     }
   ],
   "random_sequence": "astralend:chests/leviathan"

@@ -5,7 +5,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
 
-// The Hollowback: the Hushback's own model (it was one), its hide gone dark, two dull eyes glowing.
+// The Hollowback: the Hushback's own model (it was one), plated in cracked horn, stitched, with purpur
+// implants down its spine; the implants' lights, its one dull eye and its purpur lens glow.
 public class HollowbackRenderer extends MobRenderer<Hollowback, HushbackRenderer.State, HushbackRenderer.Model> {
     private static final Identifier TEXTURE = ModModelLayers.texture("hollowback");
 

@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
-// The Hushback, drawn see-through: its clear hide and fleece over opaque bones.
+// The Hushback, drawn see-through: its dark, clear hide and fleece over opaque bones.
 public class HushbackRenderer extends MobRenderer<Hushback, HushbackRenderer.State, HushbackRenderer.Model> {
     private static final Identifier TEXTURE = ModModelLayers.texture("hushback");
 
