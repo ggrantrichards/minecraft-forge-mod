@@ -173,6 +173,9 @@ jobs:
           { grep -nE "/(WARN|ERROR)\]|Exception|Caused by" survey.log | grep -v "Cache miss" | head -80; echo "---"; \
             grep "AstralEnd survey" survey.log | sed 's/.*\[AstralEnd survey\] //'; echo "---"; tail -60 survey-console.log; } > /tmp/logs/survey.txt 2>/dev/null || true
           grep -E "ERROR|Exception|Missing|astralend" client.log 2>/dev/null | head -120 > /tmp/logs/client.txt || true
+          # (1.21 port) The client's whole log up to the first crash, stack frames aside.
+          grep -v "^\s*at " screenshots.log 2>/dev/null | head -700 > /tmp/logs/screenshots-full.txt || true
+          grep -iE "reload|loot|datapack|data pack|listener|Exception caught|ForgeInternalHandler" run/logs/debug.log 2>/dev/null | cut -c1-400 | head -300 > /tmp/logs/client-debug.txt || true
           for c in run/crash-reports/*.txt; do [ -f "$c" ] && { echo "=== $c"; head -120 "$c"; }; done > /tmp/logs/crash.txt 2>/dev/null || true
           # (1.21 port) The real signatures of the classes in tools/port/javap.txt.
           JARS=$(find ~/.gradle/caches build .gradle -name '*.jar' 2>/dev/null | grep -iE 'forge|minecraft|client|server' | grep -v -e sources -e mcp_config | sort -r)
