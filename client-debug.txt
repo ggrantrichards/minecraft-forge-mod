@@ -1,0 +1,13 @@
+[16Oct2026 08:56:40.128] [Render thread/INFO] [net.minecraft.server.packs.resources.ReloadableResourceManager/]: Reloading ResourceManager: vanilla, mod_resources
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.sounds.SoundEngine.reload(SoundEngine.java:99) ~[forge-1.21.1-52.1.0_mapped_official_1.21.1.jar:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.packs.resources.SimplePreparableReloadListener.lambda$reload$1(SimplePreparableReloadListener.java:13) ~[forge-1.21.1-52.1.0_mapped_official_1.21.1.jar:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.packs.resources.SimpleReloadInstance.lambda$new$3(SimpleReloadInstance.java:69) ~[forge-1.21.1-52.1.0_mapped_official_1.21.1.jar:?]
+[16Oct2026 08:56:55.765] [Worker-Main-1/INFO] [com.ggrantrichards.astralend.dev.ReloadProbe/]: [AstralEnd probe] AddReloadListenerEvent fired (2 listeners so far)
+[16Oct2026 08:57:12.590] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[16Oct2026 08:57:12.591] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[16Oct2026 08:57:12.745] [Server thread/INFO] [com.ggrantrichards.astralend.dev.ReloadProbe/]: [AstralEnd probe] server started (integrated); loot modifier manager net.minecraftforge.common.loot.LootModifierManager@21ef2086
+[16Oct2026 08:57:13.638] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[16Oct2026 08:57:13.639] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[16Oct2026 08:57:13.639] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Time elapsed: 1928 ms
+[16Oct2026 08:59:33.703] [Server thread/INFO] [net.minecraft.server.network.ServerGamePacketListenerImpl/]: Dev lost connection: Internal Exception: java.nio.channels.ClosedChannelException
+[16Oct2026 08:59:33.737] [Server thread/INFO] [net.minecraft.server.network.ServerCommonPacketListenerImpl/]: Stopping singleplayer server as player logged out

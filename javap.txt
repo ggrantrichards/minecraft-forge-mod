@@ -1,0 +1,225 @@
+/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5.14/1194890e6f56ec29177673f2f12d0b8e627dec98/httpclient-4.5.14.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5.13/e5f6cae5ca7ecaac1ec2827a9e2d65ae2869cada/httpclient-4.5.13.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/unsafe/0.9.2/33bad02861cabd77c54a8c9d1205e8638bbbbb4f/unsafe-0.9.2.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/unsafe/0.2.0/54d7a0a5e8fdb71b973025caa46f341ae5904f39/unsafe-0.2.0.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/srgutils/0.6.2/e8e7d58835222461405514ab69fd6b29726e950d/srgutils-0.6.2.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/slime-launcher/0.2.3/62e842c3304d1f19639abcc43e98145e8fc96770/slime-launcher-0.2.3.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/securemodules/2.2.24/d8402fa81935b1a6440240f98079b14d0462ccac/securemodules-2.2.24.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/securemodules/2.2.21/a036e07b6064da635df3a3480591884fca3714d4/securemodules-2.2.21.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/roimfs/1.0.0/8a9f5b427f8e419d635ba1e347e323b355a43007/roimfs-1.0.0.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/modlauncher/10.2.6/9594303353e913090ee1100152fd14d9ef62c5ef/modlauncher-10.2.6.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/modlauncher/10.2.4/781dde4dcb54a7bd4f66b256d47e82710939b1bf/modlauncher-10.2.4.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/minecraft-mavenizer/0.5.21/56852d6d8ac0176e2f3fe9846fed9163ebc10d0d/minecraft-mavenizer-0.5.21.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mergetool-api/1.0/589fac8080d2eb657bb37f464151abcd25524d64/mergetool-api-1.0.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/26.3-66.0.8/35866e1bdf029e963d1bad80474e9940e218eae5/mclanguage-26.3-66.0.8.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.21.1-52.1.0/a51bef3c988a3a59ef4b53a509061f5e97d89eae/mclanguage-1.21.1-52.1.0.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/26.3-66.0.8/2ffe25613988ccd1002603e4f5e3926328d98ad7/lowcodelanguage-26.3-66.0.8.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.21.1-52.1.0/1642e4e16393d38f52f7959604b1a297c4a758ed/lowcodelanguage-1.21.1-52.1.0.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/26.3-66.0.8/7698de7612905da6709427dd19aece813b41d42c/javafmllanguage-26.3-66.0.8.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.21.1-52.1.0/e4df3a858ae2cb58be2705231a4d52e5cf0b133b/javafmllanguage-1.21.1-52.1.0.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/forgespi/8.0.0/60512b0b4cbc4c3ddd82c89f89226527d21904b2/forgespi-8.0.0.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/forgespi/7.1.5/c01beea469b66cf787614239b7e0f791329b3816/forgespi-7.1.5.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/forgegradle/7.0.40/bbec3f3630e3e1966dd2d5891482196bd8ddca8c/forgegradle-7.0.40.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/forge-transformers/26.3-66.0.8/f67bb15658798e3284ee84fb23d5f10f664a1237/forge-transformers-26.3-66.0.8.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlloader/26.3-66.0.8/9a8f05fdc253876a7d9aa7821a07d47fc8c1f960/fmlloader-26.3-66.0.8.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlloader/1.21.1-52.1.0/8c4b802769cc025e0a0c6b6063925e06b552e637/fmlloader-1.21.1-52.1.0.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlearlydisplay/26.3-66.0.8/d257ea489f87da6570487e5e1d2e68bfdde79442/fmlearlydisplay-26.3-66.0.8.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlearlydisplay/1.21.1-52.1.0/2a762fbfa352ef1ec8f5e0536aba9d4aee4c63a7/fmlearlydisplay-1.21.1-52.1.0.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/26.3-66.0.8/a17e07289fa9c239bf79a327ee7d59b71cb8545d/fmlcore-26.3-66.0.8.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.21.1-52.1.0/6b4d30ef1af5c3250e3d3ef039bb86cba5cb4dc4/fmlcore-1.21.1-52.1.0.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/eventbus/7.0.6/e48b41bf58cf9120b76701430ba10255949915f8/eventbus-7.0.6.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/eventbus/6.2.27/1a7914b85a47ef9e8f333b694a6f8c0dc6a57db7/eventbus-6.2.27.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/eventbus-validator/7.0.6/16f1d3a52fdfdb1ed14a8fa423e3f1e19162e51e/eventbus-validator-7.0.6.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/coremods/5.2.6/9528a9f2133ec5284122ac3d62cfff8bc8c6bba0/coremods-5.2.6.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/coremods-api/5.3.1/86c7b8efae5d43de06bc7d4da4292c1ee0f543bf/coremods-api-5.3.1.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/bootstrap/2.1.8/7ce55508387cf35eeb0eb4895bd84bec854ead93/bootstrap-2.1.8.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/bootstrap-api/2.1.8/f77d6527282dfc12e2460a3155467f40f9a2673b/bootstrap-api-2.1.8.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/artifactural/3.0.21/399dd7a3aa46a985aedfa6d62b8954c4a57a9bd6/artifactural-3.0.21.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/accesstransformers/8.2.2/5b17acd565e357c5812574e4db75b96c86c7db93/accesstransformers-8.2.2.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/accesstransformers/8.2.17/8834af62843c7c8fb17d00208a3831e9efb3e6b1/accesstransformers-8.2.17.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarSelector/0.4.2/1d78218008febe9715df57e1e337736dbd4e602/JarJarSelector-0.4.2.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarSelector/0.3.26/1e032096a4d07e5bbb7b2f3b2beee8d5e02879e9/JarJarSelector-0.3.26.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarSelector/0.3.19/376cc9c8ea60720cf027c01fc033de915699801c/JarJarSelector-0.3.19.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarMetadata/0.4.2/bfc05a595d113838628a0ddc90139b4edc9445c1/JarJarMetadata-0.4.2.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarMetadata/0.3.26/6db967d6cce100e4abdeed0abfd594b9f42e0d10/JarJarMetadata-0.3.26.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarMetadata/0.3.19/83feaa9b770e6ac0e96ee4fc23fa89325c5fe2/JarJarMetadata-0.3.19.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarFileSystems/0.4.2/b47957ee0163282fc1116ab71e56c3d5e305d786/JarJarFileSystems-0.4.2.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarFileSystems/0.3.26/4b48cd32749b87a18afee96f33b825305feea289/JarJarFileSystems-0.3.26.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/DiffPatch/2.0.12/7182b5f298c31f28aa50e97016f154b0ad746ad6/DiffPatch-2.0.12-all.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge.gradle/ForgeGradle/6.0.54/abfc5f1f905524349236e01ee686f7359a5dbd4e/ForgeGradle-6.0.54.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/io.github.llamalad7/mixinextras-forge/0.5.4/ff3cadb413a78c2b4a32a02dd1a9260f2e0b6238/mixinextras-forge-0.5.4.jar
+/home/runner/.gradle/caches/minecraftforge/forgegradle/mavenizer/caches/minecraft_tasks/26.3/server.jar
+/home/runner/.gradle/caches/minecraftforge/forgegradle/mavenizer/caches/minecraft_tasks/26.3/client.jar
+/home/runner/.gradle/caches/minecraftforge/forgegradle/mavenizer/caches/maven/mojang/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar
+/home/runner/.gradle/caches/minecraftforge/forgegradle/mavenizer/caches/maven/mojang/org/lwjgl/lwjgl/3.4.3/lwjgl-3.4.3.jar
+/home/runner/.gradle/caches/minecraftforge/forgegradle/mavenizer/caches/maven/mojang/org/lwjgl/lwjgl/3.4.3/lwjgl-3.4.3-natives-windows.jar
+/home/runner/.gradle/caches/minecraftforge/forgegradle/mavenizer/caches/maven/mojang/org/lwjgl/lwjgl/3.4.3/lwjgl-3.4.3-natives-windows-arm64.jar
+/home/runner/.gradle/caches/minecraftforge/forgegradle/mavenizer/caches/maven/mojang/org/lwjgl/lwjgl/3.4.3/lwjgl-3.4.3-natives-macos.jar
+/home/runner/.gradle/caches/minecraftforge/forgegradle/mavenizer/caches/maven/mojang/org/lwjgl/lwjgl/3.4.3/lwjgl-3.4.3-natives-macos-arm64.jar
+/home/runner/.gradle/caches/minecraftforge/forgegradle/mavenizer/caches/maven/mojang/org/lwjgl/lwjgl/3.4.3/lwjgl-3.4.3-natives-linux.jar
+/home/runner/.gradle/caches/minecraftforge/forgegradle/mavenizer/caches/maven/mojang/org/lwjgl/lwjgl-vulkan/3.4.3/lwjgl-vulkan-3.4.3.jar
+/home/runner/work/_temp/a6085fa3-f8a1-4113-a426-76a99b8e498f.sh: line 15: echo: write error: Broken pipe
+Compiled from "EntityRenderersEvent.java"
+public final class net.minecraftforge.client.event.EntityRenderersEvent$AddLayers extends net.minecraftforge.eventbus.api.event.MutableEvent implements net.minecraftforge.client.event.EntityRenderersEvent {
+  public static final net.minecraftforge.eventbus.api.bus.EventBus<net.minecraftforge.client.event.EntityRenderersEvent$AddLayers> BUS;
+  public net.minecraftforge.client.event.EntityRenderersEvent$AddLayers(java.util.Map<net.minecraft.world.entity.EntityType<?>, net.minecraft.client.renderer.entity.EntityRenderer<?, ?>>, java.util.Map<net.minecraft.world.entity.player.PlayerModelType, net.minecraft.client.renderer.entity.player.AvatarRenderer<net.minecraft.client.player.AbstractClientPlayer>>, java.util.Map<net.minecraft.world.entity.player.PlayerModelType, net.minecraft.client.renderer.entity.player.AvatarRenderer<net.minecraft.client.entity.ClientMannequin>>, net.minecraft.client.renderer.entity.EntityRendererProvider$Context);
+  public java.util.Set<net.minecraft.world.entity.player.PlayerModelType> getModelTypes();
+  public <R extends net.minecraft.client.renderer.entity.EntityRenderer<? extends net.minecraft.world.entity.player.Player, ?>> R getPlayerRenderer(net.minecraft.world.entity.player.PlayerModelType);
+  public <R extends net.minecraft.client.renderer.entity.EntityRenderer<? extends net.minecraft.client.entity.ClientMannequin, ?>> R getMannequinRenderer(net.minecraft.world.entity.player.PlayerModelType);
+  public <T extends net.minecraft.world.entity.LivingEntity, S extends net.minecraft.client.renderer.entity.state.EntityRenderState, R extends net.minecraft.client.renderer.entity.EntityRenderer<T, S>> R getEntityRenderer(net.minecraft.world.entity.EntityType<? extends T>);
+  public net.minecraft.client.model.geom.EntityModelSet getEntityModels();
+  public net.minecraft.client.renderer.entity.EntityRendererProvider$Context getContext();
+}
+Compiled from "RenderLevelStageEvent.java"
+public class net.minecraftforge.client.event.RenderLevelStageEvent extends net.minecraftforge.eventbus.api.Event {
+  public net.minecraftforge.client.event.RenderLevelStageEvent(net.minecraftforge.client.event.RenderLevelStageEvent$Stage, net.minecraft.client.renderer.LevelRenderer, org.joml.Matrix4f, org.joml.Matrix4f, int, float, net.minecraft.client.Camera, net.minecraft.client.renderer.culling.Frustum);
+  public net.minecraftforge.client.event.RenderLevelStageEvent$Stage getStage();
+  public net.minecraft.client.renderer.LevelRenderer getLevelRenderer();
+  public org.joml.Matrix4f getPoseStack();
+  public org.joml.Matrix4f getProjectionMatrix();
+  public int getRenderTick();
+  public float getPartialTick();
+  public net.minecraft.client.Camera getCamera();
+  public net.minecraft.client.renderer.culling.Frustum getFrustum();
+}
+Compiled from "RenderBlockScreenEffectEvent.java"
+public abstract class net.minecraftforge.client.event.RenderBlockScreenEffectEvent extends net.minecraftforge.eventbus.api.event.MutableEvent implements net.minecraftforge.eventbus.api.event.characteristic.Cancellable {
+  protected net.minecraftforge.client.event.RenderBlockScreenEffectEvent(net.minecraft.world.entity.player.Player, net.minecraft.world.level.block.state.BlockState, net.minecraft.core.BlockPos);
+  public net.minecraft.world.entity.player.Player getPlayer();
+  public net.minecraft.world.level.block.state.BlockState getBlockSate();
+  public net.minecraft.core.BlockPos getBlockPos();
+  public net.minecraftforge.client.IRenderCallback getCustomRenderer();
+  public void setCustomRenderer(net.minecraftforge.client.IRenderCallback);
+}
+Compiled from "TickEvent.java"
+public interface net.minecraftforge.event.TickEvent$ServerTickEvent extends net.minecraftforge.event.TickEvent {
+  public abstract java.util.function.BooleanSupplier haveTimeSupplier();
+  public default boolean haveTime();
+  public abstract net.minecraft.server.MinecraftServer server();
+}
+Compiled from "TickEvent.java"
+public interface net.minecraftforge.event.TickEvent$LevelTickEvent extends net.minecraftforge.event.TickEvent {
+  public abstract net.minecraftforge.fml.LogicalSide side();
+  public abstract net.minecraft.world.level.Level level();
+  public abstract java.util.function.BooleanSupplier haveTimeSupplier();
+  public default boolean haveTime();
+}
+Compiled from "EntityTeleportEvent.java"
+public abstract class net.minecraftforge.event.entity.EntityTeleportEvent implements net.minecraftforge.eventbus.api.event.characteristic.Cancellable,net.minecraftforge.event.entity.EntityEvent,net.minecraftforge.eventbus.api.event.InheritableEvent {
+  public static final net.minecraftforge.eventbus.api.bus.CancellableEventBus<net.minecraftforge.event.entity.EntityTeleportEvent> BUS;
+  protected double targetX;
+  protected double targetY;
+  protected double targetZ;
+  protected net.minecraftforge.event.entity.EntityTeleportEvent(net.minecraft.world.entity.Entity, double, double, double);
+  public net.minecraft.world.entity.Entity getEntity();
+  public double getTargetX();
+  public void setTargetX(double);
+  public double getTargetY();
+  public void setTargetY(double);
+  public double getTargetZ();
+  public void setTargetZ(double);
+  public net.minecraft.world.phys.Vec3 getTarget();
+  public double getPrevX();
+  public double getPrevY();
+  public double getPrevZ();
+  public net.minecraft.world.phys.Vec3 getPrev();
+}
+Compiled from "Input.java"
+public class net.minecraft.client.player.Input {
+  public float leftImpulse;
+  public float forwardImpulse;
+  public boolean up;
+  public boolean down;
+  public boolean left;
+  public boolean right;
+  public boolean jumping;
+  public boolean shiftKeyDown;
+  public net.minecraft.client.player.Input();
+  public void tick(boolean, float);
+  public net.minecraft.world.phys.Vec2 getMoveVector();
+  public boolean hasForwardImpulse();
+}
+Compiled from "FoodProperties.java"
+public class net.minecraft.world.food.FoodProperties$Builder {
+  public net.minecraft.world.food.FoodProperties$Builder();
+  public net.minecraft.world.food.FoodProperties$Builder nutrition(int);
+  public net.minecraft.world.food.FoodProperties$Builder saturationModifier(float);
+  public net.minecraft.world.food.FoodProperties$Builder alwaysEdible();
+  public net.minecraft.world.food.FoodProperties build();
+}
+Compiled from "ItemCombinerMenu.java"
+public abstract class net.minecraft.world.inventory.ItemCombinerMenu extends net.minecraft.world.inventory.AbstractContainerMenu {
+  protected final net.minecraft.world.inventory.ContainerLevelAccess access;
+  protected final net.minecraft.world.entity.player.Player player;
+  protected final net.minecraft.world.Container inputSlots;
+  protected final net.minecraft.world.inventory.ResultContainer resultSlots;
+  protected boolean mayPickup(net.minecraft.world.entity.player.Player, boolean);
+  protected abstract void onTake(net.minecraft.world.entity.player.Player, net.minecraft.world.item.ItemStack);
+  protected abstract boolean isValidBlock(net.minecraft.world.level.block.state.BlockState);
+  public net.minecraft.world.inventory.ItemCombinerMenu(net.minecraft.world.inventory.MenuType<?>, int, net.minecraft.world.entity.player.Inventory, net.minecraft.world.inventory.ContainerLevelAccess, net.minecraft.world.inventory.ItemCombinerMenuSlotDefinition);
+  public abstract void createResult();
+  public void slotsChanged(net.minecraft.world.Container);
+  public void removed(net.minecraft.world.entity.player.Player);
+  public boolean stillValid(net.minecraft.world.entity.player.Player);
+  public net.minecraft.world.item.ItemStack quickMoveStack(net.minecraft.world.entity.player.Player, int);
+  protected boolean canMoveIntoInputSlots(net.minecraft.world.item.ItemStack);
+  public int getResultSlot();
+}
+Compiled from "Feature.java"
+public interface net.minecraft.world.level.levelgen.feature.Feature {
+  public static final com.mojang.serialization.Codec<net.minecraft.world.level.levelgen.feature.Feature> DIRECT_CODEC;
+  public static final com.mojang.serialization.Codec<net.minecraft.core.Holder<net.minecraft.world.level.levelgen.feature.Feature>> CODEC;
+  public static final com.mojang.serialization.Codec<net.minecraft.core.HolderSet<net.minecraft.world.level.levelgen.feature.Feature>> LIST_CODEC;
+  public abstract com.mojang.serialization.MapCodec<? extends net.minecraft.world.level.levelgen.feature.Feature> codec();
+  public abstract boolean place(net.minecraft.world.level.WorldGenLevel, net.minecraft.world.level.chunk.ChunkGenerator, net.minecraft.util.RandomSource, net.minecraft.core.BlockPos);
+  public default java.util.stream.Stream<net.minecraft.core.Holder<net.minecraft.world.level.levelgen.feature.Feature>> getSubFeatures();
+  public default void setBlock(net.minecraft.world.level.LevelWriter, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState);
+  public default void safeSetBlock(net.minecraft.world.level.WorldGenLevel, net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState, java.util.function.Predicate<net.minecraft.world.level.block.state.BlockState>);
+  public default void markAboveForPostProcessing(net.minecraft.world.level.WorldGenLevel, net.minecraft.core.BlockPos);
+}
+Compiled from "BrewingRecipeRegisterEvent.java"
+public class net.minecraftforge.event.brewing.BrewingRecipeRegisterEvent extends net.minecraftforge.eventbus.api.Event {
+  public net.minecraftforge.event.brewing.BrewingRecipeRegisterEvent(net.minecraft.world.item.alchemy.PotionBrewing$Builder, net.minecraft.world.flag.FeatureFlagSet);
+  public net.minecraft.world.item.alchemy.PotionBrewing$Builder getBuilder();
+  public net.minecraft.world.flag.FeatureFlagSet getFeatures();
+  public void addRecipe(net.minecraft.world.item.crafting.Ingredient, net.minecraft.world.item.crafting.Ingredient, net.minecraft.world.item.ItemStack);
+  public void addRecipe(net.minecraftforge.common.brewing.IBrewingRecipe);
+}
+Compiled from "ModelEvent.java"
+public final class net.minecraftforge.client.event.ModelEvent$ModifyBakingResult extends java.lang.Record implements net.minecraftforge.eventbus.api.event.RecordEvent,net.minecraftforge.client.event.ModelEvent {
+  public static final net.minecraftforge.eventbus.api.bus.EventBus<net.minecraftforge.client.event.ModelEvent$ModifyBakingResult> BUS;
+  public net.minecraftforge.client.event.ModelEvent$ModifyBakingResult(net.minecraft.client.resources.model.ModelBakery, net.minecraft.client.resources.model.ModelBakery$BakingResult);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public net.minecraft.client.resources.model.ModelBakery getModelBakery();
+  public net.minecraft.client.resources.model.ModelBakery$BakingResult getResults();
+}
+Compiled from "ModelEvent.java"
+public class net.minecraftforge.client.event.ModelEvent$RegisterAdditional extends net.minecraftforge.client.event.ModelEvent implements net.minecraftforge.fml.event.IModBusEvent {
+  public net.minecraftforge.client.event.ModelEvent$RegisterAdditional(java.util.Set<net.minecraft.client.resources.model.ModelResourceLocation>);
+  public void register(net.minecraft.client.resources.model.ModelResourceLocation);
+}
+Compiled from "ItemOverrides.java"
+public class net.minecraft.client.renderer.block.model.ItemOverrides {
+  public static final net.minecraft.client.renderer.block.model.ItemOverrides EMPTY;
+  public static final float NO_OVERRIDE;
+  protected net.minecraft.client.renderer.block.model.ItemOverrides();
+  public net.minecraft.client.renderer.block.model.ItemOverrides(net.minecraft.client.resources.model.ModelBaker, net.minecraft.client.renderer.block.model.BlockModel, java.util.List<net.minecraft.client.renderer.block.model.ItemOverride>);
+  public net.minecraft.client.renderer.block.model.ItemOverrides(net.minecraft.client.resources.model.ModelBaker, net.minecraft.client.resources.model.UnbakedModel, java.util.List<net.minecraft.client.renderer.block.model.ItemOverride>, java.util.function.Function<net.minecraft.client.resources.model.Material, net.minecraft.client.renderer.texture.TextureAtlasSprite>);
+  public net.minecraft.client.resources.model.BakedModel resolve(net.minecraft.client.resources.model.BakedModel, net.minecraft.world.item.ItemStack, net.minecraft.client.multiplayer.ClientLevel, net.minecraft.world.entity.LivingEntity, int);
+  public com.google.common.collect.ImmutableList<net.minecraft.client.renderer.block.model.ItemOverrides$BakedOverride> getOverrides();
+}
+Compiled from "ModelResourceLocation.java"
+public final class net.minecraft.client.resources.model.ModelResourceLocation extends java.lang.Record {
+  public static final java.lang.String INVENTORY_VARIANT;
+  public net.minecraft.client.resources.model.ModelResourceLocation(net.minecraft.resources.ResourceLocation, java.lang.String);
+  public static net.minecraft.client.resources.model.ModelResourceLocation vanilla(java.lang.String, java.lang.String);
+  public static net.minecraft.client.resources.model.ModelResourceLocation inventory(net.minecraft.resources.ResourceLocation);
+  public java.lang.String getVariant();
+  public java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public net.minecraft.resources.ResourceLocation id();
+  public java.lang.String variant();
+}

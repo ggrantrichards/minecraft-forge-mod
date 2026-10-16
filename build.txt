@@ -1,0 +1,41 @@
+---
+ > Running 'merge'
+ > Running 'listLibraries'
+ > Running 'rename'
+Stopping at requested step: /home/runner/.gradle/caches/forge_gradle/mcp_repo/de/oceanlabs/mcp/mcp_config/1.21.1-20240808.132146/joined/rename/output.jar
+[08:33:14] [main/INFO]: Writing debug log file accesstransform.log
+[08:33:14] [main/INFO]: Access Transformer processor running version 8.2.14
+[08:33:14] [main/INFO]: Command line arguments [--inJar, /home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.21.1-52.1.0/forge-1.21.1-52.1.0-injected.jar, --outJar, /home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.21.1-52.1.0_mapped_official_1.21.1/forge-1.21.1-52.1.0_mapped_official_1.21.1.jar, --logFile, accesstransform.log, --atFile, /home/runner/work/minecraft-forge-mod/minecraft-forge-mod/build/_atJar_4/parent_at.cfg]
+[08:33:14] [main/INFO]: Reading from /home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.21.1-52.1.0/forge-1.21.1-52.1.0-injected.jar
+[08:33:14] [main/INFO]: Writing to /home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.21.1-52.1.0_mapped_official_1.21.1/forge-1.21.1-52.1.0_mapped_official_1.21.1.jar
+[08:33:14] [main/INFO]: Transformer file /home/runner/work/minecraft-forge-mod/minecraft-forge-mod/build/_atJar_4/parent_at.cfg
+[08:33:14] [main/WARN]: Found existing output jar /home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.21.1-52.1.0_mapped_official_1.21.1/forge-1.21.1-52.1.0_mapped_official_1.21.1.jar, overwriting
+[08:33:18] [main/INFO]: JAR transformation complete /home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.21.1-52.1.0_mapped_official_1.21.1/forge-1.21.1-52.1.0_mapped_official_1.21.1.jar
+Creating SRG -> MCP TSRG
+/home/runner/work/minecraft-forge-mod/minecraft-forge-mod/src/main/java/com/ggrantrichards/astralend/client/sky/AstralSky.java:81: warning: [removal] getPoseStack() in RenderLevelStageEvent has been deprecated and marked for removal
+            renderer.render(new org.joml.Matrix4f(event.getPoseStack()));
+                                                       ^
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+1 warning
+
+> Task :processResources
+> Task :classes
+> Task :jar
+> Task :assemble
+> Task :compileTestJava NO-SOURCE
+> Task :processTestResources NO-SOURCE
+> Task :testClasses UP-TO-DATE
+> Task :test NO-SOURCE
+> Task :check UP-TO-DATE
+> Task :build
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1792139507102.json
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.10.2/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 2m 24s
+3 actionable tasks: 3 executed
