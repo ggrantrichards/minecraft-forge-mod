@@ -21,6 +21,8 @@ from pathlib import Path
 
 from PIL import Image
 
+import spawn_eggs
+
 ROOT = Path(__file__).resolve().parents[2]
 JAVA = ROOT / "src/main/java/com/ggrantrichards/astralend/client/model/MobMeshes.java"
 TEX = ROOT / "src/main/resources/assets/astralend/textures"
@@ -1887,7 +1889,8 @@ def main():
             glow.save(folder / f"{mob.name}_glow.png")
             out.append(f"entity/{mob.name}/{mob.name}_glow.png")
         (TEX / "item").mkdir(parents=True, exist_ok=True)
-        egg(*mob.egg).save(TEX / "item" / f"{mob.name}_spawn_egg.png")
+        # Each mob's own painted egg (spawn_eggs.py), or the plain two-colour one.
+        (spawn_eggs.paint(mob.name) or egg(*mob.egg)).save(TEX / "item" / f"{mob.name}_spawn_egg.png")
         out.append(f"item/{mob.name}_spawn_egg.png")
     print(f"Wrote {JAVA.relative_to(ROOT)} and {len(out)} textures")
 
