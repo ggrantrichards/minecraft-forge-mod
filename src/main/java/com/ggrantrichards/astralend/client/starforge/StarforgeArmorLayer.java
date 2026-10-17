@@ -18,10 +18,10 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 
-// Starforged armour you're wearing glows in its upgrade's colour: the armour drawn again at full
-// brightness, added over itself in the upgrade's colour (through a white copy of its texture, see
-// GlowMasks) and slowly breathing, so you can read someone's build at a glance (and see it in the
-// dark). (1.21.1 port: drawn on armour models a hair larger than the armour's own, so it sits over it.)
+// Starforged armour you're wearing has a glowing outline in its upgrade's colour: the armour drawn
+// again at full brightness through a copy of its texture that keeps only its edges (see GlowMasks),
+// slowly breathing, so you can read someone's build at a glance (and see it in the dark).
+// (1.21.1 port: drawn on armour models a hair larger than the armour's own, so it sits over it.)
 public class StarforgeArmorLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
     private final HumanoidModel<AbstractClientPlayer> inner;
     private final HumanoidModel<AbstractClientPlayer> outer;
@@ -61,8 +61,8 @@ public class StarforgeArmorLayer extends RenderLayer<AbstractClientPlayer, Playe
             case FEET -> { model.rightLeg.visible = true; model.leftLeg.visible = true; }
             default -> { }
         }
-        // Added on top of the armour (the render type is additive), so the tint is kept low.
-        float strength = 0.18F + 0.06F * Mth.sin(ageInTicks * 0.06F);
+        // Added on top of the armour's edges (the render type is additive), in the upgrade's full colour.
+        float strength = 0.8F + 0.2F * Mth.sin(ageInTicks * 0.06F);
         int c = upgrade.colour();
         int tint = 0xFF000000 | channel(c >> 16, strength) << 16 | channel(c >> 8, strength) << 8 | channel(c, strength);
         for (ArmorMaterial.Layer layer : armor.getMaterial().value().layers()) {
