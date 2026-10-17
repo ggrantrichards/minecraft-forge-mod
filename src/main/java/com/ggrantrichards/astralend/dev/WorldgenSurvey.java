@@ -754,7 +754,7 @@ public final class WorldgenSurvey {
         int skullBone = 0, variants = 0;
         for (BlockPos p : BlockPos.betweenClosed(throat.offset(-40, -24, -40), throat.offset(40, 30, 40))) {
             BlockState state = end.getBlockState(p);
-            if (state.is(ModBlocks.LEVIATHAN_BONE_BLOCK.get())) {
+            if (state.is(Blocks.BONE_BLOCK)) {
                 skullBone++;
             } else if (state.is(ModBlocks.WEATHERED_LEVIATHAN_BONE.get()) || state.is(ModBlocks.LICHENED_LEVIATHAN_BONE.get())) {
                 skullBone++;
@@ -1554,7 +1554,7 @@ public final class WorldgenSurvey {
         atLeast(area, ModBlocks.SHIMMER_REED.get(), 1, failures);
         atLeast(area, ModBlocks.PALE_END_STONE_BRICKS.get(), 0.05, failures);  // standing stones
         atLeast(area, ModBlocks.MEMORY_MOSS.get(), 0.5, failures);
-        atLeast(area, ModBlocks.LEVIATHAN_BONE_BLOCK.get(), 1, failures);     // a graveyard: bones everywhere
+        atLeast(area, Blocks.BONE_BLOCK, 1, failures);     // a graveyard: bones everywhere
         // Solarite (since the golden-meadow rework): veins in the pale stone, and raw Solarite glowing at the
         // bottom of the scorch fissures.
         atLeast(area, ModBlocks.SOLARITE_ORE.get(), 0.5, failures);
@@ -1567,7 +1567,7 @@ public final class WorldgenSurvey {
         }
         double flatShare = 100.0 * flat / Math.max(1, area.landColumnsIn);
         log(String.format("Ashen Barrens: %.0f%% of the land is a flat shelf topped at y=52-55; Leviathan Bone ribs: %d blocks",
-            flatShare, area.in(ModBlocks.LEVIATHAN_BONE_BLOCK.get())));
+            flatShare, area.in(Blocks.BONE_BLOCK)));
         if (flatShare < 60) {
             failures.add(String.format("Ashen Barrens aren't flat shelves: only %.0f%% of the land is topped at y=52-55", flatShare));
         }
@@ -1714,7 +1714,7 @@ public final class WorldgenSurvey {
             TOP_SYMBOLS.put(ModBlocks.SHIMMER_GRASS.get(), 'G');
             TOP_SYMBOLS.put(ModBlocks.PALE_END_STONE_BRICKS.get(), 'B');
             TOP_SYMBOLS.put(ModBlocks.PALE_END_STONE_TILES.get(), 'B');
-            TOP_SYMBOLS.put(ModBlocks.LEVIATHAN_BONE_BLOCK.get(), 'J');
+            TOP_SYMBOLS.put(Blocks.BONE_BLOCK, 'J');
             TOP_SYMBOLS.put(ModBlocks.CHARRED_END_STONE.get(), 'H');
             TOP_SYMBOLS.put(Blocks.BLUE_ICE, 'I');
             TOP_SYMBOLS.put(ModBlocks.STARDUST_BLOCK.get(), 'T');

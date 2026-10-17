@@ -42,6 +42,11 @@ class Egg:
                 self.lit.add(p)
         return self
 
+    def cut(self, points):
+        for p in points:
+            self.px.pop(p, None)
+        return self
+
     def rows(self, y0, y1, colour):
         return self.put([(x, y) for (x, y) in EGG if y0 <= y <= y1], colour)
 
@@ -121,28 +126,32 @@ def hydragrip():
 
 
 def mirror_wretch():
-    e = Egg("6c6876")
-    e.put([(5, 0), (7, 0), (9, 0), (5, 1)], "2a2630")                    # spines
+    """Grey and segmented like a silverfish's egg, with the Wretch's round mouth of teeth up top,
+    little dark legs down its sides and spines along its back."""
+    e = Egg("74707e")
+    for y in (7, 10, 13):
+        e.put([(x, y) for x in range(3, 13) if (x, y) in EGG], "56525f")       # segments
+        e.put([(2, y), (13, y)], "2a2630")                                     # legs
     g = grid([".rrrr.",
               "rTkkTr",
               "rkkkkr",
-              "rTkkTr",
-              ".rrrr."], 5, 6)
-    e.put(g["r"], "8a4a5e").put(g["k"], "140a10").put(g["T"], "e8dcc8")  # round mouth of teeth
-    e.put([(x, 13) for x in range(4, 12)], "54505e")                     # segments
+              ".rTTr."], 5, 2)
+    e.put(g["r"], "9a5468").put(g["k"], "140a10").put(g["T"], "ece0cc")      # its mouth
+    e.put([(6, 0), (9, 0)], "2a2630")                                          # spines
     return e
 
 
 def pollinator():
-    e = Egg("7fd8cf")
-    e.rows(1, 2, "b8f0e8")
-    e.put([(x, 8) for x in range(3, 13) if x % 2], "ffffff", glow=True)   # the rim of its cap
-    for x in range(3, 13):
-        top = 9
-        col = "a37ad8" if x % 2 else "7a52b8"
-        e.put([(x, y) for y in range(top, 16) if (x, y) in EGG], col)    # tentacles
-    e.put([(5, 15), (10, 15)], "a37ad8")                                  # dangling past the egg
-    e.put([(4, 13), (5, 15), (8, 15), (10, 15), (11, 13)], "ffffff")      # their white tips
+    """A jellyfish: a teal bell with a rim of white lights, and its tentacles hanging free below."""
+    e = Egg("74cfc6")
+    e.rows(1, 3, "a8ece4")
+    e.rows(7, 7, "56aaa2")
+    e.put([(x, 8) for x in range(2, 14)], "8adcd2")                             # the bell's rim, wider
+    e.put([(x, 8) for x in range(3, 13, 2)], "ffffff", glow=True)               # its lights
+    e.cut([(x, y) for x in range(16) for y in range(9, 16)])
+    for x, end, col in ((4, 13, "c8a4f4"), (6, 15, "a07ad8"), (9, 15, "c8a4f4"), (11, 13, "a07ad8")):
+        e.put([(x, y) for y in range(9, end)], col)                             # tentacles
+        e.put([(x, end)], "ffffff")                                             # white tips
     return e
 
 

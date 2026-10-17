@@ -116,12 +116,8 @@ public final class ModBlocks {
             .isRedstoneConductor((state, level, pos) -> false)
             .isSuffocating((state, level, pos) -> false)
             .isViewBlocking((state, level, pos, aabb) -> false));
-    // Leviathan Bone: fossil bone of the ancient Star Leviathans. A pillar block, like vanilla's bone block.
-    public static final RegistryObject<Block> LEVIATHAN_BONE_BLOCK = register("leviathan_bone_block", RotatedPillarBlock::new,
-        () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).instrument(NoteBlockInstrument.XYLOPHONE)
-            .requiresCorrectToolForDrops().strength(2.0F).sound(SoundType.BONE_BLOCK));
-    // Its variants (after beta.4), so a skeleton isn't one block a thousand times over: weathered - grey,
-    // cracked and pitted - and lichened, with the End's violet lichen grown over it.
+    // The Leviathans are vanilla bone block; these are its variants, so a skeleton isn't one block a
+    // thousand times over: weathered - grey, cracked and pitted - and lichened, grown over with lichen.
     public static final RegistryObject<Block> WEATHERED_LEVIATHAN_BONE = register("weathered_leviathan_bone", RotatedPillarBlock::new,
         () -> BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.XYLOPHONE)
             .requiresCorrectToolForDrops().strength(2.0F).sound(SoundType.BONE_BLOCK));

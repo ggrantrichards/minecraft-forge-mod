@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "astralend:block/shimmer_grass"
+    "layer0": "astralend:item/shimmer_grass"
   }
 }

@@ -87,7 +87,7 @@ public class LeviathanHeadPiece extends StructurePiece {
         for (int s = -1; s <= 1; s += 2) {
             BlockState ladder = Blocks.LADDER.defaultBlockState().setValue(LadderBlock.FACING, LeviathanPiece.across(this.turn, -s));
             for (int v = b + 4; v <= cv + 2; v++) {
-                this.put(level, chunk, this.at(s * 10, v, sw + 6), ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState());
+                this.put(level, chunk, this.at(s * 10, v, sw + 6), Blocks.BONE_BLOCK.defaultBlockState());
                 this.put(level, chunk, this.at(s * 9, v, sw + 6), ladder);
             }
         }

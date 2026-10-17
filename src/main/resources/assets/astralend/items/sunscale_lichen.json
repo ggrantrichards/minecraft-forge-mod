@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "astralend:block/sunscale_lichen"
+    "model": "astralend:item/sunscale_lichen"
   }
 }

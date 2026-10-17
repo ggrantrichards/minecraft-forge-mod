@@ -2,7 +2,7 @@
   "parent": "minecraft:block/orientable",
   "textures": {
     "front": "astralend:block/maw_eye_lit",
-    "side": "astralend:block/leviathan_bone_side",
-    "top": "astralend:block/leviathan_bone_top"
+    "side": "minecraft:block/bone_block_side",
+    "top": "minecraft:block/bone_block_top"
   }
 }

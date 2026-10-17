@@ -526,6 +526,10 @@ TEXTURES += [("item/music_disc_observing_the_star.png", music_disc)]
 from retexture import TEXTURES as _RETEXTURE  # noqa: E402
 TEXTURES += _RETEXTURE
 
+# The 1.0 pass: blocks and items redone from their vanilla kin (vanilla_redo.py); last of all.
+from vanilla_redo import TEXTURES as _VANILLA_REDO  # noqa: E402
+TEXTURES += _VANILLA_REDO
+
 
 if __name__ == "__main__":
     out = Path(__file__).resolve().parents[2] / "src/main/resources/assets/astralend/textures"

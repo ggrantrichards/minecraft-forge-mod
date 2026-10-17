@@ -113,7 +113,7 @@ public class LeviathanPiece extends StructurePiece {
             .map(net.minecraft.world.level.block.Block::defaultBlockState).orElse(ModBlocks.ASTRAL_GLASS.get().defaultBlockState()));
 
     static BlockState state(LeviathanShape.Material m, int turn) {
-        BlockState bone = ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState();
+        BlockState bone = Blocks.BONE_BLOCK.defaultBlockState();
         return switch (m) {
             case BONE -> bone;
             case SPINE -> bone.setValue(RotatedPillarBlock.AXIS, along(turn));
@@ -211,7 +211,7 @@ public class LeviathanPiece extends StructurePiece {
         BlockState ladder = Blocks.LADDER.defaultBlockState().setValue(LadderBlock.FACING, across(this.turn, 1));
         for (int y = floor + 1; y <= top; y++) {
             if (y < top) {
-                this.put(level, chunk, this.at(lu - 1, y, lw), ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState());
+                this.put(level, chunk, this.at(lu - 1, y, lw), Blocks.BONE_BLOCK.defaultBlockState());
             }
             this.put(level, chunk, this.at(lu, y, lw), ladder);
         }
@@ -244,7 +244,7 @@ public class LeviathanPiece extends StructurePiece {
         BlockPos gut = this.at(0, floor + 2, LeviathanShape.STOMACH_W);
         this.put(level, chunk, gut.below(), ModBlocks.VOIDGEL.get().defaultBlockState());
         this.chest(level, chunk, rnd, gut, STOMACH_LOOT);
-        this.put(level, chunk, this.at(2, floor + 2, LeviathanShape.STOMACH_W + 1), ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState());
+        this.put(level, chunk, this.at(2, floor + 2, LeviathanShape.STOMACH_W + 1), Blocks.BONE_BLOCK.defaultBlockState());
         this.put(level, chunk, this.at(-2, floor + 2, LeviathanShape.STOMACH_W - 1), ModBlocks.WHALELIGHT_SCALE.get().defaultBlockState());
         this.maze(level, chunk, rnd);
         // The garrison: Hollowbacks in the reliquary, the Curator in its arena (shulkers keep the towers).
