@@ -18,9 +18,9 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 
-// Starforged armour you're wearing glows faintly in its upgrade's colour: the armour's own texture
-// drawn again at full brightness, tinted and dimmed, and slowly breathing, so you can read
-// someone's build at a glance (and see it in the dark). (1.21.1 port: drawn on armour models a hair
+// Starforged armour you're wearing glows in its upgrade's colour: the armour drawn again at full
+// brightness, added over itself in the upgrade's colour (through a white copy of its texture, see
+// GlowMasks) and slowly breathing, so you can read someone's build at a glance (and see it in the dark). (1.21.1 port: drawn on armour models a hair
 // larger than the armour's own, so it sits over it.)
 public class StarforgeArmorLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
     private final HumanoidModel<AbstractClientPlayer> inner;
@@ -62,12 +62,12 @@ public class StarforgeArmorLayer extends RenderLayer<AbstractClientPlayer, Playe
             default -> { }
         }
         // Added on top of the armour (the render type is additive), so the tint is kept low.
-        float strength = 0.30F + 0.12F * Mth.sin(ageInTicks * 0.06F);
+        float strength = 0.36F + 0.12F * Mth.sin(ageInTicks * 0.06F);
         int c = upgrade.colour();
         int tint = 0xFF000000 | channel(c >> 16, strength) << 16 | channel(c >> 8, strength) << 8 | channel(c, strength);
         for (ArmorMaterial.Layer layer : armor.getMaterial().value().layers()) {
             ResourceLocation texture = layer.texture(legs);
-            model.renderToBuffer(poseStack, buffers.getBuffer(RenderType.eyes(texture)), 0xF000F0, OverlayTexture.NO_OVERLAY, tint);
+            model.renderToBuffer(poseStack, buffers.getBuffer(RenderType.eyes(GlowMasks.of(texture))), 0xF000F0, OverlayTexture.NO_OVERLAY, tint);
         }
     }
 
