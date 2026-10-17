@@ -138,6 +138,10 @@ final class StarforgeSurvey {
             shots.add(String.format(java.util.Locale.ROOT, "starforge_glow_%s %.1f %d %.1f 135 8.0 armor,glow=%s", glow,
                 standOn.getX() + 0.5, standOn.getY(), standOn.getZ() + 0.5, glow));
         }
+        for (int v = 1; v <= 5; v++) {   // (temporary) other ways of drawing the glow
+            shots.add(String.format(java.util.Locale.ROOT, "starforge_glow_variant%d %.1f %d %.1f 135 8.0 armor,glow=void_recall,variant=%d", v,
+                standOn.getX() + 0.5, standOn.getY(), standOn.getZ() + 0.5, v));
+        }
         shots.addAll(List.of(
             "starforge_astral_forge " + cam + " -45 32.0",
             "starforge_forge_screen " + cam + " -45 32.0 forge",

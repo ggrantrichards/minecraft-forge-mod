@@ -55,9 +55,24 @@ public class StarforgeArmorLayer<S extends HumanoidRenderState, M extends Humano
         float strength = 0.36F + 0.12F * Mth.sin(state.ageInTicks * 0.06F);
         int c = upgrade.colour();
         int tint = 0xFF000000 | channel(c >> 16, strength) << 16 | channel(c >> 8, strength) << 8 | channel(c, strength);
-        collector.order(4).submitModel(this.models.get(slot), state, poseStack, RenderTypes.eyes(GlowMasks.of(texture)), 0xF000F0,
+        Identifier mask = GlowMasks.of(texture);
+        // (Temporary, for the CI screenshots: which draw order and render type shows the glow.)
+        int v = variant;
+        int order = switch (v) { case 1 -> 0; case 2 -> 2; case 3, 5 -> 20; default -> 4; };
+        net.minecraft.client.renderer.rendertype.RenderType type = v >= 4 ? RenderTypes.entityTranslucentEmissive(mask) : RenderTypes.eyes(mask);
+        if (v >= 4) {
+            tint = (Math.round(255 * strength) << 24) | (c & 0xFFFFFF);
+        }
+        if (LOGGED.add(v)) {
+            LOGGER.info("[AstralEnd] starforge glow: variant {} drawing {} with {} at order {}", v, mask, type, order);
+        }
+        collector.order(order).submitModel(this.models.get(slot), state, poseStack, type, 0xF000F0,
             OverlayTexture.NO_OVERLAY, tint, null, state.outlineColor);
     }
+
+    public static int variant;
+    private static final java.util.Set<Integer> LOGGED = new java.util.HashSet<>();
+    private static final org.slf4j.Logger LOGGER = com.mojang.logging.LogUtils.getLogger();
 
     private static int channel(int value, float strength) {
         return Math.round((value & 0xFF) * strength);
