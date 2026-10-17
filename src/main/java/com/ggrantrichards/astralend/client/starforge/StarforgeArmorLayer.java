@@ -20,8 +20,8 @@ import net.minecraft.world.item.ItemStack;
 
 // Starforged armour you're wearing glows in its upgrade's colour: its edges shine (the armour drawn
 // again at full brightness through a copy of its texture that keeps only its edges, fading inward,
-// see GlowMasks) and the light spills just past them (the same, fainter, on a shell half a pixel
-// outside the armour), slowly breathing, so you can read someone's build at a glance and see it
+// see GlowMasks) and the light spills just past them (the same, fainter, on a shell a sixth of a
+// pixel outside the armour), slowly breathing, so you can read someone's build at a glance and see it
 // in the dark. (1.21.1 port: drawn on armour models a hair larger than the armour's own.)
 public class StarforgeArmorLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
     // How strong the glow is on the armour and on each shell of the halo round it.
@@ -54,7 +54,7 @@ public class StarforgeArmorLayer extends RenderLayer<AbstractClientPlayer, Playe
             return;
         }
         boolean legs = slot == EquipmentSlot.LEGS;
-        float pulse = 0.7F + 0.1F * Mth.sin(ageInTicks * 0.06F);
+        float pulse = 0.9F + 0.1F * Mth.sin(ageInTicks * 0.06F);
         for (int shell = 0; shell < SHELLS.length; shell++) {
             this.shell((legs ? this.inner : this.outer).get(shell), poseStack, buffers, armor, upgrade, slot, pulse * SHELLS[shell]);
         }

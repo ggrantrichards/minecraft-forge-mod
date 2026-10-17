@@ -19,8 +19,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 // Client side of Starforging: the Astral Forge's screen, and the glow on worn armour.
 public final class StarforgeClient {
     // The glow's armour models: a hair larger than the armour's (0.5 and 1.0), so they sit over it, and
-    // one shell half a pixel further out for a thin halo round it.
-    private static final float[] SPREAD = {0.03F, 0.5F};
+    // one shell a sixth of a pixel further out for a thin halo round it.
+    private static final float[] SPREAD = {0.03F, 0.17F};
 
     private static ModelLayerLocation layer(String part, int shell) {
         return new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(AstralEnd.MODID, shell == 0 ? "starforge_accent" : "starforge_glow_" + shell), part);

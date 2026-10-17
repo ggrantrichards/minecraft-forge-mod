@@ -37,12 +37,12 @@ final class GlowMasks {
                     alpha[y * w + x] = source.getPixelRGBA(x, y) >>> 24;
                 }
             }
-            int[] glow = glow(alpha, w, h);
-            NativeImage image = new NativeImage(w, h, true);
-            for (int y = 0; y < h; y++) {
-                for (int x = 0; x < w; x++) {
-                    int v = glow[y * w + x];
-                    image.setPixelRGBA(x, y, v == 0 ? 0 : 0xFF000000 | v << 16 | v << 8 | v);
+            // Three times the armour's resolution, so the line can be a third of one of its pixels wide.
+            boolean[] line = lines(alpha, w, h);
+            NativeImage image = new NativeImage(w * FINE, h * FINE, true);
+            for (int y = 0; y < h * FINE; y++) {
+                for (int x = 0; x < w * FINE; x++) {
+                    image.setPixelRGBA(x, y, line[y * w * FINE + x] ? 0xFFFFFFFF : 0);
                 }
             }
             minecraft.getTextureManager().register(mask, new DynamicTexture(image));
@@ -57,12 +57,13 @@ final class GlowMasks {
     // of the head, the helmet's outer layer, the body, an arm and a leg (the left ones mirror the right).
     private static final int[][] BOXES = {{0, 0, 8, 8, 8}, {32, 0, 8, 8, 8}, {16, 16, 8, 12, 4}, {40, 16, 4, 12, 4}, {0, 16, 4, 12, 4}};
 
-    // How brightly each pixel glows: a single line along the armour's outline (the drawn pixels beside a
-    // hole in the armour, and at the borders of each box's top, bottom and side faces: lighting those
-    // and not the front and back gives every edge of a box one line, not two), dark everywhere else.
-    private static final int[] FADE = {255};
+    // A single thin line along the armour's outline: on the side of each drawn pixel that faces a hole
+    // in the armour, or the border of a box's top, bottom or side face (lighting those and not the front
+    // and back gives every edge of a box one line, not two). The mask is FINE times the armour's
+    // resolution, and the line is the outermost of those finer pixels.
+    static final int FINE = 3;
 
-    static int[] glow(int[] alpha, int w, int h) {
+    static boolean[] lines(int[] alpha, int w, int h) {
         int scale = Math.max(1, w / 64);
         int[] face = new int[w * h];
         Arrays.fill(face, -1);
@@ -83,10 +84,8 @@ final class GlowMasks {
                 id++;
             }
         }
-        // Distance (in pixels, within the face) from the outline, out to the end of the fade.
-        int far = FADE.length * scale;
-        int[] dist = new int[w * h];
-        Arrays.fill(dist, far);
+        int fw = w * FINE;
+        boolean[] line = new boolean[fw * h * FINE];
         int[][] steps = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
@@ -97,35 +96,19 @@ final class GlowMasks {
                 for (int[] step : steps) {
                     int nx = x + step[0], ny = y + step[1];
                     boolean outside = nx < 0 || ny < 0 || nx >= w || ny >= h || face[ny * w + nx] != face[i];
-                    if (outside ? face[i] < 0 || litBorder[face[i]] : alpha[ny * w + nx] < 16) {
-                        dist[i] = 0;
-                        break;
-                    }
-                }
-            }
-        }
-        for (int d = 1; d < far; d++) {
-            for (int y = 0; y < h; y++) {
-                for (int x = 0; x < w; x++) {
-                    int i = y * w + x;
-                    if (alpha[i] < 16 || dist[i] < far) {
+                    if (!(outside ? face[i] < 0 || litBorder[face[i]] : alpha[ny * w + nx] < 16)) {
                         continue;
                     }
-                    for (int[] step : steps) {
-                        int n = (y + step[1]) * w + x + step[0];
-                        if (dist[n] == d - 1 && face[n] == face[i]) {
-                            dist[i] = d;
-                            break;
-                        }
+                    // The finer pixels along that side of this pixel.
+                    for (int k = 0; k < FINE; k++) {
+                        int fx = step[0] == 0 ? x * FINE + k : step[0] > 0 ? x * FINE + FINE - 1 : x * FINE;
+                        int fy = step[1] == 0 ? y * FINE + k : step[1] > 0 ? y * FINE + FINE - 1 : y * FINE;
+                        line[fy * fw + fx] = true;
                     }
                 }
             }
         }
-        int[] glow = new int[w * h];
-        for (int i = 0; i < w * h; i++) {
-            glow[i] = alpha[i] < 16 || dist[i] >= far ? 0 : FADE[dist[i] / scale];
-        }
-        return glow;
+        return line;
     }
 
     private GlowMasks() {}
