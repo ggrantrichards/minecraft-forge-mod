@@ -62,7 +62,7 @@ public class StarforgeArmorLayer extends RenderLayer<AbstractClientPlayer, Playe
             default -> { }
         }
         // Added on top of the armour (the render type is additive), so the tint is kept low.
-        float strength = 0.36F + 0.12F * Mth.sin(ageInTicks * 0.06F);
+        float strength = 0.18F + 0.06F * Mth.sin(ageInTicks * 0.06F);
         int c = upgrade.colour();
         int tint = 0xFF000000 | channel(c >> 16, strength) << 16 | channel(c >> 8, strength) << 8 | channel(c, strength);
         for (ArmorMaterial.Layer layer : armor.getMaterial().value().layers()) {
