@@ -321,63 +321,35 @@ def flare_pollen():
 
 
 def umbral_membrane():
-    """A torn veil of the Stalker's dark hide, veined in violet."""
-    return draw(["................",
-                 "..aaaaaaaaaa....",
-                 ".adbbbbbbbbba...",
-                 ".adccbcbbcbba...",
-                 ".abbcbbcbbcba...",
-                 "..abbbcbbbcbba..",
-                 "..abcbbbcbbbba..",
-                 "...abbcbbbcbba..",
-                 "...abbbbcbbbba..",
-                 "....abcbbbcba...",
-                 "....abbbcbbba...",
-                 ".....abbbbba....",
-                 ".....ab.abba....",
-                 "......a..aa.....",
-                 "................",
-                 "................"], {"a": "0e0a16", "b": "2a2040", "c": "5a4486", "d": "786a9e"})
+    """A phantom membrane's shape, in the Umbral Stalker's own black and lilac."""
+    return gradient(item("phantom_membrane"), "120a18", "2e1a36", "6a3a72", "d098d8")
 
 
 def hollow_thorn():
-    """One of the Hollow Vines' black thorns: curved like a claw, a violet sheen along it."""
-    return draw(["................",
-                 "..........aa....",
-                 "...........ca...",
-                 "...........aca..",
-                 "..........abca..",
-                 ".........abba...",
-                 "........abbba...",
-                 ".......abbba....",
-                 "......abbbba....",
-                 ".....abbbba.....",
-                 "....abbbbba.....",
-                 "...abbbbba......",
-                 "..aabbbba.......",
-                 "..aaaaaa........",
-                 "................",
-                 "................"], {"a": "0c0812", "b": "2a2038", "c": "7a64a8"})
+    """A length of the Hollow Vines' stem, drawn as a stick is, black, with its thorns standing off it."""
+    img = gradient(item("stick"), "0c0812", "1e1628", "342848", "5a4878")
+    put(img, [(9, 4), (12, 7), (5, 8), (8, 11), (2, 11)], "2a2038")     # thorns, off both sides
+    return put(img, [(8, 3), (13, 8), (4, 7), (9, 12), (1, 10)], "8a74b8")    # their pale points
 
 
 def chart_fragment():
-    """A torn scrap of a star chart: parchment, inked with a few stars and a line between them."""
+    """A torn-off corner of a chart, in a map's pale paper and olive edge, with a few inked stars."""
     return draw(["................",
                  "................",
-                 "...aaaa.........",
-                 "..abbbbaaa......",
-                 "..abccbbbbaa....",
-                 "..abbkbbbbbba...",
-                 "...abbblbbbba...",
-                 "...abbbbkbbcba..",
-                 "...abcbbblbbba..",
-                 "...abbbbbbbkba..",
-                 "....abbcbbbbba..",
-                 "....abbbbbbaa...",
-                 ".....abbaaa.....",
-                 ".....aaa........",
+                 "...a............",
+                 "..aba...........",
+                 "..abba.a........",
+                 "..abbbabaa......",
+                 "..abbkbbbba.....",
+                 "..abbbbbbbaa....",
+                 "..abbbblbbbba...",
+                 "..abkbbblbbba...",
+                 "..abbbbbbbkbaa..",
+                 "..abbcbbbbbbbba.",
+                 "..abbbbbcbbbbba.",
+                 "..aaaaaaaaaaaaa.",
                  "................",
-                 "................"], {"a": "6a5236", "b": "e2d2aa", "c": "c8b48a", "k": "2a2240", "l": "6a5a7a"})
+                 "................"], {"a": "8a8238", "b": "f2eebe", "c": "dcd49a", "k": "2a2240", "l": "6a5a7a"})
 
 
 def rift_pearl():
@@ -397,42 +369,40 @@ def rift_pearl():
 
 
 def portal_lens():
-    """A brass-rimmed lens; through it, the starfield of an End portal."""
+    """A round lens of violet glass, highlighted as vanilla's glass is, in a spyglass's copper rim."""
     img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
-    rnd = random.Random(5)
     for y in range(16):
         for x in range(16):
             d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
             if d < 6.6:
                 if d > 5.6:
-                    c = "6a4a12"
+                    c = "5a2c18"
                 elif d > 4.6:
-                    c = "f0d070" if (x - 7.5) + (y - 7.5) < 0 else "c8a24c"
+                    c = "e0905a" if (x - 7.5) + (y - 7.5) < 0 else "a8582c"
                 else:
-                    c = rnd.choice(["0a0a14", "0a0a14", "0e0c1c", "121028"])
+                    c = "7a4ab0" if (x - 7.5) + (y - 7.5) < -2 else "5a3290" if (x - 7.5) + (y - 7.5) < 3 else "42226e"
                 img.putpixel((x, y), hexc(c))
-    put(img, [(6, 6), (9, 8), (7, 10), (10, 5), (5, 9)], "8ae8d0")
-    return put(img, [(8, 7), (6, 9)], "c49cff")
+    return put(img, [(5, 6), (6, 5), (5, 7), (7, 5), (9, 10), (10, 9)], "e8dcff")
 
 
 def temporal_crystal():
-    """An upright crystal, banded round its middle with gold."""
+    """A little cluster of pale teal crystal, flecked with gold, as an amethyst cluster grows."""
     return draw(["................",
-                 ".......aa.......",
-                 "......abca......",
-                 ".....abbcca.....",
-                 ".....abbcca.....",
-                 "....abbbccca....",
-                 "....abbbccca....",
-                 "....agggggga....",
-                 "....ahhhhhha....",
-                 "....abbbccca....",
-                 "....abbbccca....",
-                 ".....abbcca.....",
-                 ".....abbcca.....",
-                 "......abca......",
-                 ".......aa.......",
-                 "................"], {"a": "0a3440", "b": "2a8aa0", "c": "8ae6f0", "g": "f0d070", "h": "a87a20"})
+                 "................",
+                 ".......a........",
+                 "......aca.......",
+                 "......aca...a...",
+                 "..a...abca.aca..",
+                 ".aca..abca.acca.",
+                 ".abca.abcga.bca.",
+                 ".abca.abbca.bca.",
+                 "..abcaabbcaabca.",
+                 "..abbaabgbaabba.",
+                 "..abbcabbbaabca.",
+                 "...abbabbbabba..",
+                 "...aaaaaaaaaaa..",
+                 "................",
+                 "................"], {"a": "0e3a44", "b": "3aa0a8", "c": "a8f0ec", "g": "f0d070"})
 
 
 def star_chart():
@@ -459,10 +429,12 @@ def star_chart():
 
 
 def music_disc():
-    """A disc like vanilla's, its label in the End's purple, a star at its centre."""
+    """A disc like vanilla's: violet, its grooves catching the light, and a gold label with a star."""
     src = item("music_disc_13")
-    label = lambda p, x, y: hsv(p)[1] > 0.35
-    return only(src, label, "4a2a7a", "9a6ad8", "e8d8ff")
+    labelled = {(x, y) for y in range(16) for x in range(16) if src.getpixel((x, y))[3] and hsv(src.getpixel((x, y)))[1] > 0.35}
+    out = only(src, lambda p, x, y: (x, y) not in labelled, "120a1e", "2a1a44", "4a3070", "8a6ab8")
+    out = only(out, lambda p, x, y: (x, y) in labelled, "8a5a12", "e0b040", "fff0a8")
+    return put(out, [(7, 7), (8, 8)], "ffffff")
 
 
 def sunshade():
@@ -480,21 +452,24 @@ def sunshade():
 
 
 def maw_eye(lit):
-    """The Leviathan's eye socket in a face of bone block: a deep pit; once the skull has woken, an
-    eye in it, violet, slit-pupilled and glowing."""
+    """The Leviathan's eye socket in a face of bone block: a deep pit; once the skull has woken, light
+    burning far down in it."""
     img = vanilla("bone_block_side")
+    rnd = random.Random(4)
     for y in range(16):
         for x in range(16):
             d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
             if d < 5.6:
-                if not lit:
-                    c = "0c0a0e" if d < 4.2 else "2a241e" if d < 5.0 else "6a6252"
+                if d > 5.0:
+                    c = "6a6252"
+                elif d > 4.2:
+                    c = "2a241e"
+                elif not lit:
+                    c = "0c0a0e"
                 else:
-                    c = "2a0e44" if d > 4.6 else "c070f0" if d > 3.6 else "8a3ad0" if d > 2.0 else "e8b0ff"
+                    t = d + rnd.uniform(-0.6, 0.6)
+                    c = "2a0a3c" if t > 3.4 else "6a1e90" if t > 2.4 else "b048e0" if t > 1.3 else "f4c8ff"
                 img.putpixel((x, y), hexc(c))
-    if lit:
-        put(img, [(7, 5), (8, 5), (7, 6), (8, 6), (7, 7), (8, 7), (7, 8), (8, 8), (7, 9), (8, 9), (7, 10), (8, 10)], "120418")
-        put(img, [(5, 5)], "ffffff")
     return img
 
 
