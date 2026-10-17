@@ -1,3 +1,6 @@
 {
-  "parent": "astralend:block/maw_eye"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "astralend:item/maw_eye"
+  }
 }
