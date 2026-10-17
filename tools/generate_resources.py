@@ -1370,7 +1370,9 @@ def flares_phase5():
         "from": [0, 14, 0], "to": [16, 16, 16],
         "faces": {"up": {"uv": [0, 0, 16, 16], "texture": "#shade"}, "down": {"uv": [0, 0, 16, 16], "texture": "#shade"},
                   **{side: {"uv": [0, 0, 16, 2], "texture": "#shade"} for side in ("north", "south", "east", "west")}}}]})
-    item_def("sunshade", rid("block/sunshade"))
+    # In the inventory, a flat icon of its frame (the block model is a thin slab with no item view).
+    item_model("sunshade", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("block/sunshade")}})
+    item_def("sunshade", rid("item/sunshade"))
     lang[f"block.{NS}.sunshade"] = "Sunshade"
     drop_self("sunshade")
     # (Hushfleece since the Void Ray, whose Ray Film it was, was cut: shade from the meadow's own herd.)

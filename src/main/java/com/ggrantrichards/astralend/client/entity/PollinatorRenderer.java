@@ -7,7 +7,6 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -48,7 +47,7 @@ public class PollinatorRenderer extends MobRenderer<EndPollinator, LivingEntityR
         private final ModelPart[] tendrils = new ModelPart[5];
 
         public Model(ModelPart root) {
-            super(root, RenderTypes::entityTranslucent);
+            super(root);
             this.bell = root.getChild("bell");
             for (int i = 0; i < 5; i++) {
                 this.tendrils[i] = this.bell.getChild("tendril_" + (i + 1));

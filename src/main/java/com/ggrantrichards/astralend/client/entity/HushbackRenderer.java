@@ -7,11 +7,10 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
-// The Hushback, drawn see-through: its dark, clear hide and fleece over opaque bones.
+// The Hushback: its dark hide with the bones showing on it, and its fleece.
 public class HushbackRenderer extends MobRenderer<Hushback, HushbackRenderer.State, HushbackRenderer.Model> {
     private static final Identifier TEXTURE = ModModelLayers.texture("hushback");
 
@@ -59,7 +58,7 @@ public class HushbackRenderer extends MobRenderer<Hushback, HushbackRenderer.Sta
         private final ModelPart[] legs = new ModelPart[4];
 
         public Model(ModelPart root) {
-            super(root, RenderTypes::entityTranslucent);
+            super(root);
             this.body = root.getChild("body");
             this.head = this.body.getChild("head");
             this.fleece = this.body.getChild("fleece");

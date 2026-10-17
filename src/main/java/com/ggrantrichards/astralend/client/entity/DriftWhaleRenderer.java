@@ -7,7 +7,6 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -71,7 +70,7 @@ public class DriftWhaleRenderer extends MobRenderer<DriftWhale, DriftWhaleRender
         private final ModelPart rightFin;
 
         public Model(ModelPart root) {
-            super(root, RenderTypes::entityTranslucent);
+            super(root);
             this.body = root.getChild("body");
             this.head = this.body.getChild("head");
             this.jaw = this.head.getChild("jaw");

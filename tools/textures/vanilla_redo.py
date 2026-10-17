@@ -266,8 +266,10 @@ def draw(rows, palette):
 
 
 def lumineshroom_drawn(cap, stem):
-    """A mushroom with a broad domed cap, in the colours the Lumineshrooms always had."""
+    """A mushroom with a broad domed cap, in the colours the Lumineshrooms always had, its stem
+    down to the bottom pixel so it stands on the ground."""
     return draw(["................",
+                 "................",
                  "................",
                  "................",
                  ".....aaaaaa.....",
@@ -281,8 +283,7 @@ def lumineshroom_drawn(cap, stem):
                  "......fghf......",
                  "......fghf......",
                  ".....ffghff.....",
-                 ".....ffffff.....",
-                 "................"], {**cap, **stem})
+                 ".....ffffff....."], {**cap, **stem})
 
 
 def lumineshroom():
