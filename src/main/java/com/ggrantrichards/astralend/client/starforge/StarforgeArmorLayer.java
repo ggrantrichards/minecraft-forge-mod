@@ -54,7 +54,7 @@ public class StarforgeArmorLayer extends RenderLayer<AbstractClientPlayer, Playe
             return;
         }
         boolean legs = slot == EquipmentSlot.LEGS;
-        float pulse = 0.52F + 0.08F * Mth.sin(ageInTicks * 0.06F);
+        float pulse = 0.7F + 0.1F * Mth.sin(ageInTicks * 0.06F);
         for (int shell = 0; shell < SHELLS.length; shell++) {
             this.shell((legs ? this.inner : this.outer).get(shell), poseStack, buffers, armor, upgrade, slot, pulse * SHELLS[shell]);
         }
