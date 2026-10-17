@@ -142,16 +142,17 @@ def mirror_wretch():
 
 
 def pollinator():
-    """A jellyfish: a teal bell with a rim of white lights, and its tentacles hanging free below."""
+    """The whole egg, as vanilla's are: a teal bell up top with its rim of white lights, and below it
+    the tentacles, striped lilac and violet down to white tips, the bottom edge ragged between them."""
     e = Egg("74cfc6")
     e.rows(1, 3, "a8ece4")
-    e.rows(7, 7, "56aaa2")
-    e.put([(x, 8) for x in range(2, 14)], "8adcd2")                             # the bell's rim, wider
-    e.put([(x, 8) for x in range(3, 13, 2)], "ffffff", glow=True)               # its lights
-    e.cut([(x, y) for x in range(16) for y in range(9, 16)])
-    for x, end, col in ((4, 13, "c8a4f4"), (6, 15, "a07ad8"), (9, 15, "c8a4f4"), (11, 13, "a07ad8")):
-        e.put([(x, y) for y in range(9, end)], col)                             # tentacles
-        e.put([(x, end)], "ffffff")                                             # white tips
+    e.rows(7, 7, "4e9e98")
+    e.put([(x, 8) for x in range(3, 13)], "8adcd2")
+    e.put([(x, 8) for x in range(4, 12, 2)], "ffffff", glow=True)              # the bell's lights
+    for (x, y) in [p for p in e.px if p[1] >= 9]:
+        e.put([(x, y)], "c8a4f4" if x % 2 else "6a42a8")                       # tentacles
+    e.cut([(6, 15), (8, 15), (4, 13), (11, 13)])
+    e.put([(5, 14), (7, 15), (9, 15), (11, 12), (3, 12)], "ffffff")            # their tips
     return e
 
 

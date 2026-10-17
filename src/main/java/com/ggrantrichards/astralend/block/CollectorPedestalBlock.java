@@ -29,12 +29,12 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jspecify.annotations.Nullable;
 
-// Collector Pedestal: holds one Void Crystal or Flare Bottle. Under open sky in the Eclipse during a
+// Collector Pedestal: holds one Void Crystal or glass bottle. Under open sky in the Eclipse during a
 // Sunstorm it charges what it holds (CollectorPedestalBlockEntity). Use it with the item to
 // set it down, with an empty hand to take it back. The state shows what it holds (a model each).
 public class CollectorPedestalBlock extends Block implements EntityBlock {
     public enum Holding implements StringRepresentable {
-        NONE, VOID_CRYSTAL, CHARGED_VOID_CRYSTAL, FLARE_BOTTLE, BOTTLED_FLARE;
+        NONE, VOID_CRYSTAL, CHARGED_VOID_CRYSTAL, GLASS_BOTTLE, BOTTLED_FLARE;
 
         @Override
         public String getSerializedName() {
@@ -49,7 +49,7 @@ public class CollectorPedestalBlock extends Block implements EntityBlock {
             Item item = stack.getItem();
             if (item == ModItems.VOID_CRYSTAL.get()) return VOID_CRYSTAL;
             if (item == ModItems.CHARGED_VOID_CRYSTAL.get()) return CHARGED_VOID_CRYSTAL;
-            if (item == ModItems.FLARE_BOTTLE.get()) return FLARE_BOTTLE;
+            if (item == net.minecraft.world.item.Items.GLASS_BOTTLE) return GLASS_BOTTLE;   // a plain bottle catches a flare
             if (item == ModItems.BOTTLED_FLARE.get()) return BOTTLED_FLARE;
             return NONE;
         }

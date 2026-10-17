@@ -78,11 +78,6 @@ def cracks():
     return out
 
 
-def weathered(face):
-    img = gradient(vanilla(f"bone_block_{face}"), *AGED)
-    return put(img, cracks(), "4a4438")
-
-
 def lichened(face):
     img = vanilla(f"bone_block_{face}")
     lichen = vanilla("glow_lichen")
@@ -96,40 +91,7 @@ def lichened(face):
     return img
 
 
-def maw_eye(lit):
-    """The Leviathan's eye socket in a face of bone block: a deep pit, with an Eye of Ender's iris in it
-    once the skull has woken."""
-    img = vanilla("bone_block_side")
-    for y in range(16):
-        for x in range(16):
-            d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
-            if d < 5.6:
-                img.putpixel((x, y), hexc("0c0a0e" if d < 4.2 else "2a241e" if d < 5.0 else "6a6252"))
-    if lit:
-        eye = gradient(item("ender_eye"), "1a0630", "5a1a90", "b060f0", "f0d8ff").crop((4, 4, 12, 12))
-        img.alpha_composite(eye, (4, 4))
-    return img
-
-
 # ------------------------------------------------------------------ blocks
-def meteoric_iron_block():
-    return gradient(vanilla("iron_block"), "2e3040", "4c5064", "727890", "a4abc0")
-
-
-def lumineshroom():
-    """A red mushroom's shape: a cream-gold cap with teal spots, as the giant ones have."""
-    src = vanilla("red_mushroom")
-    red = lambda p, x, y: hsv(p)[1] > 0.45 and (hsv(p)[0] < 0.08 or hsv(p)[0] > 0.9)
-    capped = only(src, red, "8a6a28", "c8a24c", "ecd27e")
-    rows = {y for y in range(16) for x in range(16) if red(src.getpixel((x, y)), x, y)}
-    spot = lambda p, x, y: y in rows and not red(p, x, y) and sum(p[:3]) > 500
-    return only(capped, spot, "2a9e94", "6ae0d2")
-
-
-def ashen_lumineshroom():
-    return gradient(vanilla("brown_mushroom"), "3e3a40", "66626a", "8e8a90", "b4aea6")
-
-
 def chiseled_nightstone():
     return gradient(vanilla("chiseled_polished_blackstone"), "15121f", "241e36", "352c4e", "5a4d7b")
 
@@ -139,21 +101,6 @@ FROST = ("3e5e7e", "7aa6c4", "bcdcf0", "f4fbff")
 
 def comet_cress(stage):
     return gradient(vanilla(f"wheat_stage{(0, 3, 5, 7)[stage]}"), *FROST)
-
-
-def sunshade():
-    """A copper trapdoor's frame with dark Hushfleece stretched in it: a canopy to stand under."""
-    frame = vanilla("copper_trapdoor")
-    fleece = gradient(vanilla("gray_wool"), "221c34", "2e2644", "3c3256", "4a4066")
-    out = fleece.copy()
-    for y in range(16):
-        for x in range(16):
-            p = frame.getpixel((x, y))
-            border = x in (0, 15) or y in (0, 15) or x in (1, 14) or y in (1, 14)
-            brace = abs(x - y) <= 0 or abs(x + y - 15) <= 0
-            if border or brace:
-                out.putpixel((x, y), p)
-    return out
 
 
 def end_chimes():
@@ -200,10 +147,6 @@ def shimmer_grass_item():
     return gradient(vanilla("short_grass"), "6e6a62", "8e897f", "c4beb0", "e4ded0")
 
 
-def nebula_tufts_item():
-    return gradient(vanilla("short_grass"), "6e2046", "a43a68", "d8709c", "f4b8d4")
-
-
 def sunscale_lichen_item():
     return gradient(vanilla("glow_lichen"), "8a3a14", "c8661e", "eea040", "ffd890")
 
@@ -226,62 +169,18 @@ def curators_core():
     return gradient(item("heart_of_the_sea"), "1e0a3a", "4a2486", "8a52d6", "d4b4ff")
 
 
-def charged_void_crystal():
-    return gradient(item("amethyst_shard"), "3a1e7a", "7a4ad8", "b896ff", "f6eeff")
-
-
-def flare_pollen():
-    return gradient(item("glowstone_dust"), "8a4410", "d08420", "f8c444", "fff0a8")
-
-
-def glowing_spores():
-    return gradient(item("glowstone_dust"), "145858", "2e9e92", "6ee0cc", "ccfff0")
-
-
-def umbral_membrane():
-    return gradient(item("phantom_membrane"), "1a1424", "2e2440", "4a3a64", "706090")
-
-
 def cracked_lens():
     """A round lens of pale glass, cracked across."""
     img = gradient(item("ender_pearl"), "5a7488", "9cbccc", "d8ecf4", "ffffff")
     return put(img, [(5, 4), (6, 5), (7, 6), (7, 7), (8, 8), (9, 9), (9, 10), (10, 11), (8, 7), (9, 6)], "3a4a58")
 
 
-def chart_fragment():
-    img = gradient(item("paper"), "8a7450", "b49c70", "d8c49a", "eee2c0")
-    return put(img, [(5, 6), (9, 5), (11, 8), (7, 9), (6, 7), (7, 8)], "3a2e40")
-
-
-def hollow_thorn():
-    return gradient(item("pointed_dripstone"), "120c1a", "261e34", "40325a", "665682")
-
-
 def starsap():
     return gradient(item("resin_clump"), "6a2e08", "b46612", "eea436", "ffe08c")
 
 
-def rift_pearl():
-    return gradient(item("ender_pearl"), "1c0a34", "4a1c86", "9a4ae0", "eaccff")
-
-
 def starforge_alloy():
     return gradient(item("netherite_ingot"), "1c1630", "3a3058", "655494", "aa9ae0")
-
-
-def temporal_crystal():
-    return gradient(item("echo_shard"), "0e3846", "2a8aa0", "6ad6e6", "e0fcff")
-
-
-def portal_lens():
-    return gradient(item("ender_eye"), "1a0a30", "4a2a80", "8c5ad8", "dcc4ff")
-
-
-def star_chart():
-    """A map, but of the sky: dark blue, with a few stars and a constellation drawn on."""
-    img = gradient(item("filled_map"), "141a34", "222c58", "34427e", "c8a24c")
-    put(img, [(5, 5), (10, 6), (7, 9), (11, 10), (6, 11)], "f4ecc8")
-    return put(img, [(6, 6), (8, 7), (9, 8), (10, 9)], "8a7a5a")
 
 
 def chorus_flower_on_a_stick():
@@ -299,13 +198,6 @@ def starforge_template():
 
 def gilded_trim_template():
     return gradient(item("spire_armor_trim_smithing_template"), "5a3c0c", "9a7020", "d0a848", "f6e6a8")
-
-
-def music_disc():
-    """A disc like vanilla's, its label in the Gilded Reach's gold."""
-    src = item("music_disc_otherside")
-    label = lambda p, x, y: hsv(p)[1] > 0.35
-    return only(src, label, "6a4a12", "c8a24c", "fff0a8")
 
 
 def glowing_stew():
@@ -359,6 +251,292 @@ WYRM = [".###...",
         ".#...#.",
         "..###.."]
 
+
+# ------------------------------------------------------------------ drawn in vanilla's manner
+# Where a recolour of a vanilla item would just be that item again, the mod's own drawing instead:
+# 16x16, a dark outline in the item's own darkest shade, three or four tones lit from the top left.
+def draw(rows, palette):
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for y, row in enumerate(rows):
+        for x, ch in enumerate(row):
+            if ch != ".":
+                img.putpixel((x, y), hexc(palette[ch]))
+    return img
+
+
+def lumineshroom_drawn(cap, stem):
+    """A mushroom with a broad domed cap, in the colours the Lumineshrooms always had."""
+    return draw(["................",
+                 "................",
+                 "................",
+                 ".....aaaaaa.....",
+                 "...aabcccbbaa...",
+                 "..abccdddccbba..",
+                 "..abcdddddcbba..",
+                 ".aabbcccccbbbaa.",
+                 ".aeeeeeeeeeeeea.",
+                 "......fggf......",
+                 "......fggf......",
+                 "......fghf......",
+                 "......fghf......",
+                 ".....ffghff.....",
+                 ".....ffffff.....",
+                 "................"], {**cap, **stem})
+
+
+def lumineshroom():
+    return lumineshroom_drawn({"a": "0e4a4a", "b": "176a6a", "c": "30beb3", "d": "8ae8dc", "e": "125656"},
+                              {"f": "8a82a0", "g": "dcd5ea", "h": "b8aecb"})
+
+
+def ashen_lumineshroom():
+    return lumineshroom_drawn({"a": "2c2a30", "b": "403d44", "c": "67626a", "d": "8b868e", "e": "343238"},
+                              {"f": "6e6862", "g": "b4ae9e", "h": "a39d93"})
+
+
+def charged_void_crystal():
+    """The Void Crystal, charged: the same gem, lit up from inside, with a glint or two about it."""
+    src = Image.open(TEX / "item/void_crystal.png").convert("RGBA")
+    img = gradient(src, "4a2a98", "8a5ae8", "c8a8ff", "fbf6ff")
+    return put(img, [(13, 2), (2, 12), (14, 11)], "fff4c8")
+
+
+def flare_pollen():
+    return draw(["................",
+                 "................",
+                 "..........e.....",
+                 "....e...........",
+                 "........e.......",
+                 "................",
+                 "................",
+                 "................",
+                 "................",
+                 ".......aa.......",
+                 ".....aacdaa.....",
+                 "....acbcbdca....",
+                 "...acbdbcbbca...",
+                 "..abcbbcbdbbca..",
+                 "..aaaaaaaaaaaa..",
+                 "................"], {"a": "8a3e0c", "b": "d07a1c", "c": "f2b23a", "d": "ffe68a", "e": "fff4c8"})
+
+
+def umbral_membrane():
+    """A torn veil of the Stalker's dark hide, veined in violet."""
+    return draw(["................",
+                 "..aaaaaaaaaa....",
+                 ".adbbbbbbbbba...",
+                 ".adccbcbbcbba...",
+                 ".abbcbbcbbcba...",
+                 "..abbbcbbbcbba..",
+                 "..abcbbbcbbbba..",
+                 "...abbcbbbcbba..",
+                 "...abbbbcbbbba..",
+                 "....abcbbbcba...",
+                 "....abbbcbbba...",
+                 ".....abbbbba....",
+                 ".....ab.abba....",
+                 "......a..aa.....",
+                 "................",
+                 "................"], {"a": "0e0a16", "b": "2a2040", "c": "5a4486", "d": "786a9e"})
+
+
+def hollow_thorn():
+    """One of the Hollow Vines' black thorns: curved like a claw, a violet sheen along it."""
+    return draw(["................",
+                 "..........aa....",
+                 "...........ca...",
+                 "...........aca..",
+                 "..........abca..",
+                 ".........abba...",
+                 "........abbba...",
+                 ".......abbba....",
+                 "......abbbba....",
+                 ".....abbbba.....",
+                 "....abbbbba.....",
+                 "...abbbbba......",
+                 "..aabbbba.......",
+                 "..aaaaaa........",
+                 "................",
+                 "................"], {"a": "0c0812", "b": "2a2038", "c": "7a64a8"})
+
+
+def chart_fragment():
+    """A torn scrap of a star chart: parchment, inked with a few stars and a line between them."""
+    return draw(["................",
+                 "................",
+                 "...aaaa.........",
+                 "..abbbbaaa......",
+                 "..abccbbbbaa....",
+                 "..abbkbbbbbba...",
+                 "...abbblbbbba...",
+                 "...abbbbkbbcba..",
+                 "...abcbbblbbba..",
+                 "...abbbbbbbkba..",
+                 "....abbcbbbbba..",
+                 "....abbbbbbaa...",
+                 ".....abbaaa.....",
+                 ".....aaa........",
+                 "................",
+                 "................"], {"a": "6a5236", "b": "e2d2aa", "c": "c8b48a", "k": "2a2240", "l": "6a5a7a"})
+
+
+def rift_pearl():
+    """A pearl gone dark, a rift of light cracked across it."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for y in range(16):
+        for x in range(16):
+            d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+            if d < 6.0:
+                lit = (x - 7.5) + (y - 7.5) < -3
+                c = "100820" if d > 5.0 else ("4a2a7a" if lit else "2a1a4a")
+                img.putpixel((x, y), hexc(c))
+    put(img, [(5, 4), (5, 5)], "6a4aa0")
+    crack = [(4, 5), (5, 6), (6, 6), (7, 7), (7, 8), (8, 8), (9, 9), (10, 10), (11, 10)]
+    put(img, crack, "e070ff")
+    return put(img, [(7, 7), (8, 8)], "ffe8ff")
+
+
+def portal_lens():
+    """A brass-rimmed lens; through it, the starfield of an End portal."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    rnd = random.Random(5)
+    for y in range(16):
+        for x in range(16):
+            d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+            if d < 6.6:
+                if d > 5.6:
+                    c = "6a4a12"
+                elif d > 4.6:
+                    c = "f0d070" if (x - 7.5) + (y - 7.5) < 0 else "c8a24c"
+                else:
+                    c = rnd.choice(["0a0a14", "0a0a14", "0e0c1c", "121028"])
+                img.putpixel((x, y), hexc(c))
+    put(img, [(6, 6), (9, 8), (7, 10), (10, 5), (5, 9)], "8ae8d0")
+    return put(img, [(8, 7), (6, 9)], "c49cff")
+
+
+def temporal_crystal():
+    """An upright crystal, banded round its middle with gold."""
+    return draw(["................",
+                 ".......aa.......",
+                 "......abca......",
+                 ".....abbcca.....",
+                 ".....abbcca.....",
+                 "....abbbccca....",
+                 "....abbbccca....",
+                 "....agggggga....",
+                 "....ahhhhhha....",
+                 "....abbbccca....",
+                 "....abbbccca....",
+                 ".....abbcca.....",
+                 ".....abbcca.....",
+                 "......abca......",
+                 ".......aa.......",
+                 "................"], {"a": "0a3440", "b": "2a8aa0", "c": "8ae6f0", "g": "f0d070", "h": "a87a20"})
+
+
+def star_chart():
+    """A chart of the sky in a gold frame: night blue, a constellation of five stars joined up."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for y in range(1, 15):
+        for x in range(1, 15):
+            edge = x in (1, 14) or y in (1, 14)
+            rim = x in (2, 13) or y in (2, 13)
+            if edge:
+                c = "5a3c10"
+            elif rim:
+                c = "f0d070" if x + y < 15 else "c8a24c"
+            else:
+                c = "2a3a6e" if x + y < 12 else "1e2850" if x + y < 20 else "141a38"
+            img.putpixel((x, y), hexc(c))
+    stars = [(4, 10), (6, 5), (8, 8), (10, 4), (11, 9)]
+    for (x0, y0), (x1, y1) in zip(stars, stars[1:]):
+        n = max(abs(x1 - x0), abs(y1 - y0))
+        put(img, [(round(x0 + (x1 - x0) * i / n), round(y0 + (y1 - y0) * i / n)) for i in range(1, n)], "5a6c9e")
+    put(img, stars, "fff4c8")
+    put(img, [(8, 8)], "ffffff")
+    return put(img, [(5, 12), (12, 12), (4, 4)], "8a9ac8")
+
+
+def music_disc():
+    """A disc like vanilla's, its label in the End's purple, a star at its centre."""
+    src = item("music_disc_13")
+    label = lambda p, x, y: hsv(p)[1] > 0.35
+    return only(src, label, "4a2a7a", "9a6ad8", "e8d8ff")
+
+
+def sunshade():
+    """A window-frame of cut copper with a thin, tinted film stretched in it: you see the sky through it."""
+    frame = vanilla("cut_copper")
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for y in range(16):
+        for x in range(16):
+            if x in (0, 7, 8, 15) or y in (0, 7, 8, 15):
+                img.putpixel((x, y), frame.getpixel((x, y)))
+            else:
+                sheen = (x + y) % 7 == 0
+                img.putpixel((x, y), hexc("4a3a6a" if sheen else "2c2444", 190 if sheen else 150))
+    return img
+
+
+def maw_eye(lit):
+    """The Leviathan's eye socket in a face of bone block: a deep pit; once the skull has woken, an
+    eye in it, violet, slit-pupilled and glowing."""
+    img = vanilla("bone_block_side")
+    for y in range(16):
+        for x in range(16):
+            d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+            if d < 5.6:
+                if not lit:
+                    c = "0c0a0e" if d < 4.2 else "2a241e" if d < 5.0 else "6a6252"
+                else:
+                    c = "2a0e44" if d > 4.6 else "c070f0" if d > 3.6 else "8a3ad0" if d > 2.0 else "e8b0ff"
+                img.putpixel((x, y), hexc(c))
+    if lit:
+        put(img, [(7, 5), (8, 5), (7, 6), (8, 6), (7, 7), (8, 7), (7, 8), (8, 8), (7, 9), (8, 9), (7, 10), (8, 10)], "120418")
+        put(img, [(5, 5)], "ffffff")
+    return img
+
+
+def meteoric_iron_block():
+    """Iron block's bevelled frame; inside, the long crossing bands an etched iron meteorite shows."""
+    img = gradient(vanilla("iron_block"), "2e3040", "4c5064", "727890", "a4abc0")
+    for y in range(2, 14):
+        for x in range(2, 14):
+            if (x + y) % 5 == 0:
+                c = "a8b0c4"
+            elif (x - y) % 5 == 0:
+                c = "3c4052"
+            else:
+                c = "5a6074" if (x * 3 + y) % 4 else "666c80"
+            img.putpixel((x, y), hexc(c))
+    return img
+
+
+def weathered(face):
+    """Bone block, greyed with age, pitted, and cracked here and there."""
+    img = gradient(vanilla(f"bone_block_{face}"), *AGED)
+    rnd = random.Random(31 if face == "side" else 32)
+    for _ in range(9):
+        put(img, [(rnd.randrange(16), rnd.randrange(16))], "7e7666")
+    crack = [(3, 2), (4, 3), (4, 4), (5, 5)] if face == "side" else [(9, 3), (10, 4), (10, 5)]
+    crack += [(11, 10), (11, 11), (12, 12)] if face == "side" else [(4, 11), (5, 12)]
+    return put(img, crack, "5a5446")
+
+
+def nebula_tufts_item():
+    """Vanilla grass's full-size shape, rose, with the cold blue tips the tufts have."""
+    img = gradient(vanilla("short_grass"), "6e2046", "a43a68", "d8709c", "f4b8d4")
+    tips = [(x, y) for y in range(16) for x in range(16)
+            if img.getpixel((x, y))[3] and (y == 0 or not img.getpixel((x, y - 1))[3])]
+    return put(img, tips, "d1ecfb")
+
+
+def pedestal(name):
+    """What a Collector Pedestal holds, as a block texture (block models can't use item textures)."""
+    return item("glass_bottle") if name == "glass_bottle" else Image.open(TEX / f"item/{name}.png").convert("RGBA").copy()
+
+
 TEXTURES = [
     ("block/weathered_leviathan_bone_side.png", lambda: weathered("side")),
     ("block/weathered_leviathan_bone_top.png", lambda: weathered("top")),
@@ -385,11 +563,9 @@ TEXTURES = [
     ("item/nebula_tufts.png", nebula_tufts_item),
     ("item/sunscale_lichen.png", sunscale_lichen_item),
     ("item/bottled_flare.png", bottled_flare),
-    ("item/flare_bottle.png", flare_bottle),
     ("item/curators_core.png", curators_core),
     ("item/charged_void_crystal.png", charged_void_crystal),
     ("item/flare_pollen.png", flare_pollen),
-    ("item/glowing_spores.png", glowing_spores),
     ("item/umbral_membrane.png", umbral_membrane),
     ("item/cracked_lens.png", cracked_lens),
     ("item/chart_fragment.png", chart_fragment),
@@ -406,6 +582,7 @@ TEXTURES = [
     ("item/music_disc_observing_the_star.png", music_disc),
     ("item/glowing_stew.png", glowing_stew),
     ("item/spire_banner_pattern.png", lambda: banner(SPIRE)),
+    *[(f"block/pedestal_{n}.png", (lambda n=n: pedestal(n))) for n in ("glass_bottle", "charged_void_crystal", "bottled_flare")],
     ("item/wyrm_banner_pattern.png", lambda: banner(WYRM)),
 ]
 

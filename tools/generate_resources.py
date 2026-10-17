@@ -1392,8 +1392,8 @@ def flares_phase5():
         box([1, 10, 1], [15, 13, 15], [1, 0, 15, 3], [0, 0, 16, 16]),
     ]})
     parts = [{"apply": {"model": rid("block/collector_pedestal")}}]
-    for holding in ("void_crystal", "charged_void_crystal", "flare_bottle", "bottled_flare"):
-        t = rid(f"block/pedestal_{holding}")
+    for holding in ("void_crystal", "charged_void_crystal", "glass_bottle", "bottled_flare"):
+        t = rid(f"block/pedestal_{holding}")   # (a plain glass bottle catches a flare)
         planes = []
         for angle in (45, -45):
             planes.append({"from": [2, 13, 8], "to": [14, 25, 8], "shade": False,
@@ -1412,11 +1412,10 @@ def flares_phase5():
 
     # Items
     for name, english in (("flare_pollen", "Flare Pollen"), ("charged_void_crystal", "Charged Void Crystal"),
-                          ("flare_bottle", "Flare Bottle"), ("bottled_flare", "Bottled Flare")):
+                          ("bottled_flare", "Bottled Flare")):
         item_model(name, {"parent": "minecraft:item/generated", "textures": {"layer0": rid(f"item/{name}")}})
         item_def(name, rid(f"item/{name}"))
         lang[f"item.{NS}.{name}"] = english
-    shaped("flare_bottle", "flare_bottle", ["S", "G", "S"], {"S": rid("solarite_ingot"), "G": rid("astral_glass")})
 
     # Sun Ward, the potion and its effect
     lang[f"effect.{NS}.sun_ward"] = "Sun Ward"
@@ -1597,7 +1596,7 @@ def structures_phase6():
     chest_loot("solar_array", [
         {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
             entry("solarite_ingot", 6, (2, 6)), entry("raw_solarite", 5, (2, 6)), entry("solarite_block", 2, (1, 2)),
-            entry("flare_bottle", 3, (1, 2)), entry("flare_pollen", 4, (2, 6)), entry("charged_void_crystal", 2, (1, 1)),
+            entry("minecraft:glass_bottle", 3, (1, 2)), entry("flare_pollen", 4, (2, 6)), entry("charged_void_crystal", 2, (1, 1)),
             entry("minecraft:golden_apple", 2), entry("sunshade", 3, (2, 4))]},
         chance("temporal_crystal", 0.4),
         chance("bottled_flare", 0.25),
@@ -1857,7 +1856,7 @@ def advancements_phase9():
                 parent=root)
     advancement("harvest_moon", "minecraft:shears", "Shade from the Herd", "Shear a Hushback (its fleece makes Sunshades)",
                 parent=rid("end/weather_the_storm"))
-    advancement("bottled_sunlight", rid("bottled_flare"), "Bottled Sunlight", "Fill a Flare Bottle with a Sunstorm",
+    advancement("bottled_sunlight", rid("bottled_flare"), "Bottled Sunlight", "Fill a glass bottle with a Sunstorm",
                 parent=rid("end/weather_the_storm"), criteria={"bottle": has_item(rid("bottled_flare"))})
     # The Drift Whales
     advancement("something_big_out_there", rid("whalelight_scale"), "Something Big Out There", "See a Drift Whale", parent=root)

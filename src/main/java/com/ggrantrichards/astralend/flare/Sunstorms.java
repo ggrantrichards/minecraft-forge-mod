@@ -39,7 +39,7 @@ import net.minecraftforge.fml.LogicalSide;
 //
 //   WARNING   ~1 min    the star brightens and a hum rises; there's always time to get under cover
 //   FLARE     1-2 min   open sky in the Eclipse burns (Sunburn); Flareblooms open; Void Rays take off;
-//                       Void Crystal and Flare Bottles on Collector Pedestals charge
+//                       Void Crystals and glass bottles on Collector Pedestals charge
 //   AFTERGLOW ~2 min    Sunscale Lichen glows bright, Void Ray wings refill
 //
 // One timer for the whole End, saved with the world. Clients hear about it through FlareNetwork.

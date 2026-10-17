@@ -23,10 +23,10 @@
     },
     {
       "when": {
-        "holding": "flare_bottle"
+        "holding": "glass_bottle"
       },
       "apply": {
-        "model": "astralend:block/collector_pedestal_flare_bottle"
+        "model": "astralend:block/collector_pedestal_glass_bottle"
       }
     },
     {
