@@ -117,7 +117,6 @@ jobs:
             grep -A30 "Exception stopping the server" survey.log | head -40; } > /tmp/shots/survey.txt 2>/dev/null || true
           grep -E "AstralEnd screenshots|/ERROR\]" screenshots.log 2>/dev/null | tail -80 > /tmp/shots/screenshots.txt || true
           grep -iE -A8 "experimental|lifecycle|level\.dat|Exception" screenshots.log 2>/dev/null | head -60 >> /tmp/shots/screenshots.txt || true
-          grep -iE -A6 "starforge glow" screenshots.log 2>/dev/null | head -60 >> /tmp/shots/screenshots.txt || true
           cd /tmp/shots
           printf "# In-game screenshots\n\nFrom commit ${GITHUB_SHA::7} on ${GITHUB_REF_NAME}.\n\n" > README.md
           for f in astralend-*.png; do printf "### ${f}\n\n![](${f})\n\n" >> README.md; done

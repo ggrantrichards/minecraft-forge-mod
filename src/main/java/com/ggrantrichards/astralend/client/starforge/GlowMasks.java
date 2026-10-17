@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
@@ -12,10 +13,8 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 
-// The shape of an armour texture in white, made from the armour's own texture when it's first needed,
-// for the Starforge glow to light: drawn additively, a dark texture (netherite) would add almost no
-// light, so the glow goes through this instead and is as strong on netherite as on diamond. The
-// armour's shading is kept, softened, so the glow still shows its plates.
+// Where an armour texture glows, in white: made from the armour's own texture when it's first needed.
+// The Starforge glow lights the armour's edges, leaving the rest of it as it is.
 final class GlowMasks {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Map<Identifier, Identifier> MASKS = new HashMap<>();
@@ -30,14 +29,19 @@ final class GlowMasks {
             "starforge_glow/" + armour.getNamespace() + "/" + armour.getPath().replace(".png", ""));
         try (InputStream in = minecraft.getResourceManager().getResource(armour).orElseThrow().open();
              NativeImage source = NativeImage.read(in)) {
-            NativeImage image = new NativeImage(source.getWidth(), source.getHeight(), true);
-            for (int y = 0; y < source.getHeight(); y++) {
-                for (int x = 0; x < source.getWidth(); x++) {
-                    int argb = source.getPixel(x, y);
-                    int alpha = argb >>> 24;
-                    int luma = (((argb >> 16) & 0xFF) * 3 + ((argb >> 8) & 0xFF) * 6 + (argb & 0xFF)) / 10;
-                    int v = alpha < 16 ? 0 : 150 + luma * 105 / 255;
-                    image.setPixel(x, y, alpha << 24 | v << 16 | v << 8 | v);
+            int w = source.getWidth(), h = source.getHeight();
+            int[] alpha = new int[w * h];
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
+                    alpha[y * w + x] = source.getPixel(x, y) >>> 24;
+                }
+            }
+            int[] glow = glow(alpha, w, h);
+            NativeImage image = new NativeImage(w, h, true);
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
+                    int v = glow[y * w + x];
+                    image.setPixel(x, y, v << 24 | 0xFFFFFF);   // white, as opaque as it glows
                 }
             }
             minecraft.getTextureManager().register(mask, new DynamicTexture(mask::toString, image));
@@ -46,6 +50,77 @@ final class GlowMasks {
             return armour;
         }
         return mask;
+    }
+
+    // The faces of the humanoid armour model's boxes on its 64x32 texture: u, v, width, height and depth
+    // of the head, the helmet's outer layer, the body, an arm and a leg (the left ones mirror the right).
+    private static final int[][] BOXES = {{0, 0, 8, 8, 8}, {32, 0, 8, 8, 8}, {16, 16, 8, 12, 4}, {40, 16, 4, 12, 4}, {0, 16, 4, 12, 4}};
+
+    // How brightly each pixel glows: brightest on the armour's outline (every drawn pixel at the border
+    // of its face, so each box's edges light up, or beside a hole in the armour), with a fainter pixel
+    // just inside it, and dark on the rest of the armour.
+    private static final int[] FADE = {255, 60};
+
+    static int[] glow(int[] alpha, int w, int h) {
+        int scale = Math.max(1, w / 64);
+        int[] face = new int[w * h];
+        Arrays.fill(face, -1);
+        int id = 0;
+        for (int[] b : BOXES) {
+            int u = b[0], v = b[1], bw = b[2], bh = b[3], d = b[4];
+            int[][] faces = {{u + d, v, bw, d}, {u + d + bw, v, bw, d}, {u, v + d, d, bh}, {u + d, v + d, bw, bh},
+                {u + d + bw, v + d, d, bh}, {u + d + bw + d, v + d, bw, bh}};
+            for (int[] f : faces) {
+                for (int y = f[1] * scale; y < Math.min(h, (f[1] + f[3]) * scale); y++) {
+                    for (int x = f[0] * scale; x < Math.min(w, (f[0] + f[2]) * scale); x++) {
+                        face[y * w + x] = id;
+                    }
+                }
+                id++;
+            }
+        }
+        // Distance (in pixels, within the face) from the outline, out to the end of the fade.
+        int far = FADE.length * scale;
+        int[] dist = new int[w * h];
+        Arrays.fill(dist, far);
+        int[][] steps = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int i = y * w + x;
+                if (alpha[i] < 16) {
+                    continue;
+                }
+                for (int[] step : steps) {
+                    int nx = x + step[0], ny = y + step[1];
+                    if (nx < 0 || ny < 0 || nx >= w || ny >= h || face[ny * w + nx] != face[i] || alpha[ny * w + nx] < 16) {
+                        dist[i] = 0;
+                        break;
+                    }
+                }
+            }
+        }
+        for (int d = 1; d < far; d++) {
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
+                    int i = y * w + x;
+                    if (alpha[i] < 16 || dist[i] < far) {
+                        continue;
+                    }
+                    for (int[] step : steps) {
+                        int n = (y + step[1]) * w + x + step[0];
+                        if (dist[n] == d - 1 && face[n] == face[i]) {
+                            dist[i] = d;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        int[] glow = new int[w * h];
+        for (int i = 0; i < w * h; i++) {
+            glow[i] = alpha[i] < 16 || dist[i] >= far ? 0 : FADE[dist[i] / scale];
+        }
+        return glow;
     }
 
     private GlowMasks() {}

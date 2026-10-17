@@ -29,8 +29,6 @@ final class StarforgeShots {
         player.setGameMode(GameType.CREATIVE);
         player.getAbilities().flying = true;
         player.onUpdateAbilities();
-        com.ggrantrichards.astralend.client.starforge.StarforgeArmorLayer.variant = style.contains("variant=")
-            ? Integer.parseInt(style.substring(style.indexOf("variant=") + 8).split(",")[0]) : 0;
         if (style.contains("glow=")) {
             // One full set of netherite with one upgrade ("glow=none": plain), to compare the glows.
             String name = style.substring(style.indexOf("glow=") + 5).split(",")[0];
