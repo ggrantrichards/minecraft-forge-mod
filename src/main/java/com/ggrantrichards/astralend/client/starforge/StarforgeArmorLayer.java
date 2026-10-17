@@ -20,8 +20,8 @@ import net.minecraft.world.item.ItemStack;
 
 // Starforged armour you're wearing glows in its upgrade's colour: the armour drawn again at full
 // brightness, added over itself in the upgrade's colour (through a white copy of its texture, see
-// GlowMasks) and slowly breathing, so you can read someone's build at a glance (and see it in the dark). (1.21.1 port: drawn on armour models a hair
-// larger than the armour's own, so it sits over it.)
+// GlowMasks) and slowly breathing, so you can read someone's build at a glance (and see it in the
+// dark). (1.21.1 port: drawn on armour models a hair larger than the armour's own, so it sits over it.)
 public class StarforgeArmorLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
     private final HumanoidModel<AbstractClientPlayer> inner;
     private final HumanoidModel<AbstractClientPlayer> outer;
