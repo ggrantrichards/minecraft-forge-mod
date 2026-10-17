@@ -333,23 +333,23 @@ def hollow_thorn():
 
 
 def chart_fragment():
-    """A torn-off corner of a chart, in a map's pale paper and olive edge, with a few inked stars."""
+    """A torn-off corner of a Star Chart: its gold frame along two edges, night blue, three stars."""
     return draw(["................",
                  "................",
-                 "...a............",
-                 "..aba...........",
-                 "..abba.a........",
-                 "..abbbabaa......",
-                 "..abbkbbbba.....",
-                 "..abbbbbbbaa....",
-                 "..abbbblbbbba...",
-                 "..abkbbblbbba...",
-                 "..abbbbbbbkbaa..",
-                 "..abbcbbbbbbbba.",
-                 "..abbbbbcbbbbba.",
-                 "..aaaaaaaaaaaaa.",
+                 "..aaaaaaaa......",
+                 "..aggggggga.....",
+                 "..agnnnnnnna....",
+                 "..agnsnnnnnna...",
+                 "..agnnlnnnnna...",
+                 "..agnnnlsnnnna..",
+                 "..agnnnnnnnna...",
+                 "..agnnsnnnnnna..",
+                 "..agnnnlnnna....",
+                 "..agnnnnsna.....",
+                 "..agnnnna.......",
+                 "..aaaaa.........",
                  "................",
-                 "................"], {"a": "8a8238", "b": "f2eebe", "c": "dcd49a", "k": "2a2240", "l": "6a5a7a"})
+                 "................"], {"a": "4a3010", "g": "e0b448", "n": "1e2a56", "s": "fff4c8", "l": "5a6c9e"})
 
 
 def rift_pearl():
@@ -429,12 +429,22 @@ def star_chart():
 
 
 def music_disc():
-    """A disc like vanilla's: violet, its grooves catching the light, and a gold label with a star."""
+    """Vanilla's dark disc, its label a four-pointed star in lavender and white."""
     src = item("music_disc_13")
-    labelled = {(x, y) for y in range(16) for x in range(16) if src.getpixel((x, y))[3] and hsv(src.getpixel((x, y)))[1] > 0.35}
-    out = only(src, lambda p, x, y: (x, y) not in labelled, "120a1e", "2a1a44", "4a3070", "8a6ab8")
-    out = only(out, lambda p, x, y: (x, y) in labelled, "8a5a12", "e0b040", "fff0a8")
-    return put(out, [(7, 7), (8, 8)], "ffffff")
+    body = ["101014", "1e1e26", "2e2e3a", "44445a"]
+    out = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for y in range(16):
+        for x in range(16):
+            p = src.getpixel((x, y))
+            if p[3]:
+                lum = (p[0] + p[1] + p[2]) / 765
+                out.putpixel((x, y), hexc(body[min(3, int(lum * 4 * 1.6))]))
+    label = [".....", "..s..", ".sws.", "..s..", "....."]
+    for y, row in enumerate(label):
+        for x, ch in enumerate(row):
+            if ch != ".":
+                out.putpixel((5 + x, 5 + y), hexc({"s": "b48ae8", "w": "ffffff"}[ch]))
+    return out
 
 
 def sunshade():
@@ -453,23 +463,25 @@ def sunshade():
 
 def maw_eye(lit):
     """The Leviathan's eye socket in a face of bone block: a deep pit; once the skull has woken, light
-    burning far down in it."""
+    welling up out of it and running out along cracks in the bone."""
     img = vanilla("bone_block_side")
-    rnd = random.Random(4)
+    glow = ["f4d8ff", "d090f8", "a050e0", "6a1e9e", "3a0e5a"]
     for y in range(16):
         for x in range(16):
             d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
-            if d < 5.6:
-                if d > 5.0:
-                    c = "6a6252"
-                elif d > 4.2:
-                    c = "2a241e"
+            if d < 4.8:
+                if d > 4.0:
+                    c = "4a4234"
                 elif not lit:
-                    c = "0c0a0e"
+                    c = "0c0a0e" if d < 3.2 else "2a241e"
                 else:
-                    t = d + rnd.uniform(-0.6, 0.6)
-                    c = "2a0a3c" if t > 3.4 else "6a1e90" if t > 2.4 else "b048e0" if t > 1.3 else "f4c8ff"
+                    c = glow[min(4, int((d / 4.0 + 0.05) * 5))]
                 img.putpixel((x, y), hexc(c))
+    if lit:
+        for line in ([(4, 4), (3, 3), (3, 2), (2, 1)], [(11, 4), (12, 3), (12, 2), (13, 1)],
+                     [(4, 11), (3, 12), (2, 12), (1, 13)], [(11, 11), (12, 12), (13, 12), (14, 13)], [(8, 3), (8, 2), (9, 1)]):
+            put(img, line[:2], "c070f0")
+            put(img, line[2:], "7a2ec0")
     return img
 
 
