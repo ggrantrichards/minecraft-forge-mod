@@ -1,7 +1,7 @@
 {
   "textures": {
-    "item": "astralend:block/pedestal_flare_bottle",
-    "particle": "astralend:block/pedestal_flare_bottle"
+    "item": "astralend:block/pedestal_glass_bottle",
+    "particle": "astralend:block/pedestal_glass_bottle"
   },
   "elements": [
     {
@@ -91,5 +91,5 @@
       }
     }
   ],
-  "render_type": "minecraft:translucent"
+  "render_type": "minecraft:cutout"
 }

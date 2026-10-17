@@ -58,7 +58,7 @@
         },
         {
           "type": "minecraft:item",
-          "name": "astralend:flare_bottle",
+          "name": "minecraft:glass_bottle",
           "weight": 3,
           "functions": [
             {

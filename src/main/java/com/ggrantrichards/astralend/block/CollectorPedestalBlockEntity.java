@@ -19,7 +19,7 @@ import net.minecraft.nbt.CompoundTag;
 
 // What a Collector Pedestal holds, and how long it has been charging. Once a second during a flare,
 // if the pedestal is in the Eclipse with nothing above it, the charge grows; after 30 seconds of
-// flare the Void Crystal or Flare Bottle is charged.
+// flare the Void Crystal or glass bottle is charged.
 public class CollectorPedestalBlockEntity extends BlockEntity {
     public static final int CHARGE_SECONDS = 30;
     private ItemStack held = ItemStack.EMPTY;
@@ -59,7 +59,7 @@ public class CollectorPedestalBlockEntity extends BlockEntity {
             return;
         }
         CollectorPedestalBlock.Holding holding = CollectorPedestalBlock.Holding.of(pedestal.held);
-        if (holding != CollectorPedestalBlock.Holding.VOID_CRYSTAL && holding != CollectorPedestalBlock.Holding.FLARE_BOTTLE) {
+        if (holding != CollectorPedestalBlock.Holding.VOID_CRYSTAL && holding != CollectorPedestalBlock.Holding.GLASS_BOTTLE) {
             return;
         }
         if (Sunstorms.phaseIn(level) != FlarePhase.FLARE || !Sunstorms.inSunstorms(level, pos)

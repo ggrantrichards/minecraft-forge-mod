@@ -297,7 +297,6 @@ TEXTURES = [
     ("block/sunshade.png", sunshade),
     ("block/collector_pedestal_side.png", pedestal_side),
     ("block/collector_pedestal_top.png", pedestal_top),
-    ("item/flare_bottle.png", lambda: flare_bottle(False)),
     ("item/bottled_flare.png", lambda: flare_bottle(True)),
     ("item/charged_void_crystal.png", charged_void_crystal),
     ("item/flare_pollen.png", flare_pollen),
@@ -307,5 +306,5 @@ TEXTURES = [
 # What a Collector Pedestal holds is drawn on top of it with the item's own picture; block models can
 # only use block textures, so the item pictures are copied (after they are drawn above).
 _TEX = Path(__file__).resolve().parents[2] / "src/main/resources/assets/astralend/textures"
-for _name in ("void_crystal", "charged_void_crystal", "flare_bottle", "bottled_flare"):
+for _name in ("void_crystal", "charged_void_crystal", "bottled_flare"):
     TEXTURES.append((f"block/pedestal_{_name}.png", lambda n=_name: Image.open(_TEX / f"item/{n}.png").convert("RGBA").copy()))

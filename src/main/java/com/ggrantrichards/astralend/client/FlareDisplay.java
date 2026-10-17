@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 // For the CI screenshots only: a little display of the Phase 5 blocks on a flattened patch of the
 // Eclipse, laid out across the camera's view (the camera looks south-east, so "across" is +x/-z):
 // open Flareblooms and a shut one, two Collector Pedestals (one with Charged Void Crystal, one with a
-// Flare Bottle) under a Sunshade, and charged Sunscale Lichen on the ground.
+// glass bottle) under a Sunshade, and charged Sunscale Lichen on the ground.
 final class FlareDisplay {
     static void build(ServerLevel level, BlockPos centre) {
         BlockState ground = ModBlocks.SUNSCORCHED_STONE.get().defaultBlockState();
@@ -32,7 +32,7 @@ final class FlareDisplay {
         bloom(level, across(centre, -2).offset(1, 0, 1), false);
         bloom(level, across(centre, 3), true);
         pedestal(level, across(centre, -1), new ItemStack(ModItems.CHARGED_VOID_CRYSTAL.get()));
-        pedestal(level, across(centre, 1), new ItemStack(ModItems.FLARE_BOTTLE.get()));
+        pedestal(level, across(centre, 1), new ItemStack(net.minecraft.world.item.Items.GLASS_BOTTLE));
         BlockState shade = ModBlocks.SUNSHADE.get().defaultBlockState();
         for (int k = -1; k <= 1; k++) {
             level.setBlock(across(centre, k).above(3), shade, 3);

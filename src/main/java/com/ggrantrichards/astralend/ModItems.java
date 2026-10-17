@@ -38,7 +38,6 @@ public final class ModItems {
     public static final RegistryObject<Item> FLARE_POLLEN = simple("flare_pollen");
     public static final RegistryObject<Item> CHARGED_VOID_CRYSTAL = register("charged_void_crystal", Item::new,
         new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON));
-    public static final RegistryObject<Item> FLARE_BOTTLE = register("flare_bottle", Item::new, new Item.Properties().stacksTo(16));
     // The Curator's Core: what's left of the Curator when it falls (the distillation; Void Recall's material).
     public static final RegistryObject<Item> CURATORS_CORE = register("curators_core", Item::new,
         new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.EPIC).fireResistant());
