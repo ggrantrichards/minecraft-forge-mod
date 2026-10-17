@@ -29,6 +29,16 @@ jobs:
           ./gradlew build > build.log 2>&1 || { echo "--- compiler errors:"; grep -E "error:" -A4 build.log | head -150; tail -20 build.log; exit 1; }
           tail -3 build.log
 
+      # The built jar on the ci-jars branch, so it can be fetched with git (artifacts need a browser).
+      - name: Publish the jar
+        run: |
+          mkdir -p /tmp/jars && cp $(ls build/libs/*.jar | grep -vE -- '-(sources|slim|dev)\.jar$') /tmp/jars/
+          cd /tmp/jars
+          printf "# Built jar\n\nFrom commit ${GITHUB_SHA::7} on ${GITHUB_REF_NAME}.\n" > README.md
+          git init -q && git checkout -q -b ci-jars && git add . \
+            && git -c user.name="CI" -c user.email="ci@users.noreply.github.com" commit -qm "Jar from ${GITHUB_SHA::7}" \
+            && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-jars
+
       # Boots a headless Minecraft server with the mod loaded, runs its game tests (none yet) and exits.
       # This loads all recipes, loot tables and tags, so broken data files show up here.
       - name: Load the mod in a server
