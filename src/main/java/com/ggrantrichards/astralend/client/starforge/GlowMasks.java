@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 
 // Where an armour texture glows, in white: made from the armour's own texture when it's first needed.
-// The Starforge glow lights the armour's edges and fades a few pixels in, leaving the rest as it is.
+// The Starforge glow lights the armour's edges, leaving the rest of it as it is.
 // (1.21.1 port: NativeImage pixels are ABGR here; only the alpha is read, and the mask is white.)
 final class GlowMasks {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -58,9 +58,9 @@ final class GlowMasks {
     private static final int[][] BOXES = {{0, 0, 8, 8, 8}, {32, 0, 8, 8, 8}, {16, 16, 8, 12, 4}, {40, 16, 4, 12, 4}, {0, 16, 4, 12, 4}};
 
     // How brightly each pixel glows: brightest on the armour's outline (every drawn pixel at the border
-    // of its face, so each box's edges light up, or beside a hole in the armour), fading over the next
-    // few pixels inward, and dark on the rest of the armour.
-    private static final int[] FADE = {255, 120, 50, 18};
+    // of its face, so each box's edges light up, or beside a hole in the armour), with a fainter pixel
+    // just inside it, and dark on the rest of the armour.
+    private static final int[] FADE = {255, 60};
 
     static int[] glow(int[] alpha, int w, int h) {
         int scale = Math.max(1, w / 64);

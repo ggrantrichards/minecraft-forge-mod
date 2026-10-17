@@ -25,7 +25,7 @@ import net.minecraft.world.item.ItemStack;
 // in the dark. (1.21.1 port: drawn on armour models a hair larger than the armour's own.)
 public class StarforgeArmorLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
     // How strong the glow is on the armour and on each shell of the halo round it.
-    private static final float[] SHELLS = {1.0F, 0.4F, 0.15F};
+    private static final float[] SHELLS = {1.0F, 0.35F, 0.15F};
     private final java.util.List<HumanoidModel<AbstractClientPlayer>> inner;
     private final java.util.List<HumanoidModel<AbstractClientPlayer>> outer;
 
@@ -54,7 +54,7 @@ public class StarforgeArmorLayer extends RenderLayer<AbstractClientPlayer, Playe
             return;
         }
         boolean legs = slot == EquipmentSlot.LEGS;
-        float pulse = 0.8F + 0.2F * Mth.sin(ageInTicks * 0.06F);
+        float pulse = 0.52F + 0.08F * Mth.sin(ageInTicks * 0.06F);
         for (int shell = 0; shell < SHELLS.length; shell++) {
             this.shell((legs ? this.inner : this.outer).get(shell), poseStack, buffers, armor, upgrade, slot, pulse * SHELLS[shell]);
         }
