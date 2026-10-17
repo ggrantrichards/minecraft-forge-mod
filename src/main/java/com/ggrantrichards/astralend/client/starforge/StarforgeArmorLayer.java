@@ -17,6 +17,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.Equippable;
+import org.joml.Matrix4f;
 
 // Starforged armour you're wearing glows in its upgrade's colour along its edges: the armour drawn
 // again at full brightness through a copy of its texture that keeps only its edges (see GlowMasks),
@@ -52,10 +53,17 @@ public class StarforgeArmorLayer<S extends HumanoidRenderState, M extends Humano
         String layer = slot == EquipmentSlot.LEGS ? "humanoid_leggings" : "humanoid";
         Identifier texture = asset.withPath(path -> "textures/entity/equipment/" + layer + "/" + path + ".png");
         // Drawn over the armour at full brightness, in the upgrade's colour; the mask says how strongly
-        // each pixel glows. (Translucent emissive: on 26.3 the eyes type doesn't show over armour.)
+        // each pixel glows.
         float strength = 0.75F + 0.2F * Mth.sin(state.ageInTicks * 0.06F);
         int tint = Math.round(255 * strength) << 24 | (upgrade.colour() & 0xFFFFFF);
+        // Armour is drawn pulled a hair toward the camera (its render type is offset that way, so it
+        // doesn't flicker against the body), and would hide a glow drawn where the armour really is:
+        // pull the glow a little further.
+        poseStack.pushPose();
+        Matrix4f pose = poseStack.last().pose();
+        pose.set(new Matrix4f().scaling(0.999F).mul(pose));
         collector.order(4).submitModel(this.models.get(slot), state, poseStack, RenderTypes.entityTranslucentEmissive(GlowMasks.of(texture)),
             0xF000F0, OverlayTexture.NO_OVERLAY, tint, null, state.outlineColor);
+        poseStack.popPose();
     }
 }
