@@ -18,16 +18,19 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 
-// Starforged armour you're wearing has a glowing outline in its upgrade's colour: the armour drawn
-// again at full brightness through a copy of its texture that keeps only its edges (see GlowMasks),
-// slowly breathing, so you can read someone's build at a glance (and see it in the dark).
-// (1.21.1 port: drawn on armour models a hair larger than the armour's own, so it sits over it.)
+// Starforged armour you're wearing glows in its upgrade's colour: its edges shine (the armour drawn
+// again at full brightness through a copy of its texture that keeps only its edges, fading inward,
+// see GlowMasks) and the light spills a little way out round them (the same on two fainter shells
+// just outside the armour), slowly breathing, so you can read someone's build at a glance and see it
+// in the dark. (1.21.1 port: drawn on armour models a hair larger than the armour's own.)
 public class StarforgeArmorLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
-    private final HumanoidModel<AbstractClientPlayer> inner;
-    private final HumanoidModel<AbstractClientPlayer> outer;
+    // How strong the glow is on the armour and on each shell of the halo round it.
+    private static final float[] SHELLS = {1.0F, 0.4F, 0.15F};
+    private final java.util.List<HumanoidModel<AbstractClientPlayer>> inner;
+    private final java.util.List<HumanoidModel<AbstractClientPlayer>> outer;
 
     public StarforgeArmorLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent,
-                               HumanoidModel<AbstractClientPlayer> inner, HumanoidModel<AbstractClientPlayer> outer) {
+                               java.util.List<HumanoidModel<AbstractClientPlayer>> inner, java.util.List<HumanoidModel<AbstractClientPlayer>> outer) {
         super(parent);
         this.inner = inner;
         this.outer = outer;
@@ -51,7 +54,15 @@ public class StarforgeArmorLayer extends RenderLayer<AbstractClientPlayer, Playe
             return;
         }
         boolean legs = slot == EquipmentSlot.LEGS;
-        HumanoidModel<AbstractClientPlayer> model = legs ? this.inner : this.outer;
+        float pulse = 0.8F + 0.2F * Mth.sin(ageInTicks * 0.06F);
+        for (int shell = 0; shell < SHELLS.length; shell++) {
+            this.shell((legs ? this.inner : this.outer).get(shell), poseStack, buffers, armor, upgrade, slot, pulse * SHELLS[shell]);
+        }
+    }
+
+    private void shell(HumanoidModel<AbstractClientPlayer> model, PoseStack poseStack, MultiBufferSource buffers, ArmorItem armor,
+                       StarforgeUpgrade upgrade, EquipmentSlot slot, float strength) {
+        boolean legs = slot == EquipmentSlot.LEGS;
         this.getParentModel().copyPropertiesTo(model);
         model.setAllVisible(false);
         switch (slot) {
@@ -61,8 +72,7 @@ public class StarforgeArmorLayer extends RenderLayer<AbstractClientPlayer, Playe
             case FEET -> { model.rightLeg.visible = true; model.leftLeg.visible = true; }
             default -> { }
         }
-        // Added on top of the armour's edges (the render type is additive), in the upgrade's full colour.
-        float strength = 0.8F + 0.2F * Mth.sin(ageInTicks * 0.06F);
+        // Added on top of the armour's edges (the render type is additive), in the upgrade's colour.
         int c = upgrade.colour();
         int tint = 0xFF000000 | channel(c >> 16, strength) << 16 | channel(c >> 8, strength) << 8 | channel(c, strength);
         for (ArmorMaterial.Layer layer : armor.getMaterial().value().layers()) {
