@@ -1501,7 +1501,8 @@ def structures_phase6():
             "front": rid(f"block/{front}"), "side": "minecraft:block/bone_block_side", "top": "minecraft:block/bone_block_top"}})
     blockstate("maw_eye", {"variants": {f"facing={f},lit={str(l).lower()}": {"model": rid("block/maw_eye_lit" if l else "block/maw_eye"), "y": r}
                                         for f, r in facings.items() for l in (False, True)}})
-    item_def("maw_eye", rid("block/maw_eye"))
+    item_model("maw_eye", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("item/maw_eye")}})
+    item_def("maw_eye", rid("item/maw_eye"))
     cube("maw_throat")
     blockstate("wormhole", {"variants": {"": {"model": rid("block/wormhole")}}})
     block_model("wormhole", {"parent": "minecraft:block/cube_all", "textures": {"all": rid("block/wormhole")}})

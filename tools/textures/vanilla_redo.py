@@ -19,6 +19,7 @@ from pixelart import hexc
 from retexture import gradient, vanilla
 
 TEX = Path(__file__).resolve().parents[2] / "src/main/resources/assets/astralend/textures"
+ICONS = Path(__file__).resolve().parent / "icons"
 
 
 def item(name):
@@ -325,13 +326,6 @@ def umbral_membrane():
     return gradient(item("phantom_membrane"), "120a18", "2e1a36", "6a3a72", "d098d8")
 
 
-def hollow_thorn():
-    """A length of the Hollow Vines' stem, drawn as a stick is, black, with its thorns standing off it."""
-    img = gradient(item("stick"), "0c0812", "1e1628", "342848", "5a4878")
-    put(img, [(9, 4), (12, 7), (5, 8), (8, 11), (2, 11)], "2a2038")     # thorns, off both sides
-    return put(img, [(8, 3), (13, 8), (4, 7), (9, 12), (1, 10)], "8a74b8")    # their pale points
-
-
 def chart_fragment():
     """A torn-off corner of a Star Chart: its gold frame along two edges, night blue, three stars."""
     return draw(["................",
@@ -366,43 +360,6 @@ def rift_pearl():
     crack = [(4, 5), (5, 6), (6, 6), (7, 7), (7, 8), (8, 8), (9, 9), (10, 10), (11, 10)]
     put(img, crack, "e070ff")
     return put(img, [(7, 7), (8, 8)], "ffe8ff")
-
-
-def portal_lens():
-    """A round lens of violet glass, highlighted as vanilla's glass is, in a spyglass's copper rim."""
-    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
-    for y in range(16):
-        for x in range(16):
-            d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
-            if d < 6.6:
-                if d > 5.6:
-                    c = "5a2c18"
-                elif d > 4.6:
-                    c = "e0905a" if (x - 7.5) + (y - 7.5) < 0 else "a8582c"
-                else:
-                    c = "7a4ab0" if (x - 7.5) + (y - 7.5) < -2 else "5a3290" if (x - 7.5) + (y - 7.5) < 3 else "42226e"
-                img.putpixel((x, y), hexc(c))
-    return put(img, [(5, 6), (6, 5), (5, 7), (7, 5), (9, 10), (10, 9)], "e8dcff")
-
-
-def temporal_crystal():
-    """A little cluster of pale teal crystal, flecked with gold, as an amethyst cluster grows."""
-    return draw(["................",
-                 "................",
-                 ".......a........",
-                 "......aca.......",
-                 "......aca...a...",
-                 "..a...abca.aca..",
-                 ".aca..abca.acca.",
-                 ".abca.abcga.bca.",
-                 ".abca.abbca.bca.",
-                 "..abcaabbcaabca.",
-                 "..abbaabgbaabba.",
-                 "..abbcabbbaabca.",
-                 "...abbabbbabba..",
-                 "...aaaaaaaaaaa..",
-                 "................",
-                 "................"], {"a": "0e3a44", "b": "3aa0a8", "c": "a8f0ec", "g": "f0d070"})
 
 
 def star_chart():
@@ -519,6 +476,11 @@ def nebula_tufts_item():
     return put(img, tips, "d1ecfb")
 
 
+def icon(name):
+    """An icon drawn by hand as finished 16x16 pixel art, kept in tools/textures/icons."""
+    return Image.open(ICONS / f"{name}.png").convert("RGBA")
+
+
 def pedestal(name):
     """What a Collector Pedestal holds, as a block texture (block models can't use item textures)."""
     return item("glass_bottle") if name == "glass_bottle" else Image.open(TEX / f"item/{name}.png").convert("RGBA").copy()
@@ -531,6 +493,7 @@ TEXTURES = [
     ("block/lichened_leviathan_bone_top.png", lambda: lichened("top")),
     ("block/maw_eye.png", lambda: maw_eye(False)),
     ("block/maw_eye_lit.png", lambda: maw_eye(True)),
+    ("item/maw_eye.png", lambda: icon("maw_eye")),
     ("block/meteoric_iron_block.png", meteoric_iron_block),
     ("block/lumineshroom.png", lumineshroom),
     ("block/ashen_lumineshroom.png", ashen_lumineshroom),
@@ -556,12 +519,12 @@ TEXTURES = [
     ("item/umbral_membrane.png", umbral_membrane),
     ("item/cracked_lens.png", cracked_lens),
     ("item/chart_fragment.png", chart_fragment),
-    ("item/hollow_thorn.png", hollow_thorn),
+    ("item/hollow_thorn.png", lambda: icon("hollow_thorn")),
     ("item/starsap.png", starsap),
     ("item/rift_pearl.png", rift_pearl),
     ("item/starforge_alloy.png", starforge_alloy),
-    ("item/temporal_crystal.png", temporal_crystal),
-    ("item/portal_lens.png", portal_lens),
+    ("item/temporal_crystal.png", lambda: icon("temporal_crystal")),
+    ("item/portal_lens.png", lambda: icon("portal_lens")),
     ("item/star_chart.png", star_chart),
     ("item/chorus_flower_on_a_stick.png", chorus_flower_on_a_stick),
     ("item/starforge_template.png", starforge_template),

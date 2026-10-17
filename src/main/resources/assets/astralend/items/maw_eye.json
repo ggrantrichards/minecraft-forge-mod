@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "astralend:block/maw_eye"
+    "model": "astralend:item/maw_eye"
   }
 }
