@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
@@ -77,6 +78,6 @@ public class BoneFragmentFeature extends SimpleFeature {
     }
 
     private static BlockState bone(Direction.Axis axis) {
-        return ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, axis);
+        return Blocks.BONE_BLOCK.defaultBlockState().setValue(RotatedPillarBlock.AXIS, axis);
     }
 }

@@ -1,11 +1,11 @@
 package com.ggrantrichards.astralend.world.feature;
 
-import com.ggrantrichards.astralend.ModBlocks;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
@@ -25,9 +25,9 @@ public class LeviathanRibcageFeature extends SimpleFeature {
         int length = 12 + random.nextInt(11);
         int halfWidth = 4 + random.nextInt(3);
         int maxHeight = 5 + random.nextInt(4);
-        BlockState spine = ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, along.getAxis());
-        BlockState rib = ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, Direction.Axis.Y);
-        BlockState ribAcross = ModBlocks.LEVIATHAN_BONE_BLOCK.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, across.getAxis());
+        BlockState spine = Blocks.BONE_BLOCK.defaultBlockState().setValue(RotatedPillarBlock.AXIS, along.getAxis());
+        BlockState rib = Blocks.BONE_BLOCK.defaultBlockState().setValue(RotatedPillarBlock.AXIS, Direction.Axis.Y);
+        BlockState ribAcross = Blocks.BONE_BLOCK.defaultBlockState().setValue(RotatedPillarBlock.AXIS, across.getAxis());
         BlockPos start = origin.relative(along, -length / 2);
         // Only on ground that carries the whole spine: no part of it hangs over an edge or a dip.
         BlockPos[] grounds = new BlockPos[length];

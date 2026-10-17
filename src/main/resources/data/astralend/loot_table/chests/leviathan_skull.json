@@ -63,7 +63,7 @@
         },
         {
           "type": "minecraft:item",
-          "name": "astralend:leviathan_bone_block",
+          "name": "minecraft:bone_block",
           "weight": 3,
           "functions": [
             {

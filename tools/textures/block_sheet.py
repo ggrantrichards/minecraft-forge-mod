@@ -17,7 +17,6 @@ BLOCKS = [  # (name, top texture, side texture, where, vanilla kin)
     ("Sunscorched Stone", "sunscorched_stone", "sunscorched_stone", "The Corona", "sandstone"),
     ("Lumine Cap", "lumine_cap", "lumine_cap", "Nebula Fields", "shroomlight"),
     ("Glimmer Crystal", "glimmer_crystal", "glimmer_crystal", "Glimmering Crags, Resonant Spires", "amethyst block"),
-    ("Leviathan Bone", "leviathan_bone_top", "leviathan_bone_side", "The Whalefall", "bone block"),
     ("Nightstone Bricks", "nightstone_bricks", "nightstone_bricks", "Resonant Spires", "deepslate bricks"),
 ]
 

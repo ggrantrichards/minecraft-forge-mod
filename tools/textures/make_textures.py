@@ -535,46 +535,6 @@ def astral_glass():
     return img
 
 
-def leviathan_bone_side():
-    """Fibrous, vertical grain like vanilla's bone block, with a few knuckle ridges."""
-    img = Image.new("RGBA", (16, 16), BONE[3])
-    px = img.load()
-    rnd = random.Random(21)
-    for x in range(16):
-        col = [BONE[2], BONE[3], BONE[4], BONE[3], BONE[2], BONE[1]][x % 6]
-        for y in range(16):
-            px[x, y] = col if rnd.random() > 0.12 else rnd.choice([BONE[1], BONE[4]])
-    for x0, y0 in [(2, 3), (9, 5), (5, 10), (12, 12)]:
-        for dx in range(3):
-            px[(x0 + dx) % 16, y0] = BONE[4]
-            px[(x0 + dx) % 16, y0 + 1] = BONE[1]
-    for i in range(16):
-        px[i, 0] = BONE[1]
-        px[i, 15] = BONE[1]
-    return img
-
-
-def leviathan_bone_top():
-    img = Image.new("RGBA", (16, 16), BONE[3])
-    px = img.load()
-    for y in range(16):
-        for x in range(16):
-            d = max(abs(x - 7.5), abs(y - 7.5))
-            if d > 6.5:
-                px[x, y] = BONE[1]
-            elif d > 5.5:
-                px[x, y] = BONE[4]
-            elif d > 3.5:
-                px[x, y] = BONE[2]
-            elif d > 2.5:
-                px[x, y] = BONE[1]
-            elif d > 1:
-                px[x, y] = hexc("56606a")
-            else:
-                px[x, y] = hexc("7fd6d0")   # a faint glow in the marrow
-    return img
-
-
 def chorus_moss():
     rnd = random.Random(31)
     img = Image.new("RGBA", (16, 16), MOSS[2])
@@ -1323,8 +1283,6 @@ def main():
     # Other blocks
     out.append(save(stardust_block(), "block/stardust_block.png"))
     out.append(save(astral_glass(), "block/astral_glass.png"))
-    out.append(save(leviathan_bone_side(), "block/leviathan_bone_side.png"))
-    out.append(save(leviathan_bone_top(), "block/leviathan_bone_top.png"))
     out.append(save(chorus_moss(), "block/chorus_moss.png"))
 
     # Plants

@@ -460,7 +460,7 @@ def solar_array(seed):
 def bone(nx, ny, nz):
     """Leviathan Bone for a skull surface facing (nx, ny, nz): the grain runs along the skull, so its
     top and sides show the long grain and only the front and back show the ring of the bone's end."""
-    return a("leviathan_bone_block") + ("[axis=z]" if abs(nx) > max(abs(ny), abs(nz)) else "[axis=x]")
+    return "minecraft:bone_block" + ("[axis=z]" if abs(nx) > max(abs(ny), abs(nz)) else "[axis=x]")
 
 
 def nbt_list_compound(*values):
@@ -584,7 +584,7 @@ def resonant_spire(seed):
         for z in range(size):
             d = math.hypot(x - c, z - c)
             if 5.0 <= d < 6.0:
-                t.set(x, nest + 1, z, a("leviathan_bone_block") + "[axis=y]" if rnd.random() < 0.3 else bricks)
+                t.set(x, nest + 1, z, "minecraft:bone_block" + "[axis=y]" if rnd.random() < 0.3 else bricks)
             elif d < 5.0:
                 t.set(x, nest, z, stone if rnd.random() < 0.6 else polished)    # the worn hollow
     for q in range(8):

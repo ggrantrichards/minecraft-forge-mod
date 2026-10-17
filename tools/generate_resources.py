@@ -69,9 +69,9 @@ SIMPLE_CUBES = [
     ("starsap_block", "Block of Starsap"),
 ]
 PILLARS = [
-    ("leviathan_bone_block", "Leviathan Bone Block", "leviathan_bone"),
-    ("weathered_leviathan_bone", "Weathered Leviathan Bone", "weathered_leviathan_bone"),
-    ("lichened_leviathan_bone", "Lichened Leviathan Bone", "lichened_leviathan_bone"),
+    # The Leviathans are vanilla bone block; these are its weathered and lichened versions.
+    ("weathered_leviathan_bone", "Weathered Bone Block", "weathered_leviathan_bone"),
+    ("lichened_leviathan_bone", "Lichened Bone Block", "lichened_leviathan_bone"),
     ("observatory_quartz_pillar", "Observatory Quartz Pillar", "observatory_quartz_pillar"),
 ]
 CROSS_PLANTS = [
@@ -1499,7 +1499,7 @@ def structures_phase6():
     facings = {"north": 0, "east": 90, "south": 180, "west": 270}
     for lit, front in ((False, "maw_eye"), (True, "maw_eye_lit")):
         block_model(front, {"parent": "minecraft:block/orientable", "textures": {
-            "front": rid(f"block/{front}"), "side": rid("block/leviathan_bone_side"), "top": rid("block/leviathan_bone_top")}})
+            "front": rid(f"block/{front}"), "side": "minecraft:block/bone_block_side", "top": "minecraft:block/bone_block_top"}})
     blockstate("maw_eye", {"variants": {f"facing={f},lit={str(l).lower()}": {"model": rid("block/maw_eye_lit" if l else "block/maw_eye"), "y": r}
                                         for f, r in facings.items() for l in (False, True)}})
     item_def("maw_eye", rid("block/maw_eye"))
@@ -1545,7 +1545,7 @@ def structures_phase6():
     chest_loot("leviathan_stomach", [
         {"rolls": 1, "entries": [entry("star_chart")]},
         {"rolls": {"type": "minecraft:uniform", "min": 2, "max": 4}, "entries": [
-            entry("whalelight_scale", 5, (1, 3)), entry("leviathan_bone_block", 4, (1, 3)),
+            entry("whalelight_scale", 5, (1, 3)), entry("minecraft:bone_block", 4, (1, 3)),
             entry("glowing_spores", 3, (2, 5)), entry("void_crystal", 2, (1, 3)),
             entry("minecraft:nautilus_shell", 1, (1, 1))]},
         chance("temporal_crystal", 0.15),
@@ -1555,7 +1555,7 @@ def structures_phase6():
     chest_loot("leviathan_skull", [
         {"rolls": 1, "entries": [entry("charged_void_crystal", 1, (1, 2))]},
         {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
-            entry("void_crystal", 4, (1, 4)), entry("chart_fragment", 3, (1, 2)), entry("leviathan_bone_block", 3, (2, 6)),
+            entry("void_crystal", 4, (1, 4)), entry("chart_fragment", 3, (1, 2)), entry("minecraft:bone_block", 3, (2, 6)),
             entry("whalelight_scale", 3, (1, 4)), entry("minecraft:ender_pearl", 3, (1, 3)), entry("minecraft:spyglass", 1),
             entry("minecraft:map", 2), entry("minecraft:soul_lantern", 2, (1, 2)), entry("glowing_spores", 2, (2, 5))]},
         chance("star_chart", 0.35),
@@ -2175,7 +2175,7 @@ def distillation_blocks():
     chest_loot("leviathan", [
         {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 6}, "entries": [
             entry("void_crystal", 4, (2, 5)), entry("charged_void_crystal", 2, (1, 2)), entry("whalelight_scale", 3, (1, 4)),
-            entry("leviathan_bone_block", 3, (2, 6)), entry("minecraft:ender_pearl", 3, (2, 4)), entry("minecraft:shulker_shell", 1, (1, 1)),
+            entry("minecraft:bone_block", 3, (2, 6)), entry("minecraft:ender_pearl", 3, (2, 4)), entry("minecraft:shulker_shell", 1, (1, 1)),
             entry("minecraft:experience_bottle", 2, (2, 5)), entry("minecraft:purpur_block", 2, (4, 12)),
             entry("minecraft:diamond", 1, (1, 3)), entry("minecraft:golden_apple", 1, (1, 1))]},
         chance("starforge_alloy", 0.35),
@@ -2292,6 +2292,9 @@ def main():
     for name, english in CROSS_PLANTS:
         cross_plant(name)
         lang[f"block.{NS}.{name}"] = english
+    # Little grasses get full-size inventory icons, as vanilla's short grass does (vanilla_redo.py).
+    for name in ("shimmer_grass", "nebula_tufts"):
+        item_model(name, {"parent": "minecraft:item/generated", "textures": {"layer0": rid(f"item/{name}")}})
 
     # Astral Vine: grows upward like twisting vines (a head block and a body block).
     for name, texture in (("astral_vine", "astral_vine"), ("astral_vine_plant", "astral_vine_plant")):
@@ -2318,7 +2321,8 @@ def main():
     for name, texture in (("hollow_vines", "hollow_vines"), ("hollow_vines_plant", "hollow_vines_plant")):
         blockstate(name, {"variants": {"": {"model": rid(f"block/{name}")}}})
         block_model(name, {"parent": "minecraft:block/cross", "textures": {"cross": rid(f"block/{texture}")}})
-    item_model("hollow_vines", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("block/hollow_vines")}})
+    # (In the inventory, the whole length of vine, as vanilla's vines show: the tip alone is tiny.)
+    item_model("hollow_vines", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("block/hollow_vines_plant")}})
     item_def("hollow_vines", rid("item/hollow_vines"))
     lang[f"block.{NS}.hollow_vines"] = "Hollow Vines"
     lang[f"block.{NS}.hollow_vines_plant"] = "Hollow Vines Plant"
@@ -2428,7 +2432,9 @@ def main():
     # Sunscale Lichen: a carpet.
     blockstate("sunscale_lichen", {"variants": {"": {"model": rid("block/sunscale_lichen")}}})
     block_model("sunscale_lichen", {"parent": "minecraft:block/carpet", "textures": {"wool": rid("block/sunscale_lichen")}})
-    item_def("sunscale_lichen", rid("block/sunscale_lichen"))
+    # (In the inventory, a lichen icon as glow lichen's: the carpet it lies as is a thin, sparse square.)
+    item_model("sunscale_lichen", {"parent": "minecraft:item/generated", "textures": {"layer0": rid("item/sunscale_lichen")}})
+    item_def("sunscale_lichen", rid("item/sunscale_lichen"))
     lang[f"block.{NS}.sunscale_lichen"] = "Sunscale Lichen"
     drop_self("sunscale_lichen")
 
