@@ -54,7 +54,7 @@ public class StarforgeArmorLayer<S extends HumanoidRenderState, M extends Humano
         Identifier texture = asset.withPath(path -> "textures/entity/equipment/" + layer + "/" + path + ".png");
         // Light added over the armour in the upgrade's colour; the mask says how strongly each pixel
         // glows. (The charged creeper's additive type, standing still: on 26.3 the eyes type is opaque.)
-        float strength = 0.7F + 0.1F * Mth.sin(state.ageInTicks * 0.06F);
+        float strength = 0.9F + 0.1F * Mth.sin(state.ageInTicks * 0.06F);
         int c = upgrade.colour();
         int tint = 0xFF000000 | channel(c >> 16, strength) << 16 | channel(c >> 8, strength) << 8 | channel(c, strength);
         // Armour is drawn pulled a hair toward the camera (its render type is offset that way, so it
