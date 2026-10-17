@@ -20,12 +20,12 @@ import net.minecraft.world.item.ItemStack;
 
 // Starforged armour you're wearing glows in its upgrade's colour: its edges shine (the armour drawn
 // again at full brightness through a copy of its texture that keeps only its edges, fading inward,
-// see GlowMasks) and the light spills a little way out round them (the same on two fainter shells
-// just outside the armour), slowly breathing, so you can read someone's build at a glance and see it
+// see GlowMasks) and the light spills just past them (the same, fainter, on a shell half a pixel
+// outside the armour), slowly breathing, so you can read someone's build at a glance and see it
 // in the dark. (1.21.1 port: drawn on armour models a hair larger than the armour's own.)
 public class StarforgeArmorLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
     // How strong the glow is on the armour and on each shell of the halo round it.
-    private static final float[] SHELLS = {1.0F, 0.35F, 0.15F};
+    private static final float[] SHELLS = {1.0F, 0.25F};
     private final java.util.List<HumanoidModel<AbstractClientPlayer>> inner;
     private final java.util.List<HumanoidModel<AbstractClientPlayer>> outer;
 
