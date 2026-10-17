@@ -41,7 +41,7 @@ final class GlowMasks {
             for (int y = 0; y < h; y++) {
                 for (int x = 0; x < w; x++) {
                     int v = glow[y * w + x];
-                    image.setPixel(x, y, v << 24 | 0xFFFFFF);   // white, as opaque as it glows
+                    image.setPixel(x, y, v << 24 | v << 16 | v << 8 | v);
                 }
             }
             minecraft.getTextureManager().register(mask, new DynamicTexture(mask::toString, image));

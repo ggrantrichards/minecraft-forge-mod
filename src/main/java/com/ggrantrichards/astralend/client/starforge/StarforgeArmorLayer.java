@@ -52,18 +52,23 @@ public class StarforgeArmorLayer<S extends HumanoidRenderState, M extends Humano
         Identifier asset = equippable.assetId().get().identifier();
         String layer = slot == EquipmentSlot.LEGS ? "humanoid_leggings" : "humanoid";
         Identifier texture = asset.withPath(path -> "textures/entity/equipment/" + layer + "/" + path + ".png");
-        // Drawn over the armour at full brightness, in the upgrade's colour; the mask says how strongly
-        // each pixel glows.
-        float strength = 0.75F + 0.2F * Mth.sin(state.ageInTicks * 0.06F);
-        int tint = Math.round(255 * strength) << 24 | (upgrade.colour() & 0xFFFFFF);
+        // Light added over the armour (the render type is additive) in the upgrade's colour; the mask
+        // says how strongly each pixel glows.
+        float strength = 0.52F + 0.08F * Mth.sin(state.ageInTicks * 0.06F);
+        int c = upgrade.colour();
+        int tint = 0xFF000000 | channel(c >> 16, strength) << 16 | channel(c >> 8, strength) << 8 | channel(c, strength);
         // Armour is drawn pulled a hair toward the camera (its render type is offset that way, so it
         // doesn't flicker against the body), and would hide a glow drawn where the armour really is:
         // pull the glow a little further.
         poseStack.pushPose();
         Matrix4f pose = poseStack.last().pose();
         pose.set(new Matrix4f().scaling(0.999F).mul(pose));
-        collector.order(4).submitModel(this.models.get(slot), state, poseStack, RenderTypes.entityTranslucentEmissive(GlowMasks.of(texture)),
+        collector.order(4).submitModel(this.models.get(slot), state, poseStack, RenderTypes.eyes(GlowMasks.of(texture)),
             0xF000F0, OverlayTexture.NO_OVERLAY, tint, null, state.outlineColor);
         poseStack.popPose();
+    }
+
+    private static int channel(int value, float strength) {
+        return Math.round((value & 0xFF) * strength);
     }
 }
