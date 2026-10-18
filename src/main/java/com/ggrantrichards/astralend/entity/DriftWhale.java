@@ -38,7 +38,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-// Drift Whale: a huge, translucent whale that swims slowly through the void, the last small
+// Drift Whale: a huge, glowing whale that swims slowly through the void, the last small
 // descendant of the Star Leviathans.
 //
 // Whales travel in pods of three to five: one leads, the rest swim loosely round it, and now and then

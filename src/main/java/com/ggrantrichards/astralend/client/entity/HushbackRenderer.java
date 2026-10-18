@@ -1,6 +1,5 @@
 package com.ggrantrichards.astralend.client.entity;
 
-import net.minecraft.client.renderer.RenderType;
 import com.ggrantrichards.astralend.entity.Hushback;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
@@ -11,7 +10,7 @@ import com.ggrantrichards.astralend.client.compat.LivingEntityRenderState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-// The Hushback, drawn see-through: its dark, clear hide and fleece over opaque bones.
+// The Hushback: its dark hide with the bones showing on it, and its fleece.
 public class HushbackRenderer extends com.ggrantrichards.astralend.client.compat.StateMobRenderer<Hushback, HushbackRenderer.State, HushbackRenderer.Model> {
     private static final ResourceLocation TEXTURE = ModModelLayers.texture("hushback");
 
@@ -59,7 +58,7 @@ public class HushbackRenderer extends com.ggrantrichards.astralend.client.compat
         private final ModelPart[] legs = new ModelPart[4];
 
         public Model(ModelPart root) {
-            super(root, RenderType::entityTranslucent);
+            super(root);
             this.body = root.getChild("body");
             this.head = this.body.getChild("head");
             this.fleece = this.body.getChild("fleece");

@@ -1,3 +1,6 @@
 {
-  "parent": "astralend:block/sunshade"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "astralend:block/sunshade"
+  }
 }

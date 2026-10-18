@@ -263,31 +263,6 @@ TEXTURES += [
 
 
 # ------------------------------------------------------------------ Batch C: Upwell Mote and Upwelling
-MOTE = [
-    "................",
-    ".......w........",
-    "......wWw.......",
-    ".....wWHWw......",
-    "....w.lHl.w.....",
-    ".......l........",
-    "......vlv.......",
-    ".....v.l.v......",
-    ".......l........",
-    "......vlv.......",
-    ".....v.m.v......",
-    ".......m........",
-    "......m.m.......",
-    ".......m........",
-    "................",
-    "................",
-]
-
-
-def upwell_mote():
-    return from_map(MOTE, {"w": hexc("8fe8dc"), "W": hexc("c8fff4"), "H": hexc("ffffff"), "l": hexc("7fd0e8"),
-                           "v": hexc("9a7ae8"), "m": hexc("5a3ab0")})
-
-
 def upwelling_icon():
     """The effect icon (18x18): three chevrons rising."""
     from PIL import Image
@@ -304,7 +279,6 @@ def upwelling_icon():
 
 
 TEXTURES += [
-    ("item/upwell_mote.png", upwell_mote),
     ("mob_effect/upwelling.png", upwelling_icon),
 ]
 

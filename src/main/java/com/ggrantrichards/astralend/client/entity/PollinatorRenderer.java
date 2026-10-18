@@ -1,6 +1,5 @@
 package com.ggrantrichards.astralend.client.entity;
 
-import net.minecraft.client.renderer.RenderType;
 import com.ggrantrichards.astralend.entity.EndPollinator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
@@ -48,7 +47,7 @@ public class PollinatorRenderer extends com.ggrantrichards.astralend.client.comp
         private final ModelPart[] tendrils = new ModelPart[5];
 
         public Model(ModelPart root) {
-            super(root, RenderType::entityTranslucent);
+            super(root);
             this.bell = root.getChild("bell");
             for (int i = 0; i < 5; i++) {
                 this.tendrils[i] = this.bell.getChild("tendril_" + (i + 1));

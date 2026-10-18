@@ -82,32 +82,43 @@ if __name__ == "__main__":
     main()
 
 
+def veins(rnd, paths, steps, widths):
+    """Wandering vein paths that wrap round the tile, so the net carries on across blocks: 0..1 per pixel."""
+    v = [[0.0] * 16 for _ in range(16)]
+    for k in range(paths):
+        x, y = rnd.uniform(0, 16), rnd.uniform(0, 16)
+        ang = rnd.uniform(0, math.tau)
+        width = widths[min(k, len(widths) - 1)]
+        for _ in range(steps):
+            ang += rnd.uniform(-0.6, 0.6)
+            x, y = (x + math.cos(ang) * 0.7) % 16, (y + math.sin(ang) * 0.7) % 16
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    px, py = int(x + dx) % 16, int(y + dy) % 16
+                    d = math.hypot(px + 0.5 - x, py + 0.5 - y) if abs(px - x) < 2 and abs(py - y) < 2 else 9
+                    v[py][px] = max(v[py][px], max(0.0, 1.0 - d / (width + 0.6)))
+    return v
+
+
 def flesh():
-    """Leviathan Flesh: black-purple fibres, with veins of violet running along them that swell and fade
-    with the heart's beat, fainter (an animation, like the Nether's stems)."""
-    tones = [(12, 6, 18), (22, 10, 32), (32, 15, 46), (44, 20, 62), (60, 28, 84)]
-    glow = [(70, 28, 116), (104, 44, 168), (150, 80, 228), (200, 150, 255)]
-    rnd = random.Random(2203)
-    base = [[0] * 16 for _ in range(16)]
-    veins = set()
-    for y in range(16):
-        band = y % 4
-        for x in range(16):
-            t = (0, 2, 3, 2)[band]
-            if band and rnd.random() < 0.18:
-                t += rnd.choice((-1, 1))
-            base[y][x] = max(0, min(4, t))
-            if band == 2 and (x + y * 3) % 5 in (0, 1):
-                veins.add((x, y))
+    """Leviathan Flesh: made the way the Heart is, but quieter - the same near-black muscle, mottled a
+    little darker, with fewer and finer veins that only brighten a little with the beat."""
+    rnd = random.Random(2422)   # a seed whose veins spread evenly over the tile
+    base = tile_noise(rnd, 4)
+    grain = tile_noise(rnd, 2)
+    vein = veins(rnd, 3, 24, (0.3, 0.25))
     frames = []
     for b in BEAT:
         img = Image.new("RGBA", (16, 16))
         for y in range(16):
             for x in range(16):
-                if (x, y) in veins:
-                    img.putpixel((x, y), glow[min(3, int(b * 3.2))] + (255,))
+                v = vein[y][x]
+                if v > 0.5:
+                    c = VEIN[min(2, int((v - 0.5) / 0.5 * 1.2 + b * 1.3))]
                 else:
-                    img.putpixel((x, y), tones[base[y][x]] + (255,))
+                    f = base(x, y) * 0.75 + grain(x, y) * 0.25
+                    c = FLESH[min(3, int(f * 3.2))]
+                img.putpixel((x, y), c + (255,))
         frames.append(img)
     sheet = Image.new("RGBA", (16, 16 * len(frames)))
     for k, fr in enumerate(frames):

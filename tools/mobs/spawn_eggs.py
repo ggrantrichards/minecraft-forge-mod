@@ -55,6 +55,9 @@ class Egg:
         drawn = set(self.px)
         for (x, y), c in self.px.items():
             if (x, y) not in self.lit:
+                # A little mottling, as a mob's skin has: a few pixels a shade lighter or darker.
+                k = (x * 7 + y * 13 + x * y * 5) % 11
+                c = mix(c, (255, 255, 255), 0.08) if k == 0 else mix(c, (0, 0, 0), 0.1) if k == 1 else c
                 # Lit from the top left: lighter up there, darker down to the bottom right.
                 t = ((x - 7.5) + (y - 8.0)) / 16.0
                 c = mix(c, (255, 255, 255), -t * 0.35) if t < 0 else mix(c, (0, 0, 0), t * 0.35)
@@ -77,7 +80,44 @@ def grid(rows, x0=0, y0=0):
     return out
 
 
+def art(rows, palette, lit=""):
+    """An egg drawn as a whole: 16 rows of characters, each one a colour from `palette` ('.' is empty).
+    The characters in `lit` glow."""
+    e = Egg("000000")
+    e.px = {}
+    for y, row in enumerate(rows):
+        for x, ch in enumerate(row):
+            if ch != ".":
+                e.px[(x, y)] = hexc(palette[ch])
+                if ch in lit:
+                    e.lit.add((x, y))
+    return e
+
+
 def hushback():
+    """Its dark hide with the bones on it: the skull's brow and nose round two calm pale eyes, the
+    spine down the middle and the ribs curving round its sides."""
+    return art(["................",
+                "......nNNn......",
+                ".....nbbbbn.....",
+                "....dEbnnbEd....",
+                "....nebnnben....",
+                "....nnnbbnnn....",
+                "...nfnnggnnnn...",
+                "...nbbbGGbbbn...",
+                "...bnnnggnnnb...",
+                "...nbbbGGbbbn...",
+                "...bnnnggnnfb...",
+                "...nnbbGGbbnn...",
+                "...nnbnggnbnn...",
+                "....nnnggnnn....",
+                ".....nnnnnn.....",
+                "......nnnn......"],
+               {"n": "262040", "N": "34305a", "d": "1c1830", "b": "a8945e", "g": "c4ac6c", "G": "dcc88e",
+                "E": "e6e0ff", "e": "9a90c8", "f": "c8b070"})
+
+
+def hushback_old():
     e = Egg("2c2648")
     e.put([(x, 3) for x in range(5, 11)], "b89a5a")                       # the pale stripe down its back
     g = grid(["..bb..bb..",
@@ -90,6 +130,28 @@ def hushback():
 
 
 def hollowback():
+    """Grey as ash, its head split open: fangs top and bottom, dark gums, the violet glow down its throat."""
+    return art(["................",
+                "......aAAa......",
+                ".....aAAAAa.....",
+                "....daVaaVad....",
+                "....aaaaaaaa....",
+                "....kkkkkkkk....",
+                "...kTkTkkTkTk...",
+                "...kmmmmmmmmk...",
+                "...kmmPPPPmmk...",
+                "...kmmPPPPmmk...",
+                "...kmmmmmmmmk...",
+                "...kmTkTTkTmk...",
+                "...akkkkkkkka...",
+                "....aaaaaaaa....",
+                ".....aaaaaa.....",
+                "......aaaa......"],
+               {"a": "5a5468", "A": "6c667a", "d": "3a3644", "V": "8a5ac8", "k": "1a0610", "m": "441226",
+                "T": "e8dcc0", "P": "8a3ad0"}, lit="P")
+
+
+def hollowback_old():
     e = Egg("4a4558")
     e.put([(5, 4), (10, 4)], "a8a0b0")                                   # dull eyes
     g = grid(["tttttttt",
@@ -157,6 +219,29 @@ def pollinator():
 
 
 def shardback():
+    """The crystals crowding its back stand up out of the egg; its banded dark hide, a blunt snout and the
+    four lilac eyes, two each side."""
+    return art(["....w...W..w....",
+                "....cw.wCwwc....",
+                ".....lcclccl....",
+                ".....hlcclch....",
+                "....hhllllhh....",
+                "....hhhhhhhh....",
+                "...hhhhhhhhhh...",
+                "...HHHHHHHHHH...",
+                "...hEhhhhhhEh...",
+                "...hhhhhhhhhh...",
+                "...hEhhsshhEh...",
+                "...HHHsSSsHHH...",
+                "...hhhsSSshhh...",
+                "....hhhhhhhh....",
+                ".....hhhhhh.....",
+                "......hhhh......"],
+               {"h": "3a2e4c", "H": "2c2240", "s": "4a3c5e", "S": "241a34", "E": "c8a8f8",
+                "c": "d8bfee", "C": "fbf4ff", "l": "a888c8", "w": "fbf4ff", "W": "ffffff"}, lit="E")
+
+
+def shardback_old():
     e = Egg("3a2e4c")
     g = grid(["c.....c",
               "cc.C.cc",
@@ -169,6 +254,29 @@ def shardback():
 
 
 def umbral_stalker():
+    """Black as the dark it hunts in: two violet crystal horns with white tips, narrowed white eyes, white
+    fangs and the claws of its forelegs."""
+    return art(["....w......w....",
+                "....p.kKKk.p....",
+                "....ppkkkkpp....",
+                ".....kkkkkk.....",
+                "....kkkkkkkk....",
+                "....kkkkkkkk....",
+                "...kkWWkkWWkk...",
+                "...kkkWkkWkkk...",
+                "...kkkkkkkkkk...",
+                "...kkTkkkkTkk...",
+                "...kkTkkkkTkk...",
+                "...kkkkkkkkkk...",
+                "..ckkkkkkkkkkc..",
+                "..cckkkkkkkkcc..",
+                ".....kkkkkk.....",
+                "......kkkk......"],
+               {"k": "16111f", "K": "241c30", "p": "a070e0", "w": "f4f0ff", "W": "f4f0ff", "T": "e8e0d8",
+                "c": "4a3a62"}, lit="Ww")
+
+
+def umbral_stalker_old():
     e = Egg("16111f")
     e.put([(3, 0), (4, 1), (4, 2), (5, 2), (12, 0), (11, 1), (11, 2), (10, 2)], "e8b8f0")  # horns
     e.put([(5, 7), (6, 8), (10, 7), (9, 8)], "f4f0ff", glow=True)       # narrowed eyes
@@ -193,6 +301,29 @@ def watcher():
 
 
 def curator():
+    """The war-construct: the two stacks on its back, its violet visor, the broad pauldrons standing out of
+    the egg, its core glowing in its glass case, the belt below."""
+    return art(["....g......g....",
+                "....g.gGGg.g....",
+                "....ggvvvvgg....",
+                ".....gggggg.....",
+                "..ssggggggggss..",
+                "..sStggggggtSs..",
+                "...sgfffffffgs..",
+                "...gffCCCCffg...",
+                "...gfCPPPPCfg...",
+                "...gfCPPPPCfg...",
+                "...gffCCCCffg...",
+                "...bbbbbbbbbb...",
+                "...gggggggggg...",
+                "....ggg..ggg....",
+                ".....gg..gg.....",
+                "......g..g......"],
+               {"g": "343244", "G": "4a4658", "s": "4a4658", "S": "b07aa8", "t": "8a6a98", "v": "b070ff",
+                "f": "5a5468", "C": "6a2cc8", "P": "e0c0ff", "b": "8a6a98"}, lit="vCP")
+
+
+def curator_old():
     e = Egg("343244")
     e.put([(1, 6), (2, 6), (2, 7), (13, 6), (14, 6), (13, 7)], "4a4658")  # shoulders
     e.put([(2, 5), (13, 5)], "b07aa8")

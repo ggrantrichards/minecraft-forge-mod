@@ -1,6 +1,5 @@
 package com.ggrantrichards.astralend.client.entity;
 
-import net.minecraft.client.renderer.RenderType;
 import com.ggrantrichards.astralend.entity.DriftWhale;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
@@ -71,7 +70,7 @@ public class DriftWhaleRenderer extends com.ggrantrichards.astralend.client.comp
         private final ModelPart rightFin;
 
         public Model(ModelPart root) {
-            super(root, RenderType::entityTranslucent);
+            super(root);
             this.body = root.getChild("body");
             this.head = this.body.getChild("head");
             this.jaw = this.head.getChild("jaw");
