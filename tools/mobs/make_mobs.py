@@ -1195,7 +1195,7 @@ def hush_fleece(face, px, py, fw, fh, rnd):
     """Sparse gold tufts on the back and flanks; the rest bare."""
     if face == "down":
         return None
-    return hexc("c8b070") if (n() > 0.82 and rnd.random() < 0.25) else None
+    return hexc("c8b070") if (face == "up" and rnd.random() < 0.06) else None
 
 
 def hush_eye(face, px, py, fw, fh, rnd):
