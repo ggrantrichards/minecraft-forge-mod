@@ -2,25 +2,6 @@
 
 
 # Glowing Spores: a little cluster of luminous spore pods (left behind by End Pollinators).
-GLOWING_SPORES = [
-    "................",
-    "................",
-    "......oo........",
-    ".....oGwo...oo..",
-    ".....ogGo..owGo.",
-    "..oo..oo...ogGo.",
-    ".owGo.......oo..",
-    ".ogGo..ooo......",
-    "..oo..oGwGo.....",
-    "......ogGGo..oo.",
-    "......oggGo.oGwo",
-    ".......ooo..oggo",
-    "...oo........oo.",
-    "..oGwo..........",
-    "..oggo..........",
-    "...oo...........",
-]
-GLOWING_SPORES_PAL = dict(o="1d4a4f", g="2fae9f", G="6ff2da", w="e6fffa")
 
 # Chart Fragment: a thin crystal wafer with glowing circuitry (from a Void Wanderer's scan).
 # Chart Fragment: a shard of a Void Wanderer's star map, pale lens-glass with a constellation etched
@@ -151,7 +132,6 @@ CINDER = [
 CINDER_PAL = dict(o="2a1410", r="8a2a14", f="e0561c", y="ffb03a", w="fff0b0")
 
 ITEM_MAPS = {
-    "glowing_spores": (GLOWING_SPORES, GLOWING_SPORES_PAL),
     "chart_fragment": (CHART_FRAGMENT, CHART_FRAGMENT_PAL),
     "cracked_lens": (CRACKED_LENS, CRACKED_LENS_PAL),
     "umbral_membrane": (UMBRAL_MEMBRANE, UMBRAL_MEMBRANE_PAL),

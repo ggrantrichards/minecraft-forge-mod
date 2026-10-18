@@ -297,10 +297,69 @@ def ashen_lumineshroom():
 
 
 def charged_void_crystal():
-    """The Void Crystal, charged: the same gem, lit up from inside, with a glint or two about it."""
-    src = Image.open(TEX / "item/void_crystal.png").convert("RGBA")
-    img = gradient(src, "4a2a98", "8a5ae8", "c8a8ff", "fbf6ff")
-    return put(img, [(13, 2), (2, 12), (14, 11)], "fff4c8")
+    """The Void Crystal, charged: the same gem, paler, lit white from a core at its heart, with sparks
+    jumping off it - you can tell it from the plain one across the inventory."""
+    return draw(["................",
+                 "........A.....s.",
+                 ".......ABA...sYs",
+                 "......ABCDA...s.",
+                 ".....ABCWDEA....",
+                 "....ABCWYWDEA...",
+                 "...ABBWYYYWEEA..",
+                 "..ABBFWYYYWDEA..",
+                 "..ACBCCWYWDEEA..",
+                 "...ACCCDWDDEA...",
+                 "....ACCDDEEA....",
+                 ".s...ACDDEA.....",
+                 "sYs...ADEA....s.",
+                 ".s.....AA.......",
+                 "................",
+                 "................"],
+                {"A": "2a1060", "B": "f0e8ff", "C": "b48cff", "D": "8a5ae8", "E": "5a33b3", "F": "ffffff",
+                 "W": "e8dcff", "Y": "ffffff", "s": "fff0b0"})
+
+
+def glowing_spores():
+    """A little heap of glowing teal spore-dust, as glowstone dust lies, a few grains drifting up off it."""
+    return draw(["................",
+                 "................",
+                 "................",
+                 "................",
+                 "................",
+                 ".........C......",
+                 "....C...........",
+                 "...........C....",
+                 "......B.........",
+                 ".....BCB..B.....",
+                 "...B.BDBBBCB....",
+                 "..BCBDDBCBDBB...",
+                 ".BDDBBDDDBDDBB..",
+                 ".ADDDDADDDDDDA..",
+                 "..AAADDAAADAA...",
+                 "................"],
+                {"A": "1d4a4f", "D": "2fae9f", "B": "6ff2da", "C": "e6fffa"})
+
+
+def upwell_mote():
+    """A bright mote of the Upwelling: a glowing bead rising, its wisps trailing below it."""
+    return draw(["................",
+                 "......AAA.......",
+                 ".....ABBBA......",
+                 "....ABCCCBA.....",
+                 "....ABCWCBA.....",
+                 "....ABCCCBA.....",
+                 ".....ABBBA......",
+                 "......AAA.......",
+                 ".....D.D.D......",
+                 "......DED.......",
+                 ".....E.D.E......",
+                 "......EDE.......",
+                 ".......F........",
+                 "......F.F.......",
+                 ".......F........",
+                 "................"],
+                {"A": "2a6a80", "B": "8fe8dc", "C": "c8fff4", "W": "ffffff", "D": "7fd0e8", "E": "9a7ae8",
+                 "F": "5a3ab0"})
 
 
 def flare_pollen():
@@ -516,6 +575,8 @@ TEXTURES = [
     ("item/bottled_flare.png", bottled_flare),
     ("item/curators_core.png", curators_core),
     ("item/charged_void_crystal.png", charged_void_crystal),
+    ("item/glowing_spores.png", glowing_spores),
+    ("item/upwell_mote.png", upwell_mote),
     ("item/flare_pollen.png", flare_pollen),
     ("item/umbral_membrane.png", umbral_membrane),
     ("item/cracked_lens.png", cracked_lens),
