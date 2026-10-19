@@ -1,0 +1,1 @@
+the game's assets: /home/runner/.minecraft/assets
