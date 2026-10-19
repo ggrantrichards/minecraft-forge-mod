@@ -492,7 +492,7 @@ public class Curator extends Monster {
         } else if (c == ACT_PUNCH_LEFT || c == ACT_PUNCH_RIGHT) {
             this.act(c, PUNCH_TICKS);
             if (d2 < 3.6 * 3.6) {
-                this.doHurtTarget(level, target);
+                this.doHurtTarget(target);
             }
         } else if (d2 > (this.cueHold + 0.5) * (this.cueHold + 0.5)) {
             this.moveToward(target.position().add(0.0, 0.2, 0.0), 0.2);
