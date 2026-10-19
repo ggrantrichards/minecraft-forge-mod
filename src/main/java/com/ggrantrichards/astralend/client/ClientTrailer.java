@@ -188,6 +188,15 @@ public final class ClientTrailer {
                         findFocus(minecraft, scene);
                     }
                 }
+                if (scene.fight() && !TrailerFight.ready()) {
+                    if (ticks % 20 == 0) {
+                        TrailerFight.retry(server);
+                    }
+                    if (ticks < 1200) {
+                        return;     // (after a minute it goes ahead anyway, and the log says why)
+                    }
+                    LOGGER.error(TAG + "the fight's {} beat never got set up", scene.opts().get("fight"));
+                }
                 pose(minecraft, server, scene, 0);
                 if (ticks >= 80 && inEnd(minecraft)) {
                     phase = Phase.PRELOAD;

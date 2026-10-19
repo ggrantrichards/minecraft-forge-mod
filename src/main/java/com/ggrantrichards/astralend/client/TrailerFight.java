@@ -67,6 +67,9 @@ final class TrailerFight {
     private static Vec3 across = new Vec3(1, 0, 0);
     private static String beat = "";
     private static boolean mapped;
+    private static volatile boolean ready;    // the beat is set up (the Curator found and staged)
+    private static boolean cont;
+    private static Vec3 near;
 
     // ---- setting up a beat (on the client, as its shot begins)
 
@@ -79,23 +82,36 @@ final class TrailerFight {
         } else {
             TrailerHud.show(minecraft);
         }
-        boolean cont = scene.has("cont");
-        Vec3 where = new Vec3(near.x(), near.y(), near.z());
+        cont = scene.has("cont");
+        TrailerFight.near = new Vec3(near.x(), near.y(), near.z());
+        ready = false;
+        retry(server);
+    }
+
+    // Set up again until it works: the first time, the Curator's chunk may not have loaded yet.
+    static void retry(IntegratedServer server) {
         server.execute(() -> {
             try {
-                prepare(server, beat, cont, where);
+                ready = prepare(server, beat, cont, near);
             } catch (RuntimeException e) {
                 LOGGER.error(TAG + "couldn't set up the fight's {} beat", beat, e);
             }
         });
     }
 
-    private static void prepare(IntegratedServer server, String beat, boolean cont, Vec3 near) {
+    static boolean ready() {
+        return ready;
+    }
+
+    private static boolean prepare(IntegratedServer server, String beat, boolean cont, Vec3 near) {
         ServerLevel end = server.getLevel(Level.END);
         ServerPlayer player = server.getPlayerList().getPlayers().get(0);
         if (curator == null || curator.isRemoved()) {
             if (!find(end, near)) {
-                return;
+                // go there, so its chunks (and the Curator) load; ClientTrailer tries again shortly
+                player.setGameMode(GameType.SPECTATOR);
+                player.teleportTo(end, near.x, near.y, near.z, java.util.Set.of(), player.getYRot(), player.getXRot(), true);
+                return false;
             }
         }
         curatorId = curator.getId();
@@ -120,7 +136,7 @@ final class TrailerFight {
                 curator.cueStagger(80);
             }
             case "beam" -> stage(end, player, 0.0, 4.5, 0.0, -5.0, false, false, 200.0F, 9.5);
-            case "flip" -> stage(end, player, 0.0, 2.6, 0.0, -1.4, false, false, 156.0F, 2.4);
+            case "flip" -> stage(end, player, 0.0, 2.2, 0.0, -1.0, false, false, 156.0F, 2.4);
             case "ceiling" -> {
                 // carrying on from the flip: on the ceiling, upside down, its case broken
                 if (player.getEffect(ModEffects.upwelling()) == null) {
@@ -135,20 +151,21 @@ final class TrailerFight {
             }
             case "finish" -> {
                 curator.showAwake(true);
-                curator.setHealth(9.0F);
+                curator.setHealth(5.0F);
                 curator.playOnCue(2.4);
             }
             default -> LOGGER.error(TAG + "no fight beat called {}", beat);
         }
         LOGGER.info(TAG + "fight {}: player at {}, Curator at {} ({} health{})", beat, player.blockPosition().toShortString(),
             curator.blockPosition().toShortString(), (int) curator.getHealth(), curator.isExposed() ? ", exposed" : "");
+        return true;
     }
 
     // The Curator nearest the reliquary's viewpoint, its home, and which way its Leviathan lies.
     private static boolean find(ServerLevel end, Vec3 near) {
         List<Curator> found = end.getEntitiesOfClass(Curator.class, new AABB(near, near).inflate(64.0));
         if (found.isEmpty()) {
-            LOGGER.error(TAG + "no Curator near {}", BlockPos.containing(near).toShortString());
+            LOGGER.info(TAG + "no Curator near {} yet", BlockPos.containing(near).toShortString());
             return false;
         }
         curator = found.get(0);
