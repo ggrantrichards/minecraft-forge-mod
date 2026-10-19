@@ -1,6 +1,7 @@
-"""Cuts the trailer together: the frames the game filmed (dev/ClientTrailer.java), the title cards,
-the captions, the score (music.py) and the narration (narrate.py, spoken beforehand into
-<out dir>/vo/), into an H.264 video.
+"""Cuts the trailer together: the frames the game filmed (client/ClientTrailer.java), the title cards,
+the captions, the soundtrack (soundtrack.py: the mod's music and the sounds the world made while it was
+filmed) and the narration, if any (narrate.py, spoken beforehand into <out dir>/vo/), into a 1080p
+H.264 video.
 
     python3 tools/trailer/compose.py <frames dir> <font ascii.png> <out dir>
 
@@ -18,8 +19,9 @@ from PIL import Image, ImageDraw, ImageFilter
 
 sys.path.insert(0, str(Path(__file__).parent))
 import music  # noqa: E402
+import soundtrack  # noqa: E402
 
-W, H, FPS = 1280, 720, 24
+W, H, FPS = 1920, 1080, 24
 SCENES = Path(__file__).with_name("scenes.txt")
 FADE = 10                 # frames to fade to and from black around a card
 
@@ -107,6 +109,7 @@ def centred(frame, font, text, scale, y, color=(255, 255, 255), alpha=1.0):
 def parse():
     beats = []
     vo = None
+    tune = None
     for line in SCENES.read_text().splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
@@ -115,6 +118,10 @@ def parse():
         words = head.split()
         if words[0] == "vo":
             vo = (float(words[1]) if len(words) > 1 else 0.0, caption.strip())
+            continue
+        if words[0] == "music":
+            # music <file> <from second> [gain dB]: from the next beat on
+            tune = (words[1], float(words[2]) if len(words) > 2 else 0.0, float(words[3]) if len(words) > 3 else 0.0)
             continue
         if words[0] == "card":
             beats.append({"kind": "card", "frames": round(float(words[1]) * FPS), "text": caption.strip()})
@@ -127,6 +134,9 @@ def parse():
         if vo is not None:
             beats[-1]["vo"] = vo
             vo = None
+        if tune is not None:
+            beats[-1]["music"] = tune
+            tune = None
     return beats
 
 
@@ -179,7 +189,8 @@ def mix_narration(track, beats, starts, vo_dir):
 
 
 def frame_path(frames_dir, beat, i):
-    return Path(frames_dir) / f"{beat['index']:02d}_{beat['shot']}_{i:04d}.png"
+    p = Path(frames_dir) / f"{beat['index']:02d}_{beat['shot']}_{i:04d}.png"
+    return p if p.exists() else p.with_suffix(".jpg")
 
 
 def load(path):
@@ -192,10 +203,10 @@ def load(path):
 def logo_layer(font):
     """THE ASTRAL END in the game's letters, built up like the Minecraft logo: a pale face over a
     stepped, darker extrusion, with a soft violet glow behind."""
-    big, small = 13, 5
+    big, small = 19, 7
     face = font.mask("ASTRAL END", big, bold=True)
     the = font.mask("THE", small, bold=True)
-    pad = 60
+    pad = 90
     h = face.shape[0] + the.shape[0] + 30 + pad * 2
     w = max(face.shape[1], the.shape[1]) + pad * 2
     rgba = np.zeros((h, w, 4), np.float32)
@@ -276,29 +287,12 @@ def render(frames_dir, font_path, out_dir):
         t += b["frames"]
     seconds = total / FPS
 
-    # the score, timed to the edit
-    def start_of(pred, default):
-        for b, s in zip(beats, starts):
-            if pred(b):
-                return s / FPS
-        return default
-    cards = [s / FPS for b, s in zip(beats, starts) if b["kind"] == "card"]
-    title = start_of(lambda b: b["kind"] == "logo", seconds - 8) + 0.25
-    sections = {"bloom": start_of(lambda b: b["kind"] == "shot" and b["shot"] == "nebula_fields", 14.0),
-                "pulse": start_of(lambda b: b["kind"] == "card" and b["text"].startswith("New life"),
-                                  cards[2] if len(cards) > 2 else 40.0),
-                "lift": start_of(lambda b: b["kind"] == "card" and b["text"].startswith("Don't wake"),
-                                 cards[4] if len(cards) > 4 else title - 30),
-                "title": title}
-    print("score sections:", {k: round(v, 1) for k, v in sections.items()}, "length", round(seconds, 1))
-    track = music.score(seconds, sections)
-    # the Spire Wyrm's roar as it wakes: a boom on the frame it wakes, a riser into it
-    for b, st in zip(beats, starts):
-        if b["kind"] == "shot" and "wyrm_wake" in b.get("events", {}):
-            at = (st + b["events"]["wyrm_wake"]) / FPS + 0.2
-            music.place(track, music.riser(2.0) * 0.5, max(0.0, at - 2.0))
-            music.place(track, music.boom() * 1.2, at)
-            print(f"the Wyrm wakes at {at:.1f} s")
+    # the soundtrack: the mod's music, section by section, and the world's own sounds
+    segments = [(st / FPS, b["music"][0], b["music"][1], b["music"][2]) for b, st in zip(beats, starts) if "music" in b]
+    if not segments:
+        segments = [(0.0, "music/out_there.ogg", 0.0, 0.0)]
+    shot_starts = {b["index"]: st for b, st in zip(beats, starts) if b["kind"] == "shot"}
+    track = soundtrack.build(seconds, segments, Path(frames_dir) / "sounds.txt", shot_starts, out_dir / "mix.txt")
     track = mix_narration(track, beats, starts, out_dir / "vo")
     wav = out_dir / "score.wav"
     music.write(str(wav), track)
@@ -307,7 +301,7 @@ def render(frames_dir, font_path, out_dir):
     ffmpeg = os.environ.get("FFMPEG", "ffmpeg")
     enc = subprocess.Popen([ffmpeg, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
                             "-r", str(FPS), "-i", "-", "-i", str(wav), "-c:v", "libx264", "-preset", "slow", "-crf", "20",
-                            "-maxrate", "3200k", "-bufsize", "6400k", "-g", "48",
+                            "-maxrate", "9000k", "-bufsize", "18000k", "-g", "48",
                             "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart",
                             str(mp4)], stdin=subprocess.PIPE)
     logo = logo_layer(font)
@@ -337,26 +331,28 @@ def render(frames_dir, font_path, out_dir):
                 frame *= max(0.0, min(1.0, fade))
                 if b["caption"]:
                     a = ramp(i - 10, n - 16, 8)
-                    draw_text(frame, font, b["caption"], 3, 46, H - 70, alpha=a)
+                    draw_text(frame, font, b["caption"], 4, 70, H - 104, alpha=a)
             elif b["kind"] == "card":
                 frame = np.zeros((H, W, 3), np.float32)
                 a = ramp(i, n, 14)
                 lines = b["text"].split("\\")
                 for k, line in enumerate(lines):
-                    centred(frame, font, line.strip(), 4, H // 2 - 18 - (len(lines) - 1) * 22 + k * 44, alpha=a)
+                    centred(frame, font, line.strip(), 6, H // 2 - 27 - (len(lines) - 1) * 33 + k * 66, alpha=a)
             else:
                 into = i / FPS
                 frame = backdrop * min(1.0, into / 0.8) if backdrop is not None else np.zeros((H, W, 3), np.float32)
                 a = min(1.0, max(0.0, (into - 0.25) / 0.6)) * min(1.0, (n - i) / 20)
-                paste(frame, logo, W / 2, H / 2 - 40, a, scale=1.0 + 0.04 * max(0.0, 1 - into / 3))
+                paste(frame, logo, W / 2, H / 2 - 60, a, scale=1.0 + 0.04 * max(0.0, 1 - into / 3))
                 sub = min(1.0, max(0.0, (into - 1.6) / 0.8)) * min(1.0, (n - i) / 20)
-                centred(frame, font, "A free update to the End, for Minecraft Forge 26.3", 2, H // 2 + 120,
+                centred(frame, font, "Minecraft 26.3 and 1.21.1 - Forge - on Modrinth", 3, H // 2 + 180,
                         color=(200, 200, 210), alpha=sub)
+                centred(frame, font, "Music: \"Space Music\" by HitCtrl (CC-BY 3.0), \"Observing the Star\" by madeso (CC0)", 2,
+                        H - 60, color=(150, 150, 160), alpha=sub * 0.8)
             frame = np.clip(frame, 0, 255).astype(np.uint8)
             enc.stdin.write(frame.tobytes())
             if i == n // 2:
                 Image.fromarray(frame).save(out_dir / "stills" / f"{bi:02d}_{b.get('shot', b['kind'])}.png")
-            elif b["kind"] == "shot" and i % 24 == 12 and any(k in b["shot"] for k in ("wyrm", "whale", "comet_wake")):
+            elif b["kind"] == "shot" and i % 24 == 12 and any(k in b["shot"] for k in ("reliquary", "whale")):
                 # moving things, a picture a second, to judge them in motion
                 Image.fromarray(frame).save(out_dir / "stills" / f"{bi:02d}_{b['shot']}_f{i:03d}.png")
             if b["kind"] == "logo" and i == int(FPS * 3.5):

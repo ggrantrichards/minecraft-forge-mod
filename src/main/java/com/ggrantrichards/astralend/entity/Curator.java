@@ -81,6 +81,11 @@ public class Curator extends Monster {
     private int chargeCooldown = 120;
     private Vec3 aim = Vec3.ZERO;          // where the cannon is locked on, or which way the charge goes
     private boolean leftNext;
+    // Filming (client/TrailerFight): on cue it makes only the attacks it's given, and wakes only when told -
+    // no slams, swaps or pylon-smashing of its own - and otherwise keeps `cueHold` blocks from its target.
+    private boolean onCue;
+    private int cued = ACT_NONE;
+    private double cueHold = 3.0;
 
     public Curator(EntityType<? extends Curator> type, Level level) {
         super(type, level);
@@ -154,6 +159,42 @@ public class Curator extends Monster {
 
     public @Nullable BlockPos home() {
         return this.home;
+    }
+
+    // ---- filming (client/TrailerFight)
+
+    public void playOnCue(double hold) {
+        this.onCue = true;
+        this.cueHold = hold;
+        this.cued = ACT_NONE;
+    }
+
+    // ACT_AIM (the cannon), ACT_CROUCH (the charge) or a punch, as soon as it's free.
+    public void cue(int action) {
+        this.cued = action;
+    }
+
+    public void cueWake(ServerLevel level) {
+        this.wake(level);
+    }
+
+    public void cueStagger(int ticks) {
+        this.stagger = ticks;
+        this.act(ACT_NONE, 0);
+    }
+
+    // Back to how it was found: asleep, its case whole, at full health (or `health`), at home.
+    public void cueReset(boolean dormant, boolean exposed, float health) {
+        this.entityData.set(DATA_DORMANT, dormant);
+        this.entityData.set(DATA_EXPOSED, exposed);
+        this.entityData.set(DATA_SLAM, 0);
+        this.act(ACT_NONE, 0);
+        this.stagger = 0;
+        this.smashing = null;
+        this.unseen = 0;
+        this.flipped.clear();
+        this.setHealth(health);
+        this.setDeltaMovement(Vec3.ZERO);
     }
 
     @Override
@@ -327,7 +368,7 @@ public class Curator extends Monster {
             }
         }
         if (this.isDormant()) {
-            if (target != null && target.distanceToSqr(Vec3.atCenterOf(centre)) < 12.0 * 12.0) {
+            if (!this.onCue && target != null && target.distanceToSqr(Vec3.atCenterOf(centre)) < 12.0 * 12.0) {
                 this.wake(level);
             }
             this.setDeltaMovement(Vec3.ZERO);
@@ -354,7 +395,7 @@ public class Curator extends Monster {
         this.attackCooldown = Math.max(0, this.attackCooldown - 1);
 
         // Pylons: a still one near the arena is a threat - go and smash it first.
-        if (this.smashing == null && this.tickCount % 20 == 0) {
+        if (this.smashing == null && this.tickCount % 20 == 0 && !this.onCue) {
             this.smashing = this.findStillPylon(level, centre);
         }
         if (this.smashing != null) {
@@ -372,7 +413,7 @@ public class Curator extends Monster {
 
         // Swap: out of its sight for three seconds, and it trades places with you.
         this.unseen = this.hasLineOfSight(target) ? 0 : this.unseen + 1;
-        if (this.unseen > 60 && this.canTeleport(level)) {
+        if (this.unseen > 60 && this.canTeleport(level) && !this.onCue) {
             this.unseen = 0;
             Vec3 mine = this.position(), theirs = target.position();
             this.teleportTo(theirs.x, theirs.y, theirs.z);
@@ -386,7 +427,7 @@ public class Curator extends Monster {
             this.turnOver(level);
         }
         // Gravity Toll: a slam whose ring lifts everyone near it. (Not upside down: there's nowhere to lift them.)
-        if (!this.isExposed() && --this.slamCooldown <= 0 && this.distanceToSqr(target) < 10.0 * 10.0) {
+        if (!this.isExposed() && !this.onCue && --this.slamCooldown <= 0 && this.distanceToSqr(target) < 10.0 * 10.0) {
             this.slamCooldown = 180 + this.random.nextInt(80);
             this.entityData.set(DATA_SLAM, 20);
             level.playSound(null, this.blockPosition(), SoundEvents.MACE_SMASH_GROUND_HEAVY, SoundSource.HOSTILE, 2.0F, 0.6F);
@@ -405,6 +446,8 @@ public class Curator extends Monster {
         this.chargeCooldown--;
         if (this.action() != ACT_NONE) {
             this.tickAction(level, target, pace);
+        } else if (this.onCue) {
+            this.onCueStep(level, target, pace);
         } else {
             double d2 = this.distanceToSqr(target);
             boolean sees = this.hasLineOfSight(target);
@@ -432,6 +475,30 @@ public class Curator extends Monster {
         // Never leaves its reliquary.
         if (this.position().distanceToSqr(Vec3.atCenterOf(centre)) > ARENA * ARENA) {
             this.moveToward(Vec3.atCenterOf(centre), 0.3);
+        }
+    }
+
+    // On cue: the attack it was given, if any; otherwise keep its distance, facing its target.
+    private void onCueStep(ServerLevel level, Player target, float pace) {
+        int c = this.cued;
+        this.cued = ACT_NONE;
+        double d2 = this.distanceToSqr(target);
+        if (c == ACT_AIM) {
+            this.act(ACT_AIM, (int) (AIM_TICKS * pace));
+            level.playSound(null, this.blockPosition(), SoundEvents.WARDEN_SONIC_CHARGE, SoundSource.HOSTILE, 2.0F, 0.8F);
+        } else if (c == ACT_CROUCH) {
+            this.act(ACT_CROUCH, (int) (CROUCH_TICKS * pace));
+            level.playSound(null, this.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 2.0F, 0.6F);
+        } else if (c == ACT_PUNCH_LEFT || c == ACT_PUNCH_RIGHT) {
+            this.act(c, PUNCH_TICKS);
+            if (d2 < 3.6 * 3.6) {
+                this.doHurtTarget(level, target);
+            }
+        } else if (d2 > (this.cueHold + 0.5) * (this.cueHold + 0.5)) {
+            this.moveToward(target.position().add(0.0, 0.2, 0.0), 0.2);
+        } else {
+            this.setDeltaMovement(this.getDeltaMovement().scale(0.6));
+            this.faceToward(target.position());
         }
     }
 
