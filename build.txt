@@ -1,0 +1,63 @@
+/home/runner/work/minecraft-forge-mod/minecraft-forge-mod/src/main/java/com/ggrantrichards/astralend/client/TrailerFight.java:119: error: cannot find symbol
+                    || e instanceof net.minecraft.world.entity.monster.EnderMan)) {
+                                                                      ^
+  symbol:   class EnderMan
+  location: package net.minecraft.world.entity.monster
+/home/runner/work/minecraft-forge-mod/minecraft-forge-mod/src/main/java/com/ggrantrichards/astralend/client/TrailerFight.java:343: error: cannot find symbol
+        minecraft.getToastManager().clear();   // no "Cover Me in Debris!" over the fight
+                 ^
+  symbol:   method getToastManager()
+  location: variable minecraft of type Minecraft
+--
+  /home/runner/work/minecraft-forge-mod/minecraft-forge-mod/src/main/java/com/ggrantrichards/astralend/client/TrailerFight.java:119: error: cannot find symbol
+                      || e instanceof net.minecraft.world.entity.monster.EnderMan)) {
+                                                                        ^
+    symbol:   class EnderMan
+    location: package net.minecraft.world.entity.monster
+--
+  /home/runner/work/minecraft-forge-mod/minecraft-forge-mod/src/main/java/com/ggrantrichards/astralend/client/TrailerFight.java:343: error: cannot find symbol
+          minecraft.getToastManager().clear();   // no "Cover Me in Debris!" over the fight
+                   ^
+    symbol:   method getToastManager()
+    location: variable minecraft of type Minecraft
+---
+/home/runner/work/minecraft-forge-mod/minecraft-forge-mod/src/main/java/com/ggrantrichards/astralend/client/TrailerFight.java:343: error: cannot find symbol
+        minecraft.getToastManager().clear();   // no "Cover Me in Debris!" over the fight
+                 ^
+  symbol:   method getToastManager()
+  location: variable minecraft of type Minecraft
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 errors
+
+> Task :compileJava FAILED
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1792437373409.json
+
+[Incubating] Problems report is available at: file:///home/runner/work/minecraft-forge-mod/minecraft-forge-mod/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava' (registered by plugin class 'org.gradle.api.plugins.JavaBasePlugin').
+> Compilation failed; see the compiler output below.
+  Note: Recompile with -Xlint:deprecation for details.
+  /home/runner/work/minecraft-forge-mod/minecraft-forge-mod/src/main/java/com/ggrantrichards/astralend/client/TrailerFight.java:119: error: cannot find symbol
+                      || e instanceof net.minecraft.world.entity.monster.EnderMan)) {
+                                                                        ^
+    symbol:   class EnderMan
+    location: package net.minecraft.world.entity.monster
+  Note: Some input files use or override a deprecated API.
+  /home/runner/work/minecraft-forge-mod/minecraft-forge-mod/src/main/java/com/ggrantrichards/astralend/client/TrailerFight.java:343: error: cannot find symbol
+          minecraft.getToastManager().clear();   // no "Cover Me in Debris!" over the fight
+                   ^
+    symbol:   method getToastManager()
+    location: variable minecraft of type Minecraft
+  2 errors
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+BUILD FAILED in 28s
+2 actionable tasks: 2 executed
+Configuration cache entry stored.
