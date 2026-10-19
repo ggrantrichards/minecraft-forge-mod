@@ -31,7 +31,7 @@
 # has loaded and been drawn.
 # The caption after "|" is shown small in the corner; leave it empty for none.
 
-music records/observing_the_star.ogg 0 0
+music records/observing_the_star.ogg 0 5
 card 2.6 | The End was never empty.
 gilded_reach_aerial 120 fwd=-10 up=7 pitch=36:26 flare=calm | The Gilded Reach
 sky_eclipse_flare 84 yaw=10 pitch=-6:2 |
