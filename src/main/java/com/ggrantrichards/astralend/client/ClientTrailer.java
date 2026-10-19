@@ -94,6 +94,7 @@ public final class ClientTrailer {
     private static float camPitch;
     private static Vec3 camFocus;         // what it follows, smoothed
     private static Vec3 camBase;          // which way it starts from its focus (flat, unit length)
+    private static double camReach = -1;  // how far out it is, kept clear of walls
     private static Method setPosition;
 
     public static void register() {
@@ -387,6 +388,7 @@ public final class ClientTrailer {
         camPos = null;
         camFocus = null;
         camBase = null;
+        camReach = -1;
         eye0 = new Vec3(base.x(), base.y() + 1.62, base.z());
         yaw0 = base.yaw();
         pitch0 = base.pitch();
@@ -547,7 +549,17 @@ public final class ClientTrailer {
         double angle = Math.toRadians(scene.num("angle", 0) + scene.num("orbit", 0) * e);
         Vec3 dir = new Vec3(camBase.x * Math.cos(angle) - camBase.z * Math.sin(angle), 0.0, camBase.x * Math.sin(angle) + camBase.z * Math.cos(angle));
         double dist = scene.num("dist", 6.0) + scene.num("pull", 0.0) * e;
-        camPos = camFocus.add(dir.scale(dist)).add(0.0, scene.num("height", 1.5) + scene.num("rise", 0.0) * e, 0.0);
+        Vec3 want = camFocus.add(dir.scale(dist)).add(0.0, scene.num("height", 1.5) + scene.num("rise", 0.0) * e, 0.0);
+        // Never inside a wall or with one in the way: come in to just this side of whatever is between
+        // the camera and what it's looking at (quickly), and ease back out once it's clear.
+        Vec3 out = want.subtract(camFocus);
+        double reach = out.length();
+        HitResult hit = minecraft.level.clip(new ClipContext(camFocus, want, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, minecraft.player));
+        if (hit.getType() != HitResult.Type.MISS) {
+            reach = Math.max(1.2, hit.getLocation().distanceTo(camFocus) - 0.5);
+        }
+        camReach = camReach < 0 || reach < camReach ? reach : Mth.lerp(0.12, camReach, reach);
+        camPos = camFocus.add(out.normalize().scale(camReach));
         Vec3 d = camFocus.subtract(camPos);
         camYaw = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
         camPitch = (float) -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));

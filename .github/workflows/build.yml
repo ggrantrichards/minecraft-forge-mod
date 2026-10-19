@@ -158,7 +158,7 @@ jobs:
         if: always() && hashFiles('trailer/*.mp4') != ''
         run: |
           mkdir -p /tmp/trailer && cp -r trailer/the_astral_end_trailer.mp4 trailer/poster.png trailer/stills /tmp/trailer/
-          cp run/screenshots/trailer/sounds.txt trailer/mix.txt /tmp/trailer/ 2>/dev/null || true
+          cp run/screenshots/trailer/sounds.txt trailer/mix.txt trailer/assets.txt /tmp/trailer/ 2>/dev/null || true
           cp trailer/teaser.webp /tmp/trailer/ 2>/dev/null || true
           grep "AstralEnd trailer" trailer.log | sed 's/.*\[AstralEnd trailer\] //' > /tmp/trailer/filming.txt || true
           cd /tmp/trailer

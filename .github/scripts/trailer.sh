@@ -53,8 +53,11 @@ ls run/screenshots/trailer/*.jpg > /dev/null 2>&1 || { echo "::error::no frames 
 JAR=$(find .gradle/mavenizer/repo -name 'client-extra*.jar' | head -1)
 unzip -p "$JAR" assets/minecraft/textures/font/ascii.png > /tmp/ascii.png
 unzip -p "$JAR" assets/minecraft/sounds.json > /tmp/sounds.json 2>/dev/null || true
-ASSETS=$(dirname "$(dirname "$(find ~/.gradle .gradle -path '*assets/indexes/*.json' 2>/dev/null | head -1)")" 2>/dev/null)
-echo "the game's sounds: ${ASSETS:-not found}"
+# The game's assets (for its sounds): wherever Gradle put them - the folder with indexes/ and objects/.
+INDEX=$(find ~ "$PWD" /tmp -path '*indexes/*.json' -size +100k 2>/dev/null | head -1)
+ASSETS=$([ -n "$INDEX" ] && dirname "$(dirname "$INDEX")")
+mkdir -p trailer
+{ echo "the game's assets: ${ASSETS:-not found} (index ${INDEX:-none})"; grep -o -- '--assetsDir[ =][^ ]*' trailer-console.log | head -2; } | tee trailer/assets.txt
 export TRAILER_ASSETS="$ASSETS" TRAILER_SOUNDS_JSON=/tmp/sounds.json
 python3 tools/trailer/compose.py run/screenshots/trailer /tmp/ascii.png trailer
 # and the README's moving teaser: fifteen seconds of the Eclipse revealed

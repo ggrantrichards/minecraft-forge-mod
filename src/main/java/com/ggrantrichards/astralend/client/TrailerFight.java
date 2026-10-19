@@ -8,9 +8,7 @@ import com.ggrantrichards.astralend.entity.Hollowback;
 import com.ggrantrichards.astralend.world.UpwellingEffect;
 import com.mojang.logging.LogUtils;
 import java.util.List;
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.CameraType;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.player.LocalPlayer;
@@ -117,19 +115,22 @@ final class TrailerFight {
         curatorId = curator.getId();
         // The garrison, and anything left lying about from the beat before, out of the way.
         for (Entity e : end.getEntities((Entity) null, new AABB(home).inflate(40.0),
-                e -> e instanceof Hollowback || e instanceof ItemEntity || e instanceof ExperienceOrb || e instanceof Projectile)) {
+                e -> e instanceof Hollowback || e instanceof ItemEntity || e instanceof ExperienceOrb || e instanceof Projectile
+                    || e instanceof net.minecraft.world.entity.monster.EnderMan)) {
             e.discard();
         }
         if (!cont) {
             gear(player);
         }
         player.setHealth(player.getMaxHealth());
+        // (the reliquary is dark: seen as a player with a night vision potion would see it)
+        player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 900, 0, false, false, false));
         switch (beat) {
-            case "wake" -> stage(end, player, 0.0, 5.5, 0.0, -1.0, true, false, 300.0F, 4.0);
+            case "wake" -> stage(end, player, 0.0, 4.5, 0.0, -4.0, true, false, 300.0F, 5.0);
             case "charge" -> {
-                // in line between the Curator and a pylon behind the player, so that the charge, dodged,
-                // carries on into the pylon (at -6, +7)
-                stage(end, player, -2.97, 1.82, 0.30, -3.80, false, false, 280.0F, 9.0);
+                // in line between the Curator and a pylon behind the player (at -6, +7), so that the
+                // charge, dodged, carries on into the pylon
+                stage(end, player, -1.5, 1.5, 2.55, -3.45, false, false, 280.0F, 9.0);
             }
             case "strike" -> {
                 stage(end, player, 0.0, 4.0, 0.0, -1.5, false, false, 235.0F, 2.5);
@@ -190,18 +191,17 @@ final class TrailerFight {
         if (!mapped) {
             mapped = true;
             // The floor round it, as the fight sees it: # floor, . a gap, C home, P a pylon.
-            StringBuilder map = new StringBuilder();
+            LOGGER.info(TAG + "fight: the reliquary's floor (across -10..10 left to right, along -12..12 down; # floor, . gap, P pylon):");
             for (int d = -12; d <= 12; d++) {
-                map.append(String.format("%4d ", d));
+                StringBuilder map = new StringBuilder(String.format("fight floor %4d ", d));
                 for (int u = -10; u <= 10; u++) {
                     BlockPos p = BlockPos.containing(at(u, d, 0.0));
                     char c = end.getBlockState(p).is(net.minecraft.world.level.block.Blocks.OBSIDIAN) ? 'P'
                         : u == 0 && d == 0 ? 'C' : end.getBlockState(p.below()).isAir() ? '.' : '#';
                     map.append(c);
                 }
-                map.append('\n');
+                LOGGER.info(TAG + map);
             }
-            LOGGER.info(TAG + "fight: the reliquary's floor (across -10..10 left to right, along -12..12 down):\n{}", map);
         }
         return true;
     }
@@ -286,14 +286,17 @@ final class TrailerFight {
         boolean wake = false;
         switch (beat) {
             case "wake" -> {
-                fwd = f < 24;
-                back = f >= 48 && f < 60;
-                wake = f == 30;
+                fwd = f < 16;
+                back = f >= 40 && f < 52;
+                wake = f == 24;
             }
             case "charge" -> {
                 cue = f == 6 ? Curator.ACT_CROUCH : -1;
-                right = f >= 27 && f < 42;
-                sprint = right;
+                boolean dodge = f >= 27 && f < 40;
+                boolean toRight = strafeRight(player, across);   // aside toward the middle of the floor
+                right = dodge && toRight;
+                left = dodge && !toRight;
+                sprint = dodge;
                 jump = f == 28 || f == 29;
             }
             case "strike" -> {
@@ -305,8 +308,11 @@ final class TrailerFight {
             }
             case "beam" -> {
                 cue = f == 4 ? Curator.ACT_AIM : -1;
-                left = f >= 30 && f < 42;
-                sprint = left;
+                boolean dodge = f >= 30 && f < 41;
+                boolean toRight = strafeRight(player, across);
+                right = dodge && toRight;
+                left = dodge && !toRight;
+                sprint = dodge;
                 jump = f == 31 || f == 32;
             }
             case "flip" -> {
@@ -332,9 +338,9 @@ final class TrailerFight {
             turnToward(player, seen.position().add(0.0, 2.4, 0.0));
         }
         if (hit) {
-            // a click of the attack button, as a player strikes: at whatever is under the crosshair
-            KeyMapping.click(InputConstants.Type.MOUSE.getOrCreate(0));
+            attack(minecraft);
         }
+        minecraft.getToastManager().clear();   // no "Cover Me in Debris!" over the fight
         int action = cue;
         boolean wakeNow = wake;
         server.execute(() -> {
@@ -349,6 +355,28 @@ final class TrailerFight {
             }
             keepGoing(server);
         });
+    }
+
+    // A strike, as the attack button makes one: at whatever is under the crosshair, with the swing.
+    private static java.lang.reflect.Method startAttack;
+
+    private static void attack(Minecraft minecraft) {
+        try {
+            if (startAttack == null) {
+                startAttack = Minecraft.class.getDeclaredMethod("startAttack");
+                startAttack.setAccessible(true);
+            }
+            startAttack.invoke(minecraft);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            LOGGER.error(TAG + "couldn't strike", e);
+        }
+    }
+
+    // Which strafe key moves the player most nearly along `toward` (flat): right, or left.
+    private static boolean strafeRight(LocalPlayer player, Vec3 toward) {
+        double yaw = Math.toRadians(player.getYRot());
+        double rx = -Math.cos(yaw), rz = -Math.sin(yaw);   // facing south (+z), your right hand is west (-x)
+        return rx * toward.x + rz * toward.z > 0.0;
     }
 
     // The player stays on their feet: hurt, but never below half health; fed; and back on the floor if a

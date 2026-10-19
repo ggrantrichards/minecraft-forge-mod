@@ -48,11 +48,11 @@ structure_leviathan_reliquary 84 fwd=4 |
 music music/space_music.ogg 33 -1
 card 2.4 | Its keeper is only resting.
 structure_leviathan_reliquary 100 fight=wake |
-structure_leviathan_reliquary 110 fight=charge cam=third dist=11 height=3.5 angle=0 orbit=25 follow=0.2 |
+structure_leviathan_reliquary 110 fight=charge cam=third dist=9 height=2.5 angle=60 orbit=20 follow=0.2 |
 structure_leviathan_reliquary 100 fight=strike |
 structure_leviathan_reliquary 100 fight=beam cam=third dist=9 height=2 angle=70 orbit=-15 follow=0.2 |
-structure_leviathan_reliquary 150 fight=flip cam=third dist=12 height=1 angle=30 orbit=30 follow=0.12 roll=0:180 rollFrom=40 rollTo=120 |
+structure_leviathan_reliquary 150 fight=flip cam=third dist=8 height=1 angle=80 orbit=25 follow=0.15 |
 structure_leviathan_reliquary 96 fight=ceiling cont |
-structure_leviathan_reliquary 130 fight=finish cont cam=third dist=11 height=-1 angle=200 orbit=35 follow=0.12 roll=180:0 rollFrom=20 rollTo=110 |
+structure_leviathan_reliquary 130 fight=finish cont cam=third dist=9 height=0 angle=110 orbit=30 follow=0.12 |
 starforge_armor 110 cam=third dist=4 height=0.4 angle=180 orbit=80 look=1.0 follow=1 | Starforged
 logo 7.0
