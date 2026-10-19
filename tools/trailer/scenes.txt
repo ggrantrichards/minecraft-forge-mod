@@ -48,7 +48,7 @@ structure_leviathan_reliquary 84 fwd=4 |
 music music/space_music.ogg 33 -1
 card 2.4 | Its keeper is only resting.
 structure_leviathan_reliquary 100 fight=wake |
-structure_leviathan_reliquary 110 fight=charge cam=third dist=9 height=2.5 angle=60 orbit=20 follow=0.2 |
+structure_leviathan_reliquary 110 fight=charge cam=third dist=8 height=1.8 angle=90 orbit=12 follow=0.25 |
 structure_leviathan_reliquary 100 fight=strike |
 structure_leviathan_reliquary 100 fight=beam cam=third dist=9 height=2 angle=70 orbit=-15 follow=0.2 |
 structure_leviathan_reliquary 150 fight=flip cam=third dist=8 height=1 angle=80 orbit=25 follow=0.15 |

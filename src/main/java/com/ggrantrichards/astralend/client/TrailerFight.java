@@ -51,7 +51,8 @@ import org.slf4j.Logger;
 //   flip     the blow that breaks its case: the reliquary turns over and the player falls up
 //   ceiling  fighting it upside down, on the ceiling
 //   finish   the last blow; it falls, and gravity comes back
-// The floor is only sure in the middle of the arena (LeviathanShape.gap), so every beat keeps to it:
+// The floor is only sure on the nave side of the arena (the far side is open to the void below; the
+// Curator hovers), so every beat keeps the player there:
 // positions are (across, along) in blocks from the Curator's home, "along" toward the pedestal.
 final class TrailerFight {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -128,9 +129,9 @@ final class TrailerFight {
         switch (beat) {
             case "wake" -> stage(end, player, 0.0, 4.5, 0.0, -4.0, true, false, 300.0F, 5.0);
             case "charge" -> {
-                // in line between the Curator and a pylon behind the player (at -6, +7), so that the
-                // charge, dodged, carries on into the pylon
-                stage(end, player, -1.5, 1.5, 2.55, -3.45, false, false, 280.0F, 9.0);
+                // on the wide row of floor by the near pylons, so there's room to dive aside; the charge
+                // carries on past, down the open nave toward the pedestal (and the camera)
+                stage(end, player, 0.0, 6.5, 0.0, -2.0, false, false, 280.0F, 9.0);
             }
             case "strike" -> {
                 stage(end, player, 0.0, 4.0, 0.0, -1.5, false, false, 235.0F, 2.5);
