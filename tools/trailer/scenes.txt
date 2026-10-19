@@ -31,7 +31,7 @@
 # has loaded and been drawn.
 # The caption after "|" is shown small in the corner; leave it empty for none.
 
-music records/observing_the_star.ogg 0 4
+music records/observing_the_star.ogg 0 0
 card 2.6 | The End was never empty.
 gilded_reach_aerial 120 fwd=-10 up=7 pitch=36:26 flare=calm | The Gilded Reach
 sky_eclipse_flare 84 yaw=10 pitch=-6:2 |
@@ -45,7 +45,7 @@ mob_watcher 70 fwd=2.5 | The Watcher
 structure_leviathan 120 fwd=14 | The Leviathan
 structure_leviathan_skull 96 fwd=8 yaw=-6 |
 structure_leviathan_reliquary 84 fwd=4 |
-music music/space_music.ogg 33 -1
+music music/space_music.ogg 33 0
 card 2.4 | Its keeper is only resting.
 structure_leviathan_reliquary 100 fight=wake |
 structure_leviathan_reliquary 110 fight=charge cam=third dist=8 height=1.8 angle=90 orbit=12 follow=0.25 |

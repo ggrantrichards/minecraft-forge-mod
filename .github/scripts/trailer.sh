@@ -9,6 +9,22 @@ rm -rf "$LOG" trailer-console.log run/screenshots/trailer trailer
 sudo apt-get install -y -qq ffmpeg > /dev/null
 python3 -m pip install -q --break-system-packages numpy pillow
 python3 tools/trailer/narrate.py trailer || { echo "::error::the narration recordings could not be prepared"; exit 1; }
+
+# [trailer-mix] in the commit message: no filming - the last trailer (on the ci-trailer branch) gets a new
+# soundtrack, from the sound log written while it was filmed (tools/trailer/remix.py).
+if printf '%s' "${COMMIT_MESSAGE:-}" | grep -q '\[trailer-mix\]'; then
+    git fetch -q origin ci-trailer && mkdir -p /tmp/last && git --work-tree=/tmp/last checkout origin/ci-trailer -- . && git reset -q
+    INDEX=$(find ~ "$PWD" /tmp -path '*indexes/*.json' -size +100k 2>/dev/null | head -1)
+    export TRAILER_ASSETS=$([ -n "$INDEX" ] && dirname "$(dirname "$INDEX")") TRAILER_SOUNDS_JSON=
+    echo "the game's assets: ${TRAILER_ASSETS:-not found}" | tee /tmp/assets.txt
+    python3 tools/trailer/remix.py /tmp/last/the_astral_end_trailer.mp4 /tmp/last/sounds.txt trailer || exit 1
+    cp -r /tmp/last/poster.png /tmp/last/stills /tmp/last/teaser.webp trailer/ 2>/dev/null
+    cp /tmp/assets.txt trailer/assets.txt
+    mkdir -p run/screenshots/trailer && cp /tmp/last/sounds.txt run/screenshots/trailer/
+    cp /tmp/last/filming.txt trailer.log 2>/dev/null; sed -i 's/^/[AstralEnd trailer] /' trailer.log 2>/dev/null
+    ls -la trailer
+    exit 0
+fi
 mkdir -p run/saves && rm -rf run/saves/survey-world && cp -r run/survey-world run/saves/survey-world
 cp tools/trailer/scenes.txt run/astralend-trailer.txt
 # A long view, the HUD at the size most people play at, no chat, no tutorial hints, no pausing when the

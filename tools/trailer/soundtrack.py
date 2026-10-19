@@ -112,7 +112,13 @@ def music_bed(segments, seconds):
         length = min(end - start, max(0, data.shape[1] - o))
         if length <= 0:
             continue
-        piece = data[:, o:o + length] * (10 ** (gain / 20))
+        piece = data[:, o:o + length]
+        # every track brought to the same loudness first (some are much quieter than others), then the
+        # section's own gain
+        loud = piece[:, np.abs(piece).max(axis=0) > 1e-3]
+        rms = float(np.sqrt(np.mean(loud ** 2))) if loud.size else 0.0
+        level = min(4.0, max(0.25, 0.12 / rms)) if rms > 0 else 1.0
+        piece = piece * level * (10 ** (gain / 20))
         env = np.ones(length, np.float32)
         k = min(fade, length)
         if i > 0:
