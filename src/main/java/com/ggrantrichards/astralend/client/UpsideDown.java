@@ -130,6 +130,14 @@ public final class UpsideDown {
         lastPitch = player.getXRot();
     }
 
+    // A turn made by something other than the mouse (the trailer's scripted aim): taken as it is, not mirrored.
+    public static void acceptTurn(LocalPlayer player) {
+        if (!Float.isNaN(lastYaw)) {
+            lastYaw = player.getYRot();
+            lastPitch = player.getXRot();
+        }
+    }
+
     private static void moveCamera(Camera camera, Vec3 to) {
         try {
             if (setPosition == null) {

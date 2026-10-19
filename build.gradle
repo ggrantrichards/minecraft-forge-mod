@@ -52,10 +52,12 @@ minecraft {
                 systemProperty 'astralend.playtests', 'true'
             }
             // ./gradlew runClient -PastralendTrailer  -> films the trailer in the survey's world, frame by
-            // frame, in 720p (see client/ClientTrailer.java and tools/trailer/).
+            // frame, in 1080p (see client/ClientTrailer.java and tools/trailer/). -PastralendTrailerOnly=fight
+            // films only the shots whose names have "fight" in them.
             if (providers.gradleProperty('astralendTrailer').isPresent()) {
-                args '--quickPlaySingleplayer', 'survey-world', '--width', '1280', '--height', '720'
+                args '--quickPlaySingleplayer', 'survey-world', '--width', '1920', '--height', '1080'
                 systemProperty 'astralend.trailer', 'true'
+                systemProperty 'astralend.trailerOnly', providers.gradleProperty('astralendTrailerOnly').getOrElse('')
             }
         }
 

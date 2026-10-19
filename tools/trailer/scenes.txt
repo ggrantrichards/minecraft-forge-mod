@@ -5,6 +5,8 @@
 #   logo <seconds>                           the title card at the end
 #   vo <offset> | <words>                    the narrator says <words>, starting <offset> seconds into
 #                                            the next beat (tools/trailer/narrate.py speaks them)
+#   music <file> <from> [dB]                 from the next beat on, this track (under the mod's
+#                                            sounds/), starting <from> seconds into it (soundtrack.py)
 #   <shot> <frames> [key=value ...] | <caption>
 #
 # <shot> is a viewpoint the worldgen survey chose (astralend-shots.txt). The camera starts there and
@@ -13,60 +15,44 @@
 #   yaw               degrees to pan (positive: to the right); pitch=a:b tilts from a to b
 #   orbit             degrees to circle the focus (positive: counter-clockwise from above)
 #   focus             what to orbit and look at: the shot's mob (default), or "hit" (where the view
-#                     first meets the ground); "wyrm" keeps the nearest Spire Wyrm in the picture
+#                     first meets the ground)
 #   track             blocks per frame that the camera and the mob glide along together
-#   roll              degrees of camera roll, eased in over the shot
+#   roll              degrees of camera roll (roll=a:b from a to b), eased over the shot or between
+#                     frames rollFrom and rollTo
 #   ease              both (default), in, out or none
-#   comet             a live comet crosses the sky and comes down ahead; the camera follows it
-#                     (comet=chase: the camera flies just behind it all the way down)
-# and things to happen: wake@N, bridges@N (on frame N), flare=<phase>, clear, and for the Spire Wyrm
-# wyrm_wake@N (it wakes on its nest), wyrm_circle@N (it circles the top of its spire, in view),
-# wyrm_breath@N (it breathes at the camera), wyrm_stun@N (the bell nearest the camera rings and
-# stuns it).
+#   ai                the shot's mob moves about as it likes (otherwise it holds still)
+#   cam=third         a third-person camera that follows the player (or a fight) from dist blocks off
+#                     and height up, starting angle degrees round, circling orbit degrees over the
+#                     shot, pulling back pull and rising rise; follow is how closely it keeps up
+#   fight=<beat>      a beat of the Curator fight, played in survival in the reliquary (see
+#                     client/TrailerFight.java); cont carries on from the beat before
+# and things to happen: wake@N, bridges@N (on frame N), flare=<phase>, clear.
+# Before filming, the camera flies each shot's whole path once and waits until everything it will see
+# has loaded and been drawn.
 # The caption after "|" is shown small in the corner; leave it empty for none.
 
-vo 0.8 | The End was never empty.
-card 4.0 | The End was never empty.
-sky_ashen_barrens 140 pitch=-40:10 fwd=4 flare=calm |
-vo 0.4 | It was waiting.
-card 3.0 | It was waiting.
-vo 0.6 | Past the dragon's island, the islands drift apart.
-nebula_fields 90 fwd=14 up=-3 yaw=8 | Nebula Fields
-deep_hollows 90 fwd=12 yaw=8 | Deep Hollows
-glimmering_crags 90 fwd=12 yaw=8 | Glimmering Crags
-vo 0.4 | Bone. Ash. Silence.
-ashen_barrens 100 fwd=14 up=-2 yaw=-8 | Ashen Barrens
-vo 0.4 | And somewhere out in the dark...
-card 3.0 | Somewhere, the void holds its breath.
-gilded_reach_aerial 150 fwd=-10 up=8 pitch=38:28 | The Gilded Reach
-vo 0.3 | ...heaven and hell, turning round each other.
-eclipse 100 fwd=12 yaw=8 | Its heaven
-corona 100 fwd=10 yaw=-8 | and its hell
-vo 0.4 | Things live here that have never seen a sun.
-mob_hushback 75 orbit=50 | Hushback
-mob_hydragrip_angled 70 orbit=-40 | Hydragrip
-mob_drift_whale_side 130 track=0.12 | Drift Whale
-vo 0.3 | Some will call you to the edge.
-mob_mirror_wretch_reared 75 orbit=30 | Mirror Wretch
-mob_umbral_stalker_lit 65 orbit=30 | Umbral Stalker
-biome_hollow_roots 85 fwd=3 | The Hollow Roots
-biome_crystal_vaults 85 fwd=2 | The Crystal Vaults
-vo 0.4 | Don't look straight at it.
-mob_watcher 80 fwd=2.5 | The Watcher
-vo 0.3 | Someone built here. No one is left to say why.
-card 3.2 | No one is left to say why.
-structure_constellation_maze 110 orbit=20 focus=hit bridges@30 | Constellation Mazes
-structure_solar_array 110 orbit=20 focus=hit | The Solar Array
-vo 0.5 | The greatest of them... a whole leviathan, made a citadel.
-structure_leviathan 160 fwd=12 | The Leviathan
-structure_leviathan_maw 110 fwd=4 wake@30 | The Maw
-vo 0.3 | Its keeper is only resting.
-structure_leviathan_reliquary 110 fwd=5 | The Reliquary
-structure_leviathan_heart 80 fwd=1 | Its heart, still beating
-mob_curator 90 orbit=25 | The Curator
-vo 0.3 | Take what it keeps.
-card 2.8 | Take what it keeps.
-starforge_astral_forge 75 orbit=35 focus=hit | Starforging
-vo 1.4 | The Astral End.
-gilded_reach_aerial 150 fwd=-20 up=14 pitch=38:24 ease=in |
-logo 8.0
+music records/observing_the_star.ogg 0 4
+card 2.6 | The End was never empty.
+gilded_reach_aerial 120 fwd=-10 up=7 pitch=36:26 flare=calm | The Gilded Reach
+sky_eclipse_flare 84 yaw=10 pitch=-6:2 |
+mob_hushback 76 orbit=50 ai | Hushback
+nebula_fields 90 fwd=10 up=-2 yaw=-8 | Nebula Fields
+mob_drift_whale_side 110 track=0.12 | Drift Whale
+glimmering_crags 84 fwd=10 yaw=8 | Glimmering Crags
+mob_mirror_wretch_reared 66 orbit=30 | Mirror Wretch
+ashen_barrens 84 fwd=12 up=-2 yaw=-8 | Ashen Barrens
+mob_watcher 70 fwd=2.5 | The Watcher
+structure_leviathan 120 fwd=14 | The Leviathan
+structure_leviathan_skull 96 fwd=8 yaw=-6 |
+structure_leviathan_reliquary 84 fwd=4 |
+music music/space_music.ogg 33 -1
+card 2.4 | Its keeper is only resting.
+structure_leviathan_reliquary 100 fight=wake |
+structure_leviathan_reliquary 110 fight=charge cam=third dist=11 height=3.5 angle=0 orbit=25 follow=0.2 |
+structure_leviathan_reliquary 100 fight=strike |
+structure_leviathan_reliquary 100 fight=beam cam=third dist=9 height=2 angle=70 orbit=-15 follow=0.2 |
+structure_leviathan_reliquary 150 fight=flip cam=third dist=12 height=1 angle=30 orbit=30 follow=0.12 roll=0:180 rollFrom=40 rollTo=120 |
+structure_leviathan_reliquary 96 fight=ceiling cont |
+structure_leviathan_reliquary 130 fight=finish cont cam=third dist=11 height=-1 angle=200 orbit=35 follow=0.12 roll=180:0 rollFrom=20 rollTo=110 |
+starforge_armor 110 cam=third dist=4 height=0.4 angle=180 orbit=80 look=1.0 follow=1 | Starforged
+logo 7.0

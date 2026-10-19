@@ -127,7 +127,7 @@ jobs:
       # Plays the scripted playtests in the real client (client/ClientPlaytests.java) and publishes a
       # contact sheet per test and the log to the ci-playtests branch.
       - name: Playtests in the real client
-        if: always() && hashFiles('run/survey-world/level.dat') != '' && !contains(github.event.head_commit.message, '[trailer]')
+        if: always() && hashFiles('run/survey-world/level.dat') != '' && !contains(github.event.head_commit.message, '[trailer')
         timeout-minutes: 25
         run: .github/scripts/playtests.sh
 
@@ -145,17 +145,20 @@ jobs:
             && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-playtests
 
       # Films the trailer and cuts it together (client/ClientTrailer.java, tools/trailer/), then
-      # publishes it to the ci-trailer branch. Only for commits whose message says [trailer]: it takes
-      # about half an hour.
+      # publishes it to the ci-trailer branch. Only for commits whose message says [trailer] (or
+      # [trailer:<part>], to film only the shots with <part> in their names): it takes about an hour.
       - name: Film the trailer
-        if: contains(github.event.head_commit.message, '[trailer]') && hashFiles('run/survey-world/level.dat') != ''
-        timeout-minutes: 100
+        if: contains(github.event.head_commit.message, '[trailer') && hashFiles('run/survey-world/level.dat') != ''
+        timeout-minutes: 150
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: .github/scripts/trailer.sh
 
       - name: Publish the trailer
         if: always() && hashFiles('trailer/*.mp4') != ''
         run: |
           mkdir -p /tmp/trailer && cp -r trailer/the_astral_end_trailer.mp4 trailer/poster.png trailer/stills /tmp/trailer/
+          cp run/screenshots/trailer/sounds.txt trailer/mix.txt /tmp/trailer/ 2>/dev/null || true
           cp trailer/teaser.webp /tmp/trailer/ 2>/dev/null || true
           grep "AstralEnd trailer" trailer.log | sed 's/.*\[AstralEnd trailer\] //' > /tmp/trailer/filming.txt || true
           cd /tmp/trailer
