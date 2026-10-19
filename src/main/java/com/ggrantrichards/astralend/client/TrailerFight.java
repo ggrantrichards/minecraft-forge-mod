@@ -8,7 +8,9 @@ import com.ggrantrichards.astralend.entity.Hollowback;
 import com.ggrantrichards.astralend.world.UpwellingEffect;
 import com.mojang.logging.LogUtils;
 import java.util.List;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.CameraType;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.player.LocalPlayer;
@@ -313,10 +315,8 @@ final class TrailerFight {
             turnToward(player, seen.position().add(0.0, 2.4, 0.0));
         }
         if (hit) {
-            if (seen != null && seen.isAlive() && dist < 4.6) {
-                minecraft.gameMode.attack(player, seen);
-            }
-            player.swing(InteractionHand.MAIN_HAND);
+            // a click of the attack button, as a player strikes: at whatever is under the crosshair
+            KeyMapping.click(InputConstants.Type.MOUSE.getOrCreate(0));
         }
         int action = cue;
         boolean wakeNow = wake;

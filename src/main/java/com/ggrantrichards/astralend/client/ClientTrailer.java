@@ -203,7 +203,8 @@ public final class ClientTrailer {
                 int f = waypoint >= points ? 0 : Math.round((float) waypoint * (scene.frames() - 1) / Math.max(1, points - 1));
                 pose(minecraft, server, scene, f);
                 ticks++;
-                boolean ready = ticks >= 6 && chunksArrived(minecraft) && minecraft.levelRenderer.hasRenderedAllSections();
+                boolean ready = ticks >= 6 && chunksArrived(minecraft, cameraPosition(minecraft, scene))
+                    && minecraft.levelRenderer.hasRenderedAllSections();
                 if (ready || ticks >= 400) {
                     if (!ready) {
                         LOGGER.warn(TAG + "{}: the view at frame {} still wasn't all drawn after 20 s", scene.shot(), f);
@@ -294,8 +295,7 @@ public final class ClientTrailer {
     }
 
     // Every chunk the camera can see has come from the server.
-    private static boolean chunksArrived(Minecraft minecraft) {
-        Vec3 at = minecraft.gameRenderer.getMainCamera().position();
+    private static boolean chunksArrived(Minecraft minecraft, Vec3 at) {
         int cx = Mth.floor(at.x) >> 4, cz = Mth.floor(at.z) >> 4;
         int r = Math.max(2, minecraft.options.getEffectiveRenderDistance() - 2);
         for (int dx = -r; dx <= r; dx++) {
