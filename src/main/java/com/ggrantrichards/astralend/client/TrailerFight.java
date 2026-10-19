@@ -116,7 +116,7 @@ final class TrailerFight {
         // The garrison, and anything left lying about from the beat before, out of the way.
         for (Entity e : end.getEntities((Entity) null, new AABB(home).inflate(40.0),
                 e -> e instanceof Hollowback || e instanceof ItemEntity || e instanceof ExperienceOrb || e instanceof Projectile
-                    || e instanceof net.minecraft.world.entity.monster.EnderMan)) {
+                    || e instanceof net.minecraft.world.entity.monster.Enderman)) {
             e.discard();
         }
         if (!cont) {
@@ -340,7 +340,7 @@ final class TrailerFight {
         if (hit) {
             attack(minecraft);
         }
-        minecraft.getToastManager().clear();   // no "Cover Me in Debris!" over the fight
+        clearToasts(minecraft);   // no "Cover Me in Debris!" over the fight
         int action = cue;
         boolean wakeNow = wake;
         server.execute(() -> {
@@ -369,6 +369,32 @@ final class TrailerFight {
             startAttack.invoke(minecraft);
         } catch (ReflectiveOperationException | RuntimeException e) {
             LOGGER.error(TAG + "couldn't strike", e);
+        }
+    }
+
+    // The toasts in the corner, cleared (found by type: 26.3 doesn't hand them out).
+    private static Object toasts;
+    private static java.lang.reflect.Method clear;
+
+    private static void clearToasts(Minecraft minecraft) {
+        try {
+            if (toasts == null) {
+                for (Object owner : new Object[] {minecraft, minecraft.gui}) {
+                    for (java.lang.reflect.Field field : owner.getClass().getDeclaredFields()) {
+                        if (toasts == null && field.getType().getSimpleName().contains("Toast")) {
+                            field.setAccessible(true);
+                            toasts = field.get(owner);
+                        }
+                    }
+                }
+                if (toasts == null) {
+                    return;
+                }
+                clear = toasts.getClass().getMethod("clear");
+            }
+            clear.invoke(toasts);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            toasts = null;
         }
     }
 
