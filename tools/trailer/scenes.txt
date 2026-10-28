@@ -56,28 +56,28 @@ starforge_armor 110 id=starforge cam=third dist=4 height=0.4 angle=180 orbit=80 
 clip wake 48 from=0 punch=24
 clip skull 72 from=10 fx=flash,title,zoom
 # the world, a place a beat or two
-clip gilded 36 from=10 speed=2.5 fx=slash tint=c8960f | The Gilded Reach / ギルデッド・リーチ
-clip sky 24 from=20 speed=2 fx=flash tint=d9641c | Sunstorms / サンストーム
-clip nebula 36 from=0 speed=2.2 fx=slash tint=c42a64 | Nebula Fields / ネビュラ・フィールズ
-clip crags 24 from=10 speed=2.5 tint=2a9fb5 | Glimmering Crags / グリマリング・クラッグズ
-clip ashen 24 from=10 speed=2.5 fx=slash tint=6f6f80 | Ashen Barrens / アッシェン・バレンズ
-clip leviathan 48 from=10 speed=2 fx=flash,zoom tint=8f2140 | Leviathans / リヴァイアサン
+clip gilded 36 from=10 speed=2.5 fx=slash tint=c8960f | The Gilded Reach
+clip sky 24 from=20 speed=2 fx=flash tint=d9641c | Sunstorms
+clip nebula 36 from=0 speed=2.2 fx=slash tint=c42a64 | Nebula Fields
+clip crags 24 from=10 speed=2.5 tint=2a9fb5 | Glimmering Crags
+clip ashen 24 from=10 speed=2.5 fx=slash tint=6f6f80 | Ashen Barrens
+clip leviathan 48 from=10 speed=2 fx=flash,zoom tint=8f2140 | Leviathans
 # who lives there: a card a bar
-clip hushback 48 from=10 speed=1.5 freeze=18 fx=card,slash tint=c9a24a | Hushback / ハッシュバック / Grazer of the Gilded Reach
-clip whale 48 from=20 speed=1.5 freeze=18 fx=card,flash tint=3f6fe0 | Drift Whale / ドリフトホエール / It sings to the void
-clip hydragrip 48 from=10 speed=1.5 freeze=18 fx=card,slash tint=3fa34d | Hydragrip / ハイドラグリップ / Hunter of endermites
-clip wretch 48 from=10 freeze=18 fx=card,flash tint=b02a4a | Mirror Wretch / ミラーレッチ / It speaks with stolen voices
-clip stalker 48 from=10 freeze=18 fx=card,slash tint=8a4fd8 | Umbral Stalker / アンブラル・ストーカー / It puts out your torches
-clip pollinator 48 from=10 speed=1.5 freeze=18 fx=card,flash tint=e0457b | End Pollinator / エンド・ポリネーター / It drifts in the whales' wake
-clip watcher 48 from=10 freeze=18 fx=card,slash tint=2bb7c9 | The Watcher / ウォッチャー / Don't look straight at it
+clip hushback 48 from=10 speed=1.5 freeze=18 fx=card,slash tint=c9a24a | Hushback / Grazer of the Gilded Reach
+clip whale 48 from=20 speed=1.5 freeze=18 fx=card,flash tint=3f6fe0 | Drift Whale / It sings to the void
+clip hydragrip 48 from=10 speed=1.5 freeze=18 fx=card,slash tint=3fa34d | Hydragrip / Hunter of endermites
+clip wretch 48 from=10 freeze=18 fx=card,flash tint=b02a4a | Mirror Wretch / It speaks with stolen voices
+clip stalker 48 from=10 freeze=18 fx=card,slash tint=8a4fd8 | Umbral Stalker / It puts out your torches
+clip pollinator 48 from=10 speed=1.5 freeze=18 fx=card,flash tint=e0457b | End Pollinator / It drifts in the whales' wake
+clip watcher 48 from=10 freeze=18 fx=card,slash tint=2bb7c9 | The Watcher / Don't look straight at it
 # and the boss
 clip nave 36 from=20 speed=1.5 fx=slash tint=6d28d9 | Its keeper is only resting
-clip wake 48 from=40 freeze=14 fx=card,flash tint=7c2ae8 | The Curator / キュレーター / Keeper of the Reliquary
+clip wake 48 from=40 freeze=14 fx=card,flash tint=7c2ae8 | The Curator / Keeper of the Reliquary
 clip charge 60 from=4 punch=30 fx=slash
 clip strike 60 from=8 punch=10,26,44 fx=flash
 clip beam 48 from=18 punch=19 fx=slash
 clip flip 72 from=0 punch=8 fx=flash tint=7c2ae8 | When it breaks, the world turns over
 clip ceiling 36 from=10 punch=6,24
 clip finish 48 from=0 punch=10 fx=flash,out
-clip starforge 60 from=20 fx=flash tint=2fc4b8 | Starforge your gear / スターフォージ
+clip starforge 60 from=20 fx=flash tint=2fc4b8 | Starforge your gear
 clip starforge 144 from=50 speed=0.4 fx=end

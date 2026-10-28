@@ -5,7 +5,7 @@ set -u
 LOG=run/logs/latest.log
 rm -rf "$LOG" trailer-console.log run/screenshots/trailer trailer
 
-sudo apt-get install -y -qq ffmpeg fonts-inter fonts-ipafont-gothic > /dev/null
+sudo apt-get install -y -qq ffmpeg fonts-inter > /dev/null
 python3 -m pip install -q --break-system-packages numpy pillow
 
 # The flags ([trailer-mix], [trailer:<part>]) are read from the commit message's first line only.

@@ -1,7 +1,7 @@
 """Cuts the trailer as an anime opening: the shots the game filmed (client/ClientTrailer.java), cut hard on
 the beat of the music, with white flashes and slash wipes between them, zoom punches and shakes on the
-hits, freeze-frame cards for each creature (its name slammed in, a tint over the picture, speed lines,
-its name in katakana down the side), the title slammed in two seconds in, bold captions for the places,
+hits, freeze-frame cards for each creature (its name slammed in, a tint over the picture, speed lines),
+the title slammed in two seconds in, bold captions for the places,
 and an end card. Under a minute, and it opens on the game, not on black.
 
     python3 tools/trailer/opening.py <frames dir> <out dir> [scenes.txt]
@@ -19,11 +19,11 @@ an id=). A clip plays one filmed shot:
               end     the end card over it               zoom    a slow push in over the clip
               out     a white flash as it ends
     punch     frames (of the clip) where a hit lands: a zoom punch, a shake and a colour split
-    text      a caption, or for a card "NAME / カタカナ / what it is"
+    text      a caption, or for a card "Name / what it is"
 
 The soundtrack is the music track from 30.5 s in (its beat falls every 12 frames from the first) under the
 sounds the world made while it was filmed (soundtrack.py), each heard where its frame is shown.
-Needs numpy, Pillow and ffmpeg, and the fonts Inter (Black) and IPAGothic.
+Needs numpy, Pillow and ffmpeg, and the font Inter (Black).
 """
 import math
 import os
@@ -49,10 +49,9 @@ EGGS = ["hushback", "drift_whale", "mirror_wretch", "watcher", "hydragrip", "cur
 
 
 def font_path(names):
-    for d in ["/usr/share/fonts/opentype/inter", "/usr/share/fonts/truetype/inter", "/usr/share/fonts/opentype/ipafont-gothic",
-              "/usr/share/fonts/truetype/ipafont-gothic", "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"]:
+    for d in ["/usr/share/fonts/opentype/inter", "/usr/share/fonts/truetype/inter"]:
         for n in names:
-            p = Path(d) / n if not d.endswith(".ttf") else Path(d)
+            p = Path(d) / n
             if p.exists():
                 return str(p)
     out = subprocess.run(["fc-match", "-f", "%{file}", names[0].split(".")[0]], capture_output=True, text=True).stdout
@@ -61,7 +60,6 @@ def font_path(names):
 
 BLACK = font_path(["Inter-Black.otf", "Inter-Black.ttf"])
 BLACK_ITALIC = font_path(["Inter-BlackItalic.otf", "Inter-BlackItalic.ttf"]) or BLACK
-KANA = font_path(["ipag.ttf", "ipagp.ttf"])
 _fonts = {}
 
 
@@ -210,23 +208,6 @@ def text_layer(text, path, size, fill=(255, 255, 255), stroke=0, stroke_fill=(0,
     return img
 
 
-def vertical_layer(text, size, fill=(255, 255, 255), stroke=3):
-    """Katakana set top to bottom, as the credits of an opening are."""
-    f = font(KANA, size)
-    img = Image.new("RGBA", (int(size * 1.4), int(size * 1.12 * len(text) + size)), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
-    for k, ch in enumerate(text):
-        if ch in "ー":
-            # the long vowel mark turns upright in vertical text
-            g = Image.new("RGBA", (size * 2, size * 2), (0, 0, 0, 0))
-            ImageDraw.Draw(g).text((size // 2, size // 2), ch, font=f, fill=fill, stroke_width=stroke, stroke_fill=(0, 0, 0))
-            g = g.rotate(-90)
-            img.alpha_composite(g, (int(-size * 0.3), int(k * size * 1.12 - size * 0.5)))
-        else:
-            d.text((int(size * 0.2), int(k * size * 1.12)), ch, font=f, fill=fill, stroke_width=stroke, stroke_fill=(0, 0, 0))
-    return img
-
-
 def paste(arr, layer, x, y, alpha=1.0, scale=1.0):
     """Composite an RGBA layer onto the frame array, its centre at (x, y)."""
     if alpha <= 0.01:
@@ -252,13 +233,11 @@ def ease_out(t):
 
 def caption(arr, text, j, cut, tint):
     """A place's name: a slab of colour slashing in from the left, the name in heavy type over it."""
-    lines = [s.strip() for s in text.split("/")]
     size = 96
-    big = text_layer(lines[0].upper(), BLACK_ITALIC, size, stroke=5, stroke_fill=(10, 6, 20), spacing=2)
+    big = text_layer(text.upper(), BLACK_ITALIC, size, stroke=5, stroke_fill=(10, 6, 20), spacing=2)
     while big.width > W - 460 and size > 40:
         size -= 6
-        big = text_layer(lines[0].upper(), BLACK_ITALIC, size, stroke=5, stroke_fill=(10, 6, 20), spacing=2)
-    small = text_layer(lines[1], KANA, 40, stroke=3, stroke_fill=(10, 6, 20)) if len(lines) > 1 else None
+        big = text_layer(text.upper(), BLACK_ITALIC, size, stroke=5, stroke_fill=(10, 6, 20), spacing=2)
     t_in = ease_out(j / 5)
     t_out = ease_out((j - (cut - 4)) / 4) if j >= cut - 4 else 0.0
     slide = (1 - t_in) * -900 + t_out * 1400
@@ -270,15 +249,12 @@ def caption(arr, text, j, cut, tint):
     line = Image.new("RGBA", (big.width + 380, 6), (255, 255, 255, 230))
     paste(arr, line, 80 + line.width / 2 + slide * 1.3, y + 72)
     paste(arr, big, 200 + big.width / 2 + slide, y - 4)
-    if small:
-        paste(arr, small, 220 + small.width / 2 + slide * 0.9, y - 92, alpha=t_in)
 
 
 def character_card(arr, text, j, tint, seed):
-    """The creature's card, from the moment the picture stops: its name slammed in, what it is, and its
-    name in katakana down the right."""
-    parts = [s.strip() for s in text.split("/")] + ["", ""]
-    name, kana, role = parts[0].upper(), parts[1], parts[2].upper()
+    """The creature's card, from the moment the picture stops: its name slammed in, and what it is."""
+    parts = [s.strip() for s in text.split("/")] + [""]
+    name, role = parts[0].upper(), parts[1].upper()
     arr[:] = duotone(arr, tint)
     lines = speed_lines(j, seed, 0.8)
     arr[:] = arr * (1 - lines * 0.55) + 255 * lines * 0.55
@@ -300,17 +276,11 @@ def character_card(arr, text, j, tint, seed):
     if role:
         r = text_layer(role, BLACK, 38, fill=tint, stroke=2, stroke_fill=(0, 0, 0), spacing=8)
         paste(arr, r, W * 0.42 - title.width / 2 + r.width / 2 + 30 + j * 0.6, H * 0.69 - size * 0.72, alpha=ease_out((j - 3) / 4))
-    if kana:
-        v = vertical_layer(kana, 92)
-        shown = min(len(kana), max(0, (j - 2) // 1 + 1))
-        if shown:
-            crop = v.crop((0, 0, v.width, min(v.height, int(92 * 1.12 * shown + 30))))
-            paste(arr, crop, W - 150, 120 + crop.height / 2)
 
 
-def title_card(arr, j, sub=True):
-    """THE ASTRAL END, slammed in: heavy, wide-set type, a thin rule above and below, the name in
-    katakana beneath, the picture darkened behind it."""
+def title_card(arr, j):
+    """THE ASTRAL END, slammed in: heavy, wide-set type, a thin rule above and below, the picture
+    darkened behind it."""
     t = ease_out(j / 5)
     arr[:] = arr * (1 - 0.45 * t)
     big = text_layer("THE ASTRAL END", BLACK, 150, fill=(255, 255, 255), stroke=0, spacing=14)
@@ -324,9 +294,6 @@ def title_card(arr, j, sub=True):
     rule = Image.new("RGBA", (int(big.width * 1.05 * ease_out((j - 2) / 6)) + 1, 4), (255, 255, 255, 220))
     paste(arr, rule, W / 2, H / 2 - 130, alpha=t)
     paste(arr, rule, W / 2, H / 2 + 92, alpha=t)
-    if sub:
-        k = text_layer("アストラル・エンド", KANA, 54, fill=(230, 220, 255), stroke=2, stroke_fill=(20, 10, 40), spacing=18)
-        paste(arr, k, W / 2, H / 2 + 150, alpha=ease_out((j - 4) / 6))
 
 
 def end_card(arr, j):
@@ -339,7 +306,7 @@ def end_card(arr, j):
         appear = ease_out((j - k * 2) / 5)
         x = W / 2 + (k - (len(eggs) - 1) / 2) * 180
         paste(arr, egg, x, H * 0.24 + (1 - appear) * -40, alpha=appear)
-    title_card(arr, j + 5, sub=False)
+    title_card(arr, j + 5)
     v = text_layer("MINECRAFT 26.3  &  1.21.1   ·   FORGE", BLACK, 44, fill=(225, 220, 240), spacing=6)
     paste(arr, v, W / 2, H * 0.66, alpha=ease_out((j - 8) / 6))
     pill_text = text_layer("DOWNLOAD ON MODRINTH", BLACK, 52, fill=(255, 255, 255), spacing=6)
