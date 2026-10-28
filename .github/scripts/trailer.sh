@@ -8,9 +8,11 @@ rm -rf "$LOG" trailer-console.log run/screenshots/trailer trailer
 sudo apt-get install -y -qq ffmpeg fonts-inter fonts-ipafont-gothic > /dev/null
 python3 -m pip install -q --break-system-packages numpy pillow
 
-# [trailer-mix] in the commit message: no filming - the last trailer (on the ci-trailer branch) gets a new
-# soundtrack, from the sound log written while it was filmed (opening.py --remix).
-if printf '%s' "${COMMIT_MESSAGE:-}" | grep -q '\[trailer-mix\]'; then
+# The flags ([trailer-mix], [trailer:<part>]) are read from the commit message's first line only.
+SUBJECT=$(printf '%s\n' "${COMMIT_MESSAGE:-}" | head -1)
+# [trailer-mix]: no filming - the last trailer (on the ci-trailer branch) gets a new soundtrack, from the
+# sound log written while it was filmed (opening.py --remix).
+if printf '%s' "$SUBJECT" | grep -q '\[trailer-mix\]'; then
     git fetch -q origin ci-trailer && mkdir -p /tmp/last && git --work-tree=/tmp/last checkout origin/ci-trailer -- . && git reset -q
     INDEX=$(find ~ "$PWD" /tmp -path '*indexes/*.json' -size +100k 2>/dev/null | head -1)
     export TRAILER_ASSETS=$([ -n "$INDEX" ] && dirname "$(dirname "$INDEX")") TRAILER_SOUNDS_JSON=
@@ -29,7 +31,7 @@ cp tools/trailer/scenes.txt run/astralend-trailer.txt
 # window isn't focused; the view bobs as you walk (the fight is played in first person).
 printf 'renderDistance:16\nsimulationDistance:10\nguiScale:3\nchatVisibility:2\nnarrator:0\nonboardAccessibility:false\ntutorialStep:none\nbobView:true\npauseOnLostFocus:false\nparticles:0\nentityShadows:true\nfov:0.0\n' > run/options.txt
 # [trailer:<part>] in the commit message: film only the shots with <part> in their names.
-ONLY=$(printf '%s' "${COMMIT_MESSAGE:-}" | grep -o '\[trailer:[^]]*\]' | head -1 | sed 's/\[trailer:\(.*\)\]/\1/')
+ONLY=$(printf '%s' "$SUBJECT" | grep -o '\[trailer:[^]]*\]' | head -1 | sed 's/\[trailer:\(.*\)\]/\1/')
 [ -n "$ONLY" ] && echo "filming only the shots with \"$ONLY\" in their names"
 
 export LIBGL_ALWAYS_SOFTWARE=1 SDL_VIDEODRIVER=x11 SDL_VIDEO_FORCE_EGL=1
