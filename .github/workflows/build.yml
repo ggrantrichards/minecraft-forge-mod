@@ -157,6 +157,15 @@ jobs:
       - name: Publish the trailer
         if: always() && hashFiles('trailer/*.mp4') != ''
         run: |
+          # GitHub takes no file over 100 MB: a bigger video is squeezed to 90 MB
+          SIZE=$(stat -c %s trailer/the_astral_end_trailer.mp4)
+          if [ "$SIZE" -gt 95000000 ]; then
+            SECS=$(ffprobe -v error -show_entries format=duration -of csv=p=0 trailer/the_astral_end_trailer.mp4)
+            RATE=$(python3 -c "print(int(90e6 * 8 / $SECS / 1000) - 200)")
+            ffmpeg -y -loglevel error -i trailer/the_astral_end_trailer.mp4 -c:v libx264 -preset slow -b:v ${RATE}k \
+              -maxrate ${RATE}k -bufsize $((RATE * 2))k -pix_fmt yuv420p -c:a copy -movflags +faststart /tmp/smaller.mp4 \
+              && mv /tmp/smaller.mp4 trailer/the_astral_end_trailer.mp4
+          fi
           mkdir -p /tmp/trailer && cp -r trailer/the_astral_end_trailer.mp4 trailer/poster.png trailer/stills /tmp/trailer/
           cp run/screenshots/trailer/sounds.txt trailer/mix.txt trailer/assets.txt /tmp/trailer/ 2>/dev/null || true
           cp trailer/teaser.webp /tmp/trailer/ 2>/dev/null || true

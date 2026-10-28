@@ -381,8 +381,9 @@ def render(frames_dir, out_dir, scenes=SCENES):
     mp4 = out_dir / "the_astral_end_trailer.mp4"
     enc = subprocess.Popen([os.environ.get("FFMPEG", "ffmpeg"), "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
                             "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-i", str(wav), "-c:v", "libx264", "-preset", "slow",
-                            "-crf", "18", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags",
-                            "+faststart", str(mp4)], stdin=subprocess.PIPE)
+                            "-crf", "18", "-maxrate", "12M", "-bufsize", "24M",   # (under GitHub's 100 MB a file)
+                            "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", str(mp4)],
+                           stdin=subprocess.PIPE)
     prev = None
     t = 0
     for ci, c in enumerate(clips):
