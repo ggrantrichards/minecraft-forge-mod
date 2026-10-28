@@ -1,23 +1,21 @@
 #!/usr/bin/env bash
 # Films the trailer in the world the survey generated (client/ClientTrailer.java), then cuts it
-# together with the titles and the score (tools/trailer/compose.py). The video lands in trailer/.
+# together as an anime opening, with the titles and the score (tools/trailer/opening.py). The video lands in trailer/.
 set -u
 LOG=run/logs/latest.log
 rm -rf "$LOG" trailer-console.log run/screenshots/trailer trailer
 
-# The narration: your own recordings, if there are any (tools/trailer/voice/; narrate.py). No synthetic voice.
-sudo apt-get install -y -qq ffmpeg > /dev/null
+sudo apt-get install -y -qq ffmpeg fonts-inter fonts-ipafont-gothic > /dev/null
 python3 -m pip install -q --break-system-packages numpy pillow
-python3 tools/trailer/narrate.py trailer || { echo "::error::the narration recordings could not be prepared"; exit 1; }
 
 # [trailer-mix] in the commit message: no filming - the last trailer (on the ci-trailer branch) gets a new
-# soundtrack, from the sound log written while it was filmed (tools/trailer/remix.py).
+# soundtrack, from the sound log written while it was filmed (opening.py --remix).
 if printf '%s' "${COMMIT_MESSAGE:-}" | grep -q '\[trailer-mix\]'; then
     git fetch -q origin ci-trailer && mkdir -p /tmp/last && git --work-tree=/tmp/last checkout origin/ci-trailer -- . && git reset -q
     INDEX=$(find ~ "$PWD" /tmp -path '*indexes/*.json' -size +100k 2>/dev/null | head -1)
     export TRAILER_ASSETS=$([ -n "$INDEX" ] && dirname "$(dirname "$INDEX")") TRAILER_SOUNDS_JSON=
     echo "the game's assets: ${TRAILER_ASSETS:-not found}" | tee /tmp/assets.txt
-    python3 tools/trailer/remix.py /tmp/last/the_astral_end_trailer.mp4 /tmp/last/sounds.txt trailer || exit 1
+    python3 tools/trailer/opening.py --remix /tmp/last/the_astral_end_trailer.mp4 /tmp/last/sounds.txt trailer || exit 1
     cp -r /tmp/last/poster.png /tmp/last/stills /tmp/last/teaser.webp trailer/ 2>/dev/null
     cp /tmp/assets.txt trailer/assets.txt
     mkdir -p run/screenshots/trailer && cp /tmp/last/sounds.txt run/screenshots/trailer/
@@ -64,10 +62,8 @@ grep "AstralEnd trailer" trailer.log | sed 's/.*\[AstralEnd trailer\] //'
 echo "$(ls run/screenshots/trailer/*.jpg 2>/dev/null | wc -l) frames filmed"
 ls run/screenshots/trailer/*.jpg > /dev/null 2>&1 || { echo "::error::no frames were filmed"; tail -40 trailer.log; exit 1; }
 
-# Cut it together: the game's own font for the titles, the game's own sounds and the mod's music for the
-# soundtrack, ffmpeg for the video.
+# Cut it together: the game's own sounds and the mod's music for the soundtrack, ffmpeg for the video.
 JAR=$(find .gradle/mavenizer/repo -name 'client-extra*.jar' | head -1)
-unzip -p "$JAR" assets/minecraft/textures/font/ascii.png > /tmp/ascii.png
 unzip -p "$JAR" assets/minecraft/sounds.json > /tmp/sounds.json 2>/dev/null || true
 # The game's assets (for its sounds): wherever Gradle put them - the folder with indexes/ and objects/.
 INDEX=$(find ~ "$PWD" /tmp -path '*indexes/*.json' -size +100k 2>/dev/null | head -1)
@@ -75,7 +71,7 @@ ASSETS=$([ -n "$INDEX" ] && dirname "$(dirname "$INDEX")")
 mkdir -p trailer
 { echo "the game's assets: ${ASSETS:-not found} (index ${INDEX:-none})"; grep -o -- '--assetsDir[ =][^ ]*' trailer-console.log | head -2; } | tee trailer/assets.txt
 export TRAILER_ASSETS="$ASSETS" TRAILER_SOUNDS_JSON=/tmp/sounds.json
-python3 tools/trailer/compose.py run/screenshots/trailer /tmp/ascii.png trailer
-# and the README's moving teaser: fifteen seconds of the Eclipse revealed
+python3 tools/trailer/opening.py run/screenshots/trailer trailer
+# and the README's moving teaser: fifteen seconds of the places and the creatures
 python3 tools/trailer/teaser.py trailer/the_astral_end_trailer.mp4 trailer/teaser.webp || true
 ls -la trailer

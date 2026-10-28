@@ -4,7 +4,7 @@ pads, building to a swell for the title.
 
     python3 tools/trailer/music.py out.wav [length_seconds]
 
-compose.py calls score(sections) with the trailer's own timings, so the build-ups land on the cuts.
+The editor calls score(sections) with the trailer's own timings, so the build-ups land on the cuts.
 """
 import sys
 import wave

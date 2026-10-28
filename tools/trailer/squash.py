@@ -1,5 +1,5 @@
 """Keeps the trailer's frames from filling the disk while it's filmed: every PNG in <dir> that the game
-finished writing more than a few seconds ago becomes a high-quality JPEG (compose.py reads either).
+finished writing more than a few seconds ago becomes a high-quality JPEG (opening.py reads either).
 Runs until <dir>/stop exists, then converts what's left.
 
     python3 tools/trailer/squash.py <frames dir> &

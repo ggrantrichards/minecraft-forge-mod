@@ -1,13 +1,8 @@
-# The Astral End - the trailer's edit. Read by the game (dev/ClientTrailer.java films each shot) and
-# by tools/trailer/compose.py (cuts it together with the titles and the score). One beat per line:
+# The Astral End - the trailer, cut as an anime opening. The game (client/ClientTrailer.java) films the
+# shots, in the order of their lines; tools/trailer/opening.py cuts them together as the "clip" lines
+# say, on the beat of the music (a beat every 12 frames), and explains them. A shot:
 #
-#   card <seconds> | <text>                  words on black between shots ("\" breaks a line)
-#   logo <seconds>                           the title card at the end
-#   vo <offset> | <words>                    the narrator says <words>, starting <offset> seconds into
-#                                            the next beat (tools/trailer/narrate.py speaks them)
-#   music <file> <from> [dB]                 from the next beat on, this track (under the mod's
-#                                            sounds/), starting <from> seconds into it (soundtrack.py)
-#   <shot> <frames> [key=value ...] | <caption>
+#   <shot> <frames> id=<name> [key=value ...] |
 #
 # <shot> is a viewpoint the worldgen survey chose (astralend-shots.txt). The camera starts there and
 # moves over <frames> frames (24 a second):
@@ -29,30 +24,60 @@
 # and things to happen: wake@N, bridges@N (on frame N), flare=<phase>, clear.
 # Before filming, the camera flies each shot's whole path once and waits until everything it will see
 # has loaded and been drawn.
-# The caption after "|" is shown small in the corner; leave it empty for none.
+# A creature summoned for a shot that walks stands on the ground under it.
 
-music records/observing_the_star.ogg 0 5
-card 2.6 | The End was never empty.
-gilded_reach_aerial 120 fwd=-10 up=7 pitch=36:26 flare=calm | The Gilded Reach
-sky_eclipse_flare 84 yaw=10 pitch=-6:2 |
-mob_hushback 76 orbit=50 ai | Hushback
-nebula_fields 90 fwd=10 up=-2 yaw=-8 | Nebula Fields
-mob_drift_whale_side 110 track=0.12 | Drift Whale
-glimmering_crags 84 fwd=10 yaw=8 | Glimmering Crags
-mob_mirror_wretch_reared 66 orbit=30 | Mirror Wretch
-ashen_barrens 84 fwd=12 up=-2 yaw=-8 | Ashen Barrens
-mob_watcher 70 fwd=2.5 | The Watcher
-structure_leviathan 120 fwd=14 | The Leviathan
-structure_leviathan_skull 96 fwd=8 yaw=-6 |
-structure_leviathan_reliquary 84 fwd=4 |
-music music/space_music.ogg 33 0
-card 2.4 | Its keeper is only resting.
-structure_leviathan_reliquary 100 fight=wake |
-structure_leviathan_reliquary 110 fight=charge cam=third dist=8 height=1.8 angle=90 orbit=12 follow=0.25 |
-structure_leviathan_reliquary 100 fight=strike |
-structure_leviathan_reliquary 100 fight=beam cam=third dist=9 height=2 angle=70 orbit=-15 follow=0.2 |
-structure_leviathan_reliquary 150 fight=flip cam=third dist=8 height=1 angle=80 orbit=25 follow=0.15 |
-structure_leviathan_reliquary 96 fight=ceiling cont |
-structure_leviathan_reliquary 130 fight=finish cont cam=third dist=9 height=0 angle=110 orbit=30 follow=0.12 |
-starforge_armor 110 cam=third dist=4 height=0.4 angle=180 orbit=80 look=1.0 follow=1 | Starforged
-logo 7.0
+# The shots
+gilded_reach_aerial 120 id=gilded fwd=-10 up=7 pitch=36:26 flare=calm |
+sky_eclipse_flare 84 id=sky yaw=10 pitch=-6:2 |
+mob_hushback 76 id=hushback orbit=50 |
+nebula_fields 90 id=nebula fwd=10 up=-2 yaw=-8 |
+mob_drift_whale_side 110 id=whale track=0.12 |
+glimmering_crags 84 id=crags fwd=10 yaw=8 |
+mob_hydragrip_angled 70 id=hydragrip orbit=40 |
+mob_mirror_wretch_reared 66 id=wretch orbit=30 |
+ashen_barrens 84 id=ashen fwd=12 up=-2 yaw=-8 |
+mob_umbral_stalker_lit 70 id=stalker fwd=1.5 orbit=20 |
+mob_pollinator 70 id=pollinator orbit=-40 |
+mob_watcher 70 id=watcher fwd=2.5 |
+structure_leviathan 120 id=leviathan fwd=14 |
+structure_leviathan_skull 96 id=skull fwd=8 yaw=-6 |
+structure_leviathan_reliquary 84 id=nave fwd=4 |
+structure_leviathan_reliquary 100 id=wake fight=wake |
+structure_leviathan_reliquary 110 id=charge fight=charge cam=third dist=8 height=1.8 angle=90 orbit=12 follow=0.25 |
+structure_leviathan_reliquary 100 id=strike fight=strike |
+structure_leviathan_reliquary 100 id=beam fight=beam cam=third dist=9 height=2 angle=70 orbit=-15 follow=0.2 |
+structure_leviathan_reliquary 150 id=flip fight=flip cam=third dist=8 height=1 angle=80 orbit=25 follow=0.15 |
+structure_leviathan_reliquary 96 id=ceiling fight=ceiling cont |
+structure_leviathan_reliquary 130 id=finish fight=finish cont cam=third dist=9 height=0 angle=110 orbit=30 follow=0.12 |
+starforge_armor 110 id=starforge cam=third dist=4 height=0.4 angle=180 orbit=80 look=1.0 follow=1 |
+
+# The edit (see opening.py): 1260 frames, 52.5 seconds
+# cold open on the fight, then the title
+clip wake 48 from=0 punch=24
+clip skull 72 from=10 fx=flash,title,zoom
+# the world, a place a beat or two
+clip gilded 36 from=10 speed=2.5 fx=slash tint=c8960f | The Gilded Reach / ギルデッド・リーチ
+clip sky 24 from=20 speed=2 fx=flash tint=d9641c | Sunstorms / サンストーム
+clip nebula 36 from=0 speed=2.2 fx=slash tint=c42a64 | Nebula Fields / ネビュラ・フィールズ
+clip crags 24 from=10 speed=2.5 tint=2a9fb5 | Glimmering Crags / グリマリング・クラッグズ
+clip ashen 24 from=10 speed=2.5 fx=slash tint=6f6f80 | Ashen Barrens / アッシェン・バレンズ
+clip leviathan 48 from=10 speed=2 fx=flash,zoom tint=8f2140 | Leviathans / リヴァイアサン
+# who lives there: a card a bar
+clip hushback 48 from=10 speed=1.5 freeze=18 fx=card,slash tint=c9a24a | Hushback / ハッシュバック / Grazer of the Gilded Reach
+clip whale 48 from=20 speed=1.5 freeze=18 fx=card,flash tint=3f6fe0 | Drift Whale / ドリフトホエール / It sings to the void
+clip hydragrip 48 from=10 speed=1.5 freeze=18 fx=card,slash tint=3fa34d | Hydragrip / ハイドラグリップ / Hunter of endermites
+clip wretch 48 from=10 freeze=18 fx=card,flash tint=b02a4a | Mirror Wretch / ミラーレッチ / It speaks with stolen voices
+clip stalker 48 from=10 freeze=18 fx=card,slash tint=8a4fd8 | Umbral Stalker / アンブラル・ストーカー / It puts out your torches
+clip pollinator 48 from=10 speed=1.5 freeze=18 fx=card,flash tint=e0457b | End Pollinator / エンド・ポリネーター / It drifts in the whales' wake
+clip watcher 48 from=10 freeze=18 fx=card,slash tint=2bb7c9 | The Watcher / ウォッチャー / Don't look straight at it
+# and the boss
+clip nave 36 from=20 speed=1.5 fx=slash tint=6d28d9 | Its keeper is only resting
+clip wake 48 from=40 freeze=14 fx=card,flash tint=7c2ae8 | The Curator / キュレーター / Keeper of the Reliquary
+clip charge 60 from=4 punch=30 fx=slash
+clip strike 60 from=8 punch=10,26,44 fx=flash
+clip beam 48 from=18 punch=19 fx=slash
+clip flip 72 from=0 punch=8 fx=flash tint=7c2ae8 | When it breaks, the world turns over
+clip ceiling 36 from=10 punch=6,24
+clip finish 48 from=0 punch=10 fx=flash,out
+clip starforge 60 from=20 fx=flash tint=2fc4b8 | Starforge your gear / スターフォージ
+clip starforge 144 from=50 speed=0.4 fx=end

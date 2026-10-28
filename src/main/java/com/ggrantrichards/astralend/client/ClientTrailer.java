@@ -180,6 +180,10 @@ public final class ClientTrailer {
                     }
                     if (ticks == 60) {
                         mob = shot(scene).mob() != null ? ClientScreenshots.summoned : null;
+                        if (mob != null && walks(mob)) {
+                            Entity m = mob;
+                            server.execute(() -> ground(m));
+                        }
                         mob0 = mob != null ? mob.position() : null;
                         if (mob instanceof Mob m && scene.has("ai")) {
                             server.execute(() -> m.setNoAi(false));   // let it go about its business
@@ -339,7 +343,8 @@ public final class ClientTrailer {
                     continue;
                 }
                 String[] words = line.split("\\|")[0].trim().split("\\s+");
-                if (words[0].equals("card") || words[0].equals("logo") || words[0].equals("vo") || words[0].equals("music")) {
+                if (words[0].equals("card") || words[0].equals("logo") || words[0].equals("vo") || words[0].equals("music")
+                        || words[0].equals("clip")) {
                     continue;
                 }
                 Map<String, String> opts = new HashMap<>();
@@ -424,6 +429,24 @@ public final class ClientTrailer {
         ticks = 0;
         LOGGER.info(TAG + "setting up {} ({} frames)", scene.shot() + (scene.fight() ? " (" + scene.opts().get("fight") + ")" : ""),
             scene.frames());
+    }
+
+    // The creatures that walk (the others hover or swim through the void on their own).
+    private static boolean walks(Entity e) {
+        return !(e instanceof com.ggrantrichards.astralend.entity.DriftWhale || e instanceof com.ggrantrichards.astralend.entity.EndPollinator
+            || e instanceof com.ggrantrichards.astralend.entity.Watcher || e instanceof com.ggrantrichards.astralend.entity.Curator
+            || e instanceof com.ggrantrichards.astralend.entity.SpireWyrm);
+    }
+
+    // A walking creature summoned for a shot stands on the ground under it, with its weight back
+    // (summoned, it hangs where it was put).
+    private static void ground(Entity e) {
+        e.setNoGravity(false);
+        double y = e.getY();
+        for (int k = 0; k < 160 && e.level().noCollision(e, e.getBoundingBox().move(0.0, (y - 0.05) - e.getY(), 0.0)); k++) {
+            y -= 0.05;
+        }
+        e.setPos(e.getX(), y, e.getZ());
     }
 
     // What an orbit circles and looks at: the shot's mob, or the ground the view first meets.

@@ -8,7 +8,7 @@ instead, in <frames dir>/sounds.txt:
     cam <shot> <frame> <x> <y> <z> <yaw>                       where the camera is on each frame
     sound <shot> <frame> <event> <category> <volume> <pitch> <x> <y> <z>
 
-compose.py calls build() with the edit's timings. The game's sounds are found through the asset index
+opening.py calls build() with the edit's timings. The game's sounds are found through the asset index
 Gradle downloaded (TRAILER_ASSETS: the folder holding indexes/ and objects/); the mod's own from its
 resources. Needs numpy and ffmpeg.
 """
@@ -147,7 +147,9 @@ def read_log(path):
 
 
 def effects(log, shot_starts, seconds, library, report=None):
-    """The sounds the world made, placed in time by the frame they were made on, faded with distance
+    """The sounds the world made, placed in time by the frame they were made on (shot_starts: where each
+    shot starts in the video, or a function (shot, frame) -> the video frames that filmed frame is shown on),
+    faded with distance
     the way Minecraft fades them (to silence at 16 blocks, or 16 x the volume when louder), and panned
     by where they were from the camera."""
     n = int(seconds * RATE)
@@ -156,7 +158,11 @@ def effects(log, shot_starts, seconds, library, report=None):
     played, missing, far = 0, {}, 0
     seen = {}
     for shot, frame, event, category, volume, pitch, x, y, z in sounds:
-        if shot not in shot_starts:
+        if callable(shot_starts):
+            where = shot_starts(shot, frame)[:2]
+        else:
+            where = [shot_starts[shot] + frame] if shot in shot_starts else []
+        if not where:
             continue
         key = (shot, frame, event)
         seen[key] = seen.get(key, 0) + 1
@@ -192,13 +198,14 @@ def effects(log, shot_starts, seconds, library, report=None):
         if abs(rate - 1.0) > 0.01 and data.shape[1] > 1:
             idx = np.arange(0, data.shape[1] - 1, rate)
             data = np.vstack([np.interp(idx, np.arange(data.shape[1]), data[c]) for c in range(2)]).astype(np.float32)
-        mono = data.mean(axis=0) * gain
-        i = int(((shot_starts[shot] + frame) / FPS) * RATE)
-        if i >= n:
-            continue
-        mono = mono[:n - i]
-        out[0, i:i + len(mono)] += mono * np.sqrt(0.5 * (1 - pan))
-        out[1, i:i + len(mono)] += mono * np.sqrt(0.5 * (1 + pan))
+        whole = data.mean(axis=0) * gain
+        for at in where:
+            i = int((at / FPS) * RATE)
+            if i >= n:
+                continue
+            mono = whole[:n - i]
+            out[0, i:i + len(mono)] += mono * np.sqrt(0.5 * (1 - pan))
+            out[1, i:i + len(mono)] += mono * np.sqrt(0.5 * (1 + pan))
         played += 1
     lines = [f"soundtrack: {played} of {len(sounds)} sounds placed ({far} too far off to hear)"]
     if missing:
