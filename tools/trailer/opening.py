@@ -406,7 +406,7 @@ def render(frames_dir, out_dir, scenes=SCENES):
             arr = split_colour(arr, p)
             if held and "card" in c["fx"]:
                 character_card(arr, c["text"], j - c["freeze"], c["tint"], ci * 101)
-            elif c["text"] and "end" not in c["fx"] and "title" not in c["fx"]:
+            elif c["text"] and not c["fx"] & {"card", "end", "title"}:
                 caption(arr, c["text"], j, c["cut"], c["tint"])
             if "title" in c["fx"]:
                 title_card(arr, j)
