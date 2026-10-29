@@ -36,7 +36,6 @@ glimmering_crags 84 id=crags fwd=10 yaw=8 |
 mob_hydragrip_angled 70 id=hydragrip orbit=40 |
 mob_mirror_wretch_reared 66 id=wretch orbit=30 |
 ashen_barrens 84 id=ashen fwd=12 up=-2 yaw=-8 |
-mob_umbral_stalker_lit 70 id=stalker fwd=1.5 orbit=20 |
 mob_pollinator 70 id=pollinator orbit=-40 |
 mob_watcher 70 id=watcher fwd=2.5 |
 structure_leviathan 120 id=leviathan fwd=14 |
@@ -51,32 +50,32 @@ structure_leviathan_reliquary 96 id=ceiling fight=ceiling cont |
 structure_leviathan_reliquary 130 id=finish fight=finish cont cam=third dist=9 height=0 angle=110 orbit=30 follow=0.12 |
 starforge_armor 110 id=starforge cam=third dist=4 height=0.4 angle=180 orbit=80 look=1.0 follow=1 |
 
-# The edit (see opening.py): 1260 frames, 52.5 seconds
-# cold open on the fight, then the title
-clip wake 48 from=0 punch=24
-clip skull 72 from=10 fx=flash,title,zoom
-# the world, a place a beat or two
-clip gilded 36 from=10 speed=2.5 fx=slash tint=c8960f | The Gilded Reach
-clip sky 24 from=20 speed=2 fx=flash tint=d9641c | Sunstorms
-clip nebula 36 from=0 speed=2.2 fx=slash tint=c42a64 | Nebula Fields
-clip crags 24 from=10 speed=2.5 tint=2a9fb5 | Glimmering Crags
-clip ashen 24 from=10 speed=2.5 fx=slash tint=6f6f80 | Ashen Barrens
-clip leviathan 48 from=10 speed=2 fx=flash,zoom tint=8f2140 | Leviathans
-# who lives there: a card a bar
-clip hushback 48 from=10 speed=1.5 freeze=18 fx=card,slash tint=c9a24a | Hushback / Grazer of the Gilded Reach
-clip whale 48 from=20 speed=1.5 freeze=18 fx=card,flash tint=3f6fe0 | Drift Whale / It sings to the void
-clip hydragrip 48 from=10 speed=1.5 freeze=18 fx=card,slash tint=3fa34d | Hydragrip / Hunter of endermites
-clip wretch 48 from=10 freeze=18 fx=card,flash tint=b02a4a | Mirror Wretch / It speaks with stolen voices
-clip stalker 48 from=10 freeze=18 fx=card,slash tint=8a4fd8 | Umbral Stalker / It puts out your torches
-clip pollinator 48 from=10 speed=1.5 freeze=18 fx=card,flash tint=e0457b | End Pollinator / It drifts in the whales' wake
-clip watcher 48 from=10 freeze=18 fx=card,slash tint=2bb7c9 | The Watcher / Don't look straight at it
+# The edit (see opening.py): 1380 frames, 57.5 seconds
+# the world from above, then the title over the eclipse
+clip gilded 48 from=0
+clip sky 60 from=0 fx=flash,title,zoom
+# the places, two seconds or more each
+clip gilded 60 from=60 fx=slash tint=c8960f | The Gilded Reach
+clip nebula 60 from=0 speed=1.4 fx=flash tint=c42a64 | Nebula Fields
+clip crags 48 from=10 speed=1.4 fx=slash tint=2a9fb5 | Glimmering Crags
+clip ashen 48 from=10 speed=1.4 fx=flash tint=6f6f80 | Ashen Barrens
+# who lives there
+clip hushback 48 from=10 fx=slash tint=c9a24a | Hushback
+clip hydragrip 48 from=10 tint=3fa34d | Hydragrip
+clip pollinator 48 from=10 fx=slash tint=e0457b | End Pollinator
+clip wretch 48 from=10 tint=b02a4a | Mirror Wretch
+clip watcher 48 from=10 fx=slash tint=2bb7c9 | The Watcher
+# the biggest things in it get a card
+clip whale 60 from=20 speed=1.2 freeze=24 fx=card,flash tint=3f6fe0 | Drift Whale / It sings to the void
+clip leviathan 72 from=10 speed=1.5 freeze=36 fx=card,slash tint=8f2140 | The Leviathan / Its bones hold the Reliquary
 # and the boss
-clip nave 36 from=20 speed=1.5 fx=slash tint=6d28d9 | Its keeper is only resting
-clip wake 48 from=40 freeze=14 fx=card,flash tint=7c2ae8 | The Curator / Keeper of the Reliquary
+clip skull 48 from=20 speed=1.2 fx=flash,zoom
+clip nave 48 from=20 speed=1.2 fx=slash tint=6d28d9 | Its keeper is only resting
+clip wake 60 from=24 freeze=30 fx=card,flash tint=7c2ae8 | The Curator / Keeper of the Reliquary
 clip charge 60 from=4 punch=30 fx=slash
 clip strike 60 from=8 punch=10,26,44 fx=flash
 clip beam 48 from=18 punch=19 fx=slash
-clip flip 72 from=0 punch=8 fx=flash tint=7c2ae8 | When it breaks, the world turns over
+clip flip 72 from=0 punch=8 fx=flash
 clip ceiling 36 from=10 punch=6,24
 clip finish 48 from=0 punch=10 fx=flash,out
 clip starforge 60 from=20 fx=flash tint=2fc4b8 | Starforge your gear
