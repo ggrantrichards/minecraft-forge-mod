@@ -50,12 +50,11 @@ structure_leviathan_reliquary 96 id=ceiling fight=ceiling cont |
 structure_leviathan_reliquary 130 id=finish fight=finish cont cam=third dist=9 height=0 angle=110 orbit=30 follow=0.12 |
 starforge_armor 110 id=starforge cam=third dist=4 height=0.4 angle=180 orbit=80 look=1.0 follow=1 |
 
-# The edit (see opening.py): 1380 frames, 57.5 seconds
-# the world from above, then the title over the eclipse
-clip gilded 48 from=0
-clip sky 60 from=0 fx=flash,title,zoom
+# The edit (see opening.py): 1332 frames, 55.5 seconds
+# the title, straight away, over the Gilded Reach from above
+clip gilded 72 from=0 fx=title,zoom
 # the places, two seconds or more each
-clip gilded 60 from=60 fx=slash tint=c8960f | The Gilded Reach
+clip sky 48 from=10 speed=1.2 fx=slash tint=d9641c | Sunstorms
 clip nebula 60 from=0 speed=1.4 fx=flash tint=c42a64 | Nebula Fields
 clip crags 48 from=10 speed=1.4 fx=slash tint=2a9fb5 | Glimmering Crags
 clip ashen 48 from=10 speed=1.4 fx=flash tint=6f6f80 | Ashen Barrens
