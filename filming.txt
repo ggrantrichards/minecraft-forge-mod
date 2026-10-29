@@ -1,0 +1,103 @@
+22 shots to film
+setting up gilded_reach_aerial (120 frames)
+gilded_reach_aerial draws at 10.5 fps; filming at 2.63 ticks a second
+filmed gilded_reach_aerial (120 frames in 45.9 s; 0 repeated)
+setting up sky_eclipse_flare (84 frames)
+sky_eclipse_flare draws at 19.1 fps; filming at 4.00 ticks a second
+filmed sky_eclipse_flare (84 frames in 21.4 s; 14 repeated)
+setting up mob_hushback (76 frames)
+mob_hushback draws at 17.2 fps; filming at 4.00 ticks a second
+filmed mob_hushback (76 frames in 19.3 s; 2 repeated)
+setting up nebula_fields (90 frames)
+nebula_fields draws at 8.7 fps; filming at 2.18 ticks a second
+filmed nebula_fields (90 frames in 41.6 s; 0 repeated)
+setting up mob_drift_whale_side (110 frames)
+mob_drift_whale_side draws at 9.3 fps; filming at 2.33 ticks a second
+filmed mob_drift_whale_side (110 frames in 47.7 s; 0 repeated)
+setting up glimmering_crags (84 frames)
+glimmering_crags draws at 19.8 fps; filming at 4.00 ticks a second
+filmed glimmering_crags (84 frames in 21.4 s; 2 repeated)
+setting up mob_hydragrip_angled (70 frames)
+mob_hydragrip_angled draws at 21.1 fps; filming at 4.00 ticks a second
+filmed mob_hydragrip_angled (70 frames in 17.9 s; 0 repeated)
+setting up mob_mirror_wretch_reared (66 frames)
+mob_mirror_wretch_reared draws at 11.9 fps; filming at 2.98 ticks a second
+filmed mob_mirror_wretch_reared (66 frames in 22.6 s; 0 repeated)
+setting up ashen_barrens (84 frames)
+ashen_barrens draws at 9.3 fps; filming at 2.33 ticks a second
+filmed ashen_barrens (84 frames in 36.3 s; 0 repeated)
+setting up mob_pollinator (70 frames)
+mob_pollinator draws at 16.1 fps; filming at 4.00 ticks a second
+filmed mob_pollinator (70 frames in 17.8 s; 0 repeated)
+setting up mob_watcher (70 frames)
+mob_watcher draws at 14.5 fps; filming at 3.64 ticks a second
+filmed mob_watcher (70 frames in 19.5 s; 0 repeated)
+setting up structure_leviathan (120 frames)
+structure_leviathan draws at 8.1 fps; filming at 2.02 ticks a second
+filmed structure_leviathan (120 frames in 60.0 s; 0 repeated)
+setting up structure_leviathan_skull (96 frames)
+structure_leviathan_skull draws at 9.6 fps; filming at 2.40 ticks a second
+filmed structure_leviathan_skull (96 frames in 40.6 s; 0 repeated)
+setting up structure_leviathan_reliquary (84 frames)
+structure_leviathan_reliquary draws at 18.9 fps; filming at 4.00 ticks a second
+filmed structure_leviathan_reliquary (84 frames in 21.3 s; 0 repeated)
+setting up structure_leviathan_reliquary (wake) (100 frames)
+fight: the Curator's home is 1154, 132, -872, its pedestal 1178, 132, -872
+fight: the reliquary's floor (across -10..10 left to right, along -12..12 down; # floor, . gap, P pylon):
+fight floor  -12 .....................
+fight floor  -11 .....................
+fight floor  -10 .....................
+fight floor   -9 .....................
+fight floor   -8 ...####.......####...
+fight floor   -7 ...#P##.......##P#...
+fight floor   -6 .....................
+fight floor   -5 .....................
+fight floor   -4 .....................
+fight floor   -3 .........###.........
+fight floor   -2 .........###.........
+fight floor   -1 ...####.#####.####...
+fight floor    0 ..#####.##C##.#####..
+fight floor    1 ........#####........
+fight floor    2 .......#######.......
+fight floor    3 .......#######.......
+fight floor    4 .......#######.......
+fight floor    5 .......#######.......
+fight floor    6 ......#########......
+fight floor    7 ..##P###########P##..
+fight floor    8 ......####...##......
+fight floor    9 ......####...##......
+fight floor   10 ......####...##......
+fight floor   11 ......#########......
+fight floor   12 ......#########......
+fight wake: player at 1159, 132, -872, Curator at 1150, 132, -872 (300 health)
+structure_leviathan_reliquary draws at 20.0 fps; filming at 4.00 ticks a second
+filmed structure_leviathan_reliquary (100 frames in 25.2 s; 0 repeated)
+setting up structure_leviathan_reliquary (charge) (110 frames)
+fight charge: player at 1161, 132, -872, Curator at 1152, 132, -872 (280 health)
+structure_leviathan_reliquary draws at 20.0 fps; filming at 4.00 ticks a second
+filmed structure_leviathan_reliquary (110 frames in 27.8 s; 0 repeated)
+setting up structure_leviathan_reliquary (strike) (100 frames)
+fight strike: player at 1158, 132, -872, Curator at 1153, 132, -872 (235 health)
+structure_leviathan_reliquary draws at 20.0 fps; filming at 4.00 ticks a second
+filmed structure_leviathan_reliquary (100 frames in 25.2 s; 0 repeated)
+setting up structure_leviathan_reliquary (beam) (100 frames)
+fight beam: player at 1159, 132, -872, Curator at 1149, 132, -872 (200 health)
+structure_leviathan_reliquary draws at 20.0 fps; filming at 4.00 ticks a second
+filmed structure_leviathan_reliquary (100 frames in 25.1 s; 0 repeated)
+setting up structure_leviathan_reliquary (flip) (150 frames)
+fight flip: player at 1156, 132, -872, Curator at 1153, 132, -872 (156 health)
+structure_leviathan_reliquary draws at 20.0 fps; filming at 4.00 ticks a second
+filmed structure_leviathan_reliquary (150 frames in 37.8 s; 0 repeated)
+setting up structure_leviathan_reliquary (ceiling) (96 frames)
+fight ceiling: player at 1158, 145, -872, Curator at 1157, 142, -872 (120 health, exposed)
+structure_leviathan_reliquary draws at 14.7 fps; filming at 3.68 ticks a second
+filmed structure_leviathan_reliquary (96 frames in 26.1 s; 3 repeated)
+fight finish: player at 1162, 145, -872, Curator at 1161, 142, -872 (5 health, exposed)
+setting up structure_leviathan_reliquary (finish) (130 frames)
+structure_leviathan_reliquary draws at 17.3 fps; filming at 4.00 ticks a second
+fight finish: the player fell through the floor; put back
+filmed structure_leviathan_reliquary (130 frames in 32.4 s; 2 repeated)
+setting up starforge_armor (110 frames)
+starforge_armor draws at 20.0 fps; filming at 4.00 ticks a second
+filmed starforge_armor (110 frames in 27.8 s; 0 repeated)
+ASTRALEND TRAILER DONE
